@@ -3,12 +3,12 @@
 import * as React from "react"
 import Link from "next/link"
 import {
-  IconDashboard,
-  IconInnerShadowTop,
-  IconReport,
-  IconVideo,
-  IconChefHat,
-} from "@tabler/icons-react"
+  LayoutDashboard,
+  Video,
+  FileText,
+  UtensilsCrossed,
+  CircleDot,
+} from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
@@ -32,22 +32,22 @@ const data = {
     {
       title: "Dashboard",
       url: "/dashboard",
-      icon: IconDashboard,
+      icon: LayoutDashboard,
     },
     {
       title: "Videos",
       url: "/videos",
-      icon: IconVideo,
+      icon: Video,
     },
     {
       title: "Reports",
       url: "/reports",
-      icon: IconReport,
+      icon: FileText,
     },
     {
       title: "Items",
       url: "/items",
-      icon: IconChefHat,
+      icon: UtensilsCrossed,
     },
   ],
 }
@@ -63,7 +63,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <Link href="/dashboard">
-                <IconInnerShadowTop className="!size-5" />
+                <CircleDot className="!size-5" />
                 <span className="text-base font-semibold">Hoptix</span>
               </Link>
             </SidebarMenuButton>

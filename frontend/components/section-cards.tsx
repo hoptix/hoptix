@@ -3,7 +3,6 @@ import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
-  CardAction,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -51,12 +50,12 @@ export function SectionCards({ data }: { data: DataItem[] }) {
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             ${estimatedRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </CardTitle>
-          <CardAction>
+          <div>
             <Badge variant="outline">
               <IconTrendingUp />
               +{trends.revenue}%
             </Badge>
-          </CardAction>
+          </div>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
@@ -73,12 +72,12 @@ export function SectionCards({ data }: { data: DataItem[] }) {
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {averageOfferRate.toFixed(1)}%
           </CardTitle>
-          <CardAction>
+          <div>
             <Badge variant="outline">
               <IconTrendingUp />
               +{trends.offerRate}%
             </Badge>
-          </CardAction>
+          </div>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
@@ -95,12 +94,12 @@ export function SectionCards({ data }: { data: DataItem[] }) {
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {averageConversionRate.toFixed(1)}%
           </CardTitle>
-          <CardAction>
+          <div>
             <Badge variant="outline">
               <IconTrendingUp />
               +{trends.conversionRate}%
             </Badge>
-          </CardAction>
+          </div>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
@@ -115,12 +114,12 @@ export function SectionCards({ data }: { data: DataItem[] }) {
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {totalSuccessfulItems.toLocaleString()}
           </CardTitle>
-          <CardAction>
+          <div>
             <Badge variant="outline">
               <IconTrendingUp />
               +{trends.items}%
             </Badge>
-          </CardAction>
+          </div>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
