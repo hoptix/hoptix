@@ -1,4 +1,4 @@
-import boto3
+import boto3, json, os
 from botocore.client import Config
 
 def get_s3(region: str):
@@ -23,3 +23,11 @@ def complete_multipart(s3, bucket: str, key: str, upload_id: str, parts: list[di
     s3.complete_multipart_upload(
         Bucket=bucket, Key=key, UploadId=upload_id, MultipartUpload={"Parts": parts}
     )
+
+def download_to_file(s3, bucket: str, key: str, dest_path: str):
+    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+    s3.download_file(bucket, key, dest_path)
+
+def put_jsonl(s3, bucket: str, key: str, lines: list[dict]):
+    body = "\n".join(json.dumps(x) for x in lines)
+    s3.put_object(Bucket=bucket, Key=key, Body=body.encode("utf-8"), ContentType="application/jsonl")

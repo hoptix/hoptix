@@ -1,0 +1,146 @@
+[
+  {
+    "Scenario": "Scenario 1",
+    "Upsizing Chance": "Drink",
+    "Description": "Customer ordered a combo Or a Drink and did not mention the size",
+    "Employee Offer Statement": "Would you like your drink large, today?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Upsizing Offer"
+  },
+  {
+    "Scenario": "Scenario 2",
+    "Upsizing Chance": "Side",
+    "Description": "Customer ordered a combo Or a Side and did not mention the size",
+    "Employee Offer Statement": "Would you like to upgrade your chips to Pretzels?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Upsizing Offer"
+  },
+  {
+    "Scenario": "Scenario 3",
+    "Upsizing Chance": "Blizzard",
+    "Description": "Customer ordered a Blizzard and did not mention the size",
+    "Employee Offer Statement": "Would you like that large today?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Upsizing Offer"
+  },
+  {
+    "Scenario": "Scenario 4",
+    "Upsizing Chance": "Sundae",
+    "Description": "Customer ordered any type of sundae and did not mention the size",
+    "Employee Offer Statement": "Would you like that large today?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Upsizing Offer"
+  },
+  {
+    "Scenario": "Scenario 5",
+    "Upsizing Chance": "Cones",
+    "Description": "Customer ordered any type of cone and did not mention the size",
+    "Employee Offer Statement": "Would you like that large today?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Upsizing Offer"
+  },
+  {
+    "Scenario": "Scenario 6",
+    "Upsizing Chance": "Drink, Blizzard, \n Sundae, Cones",
+    "Description": "Customer ordered a combo OR a Drink / Blizzard / Sundae / Cone and asked what sizes are available?",
+    "Employee Offer Statement": "We have small, medium or large. Would you like it large for only $$?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Upsizing Offer"
+  },
+  {
+    "Scenario": "Scenario 7",
+    "Upsizing Chance": "Blizzard Upgrade",
+    "Description": "Customer orders $7 meal deal with chilli cheese dog",
+    "Employee Offer Statement": "Would you like your Drink Large OR and upgrade your small sundae to a small blizzard",
+    "Chance Guide": "Chance to offer",
+    "Chance Guide__1": "Valid Upsizing Offer"
+  },
+  {
+    "Scenario": "Scenario 8",
+    "Upsizing Chance": "Dilly Bar - Box of 6",
+    "Description": "Customer orders a dilly bar",
+    "Employee Offer Statement": "Would you like a box of 6? You pay for 5 and get the 6th one free",
+    "Chance Guide": "Chance to offer",
+    "Chance Guide__1": "Valid Upsizing Offer"
+  },
+  {
+    "Scenario": "Scenario 9",
+    "Upsizing Chance": "Cakes",
+    "Description": "Customer orders a cake",
+    "Employee Offer Statement": "Would you like a sheet cake (Large cake)?",
+    "Chance Guide": "Chance to offer",
+    "Chance Guide__1": "Valid Upsizing Offer"
+  },
+  {
+    "Scenario": "Scenario 10",
+    "Upsizing Chance": "Drink, Blizzard, \nSundae, Cones, Cakes",
+    "Description": "Customer ordered any of the items with chance for upsize because no size was mentioned",
+    "Employee Offer Statement": "Small or large?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Invalid Upsizing Offer"
+  },
+  {
+    "Scenario": "Scenario 11",
+    "Upsizing Chance": "Drink, Blizzard, \nSundae, Cones, Cakes",
+    "Description": "Customer ordered any of the items with chance for upsize because no size was mentioned",
+    "Employee Offer Statement": "What size would you like?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Invalid Upsizing Offer"
+  },
+  {
+    "Scenario": "Scenario 12",
+    "Upsizing Chance": "Drink, Blizzard, \nSundae, Cones, Cakes",
+    "Description": "Customer ordered any of the items with chance for upsize and asked what sizes are available. Employee provided all size options then took the order.",
+    "Employee Offer Statement": "We have small, medium or large",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Invalid Upsizing Offer"
+  },
+  {
+    "Scenario": "Scenario 13",
+    "Upsizing Chance": "Drink, Blizzard, \nSundae, Cones, Cakes",
+    "Description": "Customer ordered an item with chance for upsize",
+    "Employee Offer Statement": "A. Employee did not make any offer\n\nB. When a customer places multiple orders, and the first order specifies a size but the second order does not, the employee assumes that the second order has the same size as the first, even if it's not the largest size.\n\nC. Employee offered another size (not the largest)",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "No Offer"
+  },
+  {
+    "Scenario": "Scenario 14",
+    "Upsizing Chance": "Blizzard Upgrade",
+    "Description": "Customer orders $7 meal deal with chilli cheese dog",
+    "Employee Offer Statement": "OK",
+    "Chance Guide": "Chance to offer",
+    "Chance Guide__1": "No Offer"
+  },
+  {
+    "Scenario": "Scenario 15",
+    "Upsizing Chance": "Dilly Bar",
+    "Description": "Customer orders a dilly bar",
+    "Employee Offer Statement": "OK",
+    "Chance Guide": "Chance to offer",
+    "Chance Guide__1": "No Offer"
+  },
+  {
+    "Scenario": "Scenario 16",
+    "Upsizing Chance": "Cakes",
+    "Description": "Customer orders a cake",
+    "Employee Offer Statement": "OK",
+    "Chance Guide": "Chance to offer",
+    "Chance Guide__1": "No Offer"
+  },
+  {
+    "Scenario": "Scenario 17",
+    "Upsizing Chance": "One sized item",
+    "Description": "Customer ordered an item with NO chance for upsize because item comes in one size only or part of a package with a defined size ( $2for5)",
+    "Employee Offer Statement": "OK",
+    "Chance Guide": "No Chance to Offer",
+    "Chance Guide__1": "-"
+  },
+  {
+    "Scenario": "Scenario 18",
+    "Upsizing Chance": "Specific sized items",
+    "Description": "Customer ordered an item and proactively asked for a specific size",
+    "Employee Offer Statement": "OK",
+    "Chance Guide": "No Chance to Offer",
+    "Chance Guide__1": "-"
+  }
+]

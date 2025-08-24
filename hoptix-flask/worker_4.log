@@ -1,0 +1,10 @@
+2025-08-24 03:17:58,376 - INFO - OpenAI API key found
+2025-08-24 03:17:58,376 - INFO - Loaded environment variables - AWS Region: us-east-2
+2025-08-24 03:17:58,376 - INFO - === Starting batch video processing (process all 'uploaded') ===
+2025-08-24 03:17:58,376 - INFO - Initializing database and S3 connections...
+2025-08-24 03:17:58,414 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-08-24 03:17:58,500 - INFO - Successfully connected to database and S3
+2025-08-24 03:17:58,987 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-24 03:17:58,990 - INFO - No more uploaded videos found in queue.
+2025-08-24 03:17:58,990 - INFO - Batch complete. Succeeded: 0, Failed: 0, Total: 0
+2025-08-24 03:17:58,990 - INFO - === Batch session completed in 0.61 seconds ===

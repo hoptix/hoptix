@@ -1,0 +1,1413 @@
+2025-08-23 18:36:59,849 - INFO - Loaded environment variables - AWS Region: us-east-2
+2025-08-23 18:36:59,849 - INFO - === Starting video processing worker ===
+2025-08-23 18:36:59,849 - INFO - Initializing database and S3 connections...
+2025-08-23 18:36:59,867 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-08-23 18:36:59,947 - INFO - Successfully connected to database and S3
+2025-08-23 18:36:59,947 - INFO - Fetching next uploaded video...
+2025-08-23 18:37:00,699 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 18:37:00,703 - INFO - Found video to process - ID: 3c68a69a-9c04-47d6-9518-e6e1077fdb72, S3 Key: dev/sample/sample.mp4
+2025-08-23 18:37:00,703 - INFO - Attempting to claim video 3c68a69a-9c04-47d6-9518-e6e1077fdb72...
+2025-08-23 18:37:00,845 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.3c68a69a-9c04-47d6-9518-e6e1077fdb72&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 18:37:00,846 - INFO - Successfully claimed video 3c68a69a-9c04-47d6-9518-e6e1077fdb72
+2025-08-23 18:37:00,846 - INFO - Starting video processing for 3c68a69a-9c04-47d6-9518-e6e1077fdb72...
+2025-08-23 18:37:09,413 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 401 Unauthorized"
+2025-08-23 18:37:09,759 - ERROR - ❌ Error processing video 3c68a69a-9c04-47d6-9518-e6e1077fdb72 after 8.91 seconds: 'SyncQueryRequestBuilder' object has no attribute 'select'
+Traceback (most recent call last):
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/run_once.py", line 70, in main
+    process_one_video(db, s3, row)
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 114, in process_one_video
+    tx_ids = insert_transactions(db, video_row, txs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 39, in insert_transactions
+    ins = db.client.table("transactions").insert(rows).select("id").execute()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'SyncQueryRequestBuilder' object has no attribute 'select'
+2025-08-23 18:37:09,947 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.3c68a69a-9c04-47d6-9518-e6e1077fdb72 "HTTP/2 200 OK"
+2025-08-23 18:37:09,952 - INFO - Marked video 3c68a69a-9c04-47d6-9518-e6e1077fdb72 as failed in database
+2025-08-23 18:37:09,952 - ERROR - Fatal error in main(): 'SyncQueryRequestBuilder' object has no attribute 'select'
+Traceback (most recent call last):
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/run_once.py", line 70, in main
+    process_one_video(db, s3, row)
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 114, in process_one_video
+    tx_ids = insert_transactions(db, video_row, txs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 39, in insert_transactions
+    ins = db.client.table("transactions").insert(rows).select("id").execute()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'SyncQueryRequestBuilder' object has no attribute 'select'
+2025-08-23 18:37:09,954 - INFO - === Worker session completed in 10.10 seconds ===
+2025-08-23 18:41:09,858 - INFO - Loaded environment variables - AWS Region: us-east-2
+2025-08-23 18:41:09,858 - INFO - === Starting video processing worker ===
+2025-08-23 18:41:09,858 - INFO - Initializing database and S3 connections...
+2025-08-23 18:41:09,876 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-08-23 18:41:09,956 - INFO - Successfully connected to database and S3
+2025-08-23 18:41:09,956 - INFO - Fetching next uploaded video...
+2025-08-23 18:41:10,135 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 18:41:10,137 - INFO - No uploaded videos found in queue
+2025-08-23 18:41:10,137 - INFO - === Worker session completed in 0.28 seconds ===
+2025-08-23 18:43:43,385 - INFO - Loaded environment variables - AWS Region: us-east-2
+2025-08-23 18:43:43,385 - INFO - === Starting video processing worker ===
+2025-08-23 18:43:43,385 - INFO - Initializing database and S3 connections...
+2025-08-23 18:43:43,404 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-08-23 18:43:43,469 - INFO - Successfully connected to database and S3
+2025-08-23 18:43:43,470 - INFO - Fetching next uploaded video...
+2025-08-23 18:43:44,243 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 18:43:44,247 - INFO - Found video to process - ID: 3c68a69a-9c04-47d6-9518-e6e1077fdb72, S3 Key: dev/sample/sample.mp4
+2025-08-23 18:43:44,247 - INFO - Attempting to claim video 3c68a69a-9c04-47d6-9518-e6e1077fdb72...
+2025-08-23 18:43:44,430 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.3c68a69a-9c04-47d6-9518-e6e1077fdb72&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 18:43:44,431 - INFO - Successfully claimed video 3c68a69a-9c04-47d6-9518-e6e1077fdb72
+2025-08-23 18:43:44,431 - INFO - Starting video processing for 3c68a69a-9c04-47d6-9518-e6e1077fdb72...
+2025-08-23 18:43:44,431 - INFO - Starting video processing pipeline for 3c68a69a-9c04-47d6-9518-e6e1077fdb72
+2025-08-23 18:43:44,432 - INFO - Downloading video 3c68a69a-9c04-47d6-9518-e6e1077fdb72 from S3: dev/sample/sample.mp4
+2025-08-23 18:43:46,473 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_psmyxi5f/input.mp4
+2025-08-23 18:43:46,473 - INFO - Starting transcription for video 3c68a69a-9c04-47d6-9518-e6e1077fdb72
+2025-08-23 18:43:50,631 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 401 Unauthorized"
+2025-08-23 18:43:50,639 - INFO - Transcription completed: 1 segments generated
+2025-08-23 18:43:50,640 - INFO - Starting transaction splitting for video 3c68a69a-9c04-47d6-9518-e6e1077fdb72
+2025-08-23 18:43:50,640 - INFO - Transaction splitting completed: 0 transactions identified
+2025-08-23 18:43:50,640 - INFO - Uploading artifacts to S3 with prefix: deriv/session=3c68a69a-9c04-47d6-9518-e6e1077fdb72/
+2025-08-23 18:43:50,942 - INFO - Artifacts uploaded to S3
+2025-08-23 18:43:50,942 - INFO - Inserting 0 transactions into database
+2025-08-23 18:43:51,129 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/transactions?columns= "HTTP/2 400 Bad Request"
+2025-08-23 18:43:51,130 - ERROR - Error inserting transactions: {'code': 'PGRST100', 'details': 'unexpected end of input expecting field name (* or [a..z0..9_$])', 'hint': None, 'message': '"failed to parse columns parameter ()" (line 1, column 1)'}
+2025-08-23 18:43:51,134 - INFO - Cleaned up temporary files for video 3c68a69a-9c04-47d6-9518-e6e1077fdb72
+2025-08-23 18:43:51,134 - ERROR - ❌ Error processing video 3c68a69a-9c04-47d6-9518-e6e1077fdb72 after 6.70 seconds: {'code': 'PGRST100', 'details': 'unexpected end of input expecting field name (* or [a..z0..9_$])', 'hint': None, 'message': '"failed to parse columns parameter ()" (line 1, column 1)'}
+Traceback (most recent call last):
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/run_once.py", line 70, in main
+    process_one_video(db, s3, row)
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 153, in process_one_video
+    tx_ids = insert_transactions(db, video_row, txs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 43, in insert_transactions
+    ins = db.client.table("transactions").insert(rows).execute()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/venv/lib/python3.12/site-packages/postgrest/_sync/request_builder.py", line 78, in execute
+    raise APIError(r.json())
+postgrest.exceptions.APIError: {'code': 'PGRST100', 'details': 'unexpected end of input expecting field name (* or [a..z0..9_$])', 'hint': None, 'message': '"failed to parse columns parameter ()" (line 1, column 1)'}
+2025-08-23 18:43:51,332 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.3c68a69a-9c04-47d6-9518-e6e1077fdb72 "HTTP/2 200 OK"
+2025-08-23 18:43:51,339 - INFO - Marked video 3c68a69a-9c04-47d6-9518-e6e1077fdb72 as failed in database
+2025-08-23 18:43:51,339 - ERROR - Fatal error in main(): {'code': 'PGRST100', 'details': 'unexpected end of input expecting field name (* or [a..z0..9_$])', 'hint': None, 'message': '"failed to parse columns parameter ()" (line 1, column 1)'}
+Traceback (most recent call last):
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/run_once.py", line 70, in main
+    process_one_video(db, s3, row)
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 153, in process_one_video
+    tx_ids = insert_transactions(db, video_row, txs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 43, in insert_transactions
+    ins = db.client.table("transactions").insert(rows).execute()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/venv/lib/python3.12/site-packages/postgrest/_sync/request_builder.py", line 78, in execute
+    raise APIError(r.json())
+postgrest.exceptions.APIError: {'code': 'PGRST100', 'details': 'unexpected end of input expecting field name (* or [a..z0..9_$])', 'hint': None, 'message': '"failed to parse columns parameter ()" (line 1, column 1)'}
+2025-08-23 18:43:51,340 - INFO - === Worker session completed in 7.95 seconds ===
+2025-08-23 18:46:41,354 - INFO - OpenAI API key found
+2025-08-23 18:46:41,355 - INFO - Loaded environment variables - AWS Region: us-east-2
+2025-08-23 18:46:41,355 - INFO - === Starting video processing worker ===
+2025-08-23 18:46:41,355 - INFO - Initializing database and S3 connections...
+2025-08-23 18:46:41,373 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-08-23 18:46:41,453 - INFO - Successfully connected to database and S3
+2025-08-23 18:46:41,453 - INFO - Fetching next uploaded video...
+2025-08-23 18:46:41,695 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 18:46:41,697 - INFO - No uploaded videos found in queue
+2025-08-23 18:46:41,697 - INFO - === Worker session completed in 0.34 seconds ===
+2025-08-23 18:46:53,826 - INFO - OpenAI API key found
+2025-08-23 18:46:53,826 - INFO - Loaded environment variables - AWS Region: us-east-2
+2025-08-23 18:46:53,826 - INFO - === Starting video processing worker ===
+2025-08-23 18:46:53,826 - INFO - Initializing database and S3 connections...
+2025-08-23 18:46:53,844 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-08-23 18:46:53,906 - INFO - Successfully connected to database and S3
+2025-08-23 18:46:53,906 - INFO - Fetching next uploaded video...
+2025-08-23 18:46:54,133 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 18:46:54,135 - INFO - No uploaded videos found in queue
+2025-08-23 18:46:54,135 - INFO - === Worker session completed in 0.31 seconds ===
+2025-08-23 18:47:09,786 - INFO - OpenAI API key found
+2025-08-23 18:47:09,786 - INFO - Loaded environment variables - AWS Region: us-east-2
+2025-08-23 18:47:09,786 - INFO - === Starting video processing worker ===
+2025-08-23 18:47:09,786 - INFO - Initializing database and S3 connections...
+2025-08-23 18:47:09,804 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-08-23 18:47:09,868 - INFO - Successfully connected to database and S3
+2025-08-23 18:47:09,868 - INFO - Fetching next uploaded video...
+2025-08-23 18:47:10,079 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 18:47:10,083 - INFO - No uploaded videos found in queue
+2025-08-23 18:47:10,083 - INFO - === Worker session completed in 0.30 seconds ===
+2025-08-23 18:47:22,119 - INFO - OpenAI API key found
+2025-08-23 18:47:22,119 - INFO - Loaded environment variables - AWS Region: us-east-2
+2025-08-23 18:47:22,119 - INFO - === Starting video processing worker ===
+2025-08-23 18:47:22,119 - INFO - Initializing database and S3 connections...
+2025-08-23 18:47:22,136 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-08-23 18:47:22,199 - INFO - Successfully connected to database and S3
+2025-08-23 18:47:22,199 - INFO - Fetching next uploaded video...
+2025-08-23 18:47:22,504 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 18:47:22,510 - INFO - Found video to process - ID: 3c68a69a-9c04-47d6-9518-e6e1077fdb72, S3 Key: dev/sample/sample.mp4
+2025-08-23 18:47:22,510 - INFO - Attempting to claim video 3c68a69a-9c04-47d6-9518-e6e1077fdb72...
+2025-08-23 18:47:22,614 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.3c68a69a-9c04-47d6-9518-e6e1077fdb72&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 18:47:22,615 - INFO - Successfully claimed video 3c68a69a-9c04-47d6-9518-e6e1077fdb72
+2025-08-23 18:47:22,615 - INFO - Starting video processing for 3c68a69a-9c04-47d6-9518-e6e1077fdb72...
+2025-08-23 18:47:22,615 - INFO - Starting video processing pipeline for 3c68a69a-9c04-47d6-9518-e6e1077fdb72
+2025-08-23 18:47:22,616 - INFO - Downloading video 3c68a69a-9c04-47d6-9518-e6e1077fdb72 from S3: dev/sample/sample.mp4
+2025-08-23 18:47:27,122 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_mrfd977m/input.mp4
+2025-08-23 18:47:27,122 - INFO - Starting transcription for video 3c68a69a-9c04-47d6-9518-e6e1077fdb72
+2025-08-23 18:47:32,203 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 401 Unauthorized"
+2025-08-23 18:47:32,212 - INFO - Transcription completed: 1 segments generated
+2025-08-23 18:47:32,212 - INFO - Starting transaction splitting for video 3c68a69a-9c04-47d6-9518-e6e1077fdb72
+2025-08-23 18:47:32,212 - INFO - Transaction splitting completed: 0 transactions identified
+2025-08-23 18:47:32,212 - INFO - Uploading artifacts to S3 with prefix: deriv/session=3c68a69a-9c04-47d6-9518-e6e1077fdb72/
+2025-08-23 18:47:32,538 - INFO - Artifacts uploaded to S3
+2025-08-23 18:47:32,539 - INFO - Inserting 0 transactions into database
+2025-08-23 18:47:32,539 - WARNING - No transactions to insert - empty list provided
+2025-08-23 18:47:32,539 - INFO - Inserted transactions with IDs: []
+2025-08-23 18:47:32,539 - INFO - Starting grading for 0 transactions
+2025-08-23 18:47:32,643 - INFO - Grading completed and uploaded to S3
+2025-08-23 18:47:32,644 - INFO - Upserting grades for 0 transactions
+2025-08-23 18:47:32,644 - WARNING - No grades to upsert - empty transaction IDs or grades list
+2025-08-23 18:47:32,644 - INFO - Successfully completed all processing steps for video 3c68a69a-9c04-47d6-9518-e6e1077fdb72
+2025-08-23 18:47:32,647 - INFO - Cleaned up temporary files for video 3c68a69a-9c04-47d6-9518-e6e1077fdb72
+2025-08-23 18:47:32,814 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.3c68a69a-9c04-47d6-9518-e6e1077fdb72 "HTTP/2 200 OK"
+2025-08-23 18:47:32,820 - INFO - ✅ Successfully processed video 3c68a69a-9c04-47d6-9518-e6e1077fdb72 in 10.03 seconds
+2025-08-23 18:47:32,820 - INFO - === Worker session completed in 10.70 seconds ===
+2025-08-23 19:15:55,475 - INFO - OpenAI API key found
+2025-08-23 19:15:55,475 - INFO - Loaded environment variables - AWS Region: us-east-2
+2025-08-23 19:15:55,475 - INFO - === Starting video processing worker ===
+2025-08-23 19:15:55,475 - INFO - Initializing database and S3 connections...
+2025-08-23 19:15:55,494 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-08-23 19:15:55,576 - INFO - Successfully connected to database and S3
+2025-08-23 19:15:55,576 - INFO - Fetching next uploaded video...
+2025-08-23 19:15:55,880 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 19:15:55,883 - INFO - Found video to process - ID: e497bb2f-00c5-418a-b7c3-4d221dc89374, S3 Key: dev/sample/sample.mp4
+2025-08-23 19:15:55,883 - INFO - Attempting to claim video e497bb2f-00c5-418a-b7c3-4d221dc89374...
+2025-08-23 19:15:55,992 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.e497bb2f-00c5-418a-b7c3-4d221dc89374&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 19:15:55,993 - INFO - Successfully claimed video e497bb2f-00c5-418a-b7c3-4d221dc89374
+2025-08-23 19:15:55,993 - INFO - Starting video processing for e497bb2f-00c5-418a-b7c3-4d221dc89374...
+2025-08-23 19:15:55,994 - INFO - Starting video processing pipeline for e497bb2f-00c5-418a-b7c3-4d221dc89374
+2025-08-23 19:15:55,996 - INFO - Downloading video e497bb2f-00c5-418a-b7c3-4d221dc89374 from S3: dev/sample/sample.mp4
+2025-08-23 19:15:58,057 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_xg86fjrq/input.mp4
+2025-08-23 19:15:58,057 - INFO - Starting transcription for video e497bb2f-00c5-418a-b7c3-4d221dc89374
+2025-08-23 19:16:02,662 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 401 Unauthorized"
+2025-08-23 19:16:02,668 - INFO - Transcription completed: 1 segments generated
+2025-08-23 19:16:02,669 - INFO - Starting transaction splitting for video e497bb2f-00c5-418a-b7c3-4d221dc89374
+2025-08-23 19:16:02,669 - INFO - Transaction splitting completed: 0 transactions identified
+2025-08-23 19:16:02,669 - INFO - Uploading artifacts to S3 with prefix: deriv/session=e497bb2f-00c5-418a-b7c3-4d221dc89374/
+2025-08-23 19:16:02,953 - INFO - Artifacts uploaded to S3
+2025-08-23 19:16:02,953 - INFO - Inserting 0 transactions into database
+2025-08-23 19:16:02,953 - WARNING - No transactions to insert - empty list provided
+2025-08-23 19:16:02,953 - INFO - Inserted transactions with IDs: []
+2025-08-23 19:16:02,953 - INFO - Starting grading for 0 transactions
+2025-08-23 19:16:03,006 - INFO - Grading completed and uploaded to S3
+2025-08-23 19:16:03,006 - INFO - Upserting grades for 0 transactions
+2025-08-23 19:16:03,006 - WARNING - No grades to upsert - empty transaction IDs or grades list
+2025-08-23 19:16:03,006 - INFO - Successfully completed all processing steps for video e497bb2f-00c5-418a-b7c3-4d221dc89374
+2025-08-23 19:16:03,008 - INFO - Cleaned up temporary files for video e497bb2f-00c5-418a-b7c3-4d221dc89374
+2025-08-23 19:16:03,182 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.e497bb2f-00c5-418a-b7c3-4d221dc89374 "HTTP/2 200 OK"
+2025-08-23 19:16:03,187 - INFO - ✅ Successfully processed video e497bb2f-00c5-418a-b7c3-4d221dc89374 in 7.01 seconds
+2025-08-23 19:16:03,187 - INFO - === Worker session completed in 7.71 seconds ===
+2025-08-23 19:17:46,839 - INFO - OpenAI API key found
+2025-08-23 19:17:46,839 - INFO - Loaded environment variables - AWS Region: us-east-2
+2025-08-23 19:17:46,839 - INFO - === Starting batch video processing (process all 'uploaded') ===
+2025-08-23 19:17:46,839 - INFO - Initializing database and S3 connections...
+2025-08-23 19:17:46,859 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-08-23 19:17:46,946 - INFO - Successfully connected to database and S3
+2025-08-23 19:17:47,226 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 19:17:47,228 - INFO - Found video to process - ID: a2ba5b09-5ed4-406c-93e9-85a94c1f1a45, S3 Key: dev/sample/sample1.mp4
+2025-08-23 19:17:47,228 - INFO - Attempting to claim video a2ba5b09-5ed4-406c-93e9-85a94c1f1a45...
+2025-08-23 19:17:47,331 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.a2ba5b09-5ed4-406c-93e9-85a94c1f1a45&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 19:17:47,332 - INFO - Successfully claimed video a2ba5b09-5ed4-406c-93e9-85a94c1f1a45
+2025-08-23 19:17:47,332 - INFO - Starting video processing for a2ba5b09-5ed4-406c-93e9-85a94c1f1a45...
+2025-08-23 19:17:47,332 - ERROR - ❌ Error processing video a2ba5b09-5ed4-406c-93e9-85a94c1f1a45 after 0.00 seconds: process_one_video() takes 3 positional arguments but 4 were given
+Traceback (most recent call last):
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/run_once.py", line 83, in main
+    process_one_video(db, s3, settings, row)  # NOTE: pass Settings as required by pipeline
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: process_one_video() takes 3 positional arguments but 4 were given
+2025-08-23 19:17:47,418 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.a2ba5b09-5ed4-406c-93e9-85a94c1f1a45 "HTTP/2 200 OK"
+2025-08-23 19:17:47,419 - INFO - Marked video a2ba5b09-5ed4-406c-93e9-85a94c1f1a45 as failed in database
+2025-08-23 19:17:47,507 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 19:17:47,510 - INFO - Found video to process - ID: a8a3a805-7cec-4902-ad50-74e65a0c7880, S3 Key: dev/sample/sample2.mp4
+2025-08-23 19:17:47,510 - INFO - Attempting to claim video a8a3a805-7cec-4902-ad50-74e65a0c7880...
+2025-08-23 19:17:47,588 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.a8a3a805-7cec-4902-ad50-74e65a0c7880&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 19:17:47,588 - INFO - Successfully claimed video a8a3a805-7cec-4902-ad50-74e65a0c7880
+2025-08-23 19:17:47,588 - INFO - Starting video processing for a8a3a805-7cec-4902-ad50-74e65a0c7880...
+2025-08-23 19:17:47,588 - ERROR - ❌ Error processing video a8a3a805-7cec-4902-ad50-74e65a0c7880 after 0.00 seconds: process_one_video() takes 3 positional arguments but 4 were given
+Traceback (most recent call last):
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/run_once.py", line 83, in main
+    process_one_video(db, s3, settings, row)  # NOTE: pass Settings as required by pipeline
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: process_one_video() takes 3 positional arguments but 4 were given
+2025-08-23 19:17:47,673 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.a8a3a805-7cec-4902-ad50-74e65a0c7880 "HTTP/2 200 OK"
+2025-08-23 19:17:47,674 - INFO - Marked video a8a3a805-7cec-4902-ad50-74e65a0c7880 as failed in database
+2025-08-23 19:17:47,749 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 19:17:47,750 - INFO - Found video to process - ID: f8d0bcca-97e9-4f9b-97e7-b227b78b91f1, S3 Key: dev/sample/sample3.mp4
+2025-08-23 19:17:47,751 - INFO - Attempting to claim video f8d0bcca-97e9-4f9b-97e7-b227b78b91f1...
+2025-08-23 19:17:47,849 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.f8d0bcca-97e9-4f9b-97e7-b227b78b91f1&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 19:17:47,851 - INFO - Successfully claimed video f8d0bcca-97e9-4f9b-97e7-b227b78b91f1
+2025-08-23 19:17:47,851 - INFO - Starting video processing for f8d0bcca-97e9-4f9b-97e7-b227b78b91f1...
+2025-08-23 19:17:47,851 - ERROR - ❌ Error processing video f8d0bcca-97e9-4f9b-97e7-b227b78b91f1 after 0.00 seconds: process_one_video() takes 3 positional arguments but 4 were given
+Traceback (most recent call last):
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/run_once.py", line 83, in main
+    process_one_video(db, s3, settings, row)  # NOTE: pass Settings as required by pipeline
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: process_one_video() takes 3 positional arguments but 4 were given
+2025-08-23 19:17:47,931 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.f8d0bcca-97e9-4f9b-97e7-b227b78b91f1 "HTTP/2 200 OK"
+2025-08-23 19:17:47,932 - INFO - Marked video f8d0bcca-97e9-4f9b-97e7-b227b78b91f1 as failed in database
+2025-08-23 19:17:48,002 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 19:17:48,003 - INFO - Found video to process - ID: 78130140-2459-4cb3-8f22-bb05b244a325, S3 Key: dev/sample/sample4.mp4
+2025-08-23 19:17:48,004 - INFO - Attempting to claim video 78130140-2459-4cb3-8f22-bb05b244a325...
+2025-08-23 19:17:48,093 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.78130140-2459-4cb3-8f22-bb05b244a325&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 19:17:48,095 - INFO - Successfully claimed video 78130140-2459-4cb3-8f22-bb05b244a325
+2025-08-23 19:17:48,095 - INFO - Starting video processing for 78130140-2459-4cb3-8f22-bb05b244a325...
+2025-08-23 19:17:48,095 - ERROR - ❌ Error processing video 78130140-2459-4cb3-8f22-bb05b244a325 after 0.00 seconds: process_one_video() takes 3 positional arguments but 4 were given
+Traceback (most recent call last):
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/run_once.py", line 83, in main
+    process_one_video(db, s3, settings, row)  # NOTE: pass Settings as required by pipeline
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: process_one_video() takes 3 positional arguments but 4 were given
+2025-08-23 19:17:48,178 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.78130140-2459-4cb3-8f22-bb05b244a325 "HTTP/2 200 OK"
+2025-08-23 19:17:48,179 - INFO - Marked video 78130140-2459-4cb3-8f22-bb05b244a325 as failed in database
+2025-08-23 19:17:48,255 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 19:17:48,258 - INFO - No more uploaded videos found in queue.
+2025-08-23 19:17:48,259 - INFO - Batch complete. Succeeded: 0, Failed: 4, Total: 4
+2025-08-23 19:17:48,259 - INFO - === Batch session completed in 1.42 seconds ===
+2025-08-23 19:18:56,540 - INFO - OpenAI API key found
+2025-08-23 19:18:56,541 - INFO - Loaded environment variables - AWS Region: us-east-2
+2025-08-23 19:18:56,541 - INFO - === Starting batch video processing (process all 'uploaded') ===
+2025-08-23 19:18:56,541 - INFO - Initializing database and S3 connections...
+2025-08-23 19:18:56,559 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-08-23 19:18:56,643 - INFO - Successfully connected to database and S3
+2025-08-23 19:18:56,806 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 19:18:56,808 - INFO - Found video to process - ID: 78130140-2459-4cb3-8f22-bb05b244a325, S3 Key: dev/sample/sample4.mp4
+2025-08-23 19:18:56,808 - INFO - Attempting to claim video 78130140-2459-4cb3-8f22-bb05b244a325...
+2025-08-23 19:18:56,899 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.78130140-2459-4cb3-8f22-bb05b244a325&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 19:18:56,900 - INFO - Successfully claimed video 78130140-2459-4cb3-8f22-bb05b244a325
+2025-08-23 19:18:56,900 - INFO - Starting video processing for 78130140-2459-4cb3-8f22-bb05b244a325...
+2025-08-23 19:18:56,900 - INFO - Starting video processing pipeline for 78130140-2459-4cb3-8f22-bb05b244a325
+2025-08-23 19:18:56,902 - INFO - Downloading video 78130140-2459-4cb3-8f22-bb05b244a325 from S3: dev/sample/sample4.mp4
+2025-08-23 19:18:58,080 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_8r27d_qu/input.mp4
+2025-08-23 19:18:58,080 - INFO - Starting transcription for video 78130140-2459-4cb3-8f22-bb05b244a325
+2025-08-23 19:19:01,489 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 401 Unauthorized"
+2025-08-23 19:19:01,495 - INFO - Transcription completed: 1 segments generated
+2025-08-23 19:19:01,495 - INFO - Starting transaction splitting for video 78130140-2459-4cb3-8f22-bb05b244a325
+2025-08-23 19:19:01,495 - INFO - Transaction splitting completed: 0 transactions identified
+2025-08-23 19:19:01,495 - INFO - Uploading artifacts to S3 with prefix: deriv/session=78130140-2459-4cb3-8f22-bb05b244a325/
+2025-08-23 19:19:01,773 - INFO - Artifacts uploaded to S3
+2025-08-23 19:19:01,773 - INFO - Inserting 0 transactions into database
+2025-08-23 19:19:01,774 - WARNING - No transactions to insert - empty list provided
+2025-08-23 19:19:01,774 - INFO - Inserted transactions with IDs: []
+2025-08-23 19:19:01,774 - INFO - Starting grading for 0 transactions
+2025-08-23 19:19:01,826 - INFO - Grading completed and uploaded to S3
+2025-08-23 19:19:01,827 - INFO - Upserting grades for 0 transactions
+2025-08-23 19:19:01,827 - WARNING - No grades to upsert - empty transaction IDs or grades list
+2025-08-23 19:19:01,827 - INFO - Successfully completed all processing steps for video 78130140-2459-4cb3-8f22-bb05b244a325
+2025-08-23 19:19:01,828 - INFO - Cleaned up temporary files for video 78130140-2459-4cb3-8f22-bb05b244a325
+2025-08-23 19:19:01,908 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.78130140-2459-4cb3-8f22-bb05b244a325 "HTTP/2 200 OK"
+2025-08-23 19:19:01,912 - INFO - ✅ Successfully processed video 78130140-2459-4cb3-8f22-bb05b244a325 in 4.93 seconds
+2025-08-23 19:19:01,998 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 19:19:01,999 - INFO - Found video to process - ID: a2ba5b09-5ed4-406c-93e9-85a94c1f1a45, S3 Key: dev/sample/sample1.mp4
+2025-08-23 19:19:01,999 - INFO - Attempting to claim video a2ba5b09-5ed4-406c-93e9-85a94c1f1a45...
+2025-08-23 19:19:02,083 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.a2ba5b09-5ed4-406c-93e9-85a94c1f1a45&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 19:19:02,084 - INFO - Successfully claimed video a2ba5b09-5ed4-406c-93e9-85a94c1f1a45
+2025-08-23 19:19:02,084 - INFO - Starting video processing for a2ba5b09-5ed4-406c-93e9-85a94c1f1a45...
+2025-08-23 19:19:02,084 - INFO - Starting video processing pipeline for a2ba5b09-5ed4-406c-93e9-85a94c1f1a45
+2025-08-23 19:19:02,085 - INFO - Downloading video a2ba5b09-5ed4-406c-93e9-85a94c1f1a45 from S3: dev/sample/sample1.mp4
+2025-08-23 19:19:02,893 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_lx7n7rhc/input.mp4
+2025-08-23 19:19:02,894 - INFO - Starting transcription for video a2ba5b09-5ed4-406c-93e9-85a94c1f1a45
+2025-08-23 19:19:04,798 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 401 Unauthorized"
+2025-08-23 19:19:04,802 - INFO - Transcription completed: 1 segments generated
+2025-08-23 19:19:04,802 - INFO - Starting transaction splitting for video a2ba5b09-5ed4-406c-93e9-85a94c1f1a45
+2025-08-23 19:19:04,802 - INFO - Transaction splitting completed: 0 transactions identified
+2025-08-23 19:19:04,802 - INFO - Uploading artifacts to S3 with prefix: deriv/session=a2ba5b09-5ed4-406c-93e9-85a94c1f1a45/
+2025-08-23 19:19:04,934 - INFO - Artifacts uploaded to S3
+2025-08-23 19:19:04,934 - INFO - Inserting 0 transactions into database
+2025-08-23 19:19:04,934 - WARNING - No transactions to insert - empty list provided
+2025-08-23 19:19:04,934 - INFO - Inserted transactions with IDs: []
+2025-08-23 19:19:04,934 - INFO - Starting grading for 0 transactions
+2025-08-23 19:19:04,985 - INFO - Grading completed and uploaded to S3
+2025-08-23 19:19:04,985 - INFO - Upserting grades for 0 transactions
+2025-08-23 19:19:04,985 - WARNING - No grades to upsert - empty transaction IDs or grades list
+2025-08-23 19:19:04,985 - INFO - Successfully completed all processing steps for video a2ba5b09-5ed4-406c-93e9-85a94c1f1a45
+2025-08-23 19:19:04,987 - INFO - Cleaned up temporary files for video a2ba5b09-5ed4-406c-93e9-85a94c1f1a45
+2025-08-23 19:19:05,064 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.a2ba5b09-5ed4-406c-93e9-85a94c1f1a45 "HTTP/2 200 OK"
+2025-08-23 19:19:05,066 - INFO - ✅ Successfully processed video a2ba5b09-5ed4-406c-93e9-85a94c1f1a45 in 2.90 seconds
+2025-08-23 19:19:05,147 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 19:19:05,148 - INFO - Found video to process - ID: a8a3a805-7cec-4902-ad50-74e65a0c7880, S3 Key: dev/sample/sample2.mp4
+2025-08-23 19:19:05,148 - INFO - Attempting to claim video a8a3a805-7cec-4902-ad50-74e65a0c7880...
+2025-08-23 19:19:05,228 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.a8a3a805-7cec-4902-ad50-74e65a0c7880&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 19:19:05,229 - INFO - Successfully claimed video a8a3a805-7cec-4902-ad50-74e65a0c7880
+2025-08-23 19:19:05,229 - INFO - Starting video processing for a8a3a805-7cec-4902-ad50-74e65a0c7880...
+2025-08-23 19:19:05,229 - INFO - Starting video processing pipeline for a8a3a805-7cec-4902-ad50-74e65a0c7880
+2025-08-23 19:19:05,230 - INFO - Downloading video a8a3a805-7cec-4902-ad50-74e65a0c7880 from S3: dev/sample/sample2.mp4
+2025-08-23 19:19:05,829 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_jt1_8a77/input.mp4
+2025-08-23 19:19:05,829 - INFO - Starting transcription for video a8a3a805-7cec-4902-ad50-74e65a0c7880
+2025-08-23 19:19:07,179 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 401 Unauthorized"
+2025-08-23 19:19:07,183 - INFO - Transcription completed: 1 segments generated
+2025-08-23 19:19:07,183 - INFO - Starting transaction splitting for video a8a3a805-7cec-4902-ad50-74e65a0c7880
+2025-08-23 19:19:07,183 - INFO - Transaction splitting completed: 0 transactions identified
+2025-08-23 19:19:07,183 - INFO - Uploading artifacts to S3 with prefix: deriv/session=a8a3a805-7cec-4902-ad50-74e65a0c7880/
+2025-08-23 19:19:07,332 - INFO - Artifacts uploaded to S3
+2025-08-23 19:19:07,332 - INFO - Inserting 0 transactions into database
+2025-08-23 19:19:07,333 - WARNING - No transactions to insert - empty list provided
+2025-08-23 19:19:07,333 - INFO - Inserted transactions with IDs: []
+2025-08-23 19:19:07,333 - INFO - Starting grading for 0 transactions
+2025-08-23 19:19:07,388 - INFO - Grading completed and uploaded to S3
+2025-08-23 19:19:07,389 - INFO - Upserting grades for 0 transactions
+2025-08-23 19:19:07,389 - WARNING - No grades to upsert - empty transaction IDs or grades list
+2025-08-23 19:19:07,389 - INFO - Successfully completed all processing steps for video a8a3a805-7cec-4902-ad50-74e65a0c7880
+2025-08-23 19:19:07,390 - INFO - Cleaned up temporary files for video a8a3a805-7cec-4902-ad50-74e65a0c7880
+2025-08-23 19:19:07,469 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.a8a3a805-7cec-4902-ad50-74e65a0c7880 "HTTP/2 200 OK"
+2025-08-23 19:19:07,471 - INFO - ✅ Successfully processed video a8a3a805-7cec-4902-ad50-74e65a0c7880 in 2.16 seconds
+2025-08-23 19:19:07,546 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 19:19:07,547 - INFO - Found video to process - ID: e497bb2f-00c5-418a-b7c3-4d221dc89374, S3 Key: dev/sample/sample.mp4
+2025-08-23 19:19:07,547 - INFO - Attempting to claim video e497bb2f-00c5-418a-b7c3-4d221dc89374...
+2025-08-23 19:19:07,619 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.e497bb2f-00c5-418a-b7c3-4d221dc89374&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 19:19:07,619 - INFO - Successfully claimed video e497bb2f-00c5-418a-b7c3-4d221dc89374
+2025-08-23 19:19:07,619 - INFO - Starting video processing for e497bb2f-00c5-418a-b7c3-4d221dc89374...
+2025-08-23 19:19:07,619 - INFO - Starting video processing pipeline for e497bb2f-00c5-418a-b7c3-4d221dc89374
+2025-08-23 19:19:07,620 - INFO - Downloading video e497bb2f-00c5-418a-b7c3-4d221dc89374 from S3: dev/sample/sample.mp4
+2025-08-23 19:19:09,550 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_tdoelod7/input.mp4
+2025-08-23 19:19:09,551 - INFO - Starting transcription for video e497bb2f-00c5-418a-b7c3-4d221dc89374
+2025-08-23 19:19:12,604 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 401 Unauthorized"
+2025-08-23 19:19:12,606 - INFO - Transcription completed: 1 segments generated
+2025-08-23 19:19:12,606 - INFO - Starting transaction splitting for video e497bb2f-00c5-418a-b7c3-4d221dc89374
+2025-08-23 19:19:12,606 - INFO - Transaction splitting completed: 0 transactions identified
+2025-08-23 19:19:12,606 - INFO - Uploading artifacts to S3 with prefix: deriv/session=e497bb2f-00c5-418a-b7c3-4d221dc89374/
+2025-08-23 19:19:12,737 - INFO - Artifacts uploaded to S3
+2025-08-23 19:19:12,737 - INFO - Inserting 0 transactions into database
+2025-08-23 19:19:12,737 - WARNING - No transactions to insert - empty list provided
+2025-08-23 19:19:12,737 - INFO - Inserted transactions with IDs: []
+2025-08-23 19:19:12,737 - INFO - Starting grading for 0 transactions
+2025-08-23 19:19:12,782 - INFO - Grading completed and uploaded to S3
+2025-08-23 19:19:12,782 - INFO - Upserting grades for 0 transactions
+2025-08-23 19:19:12,782 - WARNING - No grades to upsert - empty transaction IDs or grades list
+2025-08-23 19:19:12,782 - INFO - Successfully completed all processing steps for video e497bb2f-00c5-418a-b7c3-4d221dc89374
+2025-08-23 19:19:12,783 - INFO - Cleaned up temporary files for video e497bb2f-00c5-418a-b7c3-4d221dc89374
+2025-08-23 19:19:12,963 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.e497bb2f-00c5-418a-b7c3-4d221dc89374 "HTTP/2 200 OK"
+2025-08-23 19:19:12,964 - INFO - ✅ Successfully processed video e497bb2f-00c5-418a-b7c3-4d221dc89374 in 5.16 seconds
+2025-08-23 19:19:13,060 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 19:19:13,062 - INFO - Found video to process - ID: f8d0bcca-97e9-4f9b-97e7-b227b78b91f1, S3 Key: dev/sample/sample3.mp4
+2025-08-23 19:19:13,062 - INFO - Attempting to claim video f8d0bcca-97e9-4f9b-97e7-b227b78b91f1...
+2025-08-23 19:19:13,145 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.f8d0bcca-97e9-4f9b-97e7-b227b78b91f1&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 19:19:13,146 - INFO - Successfully claimed video f8d0bcca-97e9-4f9b-97e7-b227b78b91f1
+2025-08-23 19:19:13,146 - INFO - Starting video processing for f8d0bcca-97e9-4f9b-97e7-b227b78b91f1...
+2025-08-23 19:19:13,147 - INFO - Starting video processing pipeline for f8d0bcca-97e9-4f9b-97e7-b227b78b91f1
+2025-08-23 19:19:13,147 - INFO - Downloading video f8d0bcca-97e9-4f9b-97e7-b227b78b91f1 from S3: dev/sample/sample3.mp4
+2025-08-23 19:19:14,157 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_dr54rx45/input.mp4
+2025-08-23 19:19:14,157 - INFO - Starting transcription for video f8d0bcca-97e9-4f9b-97e7-b227b78b91f1
+2025-08-23 19:19:16,064 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 401 Unauthorized"
+2025-08-23 19:19:16,068 - INFO - Transcription completed: 1 segments generated
+2025-08-23 19:19:16,068 - INFO - Starting transaction splitting for video f8d0bcca-97e9-4f9b-97e7-b227b78b91f1
+2025-08-23 19:19:16,068 - INFO - Transaction splitting completed: 0 transactions identified
+2025-08-23 19:19:16,068 - INFO - Uploading artifacts to S3 with prefix: deriv/session=f8d0bcca-97e9-4f9b-97e7-b227b78b91f1/
+2025-08-23 19:19:16,216 - INFO - Artifacts uploaded to S3
+2025-08-23 19:19:16,216 - INFO - Inserting 0 transactions into database
+2025-08-23 19:19:16,217 - WARNING - No transactions to insert - empty list provided
+2025-08-23 19:19:16,217 - INFO - Inserted transactions with IDs: []
+2025-08-23 19:19:16,217 - INFO - Starting grading for 0 transactions
+2025-08-23 19:19:16,266 - INFO - Grading completed and uploaded to S3
+2025-08-23 19:19:16,266 - INFO - Upserting grades for 0 transactions
+2025-08-23 19:19:16,266 - WARNING - No grades to upsert - empty transaction IDs or grades list
+2025-08-23 19:19:16,266 - INFO - Successfully completed all processing steps for video f8d0bcca-97e9-4f9b-97e7-b227b78b91f1
+2025-08-23 19:19:16,268 - INFO - Cleaned up temporary files for video f8d0bcca-97e9-4f9b-97e7-b227b78b91f1
+2025-08-23 19:19:16,359 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.f8d0bcca-97e9-4f9b-97e7-b227b78b91f1 "HTTP/2 200 OK"
+2025-08-23 19:19:16,361 - INFO - ✅ Successfully processed video f8d0bcca-97e9-4f9b-97e7-b227b78b91f1 in 3.12 seconds
+2025-08-23 19:19:16,447 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 19:19:16,448 - INFO - No more uploaded videos found in queue.
+2025-08-23 19:19:16,448 - INFO - Batch complete. Succeeded: 5, Failed: 0, Total: 5
+2025-08-23 19:19:16,449 - INFO - Processed video IDs: 78130140-2459-4cb3-8f22-bb05b244a325, a2ba5b09-5ed4-406c-93e9-85a94c1f1a45, a8a3a805-7cec-4902-ad50-74e65a0c7880, e497bb2f-00c5-418a-b7c3-4d221dc89374, f8d0bcca-97e9-4f9b-97e7-b227b78b91f1
+2025-08-23 19:19:16,449 - INFO - === Batch session completed in 19.91 seconds ===
+2025-08-23 20:57:15,951 - INFO - OpenAI API key found
+2025-08-23 20:57:15,952 - INFO - Loaded environment variables - AWS Region: us-east-2
+2025-08-23 20:57:15,952 - INFO - === Starting batch video processing (process all 'uploaded') ===
+2025-08-23 20:57:15,952 - INFO - Initializing database and S3 connections...
+2025-08-23 20:57:15,969 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-08-23 20:57:16,038 - INFO - Successfully connected to database and S3
+2025-08-23 20:57:16,796 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 20:57:16,808 - INFO - No more uploaded videos found in queue.
+2025-08-23 20:57:16,808 - INFO - Batch complete. Succeeded: 0, Failed: 0, Total: 0
+2025-08-23 20:57:16,808 - INFO - === Batch session completed in 0.86 seconds ===
+2025-08-23 20:57:31,621 - INFO - OpenAI API key found
+2025-08-23 20:57:31,622 - INFO - Loaded environment variables - AWS Region: us-east-2
+2025-08-23 20:57:31,622 - INFO - === Starting batch video processing (process all 'uploaded') ===
+2025-08-23 20:57:31,622 - INFO - Initializing database and S3 connections...
+2025-08-23 20:57:31,638 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-08-23 20:57:31,677 - INFO - Successfully connected to database and S3
+2025-08-23 20:57:31,982 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 20:57:31,993 - INFO - Found video to process - ID: 092f4ca0-8392-4a58-9a0f-82b51f1b5836, S3 Key: dev/sample/sample10.avi
+2025-08-23 20:57:31,993 - INFO - Attempting to claim video 092f4ca0-8392-4a58-9a0f-82b51f1b5836...
+2025-08-23 20:57:32,191 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.092f4ca0-8392-4a58-9a0f-82b51f1b5836&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 20:57:32,193 - INFO - Successfully claimed video 092f4ca0-8392-4a58-9a0f-82b51f1b5836
+2025-08-23 20:57:32,193 - INFO - Starting video processing for 092f4ca0-8392-4a58-9a0f-82b51f1b5836...
+2025-08-23 20:57:32,193 - INFO - Starting video processing pipeline for 092f4ca0-8392-4a58-9a0f-82b51f1b5836
+2025-08-23 20:57:32,195 - INFO - Downloading video 092f4ca0-8392-4a58-9a0f-82b51f1b5836 from S3: dev/sample/sample10.avi
+2025-08-23 20:57:41,839 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_v83jk43c/input.mp4
+2025-08-23 20:57:41,839 - INFO - Starting transcription for video 092f4ca0-8392-4a58-9a0f-82b51f1b5836
+2025-08-23 20:57:55,482 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 20:57:55,490 - INFO - Transcription completed: 1 segments generated
+2025-08-23 20:57:55,490 - INFO - Starting transaction splitting for video 092f4ca0-8392-4a58-9a0f-82b51f1b5836
+2025-08-23 20:58:00,360 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 20:58:00,425 - INFO - Transaction splitting completed: 1 transactions identified
+2025-08-23 20:58:00,425 - INFO - Uploading artifacts to S3 with prefix: deriv/session=092f4ca0-8392-4a58-9a0f-82b51f1b5836/
+2025-08-23 20:58:00,787 - INFO - Artifacts uploaded to S3
+2025-08-23 20:58:00,788 - INFO - Inserting 1 transactions into database
+2025-08-23 20:58:01,078 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/transactions?columns=%22meta%22%2C%22video_id%22%2C%22ended_at%22%2C%22started_at%22%2C%22run_id%22%2C%22kind%22%2C%22tx_range%22 "HTTP/2 201 Created"
+2025-08-23 20:58:01,085 - INFO - Inserted transactions with IDs: ['b1079a5f-1826-4bfd-909e-4f9168f471a6']
+2025-08-23 20:58:01,086 - INFO - Starting grading for 1 transactions
+2025-08-23 20:58:10,288 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 20:58:10,383 - INFO - Grading completed and uploaded to S3
+2025-08-23 20:58:10,384 - INFO - Upserting grades for 1 transactions
+2025-08-23 20:58:10,627 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/grades?on_conflict=transaction_id&columns=%22video_link%22%2C%22items_upsold%22%2C%22num_upsize_opportunities%22%2C%22transaction_id%22%2C%22feedback%22%2C%22out_of_stock_items%22%2C%22score%22%2C%22num_upsell_offers%22%2C%22num_items_after%22%2C%22upsize_offered%22%2C%22num_addon_offers%22%2C%22coupon_used%22%2C%22items_after%22%2C%22video_file_path%22%2C%22num_addon_opportunities%22%2C%22upsize_possible%22%2C%22issues%22%2C%22upsell_possible%22%2C%22mobile_order%22%2C%22items_upsizeable%22%2C%22num_addon_success%22%2C%22items_upsize_success%22%2C%22num_upsize_offers%22%2C%22num_upsell_success%22%2C%22items_addonable%22%2C%22complete_order%22%2C%22num_upsize_success%22%2C%22num_items_initial%22%2C%22items_initial%22%2C%22asked_more_time%22%2C%22gpt_price%22%2C%22details%22%2C%22reasoning_summary%22%2C%22num_upsell_opportunities%22%2C%22num_largest_offers%22%2C%22items_upsellable%22%2C%22upsell_offered%22%2C%22items_addon_success%22 "HTTP/2 201 Created"
+2025-08-23 20:58:10,628 - INFO - Successfully completed all processing steps for video 092f4ca0-8392-4a58-9a0f-82b51f1b5836
+2025-08-23 20:58:10,630 - INFO - Cleaned up temporary files for video 092f4ca0-8392-4a58-9a0f-82b51f1b5836
+2025-08-23 20:58:10,758 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.092f4ca0-8392-4a58-9a0f-82b51f1b5836 "HTTP/2 200 OK"
+2025-08-23 20:58:10,760 - INFO - ✅ Successfully processed video 092f4ca0-8392-4a58-9a0f-82b51f1b5836 in 38.44 seconds
+2025-08-23 20:58:10,917 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 20:58:10,920 - INFO - Found video to process - ID: 2db2a830-5837-4132-8080-a28cf7f68702, S3 Key: dev/sample/sample12.avi
+2025-08-23 20:58:10,920 - INFO - Attempting to claim video 2db2a830-5837-4132-8080-a28cf7f68702...
+2025-08-23 20:58:11,047 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.2db2a830-5837-4132-8080-a28cf7f68702&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 20:58:11,049 - INFO - Successfully claimed video 2db2a830-5837-4132-8080-a28cf7f68702
+2025-08-23 20:58:11,050 - INFO - Starting video processing for 2db2a830-5837-4132-8080-a28cf7f68702...
+2025-08-23 20:58:11,050 - INFO - Starting video processing pipeline for 2db2a830-5837-4132-8080-a28cf7f68702
+2025-08-23 20:58:11,052 - INFO - Downloading video 2db2a830-5837-4132-8080-a28cf7f68702 from S3: dev/sample/sample12.avi
+2025-08-23 20:58:35,519 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_kctbd62w/input.mp4
+2025-08-23 20:58:35,520 - INFO - Starting transcription for video 2db2a830-5837-4132-8080-a28cf7f68702
+2025-08-23 20:58:44,373 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 20:58:47,761 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 20:58:51,076 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 20:58:51,090 - INFO - Transcription completed: 3 segments generated
+2025-08-23 20:58:51,090 - INFO - Starting transaction splitting for video 2db2a830-5837-4132-8080-a28cf7f68702
+2025-08-23 20:59:00,035 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 20:59:07,511 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 20:59:13,270 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 20:59:13,273 - INFO - Transaction splitting completed: 3 transactions identified
+2025-08-23 20:59:13,273 - INFO - Uploading artifacts to S3 with prefix: deriv/session=2db2a830-5837-4132-8080-a28cf7f68702/
+2025-08-23 20:59:13,587 - INFO - Artifacts uploaded to S3
+2025-08-23 20:59:13,587 - INFO - Inserting 3 transactions into database
+2025-08-23 20:59:13,898 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/transactions?columns=%22meta%22%2C%22video_id%22%2C%22ended_at%22%2C%22started_at%22%2C%22run_id%22%2C%22kind%22%2C%22tx_range%22 "HTTP/2 201 Created"
+2025-08-23 20:59:13,906 - INFO - Inserted transactions with IDs: ['a5b8ee9b-9322-49a7-bea6-a4a10032ee21', 'a10e54d0-6fed-4db0-9568-e3e60c49fd1b', 'dff05e31-afde-4f0c-b2d1-5a616561e418']
+2025-08-23 20:59:13,906 - INFO - Starting grading for 3 transactions
+2025-08-23 20:59:28,692 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 20:59:48,728 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 20:59:56,117 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 20:59:56,343 - INFO - Grading completed and uploaded to S3
+2025-08-23 20:59:56,344 - INFO - Upserting grades for 3 transactions
+2025-08-23 20:59:56,560 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/grades?on_conflict=transaction_id&columns=%22video_link%22%2C%22items_upsold%22%2C%22num_upsize_opportunities%22%2C%22transaction_id%22%2C%22feedback%22%2C%22out_of_stock_items%22%2C%22score%22%2C%22num_upsell_offers%22%2C%22num_items_after%22%2C%22upsize_offered%22%2C%22num_addon_offers%22%2C%22coupon_used%22%2C%22items_after%22%2C%22video_file_path%22%2C%22num_addon_opportunities%22%2C%22upsize_possible%22%2C%22issues%22%2C%22upsell_possible%22%2C%22mobile_order%22%2C%22items_upsizeable%22%2C%22num_addon_success%22%2C%22items_upsize_success%22%2C%22num_upsize_offers%22%2C%22num_upsell_success%22%2C%22items_addonable%22%2C%22complete_order%22%2C%22num_upsize_success%22%2C%22num_items_initial%22%2C%22items_initial%22%2C%22asked_more_time%22%2C%22gpt_price%22%2C%22details%22%2C%22reasoning_summary%22%2C%22num_upsell_opportunities%22%2C%22num_largest_offers%22%2C%22items_upsellable%22%2C%22upsell_offered%22%2C%22items_addon_success%22 "HTTP/2 201 Created"
+2025-08-23 20:59:56,561 - INFO - Successfully completed all processing steps for video 2db2a830-5837-4132-8080-a28cf7f68702
+2025-08-23 20:59:56,576 - INFO - Cleaned up temporary files for video 2db2a830-5837-4132-8080-a28cf7f68702
+2025-08-23 20:59:56,650 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.2db2a830-5837-4132-8080-a28cf7f68702 "HTTP/2 200 OK"
+2025-08-23 20:59:56,651 - INFO - ✅ Successfully processed video 2db2a830-5837-4132-8080-a28cf7f68702 in 105.53 seconds
+2025-08-23 20:59:56,768 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 20:59:56,771 - INFO - Found video to process - ID: 4e2fe082-9391-4307-be59-1fa06dda4789, S3 Key: dev/sample/sample11.avi
+2025-08-23 20:59:56,771 - INFO - Attempting to claim video 4e2fe082-9391-4307-be59-1fa06dda4789...
+2025-08-23 20:59:56,891 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.4e2fe082-9391-4307-be59-1fa06dda4789&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 20:59:56,892 - INFO - Successfully claimed video 4e2fe082-9391-4307-be59-1fa06dda4789
+2025-08-23 20:59:56,892 - INFO - Starting video processing for 4e2fe082-9391-4307-be59-1fa06dda4789...
+2025-08-23 20:59:56,893 - INFO - Starting video processing pipeline for 4e2fe082-9391-4307-be59-1fa06dda4789
+2025-08-23 20:59:56,893 - INFO - Downloading video 4e2fe082-9391-4307-be59-1fa06dda4789 from S3: dev/sample/sample11.avi
+2025-08-23 21:00:07,132 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_mry1w5jk/input.mp4
+2025-08-23 21:00:07,132 - INFO - Starting transcription for video 4e2fe082-9391-4307-be59-1fa06dda4789
+2025-08-23 21:00:21,547 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 21:00:21,557 - INFO - Transcription completed: 1 segments generated
+2025-08-23 21:00:21,558 - INFO - Starting transaction splitting for video 4e2fe082-9391-4307-be59-1fa06dda4789
+2025-08-23 21:00:25,949 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:00:25,953 - INFO - Transaction splitting completed: 1 transactions identified
+2025-08-23 21:00:25,953 - INFO - Uploading artifacts to S3 with prefix: deriv/session=4e2fe082-9391-4307-be59-1fa06dda4789/
+2025-08-23 21:00:26,131 - INFO - Artifacts uploaded to S3
+2025-08-23 21:00:26,131 - INFO - Inserting 1 transactions into database
+2025-08-23 21:00:26,288 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/transactions?columns=%22meta%22%2C%22video_id%22%2C%22ended_at%22%2C%22started_at%22%2C%22run_id%22%2C%22kind%22%2C%22tx_range%22 "HTTP/2 201 Created"
+2025-08-23 21:00:26,295 - INFO - Inserted transactions with IDs: ['f16c8ec9-aaba-4bff-91d8-6859c2d341b6']
+2025-08-23 21:00:26,296 - INFO - Starting grading for 1 transactions
+2025-08-23 21:00:40,994 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:00:41,104 - INFO - Grading completed and uploaded to S3
+2025-08-23 21:00:41,104 - INFO - Upserting grades for 1 transactions
+2025-08-23 21:00:41,311 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/grades?on_conflict=transaction_id&columns=%22video_link%22%2C%22items_upsold%22%2C%22num_upsize_opportunities%22%2C%22transaction_id%22%2C%22feedback%22%2C%22out_of_stock_items%22%2C%22score%22%2C%22num_upsell_offers%22%2C%22num_items_after%22%2C%22upsize_offered%22%2C%22num_addon_offers%22%2C%22coupon_used%22%2C%22items_after%22%2C%22video_file_path%22%2C%22num_addon_opportunities%22%2C%22upsize_possible%22%2C%22issues%22%2C%22upsell_possible%22%2C%22mobile_order%22%2C%22items_upsizeable%22%2C%22num_addon_success%22%2C%22items_upsize_success%22%2C%22num_upsize_offers%22%2C%22num_upsell_success%22%2C%22items_addonable%22%2C%22complete_order%22%2C%22num_upsize_success%22%2C%22num_items_initial%22%2C%22items_initial%22%2C%22asked_more_time%22%2C%22gpt_price%22%2C%22details%22%2C%22reasoning_summary%22%2C%22num_upsell_opportunities%22%2C%22num_largest_offers%22%2C%22items_upsellable%22%2C%22upsell_offered%22%2C%22items_addon_success%22 "HTTP/2 201 Created"
+2025-08-23 21:00:41,316 - INFO - Successfully completed all processing steps for video 4e2fe082-9391-4307-be59-1fa06dda4789
+2025-08-23 21:00:41,323 - INFO - Cleaned up temporary files for video 4e2fe082-9391-4307-be59-1fa06dda4789
+2025-08-23 21:00:41,411 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.4e2fe082-9391-4307-be59-1fa06dda4789 "HTTP/2 200 OK"
+2025-08-23 21:00:41,413 - INFO - ✅ Successfully processed video 4e2fe082-9391-4307-be59-1fa06dda4789 in 44.43 seconds
+2025-08-23 21:00:41,504 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 21:00:41,506 - INFO - No more uploaded videos found in queue.
+2025-08-23 21:00:41,506 - INFO - Batch complete. Succeeded: 3, Failed: 0, Total: 3
+2025-08-23 21:00:41,506 - INFO - Processed video IDs: 092f4ca0-8392-4a58-9a0f-82b51f1b5836, 2db2a830-5837-4132-8080-a28cf7f68702, 4e2fe082-9391-4307-be59-1fa06dda4789
+2025-08-23 21:00:41,507 - INFO - === Batch session completed in 189.88 seconds ===
+2025-08-23 21:48:28,929 - INFO - OpenAI API key found
+2025-08-23 21:48:28,929 - INFO - Loaded environment variables - AWS Region: us-east-2
+2025-08-23 21:48:28,929 - INFO - === Starting batch video processing (process all 'uploaded') ===
+2025-08-23 21:48:28,929 - INFO - Initializing database and S3 connections...
+2025-08-23 21:48:28,947 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-08-23 21:48:29,015 - INFO - Successfully connected to database and S3
+2025-08-23 21:48:29,488 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 21:48:29,501 - INFO - Found video to process - ID: d5eac9b1-5718-48c8-a0f5-e1386ef2cdb1, S3 Key: dev/sample/08_17_20_00.avi
+2025-08-23 21:48:29,502 - INFO - Attempting to claim video d5eac9b1-5718-48c8-a0f5-e1386ef2cdb1...
+2025-08-23 21:48:29,632 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.d5eac9b1-5718-48c8-a0f5-e1386ef2cdb1&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 21:48:29,633 - INFO - Successfully claimed video d5eac9b1-5718-48c8-a0f5-e1386ef2cdb1
+2025-08-23 21:48:29,633 - INFO - Starting video processing for d5eac9b1-5718-48c8-a0f5-e1386ef2cdb1...
+2025-08-23 21:48:29,634 - INFO - Starting video processing pipeline for d5eac9b1-5718-48c8-a0f5-e1386ef2cdb1
+2025-08-23 21:48:29,636 - INFO - Downloading video d5eac9b1-5718-48c8-a0f5-e1386ef2cdb1 from S3: dev/sample/08_17_20_00.avi
+2025-08-23 21:48:29,869 - INFO - Cleaned up temporary files for video d5eac9b1-5718-48c8-a0f5-e1386ef2cdb1
+2025-08-23 21:48:29,869 - ERROR - ❌ Error processing video d5eac9b1-5718-48c8-a0f5-e1386ef2cdb1 after 0.24 seconds: An error occurred (404) when calling the HeadObject operation: Not Found
+Traceback (most recent call last):
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/run_once.py", line 83, in main
+    process_one_video(db, s3, row)  # Settings object is created inside the function
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 147, in process_one_video
+    download_to_file(s3, settings.RAW_BUCKET, s3_key, local_path)
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../integrations/s3_client.py", line 29, in download_to_file
+    s3.download_file(bucket, key, dest_path)
+  File "/opt/miniconda3/lib/python3.12/site-packages/boto3/s3/inject.py", line 192, in download_file
+    return transfer.download_file(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/boto3/s3/transfer.py", line 406, in download_file
+    future.result()
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/futures.py", line 103, in result
+    return self._coordinator.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/futures.py", line 264, in result
+    raise self._exception
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/tasks.py", line 265, in _main
+    self._submit(transfer_future=transfer_future, **kwargs)
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/download.py", line 352, in _submit
+    response = client.head_object(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py", line 565, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py", line 1017, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (404) when calling the HeadObject operation: Not Found
+2025-08-23 21:48:30,001 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.d5eac9b1-5718-48c8-a0f5-e1386ef2cdb1 "HTTP/2 200 OK"
+2025-08-23 21:48:30,006 - INFO - Marked video d5eac9b1-5718-48c8-a0f5-e1386ef2cdb1 as failed in database
+2025-08-23 21:48:30,177 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 21:48:30,178 - INFO - Found video to process - ID: 110e81ae-3c27-4323-9397-900786ad3c67, S3 Key: dev/sample/08_17_21_00.avi
+2025-08-23 21:48:30,178 - INFO - Attempting to claim video 110e81ae-3c27-4323-9397-900786ad3c67...
+2025-08-23 21:48:30,315 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.110e81ae-3c27-4323-9397-900786ad3c67&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 21:48:30,315 - INFO - Successfully claimed video 110e81ae-3c27-4323-9397-900786ad3c67
+2025-08-23 21:48:30,315 - INFO - Starting video processing for 110e81ae-3c27-4323-9397-900786ad3c67...
+2025-08-23 21:48:30,315 - INFO - Starting video processing pipeline for 110e81ae-3c27-4323-9397-900786ad3c67
+2025-08-23 21:48:30,317 - INFO - Downloading video 110e81ae-3c27-4323-9397-900786ad3c67 from S3: dev/sample/08_17_21_00.avi
+2025-08-23 21:48:30,361 - INFO - Cleaned up temporary files for video 110e81ae-3c27-4323-9397-900786ad3c67
+2025-08-23 21:48:30,361 - ERROR - ❌ Error processing video 110e81ae-3c27-4323-9397-900786ad3c67 after 0.05 seconds: An error occurred (404) when calling the HeadObject operation: Not Found
+Traceback (most recent call last):
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/run_once.py", line 83, in main
+    process_one_video(db, s3, row)  # Settings object is created inside the function
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 147, in process_one_video
+    download_to_file(s3, settings.RAW_BUCKET, s3_key, local_path)
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../integrations/s3_client.py", line 29, in download_to_file
+    s3.download_file(bucket, key, dest_path)
+  File "/opt/miniconda3/lib/python3.12/site-packages/boto3/s3/inject.py", line 192, in download_file
+    return transfer.download_file(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/boto3/s3/transfer.py", line 406, in download_file
+    future.result()
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/futures.py", line 103, in result
+    return self._coordinator.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/futures.py", line 264, in result
+    raise self._exception
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/tasks.py", line 265, in _main
+    self._submit(transfer_future=transfer_future, **kwargs)
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/download.py", line 352, in _submit
+    response = client.head_object(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py", line 565, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py", line 1017, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (404) when calling the HeadObject operation: Not Found
+2025-08-23 21:48:30,486 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.110e81ae-3c27-4323-9397-900786ad3c67 "HTTP/2 200 OK"
+2025-08-23 21:48:30,487 - INFO - Marked video 110e81ae-3c27-4323-9397-900786ad3c67 as failed in database
+2025-08-23 21:48:30,629 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 21:48:30,631 - INFO - Found video to process - ID: 46bfa906-4adc-4c6b-91ea-c76834127a2e, S3 Key: dev/sample/08_17_22_00.avi
+2025-08-23 21:48:30,631 - INFO - Attempting to claim video 46bfa906-4adc-4c6b-91ea-c76834127a2e...
+2025-08-23 21:48:30,739 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.46bfa906-4adc-4c6b-91ea-c76834127a2e&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 21:48:30,741 - INFO - Successfully claimed video 46bfa906-4adc-4c6b-91ea-c76834127a2e
+2025-08-23 21:48:30,741 - INFO - Starting video processing for 46bfa906-4adc-4c6b-91ea-c76834127a2e...
+2025-08-23 21:48:30,742 - INFO - Starting video processing pipeline for 46bfa906-4adc-4c6b-91ea-c76834127a2e
+2025-08-23 21:48:30,743 - INFO - Downloading video 46bfa906-4adc-4c6b-91ea-c76834127a2e from S3: dev/sample/08_17_22_00.avi
+2025-08-23 21:48:30,788 - INFO - Cleaned up temporary files for video 46bfa906-4adc-4c6b-91ea-c76834127a2e
+2025-08-23 21:48:30,788 - ERROR - ❌ Error processing video 46bfa906-4adc-4c6b-91ea-c76834127a2e after 0.05 seconds: An error occurred (404) when calling the HeadObject operation: Not Found
+Traceback (most recent call last):
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/run_once.py", line 83, in main
+    process_one_video(db, s3, row)  # Settings object is created inside the function
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 147, in process_one_video
+    download_to_file(s3, settings.RAW_BUCKET, s3_key, local_path)
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../integrations/s3_client.py", line 29, in download_to_file
+    s3.download_file(bucket, key, dest_path)
+  File "/opt/miniconda3/lib/python3.12/site-packages/boto3/s3/inject.py", line 192, in download_file
+    return transfer.download_file(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/boto3/s3/transfer.py", line 406, in download_file
+    future.result()
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/futures.py", line 103, in result
+    return self._coordinator.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/futures.py", line 264, in result
+    raise self._exception
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/tasks.py", line 265, in _main
+    self._submit(transfer_future=transfer_future, **kwargs)
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/download.py", line 352, in _submit
+    response = client.head_object(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py", line 565, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py", line 1017, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (404) when calling the HeadObject operation: Not Found
+2025-08-23 21:48:30,884 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.46bfa906-4adc-4c6b-91ea-c76834127a2e "HTTP/2 200 OK"
+2025-08-23 21:48:30,885 - INFO - Marked video 46bfa906-4adc-4c6b-91ea-c76834127a2e as failed in database
+2025-08-23 21:48:30,974 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 21:48:30,975 - INFO - Found video to process - ID: 74ce59d5-bc11-4051-a41b-ad67233b2f6a, S3 Key: dev/sample/DT_File20250817200001000.avi.avi
+2025-08-23 21:48:30,975 - INFO - Attempting to claim video 74ce59d5-bc11-4051-a41b-ad67233b2f6a...
+2025-08-23 21:48:31,072 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.74ce59d5-bc11-4051-a41b-ad67233b2f6a&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 21:48:31,073 - INFO - Successfully claimed video 74ce59d5-bc11-4051-a41b-ad67233b2f6a
+2025-08-23 21:48:31,073 - INFO - Starting video processing for 74ce59d5-bc11-4051-a41b-ad67233b2f6a...
+2025-08-23 21:48:31,073 - INFO - Starting video processing pipeline for 74ce59d5-bc11-4051-a41b-ad67233b2f6a
+2025-08-23 21:48:31,074 - INFO - Downloading video 74ce59d5-bc11-4051-a41b-ad67233b2f6a from S3: dev/sample/DT_File20250817200001000.avi.avi
+2025-08-23 21:48:31,131 - INFO - Cleaned up temporary files for video 74ce59d5-bc11-4051-a41b-ad67233b2f6a
+2025-08-23 21:48:31,131 - ERROR - ❌ Error processing video 74ce59d5-bc11-4051-a41b-ad67233b2f6a after 0.06 seconds: An error occurred (404) when calling the HeadObject operation: Not Found
+Traceback (most recent call last):
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/run_once.py", line 83, in main
+    process_one_video(db, s3, row)  # Settings object is created inside the function
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 147, in process_one_video
+    download_to_file(s3, settings.RAW_BUCKET, s3_key, local_path)
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../integrations/s3_client.py", line 29, in download_to_file
+    s3.download_file(bucket, key, dest_path)
+  File "/opt/miniconda3/lib/python3.12/site-packages/boto3/s3/inject.py", line 192, in download_file
+    return transfer.download_file(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/boto3/s3/transfer.py", line 406, in download_file
+    future.result()
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/futures.py", line 103, in result
+    return self._coordinator.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/futures.py", line 264, in result
+    raise self._exception
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/tasks.py", line 265, in _main
+    self._submit(transfer_future=transfer_future, **kwargs)
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/download.py", line 352, in _submit
+    response = client.head_object(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py", line 565, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py", line 1017, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (404) when calling the HeadObject operation: Not Found
+2025-08-23 21:48:31,213 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.74ce59d5-bc11-4051-a41b-ad67233b2f6a "HTTP/2 200 OK"
+2025-08-23 21:48:31,215 - INFO - Marked video 74ce59d5-bc11-4051-a41b-ad67233b2f6a as failed in database
+2025-08-23 21:48:31,300 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 21:48:31,301 - INFO - Found video to process - ID: faa7a117-f984-416d-ad32-4c56b885bf87, S3 Key: dev/sample/DT_File20250817210001000.avi.avi
+2025-08-23 21:48:31,302 - INFO - Attempting to claim video faa7a117-f984-416d-ad32-4c56b885bf87...
+2025-08-23 21:48:31,398 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.faa7a117-f984-416d-ad32-4c56b885bf87&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 21:48:31,399 - INFO - Successfully claimed video faa7a117-f984-416d-ad32-4c56b885bf87
+2025-08-23 21:48:31,399 - INFO - Starting video processing for faa7a117-f984-416d-ad32-4c56b885bf87...
+2025-08-23 21:48:31,399 - INFO - Starting video processing pipeline for faa7a117-f984-416d-ad32-4c56b885bf87
+2025-08-23 21:48:31,401 - INFO - Downloading video faa7a117-f984-416d-ad32-4c56b885bf87 from S3: dev/sample/DT_File20250817210001000.avi.avi
+2025-08-23 21:48:31,443 - INFO - Cleaned up temporary files for video faa7a117-f984-416d-ad32-4c56b885bf87
+2025-08-23 21:48:31,443 - ERROR - ❌ Error processing video faa7a117-f984-416d-ad32-4c56b885bf87 after 0.04 seconds: An error occurred (404) when calling the HeadObject operation: Not Found
+Traceback (most recent call last):
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/run_once.py", line 83, in main
+    process_one_video(db, s3, row)  # Settings object is created inside the function
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 147, in process_one_video
+    download_to_file(s3, settings.RAW_BUCKET, s3_key, local_path)
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../integrations/s3_client.py", line 29, in download_to_file
+    s3.download_file(bucket, key, dest_path)
+  File "/opt/miniconda3/lib/python3.12/site-packages/boto3/s3/inject.py", line 192, in download_file
+    return transfer.download_file(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/boto3/s3/transfer.py", line 406, in download_file
+    future.result()
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/futures.py", line 103, in result
+    return self._coordinator.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/futures.py", line 264, in result
+    raise self._exception
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/tasks.py", line 265, in _main
+    self._submit(transfer_future=transfer_future, **kwargs)
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/download.py", line 352, in _submit
+    response = client.head_object(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py", line 565, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py", line 1017, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (404) when calling the HeadObject operation: Not Found
+2025-08-23 21:48:31,538 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.faa7a117-f984-416d-ad32-4c56b885bf87 "HTTP/2 200 OK"
+2025-08-23 21:48:31,539 - INFO - Marked video faa7a117-f984-416d-ad32-4c56b885bf87 as failed in database
+2025-08-23 21:48:31,617 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 21:48:31,618 - INFO - Found video to process - ID: ad3579ec-98b3-47ee-a564-9a746ee2759c, S3 Key: dev/sample/DT_File20250817190001000.avi.avi
+2025-08-23 21:48:31,618 - INFO - Attempting to claim video ad3579ec-98b3-47ee-a564-9a746ee2759c...
+2025-08-23 21:48:31,703 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.ad3579ec-98b3-47ee-a564-9a746ee2759c&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 21:48:31,704 - INFO - Successfully claimed video ad3579ec-98b3-47ee-a564-9a746ee2759c
+2025-08-23 21:48:31,704 - INFO - Starting video processing for ad3579ec-98b3-47ee-a564-9a746ee2759c...
+2025-08-23 21:48:31,704 - INFO - Starting video processing pipeline for ad3579ec-98b3-47ee-a564-9a746ee2759c
+2025-08-23 21:48:31,705 - INFO - Downloading video ad3579ec-98b3-47ee-a564-9a746ee2759c from S3: dev/sample/DT_File20250817190001000.avi.avi
+2025-08-23 21:48:31,750 - INFO - Cleaned up temporary files for video ad3579ec-98b3-47ee-a564-9a746ee2759c
+2025-08-23 21:48:31,750 - ERROR - ❌ Error processing video ad3579ec-98b3-47ee-a564-9a746ee2759c after 0.05 seconds: An error occurred (404) when calling the HeadObject operation: Not Found
+Traceback (most recent call last):
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/run_once.py", line 83, in main
+    process_one_video(db, s3, row)  # Settings object is created inside the function
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 147, in process_one_video
+    download_to_file(s3, settings.RAW_BUCKET, s3_key, local_path)
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../integrations/s3_client.py", line 29, in download_to_file
+    s3.download_file(bucket, key, dest_path)
+  File "/opt/miniconda3/lib/python3.12/site-packages/boto3/s3/inject.py", line 192, in download_file
+    return transfer.download_file(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/boto3/s3/transfer.py", line 406, in download_file
+    future.result()
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/futures.py", line 103, in result
+    return self._coordinator.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/futures.py", line 264, in result
+    raise self._exception
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/tasks.py", line 265, in _main
+    self._submit(transfer_future=transfer_future, **kwargs)
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/download.py", line 352, in _submit
+    response = client.head_object(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py", line 565, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py", line 1017, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (404) when calling the HeadObject operation: Not Found
+2025-08-23 21:48:31,858 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.ad3579ec-98b3-47ee-a564-9a746ee2759c "HTTP/2 200 OK"
+2025-08-23 21:48:31,859 - INFO - Marked video ad3579ec-98b3-47ee-a564-9a746ee2759c as failed in database
+2025-08-23 21:48:31,944 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 21:48:31,945 - INFO - Found video to process - ID: aaf5557e-e595-409e-afc3-ae9f6e343efb, S3 Key: dev/sample/DT_File20250817220001000.avi.avi
+2025-08-23 21:48:31,945 - INFO - Attempting to claim video aaf5557e-e595-409e-afc3-ae9f6e343efb...
+2025-08-23 21:48:32,034 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.aaf5557e-e595-409e-afc3-ae9f6e343efb&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 21:48:32,035 - INFO - Successfully claimed video aaf5557e-e595-409e-afc3-ae9f6e343efb
+2025-08-23 21:48:32,035 - INFO - Starting video processing for aaf5557e-e595-409e-afc3-ae9f6e343efb...
+2025-08-23 21:48:32,035 - INFO - Starting video processing pipeline for aaf5557e-e595-409e-afc3-ae9f6e343efb
+2025-08-23 21:48:32,036 - INFO - Downloading video aaf5557e-e595-409e-afc3-ae9f6e343efb from S3: dev/sample/DT_File20250817220001000.avi.avi
+2025-08-23 21:48:32,078 - INFO - Cleaned up temporary files for video aaf5557e-e595-409e-afc3-ae9f6e343efb
+2025-08-23 21:48:32,078 - ERROR - ❌ Error processing video aaf5557e-e595-409e-afc3-ae9f6e343efb after 0.04 seconds: An error occurred (404) when calling the HeadObject operation: Not Found
+Traceback (most recent call last):
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/run_once.py", line 83, in main
+    process_one_video(db, s3, row)  # Settings object is created inside the function
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 147, in process_one_video
+    download_to_file(s3, settings.RAW_BUCKET, s3_key, local_path)
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../integrations/s3_client.py", line 29, in download_to_file
+    s3.download_file(bucket, key, dest_path)
+  File "/opt/miniconda3/lib/python3.12/site-packages/boto3/s3/inject.py", line 192, in download_file
+    return transfer.download_file(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/boto3/s3/transfer.py", line 406, in download_file
+    future.result()
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/futures.py", line 103, in result
+    return self._coordinator.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/futures.py", line 264, in result
+    raise self._exception
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/tasks.py", line 265, in _main
+    self._submit(transfer_future=transfer_future, **kwargs)
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/download.py", line 352, in _submit
+    response = client.head_object(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py", line 565, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py", line 1017, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (404) when calling the HeadObject operation: Not Found
+2025-08-23 21:48:32,161 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.aaf5557e-e595-409e-afc3-ae9f6e343efb "HTTP/2 200 OK"
+2025-08-23 21:48:32,162 - INFO - Marked video aaf5557e-e595-409e-afc3-ae9f6e343efb as failed in database
+2025-08-23 21:48:32,232 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 21:48:32,232 - INFO - No more uploaded videos found in queue.
+2025-08-23 21:48:32,232 - INFO - Batch complete. Succeeded: 0, Failed: 7, Total: 7
+2025-08-23 21:48:32,232 - INFO - === Batch session completed in 3.30 seconds ===
+2025-08-23 21:51:26,570 - INFO - OpenAI API key found
+2025-08-23 21:51:26,570 - INFO - Loaded environment variables - AWS Region: us-east-2
+2025-08-23 21:51:26,570 - INFO - === Starting batch video processing (process all 'uploaded') ===
+2025-08-23 21:51:26,570 - INFO - Initializing database and S3 connections...
+2025-08-23 21:51:26,587 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-08-23 21:51:26,657 - INFO - Successfully connected to database and S3
+2025-08-23 21:51:27,050 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 21:51:27,053 - INFO - Found video to process - ID: 74ce59d5-bc11-4051-a41b-ad67233b2f6a, S3 Key: dev/sample/DT_File20250817200001000.avi
+2025-08-23 21:51:27,053 - INFO - Attempting to claim video 74ce59d5-bc11-4051-a41b-ad67233b2f6a...
+2025-08-23 21:51:27,145 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.74ce59d5-bc11-4051-a41b-ad67233b2f6a&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 21:51:27,145 - INFO - Successfully claimed video 74ce59d5-bc11-4051-a41b-ad67233b2f6a
+2025-08-23 21:51:27,145 - INFO - Starting video processing for 74ce59d5-bc11-4051-a41b-ad67233b2f6a...
+2025-08-23 21:51:27,145 - INFO - Starting video processing pipeline for 74ce59d5-bc11-4051-a41b-ad67233b2f6a
+2025-08-23 21:51:27,146 - INFO - Downloading video 74ce59d5-bc11-4051-a41b-ad67233b2f6a from S3: dev/sample/DT_File20250817200001000.avi
+2025-08-23 21:52:09,463 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_wohzb3x9/input.mp4
+2025-08-23 21:52:09,464 - INFO - Starting transcription for video 74ce59d5-bc11-4051-a41b-ad67233b2f6a
+2025-08-23 21:52:30,856 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 21:52:32,335 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 21:52:34,318 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 21:52:39,411 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 21:52:45,581 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 21:52:47,550 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 21:52:49,469 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 21:52:54,100 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 21:52:57,717 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 21:52:57,734 - INFO - Transcription completed: 9 segments generated
+2025-08-23 21:52:57,734 - INFO - Starting transaction splitting for video 74ce59d5-bc11-4051-a41b-ad67233b2f6a
+2025-08-23 21:53:08,535 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:53:13,797 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:53:19,332 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:53:24,812 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:53:37,114 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:53:40,564 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:53:43,745 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:53:49,554 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:53:53,616 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:53:53,620 - INFO - Transaction splitting completed: 9 transactions identified
+2025-08-23 21:53:53,620 - INFO - Uploading artifacts to S3 with prefix: deriv/session=74ce59d5-bc11-4051-a41b-ad67233b2f6a/
+2025-08-23 21:53:54,044 - INFO - Artifacts uploaded to S3
+2025-08-23 21:53:54,044 - INFO - Inserting 9 transactions into database
+2025-08-23 21:53:54,322 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/transactions?columns=%22kind%22%2C%22started_at%22%2C%22video_id%22%2C%22meta%22%2C%22ended_at%22%2C%22tx_range%22%2C%22run_id%22 "HTTP/2 201 Created"
+2025-08-23 21:53:54,330 - INFO - Inserted transactions with IDs: ['a4e18de0-6ad3-4dbf-95d3-29022420727c', '6205b163-47fc-45ff-89ea-0298d08c87fe', 'd31286f3-bf93-4b7a-a17b-8b099dedea2b', 'e4088ba3-c118-444f-ae5a-76c26e438733', '06e8ffd7-b4bd-4ed3-9e15-65f73f3f5b64', 'b7f32933-7546-4408-ae9c-2b46c54626aa', '81b31ee1-9b34-4928-9468-0320fd891c63', '2b5c6436-e8e3-46bf-b111-c2c450640450', '62e77740-d0e0-4a63-b730-091f09973974']
+2025-08-23 21:53:54,330 - INFO - Starting grading for 9 transactions
+2025-08-23 21:55:05,058 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:55:21,790 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:55:41,621 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:56:18,504 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:57:10,477 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:57:21,057 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:57:31,320 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:58:20,871 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:58:46,266 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 21:58:46,561 - INFO - Grading completed and uploaded to S3
+2025-08-23 21:58:46,561 - INFO - Upserting grades for 9 transactions
+2025-08-23 21:58:46,892 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/grades?on_conflict=transaction_id&columns=%22items_upsellable%22%2C%22items_after%22%2C%22coupon_used%22%2C%22items_addonable%22%2C%22reasoning_summary%22%2C%22details%22%2C%22video_link%22%2C%22score%22%2C%22num_upsell_success%22%2C%22feedback%22%2C%22upsell_possible%22%2C%22asked_more_time%22%2C%22num_upsell_opportunities%22%2C%22num_upsize_opportunities%22%2C%22num_items_after%22%2C%22items_upsize_success%22%2C%22gpt_price%22%2C%22complete_order%22%2C%22items_upsold%22%2C%22issues%22%2C%22upsize_offered%22%2C%22transaction_id%22%2C%22num_upsize_offers%22%2C%22items_initial%22%2C%22num_items_initial%22%2C%22num_addon_offers%22%2C%22mobile_order%22%2C%22num_upsell_offers%22%2C%22num_upsize_success%22%2C%22items_upsizeable%22%2C%22items_addon_success%22%2C%22num_addon_success%22%2C%22upsize_possible%22%2C%22video_file_path%22%2C%22num_addon_opportunities%22%2C%22upsell_offered%22%2C%22num_largest_offers%22%2C%22out_of_stock_items%22 "HTTP/2 201 Created"
+2025-08-23 21:58:46,895 - INFO - Successfully completed all processing steps for video 74ce59d5-bc11-4051-a41b-ad67233b2f6a
+2025-08-23 21:58:47,024 - INFO - Cleaned up temporary files for video 74ce59d5-bc11-4051-a41b-ad67233b2f6a
+2025-08-23 21:58:47,115 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.74ce59d5-bc11-4051-a41b-ad67233b2f6a "HTTP/2 200 OK"
+2025-08-23 21:58:47,116 - INFO - ✅ Successfully processed video 74ce59d5-bc11-4051-a41b-ad67233b2f6a in 439.88 seconds
+2025-08-23 21:58:47,202 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 21:58:47,203 - INFO - Found video to process - ID: aaf5557e-e595-409e-afc3-ae9f6e343efb, S3 Key: dev/sample/DT_File20250817220001000.avi
+2025-08-23 21:58:47,203 - INFO - Attempting to claim video aaf5557e-e595-409e-afc3-ae9f6e343efb...
+2025-08-23 21:58:47,299 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.aaf5557e-e595-409e-afc3-ae9f6e343efb&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 21:58:47,299 - INFO - Successfully claimed video aaf5557e-e595-409e-afc3-ae9f6e343efb
+2025-08-23 21:58:47,299 - INFO - Starting video processing for aaf5557e-e595-409e-afc3-ae9f6e343efb...
+2025-08-23 21:58:47,299 - INFO - Starting video processing pipeline for aaf5557e-e595-409e-afc3-ae9f6e343efb
+2025-08-23 21:58:47,300 - INFO - Downloading video aaf5557e-e595-409e-afc3-ae9f6e343efb from S3: dev/sample/DT_File20250817220001000.avi
+2025-08-23 21:59:24,789 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_ef6f0elb/input.mp4
+2025-08-23 21:59:24,790 - INFO - Starting transcription for video aaf5557e-e595-409e-afc3-ae9f6e343efb
+2025-08-23 21:59:42,164 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 21:59:44,996 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 21:59:50,540 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 21:59:56,122 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 21:59:59,501 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:00:02,557 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:00:02,579 - INFO - Transcription completed: 6 segments generated
+2025-08-23 22:00:02,579 - INFO - Starting transaction splitting for video aaf5557e-e595-409e-afc3-ae9f6e343efb
+2025-08-23 22:00:28,790 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:00:43,259 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:00:49,852 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:00:57,179 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:01:05,790 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:01:13,407 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:01:13,410 - INFO - Transaction splitting completed: 6 transactions identified
+2025-08-23 22:01:13,410 - INFO - Uploading artifacts to S3 with prefix: deriv/session=aaf5557e-e595-409e-afc3-ae9f6e343efb/
+2025-08-23 22:01:13,780 - INFO - Artifacts uploaded to S3
+2025-08-23 22:01:13,780 - INFO - Inserting 6 transactions into database
+2025-08-23 22:01:14,047 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/transactions?columns=%22kind%22%2C%22started_at%22%2C%22video_id%22%2C%22meta%22%2C%22ended_at%22%2C%22tx_range%22%2C%22run_id%22 "HTTP/2 201 Created"
+2025-08-23 22:01:14,051 - INFO - Inserted transactions with IDs: ['a9e8f2f6-2591-4524-93de-045be0100d4c', '52dac821-94f9-4a1b-9f37-a67f28d81efd', '958d8e59-abaf-4f0e-b3b4-3cc7287a6fd7', '64504fec-7e8c-4455-8601-310d14d8888d', 'b6b407a5-8a4f-4ec1-98c5-501746e7bf0a', '63b0d17e-297d-4ee1-a840-bd99bac4be6c']
+2025-08-23 22:01:14,052 - INFO - Starting grading for 6 transactions
+2025-08-23 22:02:09,441 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:02:54,899 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:04:35,912 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:05:16,180 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:05:51,529 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:06:42,671 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:06:42,945 - INFO - Grading completed and uploaded to S3
+2025-08-23 22:06:42,945 - INFO - Upserting grades for 6 transactions
+2025-08-23 22:06:43,486 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/grades?on_conflict=transaction_id&columns=%22items_upsellable%22%2C%22items_after%22%2C%22coupon_used%22%2C%22items_addonable%22%2C%22reasoning_summary%22%2C%22details%22%2C%22video_link%22%2C%22score%22%2C%22num_upsell_success%22%2C%22feedback%22%2C%22upsell_possible%22%2C%22asked_more_time%22%2C%22num_upsell_opportunities%22%2C%22num_upsize_opportunities%22%2C%22num_items_after%22%2C%22items_upsize_success%22%2C%22gpt_price%22%2C%22complete_order%22%2C%22items_upsold%22%2C%22issues%22%2C%22upsize_offered%22%2C%22transaction_id%22%2C%22num_upsize_offers%22%2C%22items_initial%22%2C%22num_items_initial%22%2C%22num_addon_offers%22%2C%22mobile_order%22%2C%22num_upsell_offers%22%2C%22num_upsize_success%22%2C%22items_upsizeable%22%2C%22items_addon_success%22%2C%22num_addon_success%22%2C%22upsize_possible%22%2C%22video_file_path%22%2C%22num_addon_opportunities%22%2C%22upsell_offered%22%2C%22num_largest_offers%22%2C%22out_of_stock_items%22 "HTTP/2 201 Created"
+2025-08-23 22:06:43,488 - INFO - Successfully completed all processing steps for video aaf5557e-e595-409e-afc3-ae9f6e343efb
+2025-08-23 22:06:43,555 - INFO - Cleaned up temporary files for video aaf5557e-e595-409e-afc3-ae9f6e343efb
+2025-08-23 22:06:43,646 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.aaf5557e-e595-409e-afc3-ae9f6e343efb "HTTP/2 200 OK"
+2025-08-23 22:06:43,647 - INFO - ✅ Successfully processed video aaf5557e-e595-409e-afc3-ae9f6e343efb in 476.26 seconds
+2025-08-23 22:06:43,740 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 22:06:43,741 - INFO - Found video to process - ID: ad3579ec-98b3-47ee-a564-9a746ee2759c, S3 Key: dev/sample/DT_File20250817190001000.avi
+2025-08-23 22:06:43,741 - INFO - Attempting to claim video ad3579ec-98b3-47ee-a564-9a746ee2759c...
+2025-08-23 22:06:43,836 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.ad3579ec-98b3-47ee-a564-9a746ee2759c&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 22:06:43,837 - INFO - Successfully claimed video ad3579ec-98b3-47ee-a564-9a746ee2759c
+2025-08-23 22:06:43,837 - INFO - Starting video processing for ad3579ec-98b3-47ee-a564-9a746ee2759c...
+2025-08-23 22:06:43,837 - INFO - Starting video processing pipeline for ad3579ec-98b3-47ee-a564-9a746ee2759c
+2025-08-23 22:06:43,837 - INFO - Downloading video ad3579ec-98b3-47ee-a564-9a746ee2759c from S3: dev/sample/DT_File20250817190001000.avi
+2025-08-23 22:08:23,061 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_qnnbzrqm/input.mp4
+2025-08-23 22:08:23,062 - INFO - Starting transcription for video ad3579ec-98b3-47ee-a564-9a746ee2759c
+2025-08-23 22:08:46,321 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:08:47,685 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:08:49,682 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:08:53,287 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:08:54,931 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:08:57,740 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:08:59,861 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:09:01,735 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:09:04,191 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:09:08,297 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:09:14,755 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:09:17,659 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:09:19,607 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:09:21,644 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:09:21,671 - INFO - Transcription completed: 14 segments generated
+2025-08-23 22:09:21,672 - INFO - Starting transaction splitting for video ad3579ec-98b3-47ee-a564-9a746ee2759c
+2025-08-23 22:09:38,391 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:09:44,337 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:09:51,174 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:09:59,692 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:10:11,270 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:10:18,116 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:10:23,813 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:10:33,785 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:10:50,872 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:11:05,352 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:11:33,172 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:11:40,051 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:11:44,090 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:11:48,059 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:11:48,061 - INFO - Transaction splitting completed: 18 transactions identified
+2025-08-23 22:11:48,061 - INFO - Uploading artifacts to S3 with prefix: deriv/session=ad3579ec-98b3-47ee-a564-9a746ee2759c/
+2025-08-23 22:11:48,673 - INFO - Artifacts uploaded to S3
+2025-08-23 22:11:48,673 - INFO - Inserting 18 transactions into database
+2025-08-23 22:11:49,209 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/transactions?columns=%22kind%22%2C%22started_at%22%2C%22video_id%22%2C%22meta%22%2C%22ended_at%22%2C%22tx_range%22%2C%22run_id%22 "HTTP/2 201 Created"
+2025-08-23 22:11:49,210 - INFO - Inserted transactions with IDs: ['b7061191-09c8-4277-8c72-0a951eafd2bd', '4079085c-4472-4f5c-b62e-2d69c7f9f67f', '8445ffc3-5a3d-4ae6-9581-6bb336ed1cea', '457c82ca-4560-4f3e-a825-aa7f3bfa6981', '00080a61-5383-4b5e-8f77-008aea671d6f', 'b986c9ee-9e2c-4539-ae8d-140db359058f', '70ab7673-5628-4121-bf20-a8255d08ade2', '40a997e9-be54-4e9f-9e2f-e7dad755c2a3', '519a1a26-747b-4d3c-9a02-790dfcd4fb1c', '84034020-a478-48eb-a4b8-4d2d5bfd68b9', '0d05b891-44c7-42dc-9246-4eae3ee75951', '20eff158-5add-4bb8-b9d8-49f691bb2e5c', '93e887ce-b596-43b0-ac4f-4a2be514a23a', 'b38979dc-5538-4e5b-b834-55a7dd3875ec', '77928b93-cf9c-4ef6-818c-896f6d9ee8fa', '46331d80-8815-4a91-961c-375e2a2215c4', '8e2ae5cf-c759-4910-b1c3-b9af336bd5d9', '69db38ea-80a4-4725-b95d-d9a142961eb3']
+2025-08-23 22:11:49,210 - INFO - Starting grading for 18 transactions
+2025-08-23 22:12:26,375 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:12:36,082 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:12:44,711 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:13:06,484 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:13:26,358 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:13:40,605 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:14:15,996 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:14:34,306 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:14:45,855 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:14:58,760 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:15:11,398 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:16:06,693 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:16:24,732 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:17:11,589 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:17:26,631 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:17:57,255 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:18:23,725 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:18:44,705 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:18:45,060 - INFO - Grading completed and uploaded to S3
+2025-08-23 22:18:45,061 - INFO - Upserting grades for 18 transactions
+2025-08-23 22:18:45,890 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/grades?on_conflict=transaction_id&columns=%22items_upsellable%22%2C%22items_after%22%2C%22coupon_used%22%2C%22items_addonable%22%2C%22reasoning_summary%22%2C%22details%22%2C%22video_link%22%2C%22score%22%2C%22num_upsell_success%22%2C%22feedback%22%2C%22upsell_possible%22%2C%22asked_more_time%22%2C%22num_upsell_opportunities%22%2C%22num_upsize_opportunities%22%2C%22num_items_after%22%2C%22items_upsize_success%22%2C%22gpt_price%22%2C%22complete_order%22%2C%22items_upsold%22%2C%22issues%22%2C%22upsize_offered%22%2C%22transaction_id%22%2C%22num_upsize_offers%22%2C%22items_initial%22%2C%22num_items_initial%22%2C%22num_addon_offers%22%2C%22mobile_order%22%2C%22num_upsell_offers%22%2C%22num_upsize_success%22%2C%22items_upsizeable%22%2C%22items_addon_success%22%2C%22num_addon_success%22%2C%22upsize_possible%22%2C%22video_file_path%22%2C%22num_addon_opportunities%22%2C%22upsell_offered%22%2C%22num_largest_offers%22%2C%22out_of_stock_items%22 "HTTP/2 201 Created"
+2025-08-23 22:18:45,892 - INFO - Successfully completed all processing steps for video ad3579ec-98b3-47ee-a564-9a746ee2759c
+2025-08-23 22:18:46,222 - INFO - Cleaned up temporary files for video ad3579ec-98b3-47ee-a564-9a746ee2759c
+2025-08-23 22:18:46,399 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.ad3579ec-98b3-47ee-a564-9a746ee2759c "HTTP/2 200 OK"
+2025-08-23 22:18:46,400 - INFO - ✅ Successfully processed video ad3579ec-98b3-47ee-a564-9a746ee2759c in 722.39 seconds
+2025-08-23 22:18:46,654 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 22:18:46,655 - INFO - Found video to process - ID: faa7a117-f984-416d-ad32-4c56b885bf87, S3 Key: dev/sample/DT_File20250817210001000.avi
+2025-08-23 22:18:46,655 - INFO - Attempting to claim video faa7a117-f984-416d-ad32-4c56b885bf87...
+2025-08-23 22:18:46,781 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.faa7a117-f984-416d-ad32-4c56b885bf87&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 22:18:46,783 - INFO - Successfully claimed video faa7a117-f984-416d-ad32-4c56b885bf87
+2025-08-23 22:18:46,783 - INFO - Starting video processing for faa7a117-f984-416d-ad32-4c56b885bf87...
+2025-08-23 22:18:46,783 - INFO - Starting video processing pipeline for faa7a117-f984-416d-ad32-4c56b885bf87
+2025-08-23 22:18:46,785 - INFO - Downloading video faa7a117-f984-416d-ad32-4c56b885bf87 from S3: dev/sample/DT_File20250817210001000.avi
+2025-08-23 22:19:17,826 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_v5koeabs/input.mp4
+2025-08-23 22:19:17,827 - INFO - Starting transcription for video faa7a117-f984-416d-ad32-4c56b885bf87
+2025-08-23 22:19:30,899 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:19:35,514 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:19:40,780 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:19:44,345 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:19:48,670 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:19:51,579 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 22:19:51,594 - INFO - Transcription completed: 6 segments generated
+2025-08-23 22:19:51,594 - INFO - Starting transaction splitting for video faa7a117-f984-416d-ad32-4c56b885bf87
+2025-08-23 22:20:02,528 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:20:28,292 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:20:48,896 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:20:53,682 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:21:01,169 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:21:05,110 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:21:05,114 - INFO - Transaction splitting completed: 7 transactions identified
+2025-08-23 22:21:05,114 - INFO - Uploading artifacts to S3 with prefix: deriv/session=faa7a117-f984-416d-ad32-4c56b885bf87/
+2025-08-23 22:21:05,607 - INFO - Artifacts uploaded to S3
+2025-08-23 22:21:05,607 - INFO - Inserting 7 transactions into database
+2025-08-23 22:21:05,967 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/transactions?columns=%22kind%22%2C%22started_at%22%2C%22video_id%22%2C%22meta%22%2C%22ended_at%22%2C%22tx_range%22%2C%22run_id%22 "HTTP/2 201 Created"
+2025-08-23 22:21:05,969 - INFO - Inserted transactions with IDs: ['051e6dab-a566-4a0a-a93e-620f9addc05e', '590a4bd3-dff7-4387-ac14-27779f34acc5', '344d01b3-1911-4b7d-b4d2-f64ac4e3c91c', '9e738f58-fe0a-4a2e-9ce5-a04bf5a3249b', '45af32eb-b79c-4fcc-8c2e-dced0fdaf911', '1b14731a-65fa-4b49-90b2-a3034976b1e4', '1e038ac1-538b-41b1-ac78-281945e8981c']
+2025-08-23 22:21:05,969 - INFO - Starting grading for 7 transactions
+2025-08-23 22:21:42,864 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:21:59,919 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:22:25,194 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:22:33,393 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:22:58,335 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:23:22,905 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:23:38,089 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 22:23:38,672 - INFO - Grading completed and uploaded to S3
+2025-08-23 22:23:38,672 - INFO - Upserting grades for 7 transactions
+2025-08-23 22:23:39,720 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/grades?on_conflict=transaction_id&columns=%22items_upsellable%22%2C%22items_after%22%2C%22coupon_used%22%2C%22items_addonable%22%2C%22reasoning_summary%22%2C%22details%22%2C%22video_link%22%2C%22score%22%2C%22num_upsell_success%22%2C%22feedback%22%2C%22upsell_possible%22%2C%22asked_more_time%22%2C%22num_upsell_opportunities%22%2C%22num_upsize_opportunities%22%2C%22num_items_after%22%2C%22items_upsize_success%22%2C%22gpt_price%22%2C%22complete_order%22%2C%22items_upsold%22%2C%22issues%22%2C%22upsize_offered%22%2C%22transaction_id%22%2C%22num_upsize_offers%22%2C%22items_initial%22%2C%22num_items_initial%22%2C%22num_addon_offers%22%2C%22mobile_order%22%2C%22num_upsell_offers%22%2C%22num_upsize_success%22%2C%22items_upsizeable%22%2C%22items_addon_success%22%2C%22num_addon_success%22%2C%22upsize_possible%22%2C%22video_file_path%22%2C%22num_addon_opportunities%22%2C%22upsell_offered%22%2C%22num_largest_offers%22%2C%22out_of_stock_items%22 "HTTP/2 201 Created"
+2025-08-23 22:23:39,722 - INFO - Successfully completed all processing steps for video faa7a117-f984-416d-ad32-4c56b885bf87
+2025-08-23 22:23:39,794 - INFO - Cleaned up temporary files for video faa7a117-f984-416d-ad32-4c56b885bf87
+2025-08-23 22:23:40,030 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.faa7a117-f984-416d-ad32-4c56b885bf87 "HTTP/2 200 OK"
+2025-08-23 22:23:40,032 - INFO - ✅ Successfully processed video faa7a117-f984-416d-ad32-4c56b885bf87 in 293.01 seconds
+2025-08-23 22:23:40,235 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 22:23:40,236 - INFO - No more uploaded videos found in queue.
+2025-08-23 22:23:40,236 - INFO - Batch complete. Succeeded: 4, Failed: 0, Total: 4
+2025-08-23 22:23:40,237 - INFO - Processed video IDs: 74ce59d5-bc11-4051-a41b-ad67233b2f6a, aaf5557e-e595-409e-afc3-ae9f6e343efb, ad3579ec-98b3-47ee-a564-9a746ee2759c, faa7a117-f984-416d-ad32-4c56b885bf87
+2025-08-23 22:23:40,237 - INFO - === Batch session completed in 1933.67 seconds ===
+2025-08-23 23:43:44,422 - INFO - OpenAI API key found
+2025-08-23 23:43:44,422 - INFO - Loaded environment variables - AWS Region: us-east-2
+2025-08-23 23:43:44,422 - INFO - === Starting batch video processing (process all 'uploaded') ===
+2025-08-23 23:43:44,422 - INFO - Initializing database and S3 connections...
+2025-08-23 23:43:44,439 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-08-23 23:43:44,511 - INFO - Successfully connected to database and S3
+2025-08-23 23:43:45,118 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-23 23:43:45,127 - INFO - Found video to process - ID: ddc154a6-29bf-47fc-9060-5f0fafaf1044, S3 Key: dev/sample/DT_File20250817170001000.avi
+2025-08-23 23:43:45,127 - INFO - Attempting to claim video ddc154a6-29bf-47fc-9060-5f0fafaf1044...
+2025-08-23 23:43:45,303 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.ddc154a6-29bf-47fc-9060-5f0fafaf1044&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-23 23:43:45,306 - INFO - Successfully claimed video ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-23 23:43:45,306 - INFO - Starting video processing for ddc154a6-29bf-47fc-9060-5f0fafaf1044...
+2025-08-23 23:43:45,306 - INFO - Starting video processing pipeline for ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-23 23:43:45,309 - INFO - Downloading video ddc154a6-29bf-47fc-9060-5f0fafaf1044 from S3: dev/sample/DT_File20250817170001000.avi
+2025-08-23 23:45:56,893 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_wl_qi6sz/input.mp4
+2025-08-23 23:45:56,894 - INFO - Starting transcription for video ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-23 23:46:28,888 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 23:46:32,565 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 23:46:34,106 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 23:46:41,035 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 23:46:48,175 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 23:46:54,496 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 23:47:09,593 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 23:47:15,646 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 23:47:28,612 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 23:47:31,907 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 23:47:37,142 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 23:47:43,488 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 23:47:54,799 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-23 23:47:54,828 - INFO - Transcription completed: 13 segments generated
+2025-08-23 23:47:54,829 - INFO - Starting transaction splitting for video ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-23 23:48:05,226 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:48:15,780 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:48:19,623 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:49:07,512 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:49:27,358 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:49:38,023 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:50:17,437 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:50:37,958 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:51:00,567 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:51:05,432 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:51:14,617 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:51:25,648 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:51:30,679 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:51:30,681 - INFO - Transaction splitting completed: 25 transactions identified
+2025-08-23 23:51:30,681 - INFO - Uploading artifacts to S3 with prefix: deriv/session=ddc154a6-29bf-47fc-9060-5f0fafaf1044/
+2025-08-23 23:51:31,167 - INFO - Artifacts uploaded to S3
+2025-08-23 23:51:31,168 - INFO - Inserting 25 transactions into database
+2025-08-23 23:51:31,690 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/transactions?columns=%22ended_at%22%2C%22video_id%22%2C%22meta%22%2C%22run_id%22%2C%22kind%22%2C%22tx_range%22%2C%22started_at%22 "HTTP/2 201 Created"
+2025-08-23 23:51:31,693 - INFO - Inserted transactions with IDs: ['cea66588-b046-4335-acca-0f82e4f644c0', 'fddfdff9-1341-452f-9914-f9d94df4467e', 'f30bff3a-69e9-4014-890a-3d9c4f5dcf26', '6f17fe13-4767-4ff1-abf6-9d19d279b602', 'a1679ba3-158c-428f-9b11-36f34627a192', '4c76f976-f391-452a-b4ba-3cdf86bdf603', '493eecb5-8ffd-4514-8a56-4a00d7c2dbd5', 'e6aca2e3-5d24-4d90-95d6-d22a5cdf3ed4', '6714226d-6ce4-4191-be65-9e60cdd9372b', '8fa6cd5c-6700-4897-adc8-02bdb52540dd', '1beeaa3f-ab8b-45bf-a8c0-b83cf2b52fa3', 'a9c75abc-90d7-424e-9df4-c22fa16fb15e', '584759f9-e2ef-4adf-8a49-26414bf002d4', '6aa5f5ba-ed35-40a5-a576-2b819802505d', 'd4bea446-6275-46c7-8e10-54e8a48152bc', '96cdd94b-9920-4d56-8faa-ab90e265ecc4', 'f96f7dc8-f259-4955-90a4-80e99e26138c', 'b86532bc-e414-4862-8f2e-eafb01e8cdc4', 'c863caea-f057-488c-a9b2-cf43ada64551', '79ef1882-8d60-4721-8e06-3bfeacdc92ca', 'c180973b-5d7a-44b2-b218-ff546dbe29cb', '5ed3d573-d798-428c-bf04-890fb05ce592', 'eee41e6a-626a-44b3-9ab4-a987ec64e920', '403a286b-8103-4546-acf2-463b4a3088e3', '47904319-8c70-467a-a7d3-d65be67a02d8']
+2025-08-23 23:51:31,693 - INFO - Starting grading for 25 transactions
+2025-08-23 23:51:52,603 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:52:21,038 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:52:49,510 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:52:58,472 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:53:22,125 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:53:45,536 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:54:18,064 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:55:00,930 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:55:23,149 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:55:43,954 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:56:31,339 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:57:05,768 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:57:31,771 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:58:09,957 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:58:28,797 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:58:50,468 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-23 23:59:50,487 - INFO - Retrying request to /responses in 0.408793 seconds
+2025-08-24 00:00:28,198 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:01:02,670 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:01:55,318 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:02:49,416 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:03:23,445 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:03:46,275 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:04:38,373 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:05:16,947 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:06:06,757 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:06:36,509 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:06:36,977 - INFO - Grading completed and uploaded to S3
+2025-08-24 00:06:36,977 - INFO - Upserting grades for 25 transactions
+2025-08-24 00:06:37,554 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/grades?on_conflict=transaction_id&columns=%22items_addon_success%22%2C%22num_upsell_success%22%2C%22score%22%2C%22num_upsell_offers%22%2C%22num_upsize_success%22%2C%22items_upsold%22%2C%22items_upsize_success%22%2C%22num_addon_offers%22%2C%22out_of_stock_items%22%2C%22transaction_id%22%2C%22items_initial%22%2C%22num_upsell_opportunities%22%2C%22items_addonable%22%2C%22upsize_possible%22%2C%22num_addon_opportunities%22%2C%22coupon_used%22%2C%22num_largest_offers%22%2C%22asked_more_time%22%2C%22num_items_after%22%2C%22gpt_price%22%2C%22upsize_offered%22%2C%22complete_order%22%2C%22items_upsizeable%22%2C%22transcript%22%2C%22issues%22%2C%22reasoning_summary%22%2C%22feedback%22%2C%22items_upsellable%22%2C%22video_file_path%22%2C%22upsell_possible%22%2C%22num_upsize_offers%22%2C%22details%22%2C%22num_items_initial%22%2C%22mobile_order%22%2C%22items_after%22%2C%22num_addon_success%22%2C%22video_link%22%2C%22upsell_offered%22%2C%22num_upsize_opportunities%22 "HTTP/2 400 Bad Request"
+2025-08-24 00:06:37,554 - ERROR - Error upserting grades: {'code': 'PGRST204', 'details': None, 'hint': None, 'message': "Could not find the 'score' column of 'grades' in the schema cache"}
+2025-08-24 00:06:38,681 - INFO - Cleaned up temporary files for video ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-24 00:06:38,682 - ERROR - ❌ Error processing video ddc154a6-29bf-47fc-9060-5f0fafaf1044 after 1373.38 seconds: {'code': 'PGRST204', 'details': None, 'hint': None, 'message': "Could not find the 'score' column of 'grades' in the schema cache"}
+Traceback (most recent call last):
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/run_once.py", line 83, in main
+    process_one_video(db, s3, row)  # Settings object is created inside the function
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 183, in process_one_video
+    upsert_grades(db, tx_ids, grades)
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 130, in upsert_grades
+    db.client.table("grades").upsert(grads, on_conflict="transaction_id").execute()
+  File "/opt/miniconda3/lib/python3.12/site-packages/postgrest/_sync/request_builder.py", line 78, in execute
+    raise APIError(r.json())
+postgrest.exceptions.APIError: {'code': 'PGRST204', 'details': None, 'hint': None, 'message': "Could not find the 'score' column of 'grades' in the schema cache"}
+2025-08-24 00:06:38,857 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.ddc154a6-29bf-47fc-9060-5f0fafaf1044 "HTTP/2 200 OK"
+2025-08-24 00:06:38,862 - INFO - Marked video ddc154a6-29bf-47fc-9060-5f0fafaf1044 as failed in database
+2025-08-24 00:06:39,061 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-24 00:06:39,062 - INFO - Found video to process - ID: c3ad8372-41bf-430d-9206-bc2df059f917, S3 Key: dev/sample/DT_File20250817180001000.avi
+2025-08-24 00:06:39,062 - INFO - Attempting to claim video c3ad8372-41bf-430d-9206-bc2df059f917...
+2025-08-24 00:06:39,239 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.c3ad8372-41bf-430d-9206-bc2df059f917&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-24 00:06:39,240 - INFO - Successfully claimed video c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-24 00:06:39,240 - INFO - Starting video processing for c3ad8372-41bf-430d-9206-bc2df059f917...
+2025-08-24 00:06:39,240 - INFO - Starting video processing pipeline for c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-24 00:06:39,241 - INFO - Downloading video c3ad8372-41bf-430d-9206-bc2df059f917 from S3: dev/sample/DT_File20250817180001000.avi
+2025-08-24 00:09:31,500 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_2z8tld1t/input.mp4
+2025-08-24 00:09:31,500 - INFO - Starting transcription for video c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-24 00:10:02,504 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:10:16,371 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:10:22,369 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:10:30,261 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:10:42,938 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:10:44,553 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:10:46,511 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:10:48,900 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:10:54,931 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:11:08,113 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:11:14,031 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:11:17,428 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:11:20,810 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:11:20,897 - INFO - Transcription completed: 13 segments generated
+2025-08-24 00:11:20,897 - INFO - Starting transaction splitting for video c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-24 00:11:55,534 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:12:01,470 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:12:17,531 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:12:29,586 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:12:34,641 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:12:39,077 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:12:45,331 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:12:48,900 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:12:59,191 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:13:46,617 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:13:58,700 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:14:12,616 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:14:18,678 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:14:18,679 - INFO - Transaction splitting completed: 18 transactions identified
+2025-08-24 00:14:18,679 - INFO - Uploading artifacts to S3 with prefix: deriv/session=c3ad8372-41bf-430d-9206-bc2df059f917/
+2025-08-24 00:14:19,050 - INFO - Artifacts uploaded to S3
+2025-08-24 00:14:19,051 - INFO - Inserting 18 transactions into database
+2025-08-24 00:14:19,426 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/transactions?columns=%22ended_at%22%2C%22video_id%22%2C%22meta%22%2C%22run_id%22%2C%22kind%22%2C%22tx_range%22%2C%22started_at%22 "HTTP/2 201 Created"
+2025-08-24 00:14:19,429 - INFO - Inserted transactions with IDs: ['9ad14976-d0ec-4169-a8b5-d894a1e56eeb', 'c76dc01c-05bc-43c4-8d10-5ed44a60d723', '312b4f60-e718-46ac-9561-4baa038e47b2', '3954abb9-5ec2-4d16-9598-5823364db79f', 'd02762fb-81b0-4a59-b34b-3f7424e0ecbd', 'c5697895-a9b6-46fc-96dd-73384d2bb007', 'efca53f6-890c-42dd-8f1d-0a13f0cdcdc5', '10270ae1-1d69-491d-9394-d9bda51c00a3', '0d132d3f-8a06-462c-98e5-271c7bc98885', 'd8eb2f82-5520-4093-8a67-eba35cb2bd10', '881f0e1d-54e4-4166-b04b-e763603eddef', 'd5a440ee-0062-4acb-a793-fb08ddc3ec6e', '42df27a8-1d7c-41b2-ac3c-04baa2802fb3', 'f777aedb-266b-478a-80a2-405e5ec5c091', 'a015f1d6-c416-4af4-92b5-58fab03098d2', 'eb861d5e-141b-4155-a521-37dfd8475831', 'bb6353d6-da74-4070-bc3b-527c567d05b6', '8cd0fa6b-a099-4e7e-ae8a-fc08e95dadb2']
+2025-08-24 00:14:19,429 - INFO - Starting grading for 18 transactions
+2025-08-24 00:14:55,232 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:15:25,698 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:16:05,264 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:16:39,065 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:17:22,859 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:18:04,291 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:18:18,306 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:19:03,473 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:19:24,264 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:19:32,557 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:19:40,491 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:19:46,713 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:20:09,204 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:21:21,845 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:21:53,875 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:22:18,396 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:22:45,356 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:23:24,628 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:23:24,968 - INFO - Grading completed and uploaded to S3
+2025-08-24 00:23:24,968 - INFO - Upserting grades for 18 transactions
+2025-08-24 00:23:26,017 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/grades?on_conflict=transaction_id&columns=%22items_addon_success%22%2C%22num_upsell_success%22%2C%22score%22%2C%22num_upsell_offers%22%2C%22num_upsize_success%22%2C%22items_upsold%22%2C%22items_upsize_success%22%2C%22num_addon_offers%22%2C%22out_of_stock_items%22%2C%22transaction_id%22%2C%22items_initial%22%2C%22num_upsell_opportunities%22%2C%22items_addonable%22%2C%22upsize_possible%22%2C%22num_addon_opportunities%22%2C%22coupon_used%22%2C%22num_largest_offers%22%2C%22asked_more_time%22%2C%22num_items_after%22%2C%22gpt_price%22%2C%22upsize_offered%22%2C%22complete_order%22%2C%22items_upsizeable%22%2C%22transcript%22%2C%22issues%22%2C%22reasoning_summary%22%2C%22feedback%22%2C%22items_upsellable%22%2C%22video_file_path%22%2C%22upsell_possible%22%2C%22num_upsize_offers%22%2C%22details%22%2C%22num_items_initial%22%2C%22mobile_order%22%2C%22items_after%22%2C%22num_addon_success%22%2C%22video_link%22%2C%22upsell_offered%22%2C%22num_upsize_opportunities%22 "HTTP/2 201 Created"
+2025-08-24 00:23:26,026 - INFO - Successfully completed all processing steps for video c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-24 00:23:27,082 - INFO - Cleaned up temporary files for video c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-24 00:23:27,251 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.c3ad8372-41bf-430d-9206-bc2df059f917 "HTTP/2 200 OK"
+2025-08-24 00:23:27,252 - INFO - ✅ Successfully processed video c3ad8372-41bf-430d-9206-bc2df059f917 in 1007.84 seconds
+2025-08-24 00:23:27,464 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-24 00:23:27,465 - INFO - Found video to process - ID: f40e1720-e979-4898-98c7-4dbf7b22387d, S3 Key: dev/sample/DT_File20250817190001000.avi
+2025-08-24 00:23:27,466 - INFO - Attempting to claim video f40e1720-e979-4898-98c7-4dbf7b22387d...
+2025-08-24 00:23:27,569 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.f40e1720-e979-4898-98c7-4dbf7b22387d&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-24 00:23:27,570 - INFO - Successfully claimed video f40e1720-e979-4898-98c7-4dbf7b22387d
+2025-08-24 00:23:27,571 - INFO - Starting video processing for f40e1720-e979-4898-98c7-4dbf7b22387d...
+2025-08-24 00:23:27,571 - INFO - Starting video processing pipeline for f40e1720-e979-4898-98c7-4dbf7b22387d
+2025-08-24 00:23:27,571 - INFO - Downloading video f40e1720-e979-4898-98c7-4dbf7b22387d from S3: dev/sample/DT_File20250817190001000.avi
+2025-08-24 00:26:46,739 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_9e49tm4m/input.mp4
+2025-08-24 00:26:46,740 - INFO - Starting transcription for video f40e1720-e979-4898-98c7-4dbf7b22387d
+2025-08-24 00:27:13,225 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:27:15,981 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:27:27,329 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:27:30,143 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:27:37,432 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:27:40,033 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:27:44,677 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:27:51,987 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:27:55,033 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:27:57,265 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:27:59,258 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:28:04,601 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:28:10,174 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:28:10,210 - INFO - Transcription completed: 13 segments generated
+2025-08-24 00:28:10,210 - INFO - Starting transaction splitting for video f40e1720-e979-4898-98c7-4dbf7b22387d
+2025-08-24 00:28:39,815 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:28:49,458 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:29:18,906 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:29:24,044 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:29:29,763 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:29:33,248 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:29:38,556 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:30:02,737 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:30:09,074 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:30:15,988 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:30:20,931 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:31:02,551 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:31:14,355 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:31:14,358 - INFO - Transaction splitting completed: 23 transactions identified
+2025-08-24 00:31:14,359 - INFO - Uploading artifacts to S3 with prefix: deriv/session=f40e1720-e979-4898-98c7-4dbf7b22387d/
+2025-08-24 00:31:14,728 - INFO - Artifacts uploaded to S3
+2025-08-24 00:31:14,728 - INFO - Inserting 23 transactions into database
+2025-08-24 00:31:15,096 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/transactions?columns=%22ended_at%22%2C%22video_id%22%2C%22meta%22%2C%22run_id%22%2C%22kind%22%2C%22tx_range%22%2C%22started_at%22 "HTTP/2 201 Created"
+2025-08-24 00:31:15,114 - INFO - Inserted transactions with IDs: ['952566b2-c4ec-48d2-b54c-e9eadd04af93', '20928482-a842-45de-b669-7e0273772595', 'a769ac0c-725d-4ee6-a968-14d205a1702f', '2be84042-7b44-4863-acea-256537aeb3b8', '319880d8-ae45-43b5-9a7e-d736101e0174', '70f6e0ac-df99-407d-bae7-22d302b68c76', 'ff2b672c-1de2-4171-92ac-1e6292df0bd4', '67c1a8e2-49d6-4559-a6d3-005c56c8207f', 'f5fb2dcd-e74a-44f2-8e28-3767c3d73804', '7e3bd53e-8666-4ee0-a7ab-d73b9af76ac9', 'cb911c14-1f6e-425f-9adf-dd01ad1a156a', '513fe1b1-4edb-45f1-ab61-d1904528f3c8', 'c05f16a6-511f-45ad-a933-0ee60dae4c73', '08711bf4-6622-4713-9a76-8a56355a70db', '46ace94b-79b7-43f4-b82e-c4b20a2948a7', 'c1b28653-3145-4c67-af22-013f103e93f1', 'cc98d39a-29f4-4e3a-8aea-4c295df83bd6', '107dd135-84a3-4a50-ad06-1dc5224b63b3', 'f7936d61-0e0b-4290-8bdf-bc68798df0ee', '5b93ecd0-ca5b-41b3-9e20-47e1eb948aba', '626ac8d1-20c2-4bdc-ab4e-9abb983cf750', '817a47e2-dacb-4a8d-8937-cdfa34cb2cec', '771dd286-1802-4098-b1a4-37301a66abf5']
+2025-08-24 00:31:15,114 - INFO - Starting grading for 23 transactions
+2025-08-24 00:31:31,468 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:31:48,340 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:32:11,439 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:32:44,112 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:33:19,599 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:33:56,957 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:34:18,126 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:34:50,399 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:35:10,459 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:35:26,809 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:35:39,499 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:36:06,404 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:36:21,264 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:36:32,769 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:36:51,657 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:37:12,843 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:37:28,903 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:37:57,277 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:38:17,242 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:38:32,700 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:38:57,227 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:39:11,598 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:39:28,602 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:39:29,081 - INFO - Grading completed and uploaded to S3
+2025-08-24 00:39:29,082 - INFO - Upserting grades for 23 transactions
+2025-08-24 00:39:29,778 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/grades?on_conflict=transaction_id&columns=%22items_addon_success%22%2C%22num_upsell_success%22%2C%22score%22%2C%22num_upsell_offers%22%2C%22num_upsize_success%22%2C%22items_upsold%22%2C%22items_upsize_success%22%2C%22num_addon_offers%22%2C%22out_of_stock_items%22%2C%22transaction_id%22%2C%22items_initial%22%2C%22num_upsell_opportunities%22%2C%22items_addonable%22%2C%22upsize_possible%22%2C%22num_addon_opportunities%22%2C%22coupon_used%22%2C%22num_largest_offers%22%2C%22asked_more_time%22%2C%22num_items_after%22%2C%22gpt_price%22%2C%22upsize_offered%22%2C%22complete_order%22%2C%22items_upsizeable%22%2C%22transcript%22%2C%22issues%22%2C%22reasoning_summary%22%2C%22feedback%22%2C%22items_upsellable%22%2C%22video_file_path%22%2C%22upsell_possible%22%2C%22num_upsize_offers%22%2C%22details%22%2C%22num_items_initial%22%2C%22mobile_order%22%2C%22items_after%22%2C%22num_addon_success%22%2C%22video_link%22%2C%22upsell_offered%22%2C%22num_upsize_opportunities%22 "HTTP/2 201 Created"
+2025-08-24 00:39:29,780 - INFO - Successfully completed all processing steps for video f40e1720-e979-4898-98c7-4dbf7b22387d
+2025-08-24 00:39:31,170 - INFO - Cleaned up temporary files for video f40e1720-e979-4898-98c7-4dbf7b22387d
+2025-08-24 00:39:31,339 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.f40e1720-e979-4898-98c7-4dbf7b22387d "HTTP/2 200 OK"
+2025-08-24 00:39:31,339 - INFO - ✅ Successfully processed video f40e1720-e979-4898-98c7-4dbf7b22387d in 963.60 seconds
+2025-08-24 00:39:31,501 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-24 00:39:31,503 - INFO - Found video to process - ID: c597c72f-b3cd-48ac-8413-8251a40ce880, S3 Key: dev/sample/DT_File20250817200001000.avi
+2025-08-24 00:39:31,504 - INFO - Attempting to claim video c597c72f-b3cd-48ac-8413-8251a40ce880...
+2025-08-24 00:39:31,573 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.c597c72f-b3cd-48ac-8413-8251a40ce880&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-24 00:39:31,574 - INFO - Successfully claimed video c597c72f-b3cd-48ac-8413-8251a40ce880
+2025-08-24 00:39:31,574 - INFO - Starting video processing for c597c72f-b3cd-48ac-8413-8251a40ce880...
+2025-08-24 00:39:31,574 - INFO - Starting video processing pipeline for c597c72f-b3cd-48ac-8413-8251a40ce880
+2025-08-24 00:39:31,575 - INFO - Downloading video c597c72f-b3cd-48ac-8413-8251a40ce880 from S3: dev/sample/DT_File20250817200001000.avi
+2025-08-24 00:42:11,894 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_62tzzryf/input.mp4
+2025-08-24 00:42:11,895 - INFO - Starting transcription for video c597c72f-b3cd-48ac-8413-8251a40ce880
+2025-08-24 00:42:38,965 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:42:42,618 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:42:46,122 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:42:49,034 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:42:54,290 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:42:57,409 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:43:00,215 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:43:06,388 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:43:18,659 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:43:28,967 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:43:33,356 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:43:40,726 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:43:49,758 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 00:43:49,792 - INFO - Transcription completed: 13 segments generated
+2025-08-24 00:43:49,793 - INFO - Starting transaction splitting for video c597c72f-b3cd-48ac-8413-8251a40ce880
+2025-08-24 00:43:59,959 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:44:09,960 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:44:24,287 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:44:32,970 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:45:01,131 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:45:14,410 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:45:24,674 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:45:40,431 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:45:45,435 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:46:16,896 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:46:25,087 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:46:28,395 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:46:54,649 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:46:54,652 - INFO - Transaction splitting completed: 22 transactions identified
+2025-08-24 00:46:54,652 - INFO - Uploading artifacts to S3 with prefix: deriv/session=c597c72f-b3cd-48ac-8413-8251a40ce880/
+2025-08-24 00:46:55,076 - INFO - Artifacts uploaded to S3
+2025-08-24 00:46:55,076 - INFO - Inserting 22 transactions into database
+2025-08-24 00:46:55,497 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/transactions?columns=%22ended_at%22%2C%22video_id%22%2C%22meta%22%2C%22run_id%22%2C%22kind%22%2C%22tx_range%22%2C%22started_at%22 "HTTP/2 201 Created"
+2025-08-24 00:46:55,511 - INFO - Inserted transactions with IDs: ['60e8e6b8-e317-48e0-9fd0-2a6b5c639f5b', '1054afa2-1ce2-4a1c-bc2d-5377be00cdf5', '37bab44c-f638-48a9-9978-f3549333787c', '2961af4b-d707-4012-b4e7-f2599a08a304', 'cf5bed03-f6cf-4d9b-9c19-a2a5ed1112cc', '47e86234-d8d7-433b-8fe6-b2b2b83dccc3', '557bc0aa-cee4-4d56-a530-0efb7bccbbf5', '252247c4-94ca-4d5d-842d-849ebc5d8771', '7ab00395-9630-4387-8268-76663bba2ab3', '767ec556-4cca-48b4-8efd-819da5583a82', 'cd1d59e3-266d-4909-8d3b-bef9439bbabf', 'fb59d2ef-8d7b-4f07-8a4b-d26dbb5eb68e', 'f03af48e-2d1b-4d87-921d-d2c6b33897f2', 'faac2a38-df98-4a56-990d-d33505b3dc11', '78a83056-b213-41dd-9ff3-760ac1e60ce3', '02215ff5-b9ae-4e9a-901e-836a151aa528', 'f9c03355-0c00-4dfc-925f-c893ffb6b4f1', 'ed561859-ece7-4af7-9636-4c807dc764a2', 'cfa8d733-a2c2-4979-9161-62249251423f', '149c90d0-afff-4545-9446-aa7f9810aab2', '802d0ee5-6aa1-4365-a8da-36fb2aaa25fa', 'ef1625ef-8468-4592-a3c5-6a6f3f08184f']
+2025-08-24 00:46:55,512 - INFO - Starting grading for 22 transactions
+2025-08-24 00:47:11,166 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 00:47:36,537 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:22:58,442 - INFO - Retrying request to /responses in 0.469443 seconds
+2025-08-24 01:23:29,718 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:23:41,067 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:24:17,271 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:24:30,317 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:25:29,034 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:25:58,594 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:26:13,000 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:26:42,843 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:27:02,880 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:27:19,412 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:27:46,872 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:28:15,650 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:28:40,392 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:29:02,919 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:29:18,693 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:29:36,632 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:30:01,784 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:30:22,357 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:30:40,559 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:30:56,173 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 01:30:56,544 - INFO - Grading completed and uploaded to S3
+2025-08-24 01:30:56,544 - INFO - Upserting grades for 22 transactions
+2025-08-24 01:30:57,448 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/grades?on_conflict=transaction_id&columns=%22items_addon_success%22%2C%22num_upsell_success%22%2C%22score%22%2C%22num_upsell_offers%22%2C%22num_upsize_success%22%2C%22items_upsold%22%2C%22items_upsize_success%22%2C%22num_addon_offers%22%2C%22out_of_stock_items%22%2C%22transaction_id%22%2C%22items_initial%22%2C%22num_upsell_opportunities%22%2C%22items_addonable%22%2C%22upsize_possible%22%2C%22num_addon_opportunities%22%2C%22coupon_used%22%2C%22num_largest_offers%22%2C%22asked_more_time%22%2C%22num_items_after%22%2C%22gpt_price%22%2C%22upsize_offered%22%2C%22complete_order%22%2C%22items_upsizeable%22%2C%22transcript%22%2C%22issues%22%2C%22reasoning_summary%22%2C%22feedback%22%2C%22items_upsellable%22%2C%22video_file_path%22%2C%22upsell_possible%22%2C%22num_upsize_offers%22%2C%22details%22%2C%22num_items_initial%22%2C%22mobile_order%22%2C%22items_after%22%2C%22num_addon_success%22%2C%22video_link%22%2C%22upsell_offered%22%2C%22num_upsize_opportunities%22 "HTTP/2 201 Created"
+2025-08-24 01:30:57,456 - INFO - Successfully completed all processing steps for video c597c72f-b3cd-48ac-8413-8251a40ce880
+2025-08-24 01:30:58,800 - INFO - Cleaned up temporary files for video c597c72f-b3cd-48ac-8413-8251a40ce880
+2025-08-24 01:30:59,000 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.c597c72f-b3cd-48ac-8413-8251a40ce880 "HTTP/2 200 OK"
+2025-08-24 01:30:59,001 - INFO - ✅ Successfully processed video c597c72f-b3cd-48ac-8413-8251a40ce880 in 3087.23 seconds
+2025-08-24 01:30:59,106 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-24 01:30:59,107 - INFO - Found video to process - ID: b13b6e34-5bfb-42e2-bd9f-0656365eb8ac, S3 Key: dev/sample/DT_File20250817210001000.avi
+2025-08-24 01:30:59,107 - INFO - Attempting to claim video b13b6e34-5bfb-42e2-bd9f-0656365eb8ac...
+2025-08-24 01:30:59,311 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.b13b6e34-5bfb-42e2-bd9f-0656365eb8ac&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-24 01:30:59,313 - INFO - Successfully claimed video b13b6e34-5bfb-42e2-bd9f-0656365eb8ac
+2025-08-24 01:30:59,313 - INFO - Starting video processing for b13b6e34-5bfb-42e2-bd9f-0656365eb8ac...
+2025-08-24 01:30:59,313 - INFO - Starting video processing pipeline for b13b6e34-5bfb-42e2-bd9f-0656365eb8ac
+2025-08-24 01:30:59,315 - INFO - Downloading video b13b6e34-5bfb-42e2-bd9f-0656365eb8ac from S3: dev/sample/DT_File20250817210001000.avi
+2025-08-24 01:30:59,516 - INFO - Cleaned up temporary files for video b13b6e34-5bfb-42e2-bd9f-0656365eb8ac
+2025-08-24 01:30:59,516 - ERROR - ❌ Error processing video b13b6e34-5bfb-42e2-bd9f-0656365eb8ac after 0.20 seconds: An error occurred (404) when calling the HeadObject operation: Not Found
+Traceback (most recent call last):
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/run_once.py", line 83, in main
+    process_one_video(db, s3, row)  # Settings object is created inside the function
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../worker/pipeline.py", line 150, in process_one_video
+    download_to_file(s3, settings.RAW_BUCKET, s3_key, local_path)
+  File "/Users/ronitjain/Desktop/Hoptix/hoptix-flask/scripts/../integrations/s3_client.py", line 29, in download_to_file
+    s3.download_file(bucket, key, dest_path)
+  File "/opt/miniconda3/lib/python3.12/site-packages/boto3/s3/inject.py", line 192, in download_file
+    return transfer.download_file(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/boto3/s3/transfer.py", line 406, in download_file
+    future.result()
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/futures.py", line 103, in result
+    return self._coordinator.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/futures.py", line 264, in result
+    raise self._exception
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/tasks.py", line 265, in _main
+    self._submit(transfer_future=transfer_future, **kwargs)
+  File "/opt/miniconda3/lib/python3.12/site-packages/s3transfer/download.py", line 352, in _submit
+    response = client.head_object(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py", line 565, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/botocore/client.py", line 1017, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (404) when calling the HeadObject operation: Not Found
+2025-08-24 01:30:59,607 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.b13b6e34-5bfb-42e2-bd9f-0656365eb8ac "HTTP/2 200 OK"
+2025-08-24 01:30:59,608 - INFO - Marked video b13b6e34-5bfb-42e2-bd9f-0656365eb8ac as failed in database
+2025-08-24 01:30:59,689 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-24 01:30:59,690 - INFO - No more uploaded videos found in queue.
+2025-08-24 01:30:59,690 - INFO - Batch complete. Succeeded: 3, Failed: 2, Total: 5
+2025-08-24 01:30:59,690 - INFO - Processed video IDs: c3ad8372-41bf-430d-9206-bc2df059f917, f40e1720-e979-4898-98c7-4dbf7b22387d, c597c72f-b3cd-48ac-8413-8251a40ce880
+2025-08-24 01:30:59,690 - INFO - === Batch session completed in 6435.27 seconds ===

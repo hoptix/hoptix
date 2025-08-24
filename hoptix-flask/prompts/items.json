@@ -1,0 +1,177 @@
+[
+  {
+    "Item": "Sundae [Size: Small]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": "2 (valid items) for $5. Valid items: Small Sundae, Pretzel, Chilli dog or any size drink",
+    "Upsizing Chance": "Large Sundae (1)",
+    "Add on Chance": "Whipped Cream/Nuts/Sprinkles"
+  },
+  {
+    "Item": "Sundae [Size: Medium, Large]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Sundae (1)",
+    "Add on Chance": "Whipped Cream/Nuts/Sprinkles"
+  },
+  {
+    "Item": "Chips",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Pretzel Sticks (1)",
+    "Add on Chance": 0
+  },
+  {
+    "Item": "Pretzel sticks [Size: None]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": "2 (valid items) for $5. Valid items: Small Sundae, Pretzel, Chilli dog or any size drink",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  },
+  {
+    "Item": "Drink [Sizes: Small, Medium, Large]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": "2 (valid items) for $5. Valid items: Small Sundae, Pretzel, Chilli dog or any size drink",
+    "Upsizing Chance": "Large Drink (1)",
+    "Add on Chance": 0
+  },
+  {
+    "Item": "Chilli dog",
+    "Ordered Items Count": "",
+    "Upselling Chance": "2 (valid items) for $5. Valid items: Small Sundae, Pretzel, Chilli dog or any size drink",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  },
+  {
+    "Item": "Cone [Sizes: Small, Medium, Large]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Cone (1)",
+    "Add on Chance": "Sprinkles"
+  },
+  {
+    "Item": "Dipped Cone [Sizes: Small, Medium, Large]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Dipped Cone (1)",
+    "Add on Chance": "Double Dip"
+  },
+  {
+    "Item": "Twist Cone  [Sizes: Small, Medium, Large]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Twist Cone (1)",
+    "Add on Chance": "Sprinkles"
+  },
+  {
+    "Item": "Dilly Bar",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Box of 6 (1)",
+    "Add on Chance": 0
+  },
+  {
+    "Item": "Shakes & Malts [Sizes: Small, Medium, Large]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Shake/Malt (1)",
+    "Add on Chance": "Extra Malt or primary topping"
+  },
+  {
+    "Item": "MooLattes [Sizes: Small, Medium, Large]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large MooLatte (1)",
+    "Add on Chance": "Primary topping"
+  },
+  {
+    "Item": "Misty Slush [Sizes: Small, Medium, Large]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Misty Slush (1)",
+    "Add on Chance": "ice cream"
+  },
+  {
+    "Item": "Misty Freeze [Sizes: Small, Medium, Large]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Misty Freeze (1)",
+    "Add on Chance": 0
+  },
+  {
+    "Item": "Bottled Water [Sizes: None]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  },
+  {
+    "Item": "Fruit Smoothies [Sizes: Small, Medium, Large]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fruit Smoothie (1)",
+    "Add on Chance": "Banana boost"
+  },
+  {
+    "Item": "Julius Originals [Sizes: Small, Medium, Large]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Julius Original (1)",
+    "Add on Chance": "Banana boost"
+  },
+  {
+    "Item": "Frozen Cakes [Sizes: 11x14 (1/12 slice), 10\" (1/12 slice), 9\" (1/10 slice), 8\" (1/8 slice)]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Sheet Cake (1)",
+    "Add on Chance": 0
+  },
+  {
+    "Item": "Blizzard Cakes [Sizes: Kid's, Small, Medium, Large]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Sheet Cake (1)",
+    "Add on Chance": 0
+  },
+  {
+    "Item": "Blizzard [Sizes: Small, Medium, Large]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Blizzard (1)",
+    "Add on Chance": "Primary Topping/Ingredient"
+  },
+  {
+    "Item": "Cupfection [Sizes: None]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": "Primary Topping/Ingredient"
+  },
+  {
+    "Item": "Slush [Sizes: Small, Medium, Large]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Slush (1)",
+    "Add on Chance": "Ice Cream"
+  },
+  {
+    "Item": "Chili Cheese Dog [Sizes: None]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  },
+  {
+    "Item": "Hot Dog [Sizes: None]",
+    "Ordered Items Count": 1,
+    "Upselling Chance": "Combo (Chips and drink)",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  },
+  {
+    "Item": "2-Piece Chicken Strips",
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  }
+]

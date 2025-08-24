@@ -1,0 +1,518 @@
+2025-08-24 03:17:56,341 - INFO - OpenAI API key found
+2025-08-24 03:17:56,341 - INFO - Loaded environment variables - AWS Region: us-east-2
+2025-08-24 03:17:56,341 - INFO - === Starting batch video processing (process all 'uploaded') ===
+2025-08-24 03:17:56,342 - INFO - Initializing database and S3 connections...
+2025-08-24 03:17:56,357 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+2025-08-24 03:17:56,392 - INFO - Successfully connected to database and S3
+2025-08-24 03:17:56,532 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-24 03:17:56,536 - INFO - Found video to process - ID: c597c72f-b3cd-48ac-8413-8251a40ce880, S3 Key: dev/sample/DT_File20250817200001000.avi
+2025-08-24 03:17:56,536 - INFO - Attempting to claim video c597c72f-b3cd-48ac-8413-8251a40ce880...
+2025-08-24 03:17:56,610 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.c597c72f-b3cd-48ac-8413-8251a40ce880&status=eq.uploaded "HTTP/2 200 OK"
+2025-08-24 03:17:56,611 - INFO - Successfully claimed video c597c72f-b3cd-48ac-8413-8251a40ce880
+2025-08-24 03:17:56,611 - INFO - Starting video processing for c597c72f-b3cd-48ac-8413-8251a40ce880...
+2025-08-24 03:17:56,611 - INFO - Starting video processing pipeline for c597c72f-b3cd-48ac-8413-8251a40ce880
+2025-08-24 03:17:56,611 - INFO - Downloading video c597c72f-b3cd-48ac-8413-8251a40ce880 from S3: dev/sample/DT_File20250817200001000.avi
+2025-08-24 03:23:28,680 - INFO - Downloaded video to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_vcuay0ft/input.mp4
+2025-08-24 03:23:28,681 - INFO - Starting transcription for video c597c72f-b3cd-48ac-8413-8251a40ce880
+2025-08-24 03:24:00,537 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 03:24:04,056 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 03:24:07,410 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 03:24:11,316 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 03:24:15,580 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 03:24:18,156 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 03:24:20,951 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 03:24:27,331 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 03:24:37,988 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 03:24:50,310 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 03:24:54,516 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 03:25:04,401 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 03:25:13,050 - INFO - HTTP Request: POST https://api.openai.com/v1/audio/transcriptions "HTTP/1.1 200 OK"
+2025-08-24 03:25:13,082 - INFO - Transcription completed: 13 segments generated
+2025-08-24 03:25:13,082 - INFO - Starting transaction splitting for video c597c72f-b3cd-48ac-8413-8251a40ce880
+2025-08-24 03:25:21,127 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:25:27,198 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:25:38,544 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:25:41,792 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:25:54,727 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:26:08,011 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:26:11,742 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:26:48,809 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:26:53,024 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+Using video timestamp from filename: 2025-08-17T20:00:01Z
+
+=== STEP 1 (Transaction Splitting) RAW OUTPUT ===
+Input transcript: Operator: Can I get a large chocolate brownie extreme blizzard?
+
+Customer: Yeah, a large chocolate brownie extreme blizzard.
+
+Operator: No, that's it.
+
+Customer: Alright, thank you.
+...
+Raw LLM response: {"1": "Operator: Can I get a large chocolate brownie extreme blizzard?\nCustomer: Yeah, a large chocolate brownie extreme blizzard.\nOperator: No, that's it.\nCustomer: Alright, thank you.", "2": "1", "3": "0", "4": "0", "5": "0", "6": "0"}
+==================================================
+
+=== STEP 1 (Transaction Splitting) RAW OUTPUT ===
+Input transcript: Operator: No.
+
+Customer: I'd like to have a medium hot fudge blizzard and a medium chocolate chip cookie dough.
+
+Operator: Okay.
+
+Customer: And then the pup cup, just straight vanilla.
+
+Operator: No p...
+Raw LLM response: {"1": "Operator: No.\nCustomer: I'd like to have a medium hot fudge blizzard and a medium chocolate chip cookie dough.\nOperator: Okay.\nCustomer: And then the pup cup, just straight vanilla.\nOperator: No peanut butter?\nCustomer: No.\nOperator: Alright, anything else for you?\nCustomer: I think that'll do it.\nOperator: Alright, just go on up to the window, thank you.", "2": "1", "3": "0", "4": "0", "5": "0", "6": "0"}
+==================================================
+
+=== STEP 1 (Transaction Splitting) RAW OUTPUT ===
+Input transcript: Operator: Hello, welcome to Burger King, what can I get started for you?
+
+Customer: Can I get a medium Kit Kat?
+
+Operator: Gotcha, do you want extra anything on that today?
+
+Customer: No.
+
+Operator: A...
+Raw LLM response: {"1": "Operator: Hello, welcome to Burger King, what can I get started for you?\nCustomer: Can I get a medium Kit Kat?\nOperator: Gotcha, do you want extra anything on that today?\nCustomer: No.\nOperator: Alright, anything else?\nCustomer: No, that's all.\nOperator: Alrighty, $6.36 for you up at the window.", "2": "1", "3": "0", "4": "0", "5": "0", "6": "0"}@#&{"1": "Operator: Hi, welcome to Burger King, what can I get started for you?\nCustomer: Hi, can I get a medium cone chocolate and vanilla twist, and can I get a pup cup, no peanut butter?\nOperator: Gotcha, anything else?\nCustomer: Nope, that's it.\nOperator: Alrighty, $6.74 for you.\nCustomer: Thank you.", "2": "1", "3": "0", "4": "0", "5": "0", "6": "0"}
+==================================================
+
+=== STEP 1 (Transaction Splitting) RAW OUTPUT ===
+Input transcript: Operator: Hi, welcome. What can I get for you? 
+
+Customer: Can I get a brownie and Oreo confection? 
+
+Operator: Is that a brownie and Oreo confection? 
+
+Customer: Yep, and then I'll get a caramel brow...
+Raw LLM response: {"1":"Operator: Hi, welcome. What can I get for you?\nCustomer: Can I get a brownie and Oreo confection?\nOperator: Is that a brownie and Oreo confection?\nCustomer: Yep, and then I'll get a caramel brownie confection as well, and then that's it.\nOperator: Alright, it's going to be $14.16 at the window.\nCustomer: Thank you.","2":"1","3":"0","4":"0","5":"0","6":"0"}
+==================================================
+
+=== STEP 1 (Transaction Splitting) RAW OUTPUT ===
+Input transcript: Hi, what can I get for you? I'd like a classic hot dog. Do you want anything on that hot dog? Just ketchup and mustard. Alright, and did you just want the hot dog or did you want a combo? I'll do a co...
+Raw LLM response: {"1": "Operator: Hi, what can I get for you?\nCustomer: I'd like a classic hot dog.\nOperator: Do you want anything on that hot dog?\nCustomer: Just ketchup and mustard.\nOperator: Alright, and did you just want the hot dog or did you want a combo?\nCustomer: I'll do a combo.\nOperator: Combo? What kind of chips would you want? We have Lay's, barbecue Doritos, or you can upgrade for some pretzels.\nCustomer: I'll upgrade for pretzels.\nOperator: Pretzels? Alright. What kind of drink would you like?\nCustomer: I'll do water.\nOperator: Water?\nCustomer: And I'm going to do a blizzard.\nOperator: Okay, and you said ketchup and mustard on the hot dog?\nCustomer: Yes.\nOperator: Alright, and what kind of blizzard would you like?\nCustomer: I'll do the Royal Reese's Fluffernutter.\nOperator: Small?\nCustomer: Small Royal Reese's Fluffernutter.\nOperator: Anything else?\nCustomer: Nope, that'll be it.\nOperator: $3.16.88 at the window.", "2": "1", "3": "0", "4": "0", "5": "0", "6": "0"}
+==================================================
+
+=== STEP 1 (Transaction Splitting) RAW OUTPUT ===
+Input transcript: Hi, what can I get for you? Um, just a second please. No worries, take your time. Okay, I'm ready. What can I get for you? Can I please have a brownie and Oreo perfection? Anything else? Um, and then ...
+Raw LLM response: {"1":"Operator: Hi, what can I get for you?\nCustomer: Um, just a second please.\nOperator: No worries, take your time.\nCustomer: Okay, I'm ready.\nOperator: What can I get for you?\nCustomer: Can I please have a brownie and Oreo perfection?\nOperator: Anything else?\nCustomer: Um, and then I also have a door dash.\nOperator: What was the name on it?\nCustomer: Anthony G.\nOperator: Okay, you can talk to the window.\nCustomer: Thank you.","2":"1","3":"1","4":"0","5":"0","6":"0"}
+==================================================
+
+=== STEP 1 (Transaction Splitting) RAW OUTPUT ===
+Input transcript: Operator: Hi, welcome to Dairy Queen. What can I get for you?  
+Customer: Can I do a banana split?  
+Operator: Banana split, anything else?  
+Customer: Nope, that's it.  
+Operator: That'll be $6.86 at...
+Raw LLM response: {"1":"Operator: Hi, welcome to Dairy Queen. What can I get for you?\nCustomer: Can I do a banana split?\nOperator: Banana split, anything else?\nCustomer: Nope, that's it.\nOperator: That'll be $6.86 at the window.","2":"1","3":"0","4":"0","5":"0","6":"0"}
+==================================================
+
+=== STEP 1 (Transaction Splitting) RAW OUTPUT ===
+Input transcript: Operator: Can I just have a plain kid's vanilla blizzard?
+
+Customer: You just want a mini blizzard, just vanilla?
+
+Operator: Just vanilla.
+
+Customer: Anything else?
+
+Operator: No.
+
+Customer: So it's j...
+Raw LLM response: {"1": "Operator: Can I just have a plain kid's vanilla blizzard?\nCustomer: You just want a mini blizzard, just vanilla?\nOperator: Just vanilla.\nCustomer: Anything else?\nOperator: No.\nCustomer: So it's just the one mini blizzard?\nOperator: Yes, put a top on it.\nCustomer: 25.22 at the window.\nOperator: No.", "2": "1", "3": "0", "4": "0", "5": "0", "6": "0"}@#&{"1": "Customer: Can I just get a banana split?\nOperator: Anything else?\nCustomer: No, that's it.\nOperator: 360 at the window.", "2": "1", "3": "0", "4": "0", "5": "0", "6": "0"}@#&{"1": "Customer: I need two mini blizzards, chocolate brownie extreme with chocolate ice cream.\nOperator: You said two mini chocolate brownie extremes with chocolate ice cream?\nCustomer: Correct.\nOperator: Anything else?\nCustomer: No, thank you.\nOperator: I'll have your total at the window.", "2": "1", "3": "0", "4": "0", "5": "0", "6": "0"}
+==================================================
+
+=== STEP 1 (Transaction Splitting) RAW OUTPUT ===
+Input transcript: Operator: Yeah, what can I get for you? Customer: Yeah, could you have some like cake in a cup, like the little mini ice cream cake in a cup? Operator: Uh, the cupcake? Customer: Yeah. Operator: Yeah,...
+Raw LLM response: {"1":"Operator: Yeah, what can I get for you?\nCustomer: Yeah, could you have some like cake in a cup, like the little mini ice cream cake in a cup?\nOperator: Uh, the cupcake?\nCustomer: Yeah.\nOperator: Yeah, we have it.\nCustomer: Yeah, can I get one of those please?\nOperator: Yeah, anything else?\nCustomer: Uh, yeah, whatever you want.\nCustomer: Can I get a medium Royal New York cheesecake?\nOperator: I'm so sorry, could you repeat that?\nCustomer: Can I get a medium Blizzard Royal New York cheesecake?\nOperator: Medium Royal New York cheesecake, anything else?\nCustomer: That'll be it.\nOperator: We'll see you at 11.04 at the window.","2":"1","3":"0","4":"0","5":"0","6":"0"}
+2025-08-24 03:27:10,814 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:27:15,740 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:27:23,526 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:27:48,228 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:27:48,231 - INFO - Transaction splitting completed: 21 transactions identified
+2025-08-24 03:27:48,232 - INFO - Uploading artifacts to S3 with prefix: deriv/session=c597c72f-b3cd-48ac-8413-8251a40ce880/
+2025-08-24 03:27:49,284 - INFO - Artifacts uploaded to S3
+2025-08-24 03:27:49,285 - INFO - Inserting 21 transactions into database
+2025-08-24 03:27:49,285 - INFO - Transaction 1: 2025-08-17T20:00:01Z to 2025-08-17T20:01:31Z (video seconds 0.0-90.0)
+2025-08-24 03:27:49,285 - INFO - Transaction 2: 2025-08-17T20:10:31Z to 2025-08-17T20:11:31Z (video seconds 630.0-690.0)
+2025-08-24 03:27:49,285 - INFO - Transaction 3: 2025-08-17T20:12:01Z to 2025-08-17T20:12:31Z (video seconds 720.0-750.0)
+2025-08-24 03:27:49,285 - INFO - Transaction 4: 2025-08-17T20:12:31Z to 2025-08-17T20:13:01Z (video seconds 750.0-780.0)
+2025-08-24 03:27:49,285 - INFO - Transaction 5: 2025-08-17T20:15:01Z to 2025-08-17T20:16:01Z (video seconds 900.0-960.0)
+2025-08-24 03:27:49,285 - INFO - Transaction 6: 2025-08-17T20:21:16Z to 2025-08-17T20:22:46Z (video seconds 1275.0-1365.0)
+2025-08-24 03:27:49,286 - INFO - Transaction 7: 2025-08-17T20:26:01Z to 2025-08-17T20:27:01Z (video seconds 1560.0-1620.0)
+2025-08-24 03:27:49,286 - INFO - Transaction 8: 2025-08-17T20:29:16Z to 2025-08-17T20:30:01Z (video seconds 1755.0-1800.0)
+2025-08-24 03:27:49,286 - INFO - Transaction 9: 2025-08-17T20:31:16Z to 2025-08-17T20:32:06Z (video seconds 1875.0-1925.0)
+2025-08-24 03:27:49,286 - INFO - Transaction 10: 2025-08-17T20:32:06Z to 2025-08-17T20:32:56Z (video seconds 1925.0-1975.0)
+2025-08-24 03:27:49,286 - INFO - Transaction 11: 2025-08-17T20:32:56Z to 2025-08-17T20:33:46Z (video seconds 1975.0-2025.0)
+2025-08-24 03:27:49,286 - INFO - Transaction 12: 2025-08-17T20:34:31Z to 2025-08-17T20:41:16Z (video seconds 2070.0-2475.0)
+2025-08-24 03:27:49,286 - INFO - Transaction 13: 2025-08-17T20:43:46Z to 2025-08-17T20:45:11Z (video seconds 2625.0-2710.0)
+2025-08-24 03:27:49,286 - INFO - Transaction 14: 2025-08-17T20:45:11Z to 2025-08-17T20:46:36Z (video seconds 2710.0-2795.0)
+2025-08-24 03:27:49,286 - INFO - Transaction 15: 2025-08-17T20:46:36Z to 2025-08-17T20:48:01Z (video seconds 2795.0-2880.0)
+2025-08-24 03:27:49,286 - INFO - Transaction 16: 2025-08-17T20:48:31Z to 2025-08-17T20:49:46Z (video seconds 2910.0-2985.0)
+2025-08-24 03:27:49,286 - INFO - Transaction 17: 2025-08-17T20:50:31Z to 2025-08-17T20:55:01Z (video seconds 3030.0-3300.0)
+2025-08-24 03:27:49,286 - INFO - Transaction 18: 2025-08-17T20:56:31Z to 2025-08-17T20:57:23.217500Z (video seconds 3390.0-3442.2174999999997)
+2025-08-24 03:27:49,286 - INFO - Transaction 19: 2025-08-17T20:57:23.217500Z to 2025-08-17T20:58:15.435000Z (video seconds 3442.2174999999997-3494.435)
+2025-08-24 03:27:49,286 - INFO - Transaction 20: 2025-08-17T20:58:15.435000Z to 2025-08-17T20:59:07.652500Z (video seconds 3494.435-3546.6525)
+2025-08-24 03:27:49,287 - INFO - Transaction 21: 2025-08-17T20:59:07.652500Z to 2025-08-17T20:59:59.870000Z (video seconds 3546.6525-3598.87)
+2025-08-24 03:27:49,289 - INFO - Saved 21 transaction records to exports/20250824_032749_transactions.csv
+2025-08-24 03:27:50,004 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/transactions?columns=%22video_id%22%2C%22tx_range%22%2C%22meta%22%2C%22kind%22%2C%22started_at%22%2C%22ended_at%22%2C%22run_id%22 "HTTP/2 201 Created"
+2025-08-24 03:27:50,006 - INFO - Inserted transactions with IDs: ['7badbb7d-f434-4d87-b400-1bd86c73788d', 'e59a91dc-4f35-4f20-9ee5-4b6934833ec0', '0fd49604-3b74-425d-ad7f-741abdac2f6f', 'e9e548b9-0305-4a7f-9cbd-3fd6db7b8bfa', '9155c62b-3693-4329-b1d1-cd1aa8df4a92', '3530481e-c088-44eb-9980-419d4b4a3050', 'de2aba83-3d32-46e5-ae39-d49dae5145b1', '7dbb4ee3-ecea-4918-b9d6-d30d54ee4de3', 'fad656db-7508-4ada-9994-14f4d06c0fbc', '282c7fed-9d36-4aad-b6f4-808761f71fbf', 'f577b40c-af0a-4dfa-a267-df91a01ac10b', '9a014f61-6ae2-4878-aade-c39d985dfd1c', '257aa447-50d6-4136-afd5-3588b93d9092', 'ed014aec-f313-4fb9-9766-dc8bab5de8f3', '16d69293-1f96-4b78-84d2-8adb4ac8c74f', 'b94f7773-0638-4e21-b081-dc7a314035de', 'afdbb338-1199-4e57-9f58-660c9da297b9', 'c30bb333-b903-4461-9dec-9636a58e0aa6', '18c3bdf2-9396-4c63-a096-9e6d48b60bf6', 'af38615d-c15c-46ae-9bf3-ceddab9a4eba', '3125b5e9-f25d-4d51-8445-4abc01e6c544']
+2025-08-24 03:27:50,006 - INFO - Starting grading for 21 transactions
+2025-08-24 03:28:05,848 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+==================================================
+
+=== STEP 1 (Transaction Splitting) RAW OUTPUT ===
+Input transcript: Operator: Hello, welcome to Dairy Queen. Do you have the app? Customer: Oh no, I don't have the app. Thank you though. Operator: What can I get for you? Customer: Can I start with two medium Orange Ju...
+Raw LLM response: {"1":"Operator: Hello, welcome to Dairy Queen. Do you have the app?\nCustomer: Oh no, I don't have the app. Thank you though.\nOperator: What can I get for you?\nCustomer: Can I start with two medium Orange Julius?\nOperator: Okay, anything else?\nCustomer: One large Orange Julius.\nOperator: Okay.\nCustomer: And...\nCustomer: One order of soft pretzel sticks.\nOperator: Okay, so one order is going to be $3.89. Did you want to do two for five?\nCustomer: Yes, please.\nOperator: Alright, anything else?\nCustomer: I want to get a chili cheese dog.\nOperator: Alright, did you just want the chili cheese dog or did you want the combo?\nCustomer: Just the chili cheese dog.\nOperator: Alright, anything else tonight?\nCustomer: That'll do it.\nOperator: It'll be $28.31 at the window.\nCustomer: Thank you.","2":"1","3":"0","4":"0","5":"0","6":"0"}@#&{"1":"Operator: Hi.\nCustomer: Hi.\nOperator: Can I get a mixing blizzard mashup? Medium.\nOperator: A medium mixing bowl, gotcha. Do you want extra cookie dough in that today?\nCustomer: No, not today.\nOperator: Alrighty.\nCustomer: And then can I do an Oreo blizzard as well?\nOperator: A medium mint Oreo, gotcha. Do you want extra Oreo?\nCustomer: No.\nOperator: Alrighty.\nCustomer: And then I would do a Snickers blizzard as well.\nOperator: Gotcha, a medium Snickers. Anything else?\nCustomer: That should do it.\nOperator: Alrighty, $20.58 for you.\nCustomer: Awesome, thanks.","2":"1","3":"0","4":"0","5":"0","6":"0"}@#&{"1":"Operator: Hi.\nCustomer: Hi.\nOperator: Alright, we would like one medium M&M with vanilla ice cream.\nOperator: I'm sorry, could you repeat that?\nCustomer: Yes, one medium M&M with vanilla ice cream, no chocolate syrup.\nOperator: You said no hot fudge or extra?\nCustomer: No hot fudge.\nOperator: Alright, so it's a medium M&M with no chocolate?\nCustomer: Right, with vanilla ice cream.\nOperator: Okay.\nCustomer: And also one medium Snickers.\nOperator: Medium Snickers.\nCustomer: You said that was it?\nOperator: Yep.\nCustomer: $13.72 at the window.","2":"1","3":"0","4":"0","5":"0","6":"0"}
+==================================================
+
+=== STEP 1 (Transaction Splitting) RAW OUTPUT ===
+Input transcript: Operator: Can I please have a small vanilla shake?
+
+Customer: Small vanilla shake?
+
+Operator: Yes, and a small caramel sundae.
+
+Customer: Small caramel sundae. Did you want chopped nuts, whipped cream...
+Raw LLM response: {"1":"Operator: Can I please have a small vanilla shake?\nCustomer: Small vanilla shake?\nOperator: Yes, and a small caramel sundae.\nCustomer: Small caramel sundae. Did you want chopped nuts, whipped cream, or sprinkles on that?\nOperator: That'd be chopped nuts, whipped cream, sprinkles.\nCustomer: Yeah.\nOperator: Sprinkles, please.\nCustomer: Okay, anything else?\nOperator: Yes, ma'am, and a small Heath Blizzard.\nCustomer: Small Heath. Do you want extra Heath in that?\nOperator: No, we're good, thank you.\nCustomer: Alright, anything else tonight?\nOperator: That should do me, hon.\nCustomer: It's gonna be $16.21 at the window.\nOperator: Great, thank you.","2":"1","3":"0","4":"0","5":"0","6":"0"}
+==================================================
+
+=== STEP 1 (Transaction Splitting) RAW OUTPUT ===
+Input transcript: Operator: Hi, welcome to Dairy Queen. What can I get started for you? 
+
+Customer: Hi, we're gonna do a kid twist cone. 
+
+Operator: Kid twist cone, anything else? 
+
+Customer: Yes, and then a medium str...
+Raw LLM response: {"1":"Operator: Hi, welcome to Dairy Queen. What can I get started for you?\nCustomer: Hi, we're gonna do a kid twist cone.\nOperator: Kid twist cone, anything else?\nCustomer: Yes, and then a medium strawberry Julius.\nOperator: Medium strawberry Julius.\nCustomer: And a mini Reese's cup blizzard.\nOperator: Okay.\nCustomer: And a peanut butter parfait.\nOperator: Anything else?\nCustomer: That's it.\nOperator: Alright, your total is going to be $20.35 at the window.","2":"1","3":"0","4":"0","5":"0","6":"0"}
+==================================================
+
+=== STEP 1 (Transaction Splitting) RAW OUTPUT ===
+Input transcript: Operator: Okay, that's ready. Customer: What can I get for you? Operator: Okay, can I get an Oreo blizzard? Customer: Two small. Operator: Two small Oreos? Do you want extra Oreos in those? Customer: ...
+Raw LLM response: {"1":"Operator: Okay, that's ready.\nCustomer: What can I get for you?\nOperator: Okay, can I get an Oreo blizzard?\nCustomer: Two small.\nOperator: Two small Oreos? Do you want extra Oreos in those?\nCustomer: No, thank you.\nOperator: Alright, anything else?\nCustomer: That's it.\nOperator: It'll be $12.19 at the window.\nCustomer: Thank you.","2":"1","3":"0","4":"0","5":"0","6":"0"}@#&{"1":"Operator: Alright, what can I get started for you today?\nCustomer: Can I do one chili cheese sauce?\nOperator: Gotcha.\nCustomer: And a medium mixed bowl of mashed potatoes.\nOperator: Gotcha. Anything else? Do you want extra 50 doughnuts there?\nCustomer: Sure.\nOperator: Gotcha. Anything else?\nCustomer: That's it.\nOperator: Alrighty, $12.62 for you.\nCustomer: Thank you.","2":"1","3":"0","4":"0","5":"0","6":"0"}@#&{"1":"Operator: Look who it is!\nOperator: Alright, what can I get for you?\nCustomer: Hi.\nOperator: No.\nCustomer: I will do a medium Reese's Caramel Craze blizzard.\nOperator: A medium Reese's Caramel Craze, gotcha.\nCustomer: And then a small s'mores blizzard.\nOperator: Gotcha.\nCustomer: And then two puff cups.\nOperator: Two puff cups, is this for dogs today?\nCustomer: Yes.\nOperator: Do you want milk bones and peanut butter on it?\nCustomer: Um, no.\nOperator: No? Alrighty, $17.73 for you.\nCustomer: Thank you.","2":"1","3":"0","4":"0","5":"0","6":"0"}@#&{"1":"Operator: Alright, what can I get for you?\nCustomer: Uh, no.\nOperator: Okay, thank you.\nCustomer: Um, can we please get two, like whatever your classic cheeseburger is?\nOperator: Uh, we don't have any fried food at this location or burgers. We only have hot dogs, chili dogs, and pretzel sticks. We're not a full-time store.\nCustomer: Oh, okay, understood.\nOperator: No, yeah, you're all good.\nCustomer: Uh, no worries about that, but can I just get the...","2":"0","3":"0","4":"0","5":"0","6":"cheeseburger"}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: Can I get a large chocolate brownie extreme blizzard?
+Customer: Yeah, a large chocolate brownie extreme blizzard.
+Operator: No, that's it.
+Customer: Alright, thank you....
+Raw LLM response: {"1": "Large Chocolate Brownie Extreme Blizzard", "2": 1, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 1, "15": "Large Chocolate Brownie Extreme Blizzard", "16": 0, "17": 0, "18": 0, "19": "Large Chocolate Brownie Extreme Blizzard", "20": 1, "21": "The operator efficiently confirmed the customer’s single large Blizzard order but did not attempt any add-on toppings such as extra brownie pieces. Upsizing was not applicable because the customer already requested the largest size, and there were no valid upsell opportunities. Service was prompt but missed a small add-on opportunity.", "22": "Speaker roles seem reversed in the transcript, creating minor ambiguity about who is ordering; treated the final order as a single large Blizzard from the customer."}
+==================================================
+2025-08-24 03:28:47,802 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:29:05,344 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+Parsed JSON: {'1': 'Large Chocolate Brownie Extreme Blizzard', '2': 1, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 1, '15': 'Large Chocolate Brownie Extreme Blizzard', '16': 0, '17': 0, '18': 0, '19': 'Large Chocolate Brownie Extreme Blizzard', '20': 1, '21': 'The operator efficiently confirmed the customer’s single large Blizzard order but did not attempt any add-on toppings such as extra brownie pieces. Upsizing was not applicable because the customer already requested the largest size, and there were no valid upsell opportunities. Service was prompt but missed a small add-on opportunity.', '22': 'Speaker roles seem reversed in the transcript, creating minor ambiguity about who is ordering; treated the final order as a single large Blizzard from the customer.'}
+GPT Price: $21.022000 (input: 4687 tokens, output: 1456 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': 'Large Chocolate Brownie Extreme Blizzard', 'num_items_initial': 1, 'num_upsell_opportunities': 0, 'items_upsellable': 0, 'num_upsell_offers': 0, 'items_upsold': 0, 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': 0, 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 1, 'items_addonable': 'Large Chocolate Brownie Extreme Blizzard', 'num_addon_offers': 0, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': 'Large Chocolate Brownie Extreme Blizzard', 'num_items_after': 1, 'feedback': 'The operator efficiently confirmed the customer’s single large Blizzard order but did not attempt any add-on toppings such as extra brownie pieces. Upsizing was not applicable because the customer already requested the largest size, and there were no valid upsell opportunities. Service was prompt but missed a small add-on opportunity.', 'issues': 'Speaker roles seem reversed in the transcript, creating minor ambiguity about who is ordering; treated the final order as a single large Blizzard from the customer.', 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: No.
+Customer: I'd like to have a medium hot fudge blizzard and a medium chocolate chip cookie dough.
+Operator: Okay.
+Customer: And then the pup cup, just straight vanilla.
+Operator: No peanu...
+Raw LLM response: {"1": "Medium Hot Fudge Blizzard, Medium Chocolate Chip Cookie Dough Blizzard, Pup Cup (Vanilla)", "2": 3, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 3, "15": "Medium Hot Fudge Blizzard, Medium Chocolate Chip Cookie Dough Blizzard, Pup Cup (Vanilla)", "16": 1, "17": 0, "18": 0, "19": "Medium Hot Fudge Blizzard, Medium Chocolate Chip Cookie Dough Blizzard, Pup Cup (Vanilla)", "20": 3, "21": "The employee accurately took the order but made no upsell or upsize attempts on the two Blizzards and only asked about peanut butter for the pup cup, which the customer declined. Numerous sales opportunities were missed.", "22": "Pup cup is not in the provided menu list, so it is unclear whether it is a revenue item or whether the peanut butter question qualifies as a paid topping offer."}
+==================================================
+Parsed JSON: {'1': 'Medium Hot Fudge Blizzard, Medium Chocolate Chip Cookie Dough Blizzard, Pup Cup (Vanilla)', '2': 3, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 3, '15': 'Medium Hot Fudge Blizzard, Medium Chocolate Chip Cookie Dough Blizzard, Pup Cup (Vanilla)', '16': 1, '17': 0, '18': 0, '19': 'Medium Hot Fudge Blizzard, Medium Chocolate Chip Cookie Dough Blizzard, Pup Cup (Vanilla)', '20': 3, '21': 'The employee accurately took the order but made no upsell or upsize attempts on the two Blizzards and only asked about peanut butter for the pup cup, which the customer declined. Numerous sales opportunities were missed.', '22': 'Pup cup is not in the provided menu list, so it is unclear whether it is a revenue item or whether the peanut butter question qualifies as a paid topping offer.'}
+GPT Price: $37.166000 (input: 4731 tokens, output: 3463 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': 'Medium Hot Fudge Blizzard, Medium Chocolate Chip Cookie Dough Blizzard, Pup Cup (Vanilla)', 'num_items_initial': 3, 'num_upsell_opportunities': 0, 'items_upsellable': 0, 'num_upsell_offers': 0, 'items_upsold': 0, 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': 0, 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 3, 'items_addonable': 'Medium Hot Fudge Blizzard, Medium Chocolate Chip Cookie Dough Blizzard, Pup Cup (Vanilla)', 'num_addon_offers': 1, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': 'Medium Hot Fudge Blizzard, Medium Chocolate Chip Cookie Dough Blizzard, Pup Cup (Vanilla)', 'num_items_after': 3, 'feedback': 'The employee accurately took the order but made no upsell or upsize attempts on the two Blizzards and only asked about peanut butter for the pup cup, which the customer declined. Numerous sales opportunities were missed.', 'issues': 'Pup cup is not in the provided menu list, so it is unclear whether it is a revenue item or whether the peanut butter question qualifies as a paid topping offer.', 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: Hello, welcome to Burger King, what can I get started for you?
+Customer: Can I get a medium Kit Kat?
+Operator: Gotcha, do you want extra anything on that today?
+Customer: No.
+Operator: Alrig...
+Raw LLM response: {"1": "Medium Kit Kat Blizzard", "2": 1, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 1, "15": "Blizzard", "16": 1, "17": 0, "18": 0, "19": "Medium Kit Kat Blizzard", "20": 1, "21": "Agent greeted promptly and confirmed the single order. They attempted an add-on by asking if the customer wanted extra toppings, but did not pursue any upselling or upsizing opportunities, missing a chance to offer a large Blizzard. Overall service was clear but could improve revenue opportunities by consistently suggesting size upgrades and combo promotions where appropriate.", "22": "Transcript labels the location as Burger King while evaluation criteria pertain to Dairy Queen, causing potential item confusion. The product 'medium Kit Kat' was interpreted as a Kit Kat Blizzard; if it were another product, some counts could differ. No explicit upsell scenarios for Blizzards beyond toppings created ambiguity in counting upsell chances."}
+==================================================
+2025-08-24 03:29:46,727 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:30:03,042 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+Parsed JSON: {'1': 'Medium Kit Kat Blizzard', '2': 1, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 1, '15': 'Blizzard', '16': 1, '17': 0, '18': 0, '19': 'Medium Kit Kat Blizzard', '20': 1, '21': 'Agent greeted promptly and confirmed the single order. They attempted an add-on by asking if the customer wanted extra toppings, but did not pursue any upselling or upsizing opportunities, missing a chance to offer a large Blizzard. Overall service was clear but could improve revenue opportunities by consistently suggesting size upgrades and combo promotions where appropriate.', '22': "Transcript labels the location as Burger King while evaluation criteria pertain to Dairy Queen, causing potential item confusion. The product 'medium Kit Kat' was interpreted as a Kit Kat Blizzard; if it were another product, some counts could differ. No explicit upsell scenarios for Blizzards beyond toppings created ambiguity in counting upsell chances."}
+GPT Price: $18.800000 (input: 4724 tokens, output: 1169 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': 'Medium Kit Kat Blizzard', 'num_items_initial': 1, 'num_upsell_opportunities': 0, 'items_upsellable': 0, 'num_upsell_offers': 0, 'items_upsold': 0, 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': 0, 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 1, 'items_addonable': 'Blizzard', 'num_addon_offers': 1, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': 'Medium Kit Kat Blizzard', 'num_items_after': 1, 'feedback': 'Agent greeted promptly and confirmed the single order. They attempted an add-on by asking if the customer wanted extra toppings, but did not pursue any upselling or upsizing opportunities, missing a chance to offer a large Blizzard. Overall service was clear but could improve revenue opportunities by consistently suggesting size upgrades and combo promotions where appropriate.', 'issues': "Transcript labels the location as Burger King while evaluation criteria pertain to Dairy Queen, causing potential item confusion. The product 'medium Kit Kat' was interpreted as a Kit Kat Blizzard; if it were another product, some counts could differ. No explicit upsell scenarios for Blizzards beyond toppings created ambiguity in counting upsell chances.", 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: Hi, welcome to Burger King, what can I get started for you?
+Customer: Hi, can I get a medium cone chocolate and vanilla twist, and can I get a pup cup, no peanut butter?
+Operator: Gotcha, an...
+Raw LLM response: {"1": "Medium Twist Cone, Pup Cup", "2": 2, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 1, "15": "Twist Cone", "16": 0, "17": 0, "18": 0, "19": "Medium Twist Cone, Pup Cup", "20": 2, "21": "Operator was polite and efficient but made no specific attempts to upsell, upsize, or add toppings. A valid add-on opportunity existed for sprinkles on the twist cone, yet no offer was presented. Overall, the interaction was smooth but lacking in sales initiative.", "22": "Ambiguity on whether the generic prompt anything else counts as an upsell offer; unclear if pup cup is considered a priced item or free treat; operator identified as Burger King while metrics are Dairy Queen specific."}
+==================================================
+Parsed JSON: {'1': 'Medium Twist Cone, Pup Cup', '2': 2, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 1, '15': 'Twist Cone', '16': 0, '17': 0, '18': 0, '19': 'Medium Twist Cone, Pup Cup', '20': 2, '21': 'Operator was polite and efficient but made no specific attempts to upsell, upsize, or add toppings. A valid add-on opportunity existed for sprinkles on the twist cone, yet no offer was presented. Overall, the interaction was smooth but lacking in sales initiative.', '22': 'Ambiguity on whether the generic prompt anything else counts as an upsell offer; unclear if pup cup is considered a priced item or free treat; operator identified as Burger King while metrics are Dairy Queen specific.'}
+GPT Price: $28.800000 (input: 4724 tokens, output: 2419 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': 'Medium Twist Cone, Pup Cup', 'num_items_initial': 2, 'num_upsell_opportunities': 0, 'items_upsellable': 0, 'num_upsell_offers': 0, 'items_upsold': 0, 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': 0, 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 1, 'items_addonable': 'Twist Cone', 'num_addon_offers': 0, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': 'Medium Twist Cone, Pup Cup', 'num_items_after': 2, 'feedback': 'Operator was polite and efficient but made no specific attempts to upsell, upsize, or add toppings. A valid add-on opportunity existed for sprinkles on the twist cone, yet no offer was presented. Overall, the interaction was smooth but lacking in sales initiative.', 'issues': 'Ambiguity on whether the generic prompt anything else counts as an upsell offer; unclear if pup cup is considered a priced item or free treat; operator identified as Burger King while metrics are Dairy Queen specific.', 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: Hi, welcome. What can I get for you?
+Customer: Can I get a brownie and Oreo confection?
+Operator: Is that a brownie and Oreo confection?
+Customer: Yep, and then I'll get a caramel brownie co...
+Raw LLM response: {"1": "Brownie and Oreo Cupfection, Caramel Brownie Cupfection", "2": 2, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 2, "15": "Cupfection (Brownie and Oreo), Cupfection (Caramel Brownie)", "16": 0, "17": 0, "18": 0, "19": "Brownie and Oreo Cupfection, Caramel Brownie Cupfection", "20": 2, "21": "Operator greeted the customer and confirmed both Cupfection orders accurately but did not offer any add-on toppings, missing two revenue opportunities. No upsizing or upselling chances existed, so service was satisfactory but not sales focused.", "22": "Cupfection topping opportunities are not explicitly described in the transcript, so evaluation of missed add ons relies on general menu guidance."}
+==================================================
+Parsed JSON: {'1': 'Brownie and Oreo Cupfection, Caramel Brownie Cupfection', '2': 2, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 2, '15': 'Cupfection (Brownie and Oreo), Cupfection (Caramel Brownie)', '16': 0, '17': 0, '18': 0, '19': 'Brownie and Oreo Cupfection, Caramel Brownie Cupfection', '20': 2, '21': 'Operator greeted the customer and confirmed both Cupfection orders accurately but did not offer any add-on toppings, missing two revenue opportunities. No upsizing or upselling chances existed, so service was satisfactory but not sales focused.', '22': 'Cupfection topping opportunities are not explicitly described in the transcript, so evaluation of missed add ons relies on general menu guidance.'}
+GPT Price: $25.710000 (input: 4723 tokens, output: 2033 tokens)
+==================================================
+2025-08-24 03:30:42,378 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:31:00,311 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:31:18,288 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': 'Brownie and Oreo Cupfection, Caramel Brownie Cupfection', 'num_items_initial': 2, 'num_upsell_opportunities': 0, 'items_upsellable': 0, 'num_upsell_offers': 0, 'items_upsold': 0, 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': 0, 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 2, 'items_addonable': 'Cupfection (Brownie and Oreo), Cupfection (Caramel Brownie)', 'num_addon_offers': 0, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': 'Brownie and Oreo Cupfection, Caramel Brownie Cupfection', 'num_items_after': 2, 'feedback': 'Operator greeted the customer and confirmed both Cupfection orders accurately but did not offer any add-on toppings, missing two revenue opportunities. No upsizing or upselling chances existed, so service was satisfactory but not sales focused.', 'issues': 'Cupfection topping opportunities are not explicitly described in the transcript, so evaluation of missed add ons relies on general menu guidance.', 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: Hi, what can I get for you?
+Customer: I'd like a classic hot dog.
+Operator: Do you want anything on that hot dog?
+Customer: Just ketchup and mustard.
+Operator: Alright, and did you just want...
+Raw LLM response: {"1": "Hot Dog, Royal Reese's Fluffernutter Blizzard", "2": 2, "3": 1, "4": "Hot Dog", "5": 1, "6": "Hot Dog to Hot Dog Combo", "7": 1, "8": 1, "9": 2, "10": "Chips, Blizzard", "11": 1, "12": 1, "13": "Chips to Pretzel Sticks", "14": 1, "15": "Blizzard", "16": 0, "17": 0, "18": 0, "19": "Hot Dog Combo (Hot Dog, Pretzel Sticks, Bottled Water), Small Royal Reese's Fluffernutter Blizzard", "20": 4, "21": "Operator successfully converted a combo upsell on the hot dog and executed a valid side upsize to pretzel sticks. Missed offering the large size for the blizzard and did not suggest toppings. Solid performance on primary upsell but some revenue left on the table.", "22": "Ambiguity on whether pretzel sticks are an upsize versus a separate premium side and on whether bottled water is sized; counted pretzel sticks as a valid side upsize and water as a single-size drink so no drink upsize chance."}
+==================================================
+Parsed JSON: {'1': "Hot Dog, Royal Reese's Fluffernutter Blizzard", '2': 2, '3': 1, '4': 'Hot Dog', '5': 1, '6': 'Hot Dog to Hot Dog Combo', '7': 1, '8': 1, '9': 2, '10': 'Chips, Blizzard', '11': 1, '12': 1, '13': 'Chips to Pretzel Sticks', '14': 1, '15': 'Blizzard', '16': 0, '17': 0, '18': 0, '19': "Hot Dog Combo (Hot Dog, Pretzel Sticks, Bottled Water), Small Royal Reese's Fluffernutter Blizzard", '20': 4, '21': 'Operator successfully converted a combo upsell on the hot dog and executed a valid side upsize to pretzel sticks. Missed offering the large size for the blizzard and did not suggest toppings. Solid performance on primary upsell but some revenue left on the table.', '22': 'Ambiguity on whether pretzel sticks are an upsize versus a separate premium side and on whether bottled water is sized; counted pretzel sticks as a valid side upsize and water as a single-size drink so no drink upsize chance.'}
+GPT Price: $41.242000 (input: 4877 tokens, output: 3936 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': "Hot Dog, Royal Reese's Fluffernutter Blizzard", 'num_items_initial': 2, 'num_upsell_opportunities': 1, 'items_upsellable': 'Hot Dog', 'num_upsell_offers': 1, 'items_upsold': 'Hot Dog to Hot Dog Combo', 'num_upsell_success': 1, 'num_largest_offers': 1, 'num_upsize_opportunities': 2, 'items_upsizeable': 'Chips, Blizzard', 'num_upsize_offers': 1, 'num_upsize_success': 1, 'items_upsize_success': 'Chips to Pretzel Sticks', 'num_addon_opportunities': 1, 'items_addonable': 'Blizzard', 'num_addon_offers': 0, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': "Hot Dog Combo (Hot Dog, Pretzel Sticks, Bottled Water), Small Royal Reese's Fluffernutter Blizzard", 'num_items_after': 4, 'feedback': 'Operator successfully converted a combo upsell on the hot dog and executed a valid side upsize to pretzel sticks. Missed offering the large size for the blizzard and did not suggest toppings. Solid performance on primary upsell but some revenue left on the table.', 'issues': 'Ambiguity on whether pretzel sticks are an upsize versus a separate premium side and on whether bottled water is sized; counted pretzel sticks as a valid side upsize and water as a single-size drink so no drink upsize chance.', 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: Hi, what can I get for you?
+Customer: Um, just a second please.
+Operator: No worries, take your time.
+Customer: Okay, I'm ready.
+Operator: What can I get for you?
+Customer: Can I please have...
+Raw LLM response: {"1":"Brownie and Oreo Cupfection","2":1,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":1,"15":"Brownie and Oreo Cupfection","16":0,"17":0,"18":0,"19":"Brownie and Oreo Cupfection","20":1,"21":"Operator was polite and efficient, confirmed DoorDash pickup, but did not attempt any add-on sale such as extra toppings for the Cupfection; no upsell or upsize opportunities were applicable.","22":"Slight ambiguity on whether Cupfection allows add-on toppings, but menu indicates it does; no other conflicts."}
+==================================================
+Parsed JSON: {'1': 'Brownie and Oreo Cupfection', '2': 1, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 1, '15': 'Brownie and Oreo Cupfection', '16': 0, '17': 0, '18': 0, '19': 'Brownie and Oreo Cupfection', '20': 1, '21': 'Operator was polite and efficient, confirmed DoorDash pickup, but did not attempt any add-on sale such as extra toppings for the Cupfection; no upsell or upsize opportunities were applicable.', '22': 'Slight ambiguity on whether Cupfection allows add-on toppings, but menu indicates it does; no other conflicts.'}
+GPT Price: $24.168000 (input: 4752 tokens, output: 1833 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 1, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': 'Brownie and Oreo Cupfection', 'num_items_initial': 1, 'num_upsell_opportunities': 0, 'items_upsellable': 0, 'num_upsell_offers': 0, 'items_upsold': 0, 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': 0, 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 1, 'items_addonable': 'Brownie and Oreo Cupfection', 'num_addon_offers': 0, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': 'Brownie and Oreo Cupfection', 'num_items_after': 1, 'feedback': 'Operator was polite and efficient, confirmed DoorDash pickup, but did not attempt any add-on sale such as extra toppings for the Cupfection; no upsell or upsize opportunities were applicable.', 'issues': 'Slight ambiguity on whether Cupfection allows add-on toppings, but menu indicates it does; no other conflicts.', 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: Hi, welcome to Dairy Queen. What can I get for you?
+Customer: Can I do a banana split?
+Operator: Banana split, anything else?
+Customer: Nope, that's it.
+Operator: That'll be $6.86 at the win...
+2025-08-24 03:31:37,054 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:31:55,154 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+Raw LLM response: {"1": "Banana Split", "2": 1, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 0, "15": 0, "16": 0, "17": 0, "18": 0, "19": "Banana Split", "20": 1, "21": "Operator efficiently took the order but did not attempt any upsell or upsize. While banana split may not fit standard promotions, operator could have suggested an added topping or beverage to grow the sale.", "22": "Banana Split not explicitly defined in reference menu so its upsell or upsize eligibility was unclear; assumed it is a single size item with no upsell opportunities."}
+==================================================
+Parsed JSON: {'1': 'Banana Split', '2': 1, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 0, '15': 0, '16': 0, '17': 0, '18': 0, '19': 'Banana Split', '20': 1, '21': 'Operator efficiently took the order but did not attempt any upsell or upsize. While banana split may not fit standard promotions, operator could have suggested an added topping or beverage to grow the sale.', '22': 'Banana Split not explicitly defined in reference menu so its upsell or upsize eligibility was unclear; assumed it is a single size item with no upsell opportunities.'}
+GPT Price: $22.352000 (input: 4700 tokens, output: 1619 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': 'Banana Split', 'num_items_initial': 1, 'num_upsell_opportunities': 0, 'items_upsellable': 0, 'num_upsell_offers': 0, 'items_upsold': 0, 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': 0, 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 0, 'items_addonable': 0, 'num_addon_offers': 0, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': 'Banana Split', 'num_items_after': 1, 'feedback': 'Operator efficiently took the order but did not attempt any upsell or upsize. While banana split may not fit standard promotions, operator could have suggested an added topping or beverage to grow the sale.', 'issues': 'Banana Split not explicitly defined in reference menu so its upsell or upsize eligibility was unclear; assumed it is a single size item with no upsell opportunities.', 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: Can I just have a plain kid's vanilla blizzard?
+Customer: You just want a mini blizzard, just vanilla?
+Operator: Just vanilla.
+Customer: Anything else?
+Operator: No.
+Customer: So it's just t...
+Raw LLM response: {"1": "Kid's Vanilla Blizzard", "2": 1, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 1, "15": "Kid's Vanilla Blizzard", "16": 0, "17": 0, "18": 0, "19": "Kid's Vanilla Blizzard", "20": 1, "21": "Customer ordered a Kid's vanilla Blizzard and the employee only confirmed the order without offering any upsell, upsize, or additional toppings, missing clear opportunities to suggest a larger size or mix-ins. Clarification was given but no suggestive selling occurred; ensure future interactions include appropriate offers.", "22": "Role labels appear swapped, requiring interpretation that Operator lines represent the customer. Because the customer explicitly requested the Kid's size, Scenario 18 applies, meaning no upsize chance was counted. An add-on chance was counted for the Blizzard even though not explicitly detailed in scenarios, based on the general menu guidance."}
+==================================================
+Parsed JSON: {'1': "Kid's Vanilla Blizzard", '2': 1, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 1, '15': "Kid's Vanilla Blizzard", '16': 0, '17': 0, '18': 0, '19': "Kid's Vanilla Blizzard", '20': 1, '21': "Customer ordered a Kid's vanilla Blizzard and the employee only confirmed the order without offering any upsell, upsize, or additional toppings, missing clear opportunities to suggest a larger size or mix-ins. Clarification was given but no suggestive selling occurred; ensure future interactions include appropriate offers.", '22': "Role labels appear swapped, requiring interpretation that Operator lines represent the customer. Because the customer explicitly requested the Kid's size, Scenario 18 applies, meaning no upsize chance was counted. An add-on chance was counted for the Blizzard even though not explicitly detailed in scenarios, based on the general menu guidance."}
+GPT Price: $22.310000 (input: 4723 tokens, output: 1608 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': "Kid's Vanilla Blizzard", 'num_items_initial': 1, 'num_upsell_opportunities': 0, 'items_upsellable': 0, 'num_upsell_offers': 0, 'items_upsold': 0, 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': 0, 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 1, 'items_addonable': "Kid's Vanilla Blizzard", 'num_addon_offers': 0, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': "Kid's Vanilla Blizzard", 'num_items_after': 1, 'feedback': "Customer ordered a Kid's vanilla Blizzard and the employee only confirmed the order without offering any upsell, upsize, or additional toppings, missing clear opportunities to suggest a larger size or mix-ins. Clarification was given but no suggestive selling occurred; ensure future interactions include appropriate offers.", 'issues': "Role labels appear swapped, requiring interpretation that Operator lines represent the customer. Because the customer explicitly requested the Kid's size, Scenario 18 applies, meaning no upsize chance was counted. An add-on chance was counted for the Blizzard even though not explicitly detailed in scenarios, based on the general menu guidance.", 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Customer: Can I just get a banana split?
+Operator: Anything else?
+Customer: No, that's it.
+Operator: 360 at the window....
+Raw LLM response: {"1": "Banana Split", "2": 1, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 0, "15": 0, "16": 0, "17": 0, "18": 0, "19": "Banana Split", "20": 1, "21": "Operator was polite and closed the order quickly but did not attempt any suggestive selling; could have recommended additional dessert items, drinks, or toppings to increase ticket.", "22": "Banana split not listed in provided menu tables so unclear if upsize or topping opportunities apply; assumed one size and no standard upsell path."}
+==================================================
+Parsed JSON: {'1': 'Banana Split', '2': 1, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 0, '15': 0, '16': 0, '17': 0, '18': 0, '19': 'Banana Split', '20': 1, '21': 'Operator was polite and closed the order quickly but did not attempt any suggestive selling; could have recommended additional dessert items, drinks, or toppings to increase ticket.', '22': 'Banana split not listed in provided menu tables so unclear if upsize or topping opportunities apply; assumed one size and no standard upsell path.'}
+GPT Price: $18.634000 (input: 4677 tokens, output: 1160 tokens)
+==================================================
+2025-08-24 03:32:13,179 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:32:37,516 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:33:19,220 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': 'Banana Split', 'num_items_initial': 1, 'num_upsell_opportunities': 0, 'items_upsellable': 0, 'num_upsell_offers': 0, 'items_upsold': 0, 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': 0, 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 0, 'items_addonable': 0, 'num_addon_offers': 0, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': 'Banana Split', 'num_items_after': 1, 'feedback': 'Operator was polite and closed the order quickly but did not attempt any suggestive selling; could have recommended additional dessert items, drinks, or toppings to increase ticket.', 'issues': 'Banana split not listed in provided menu tables so unclear if upsize or topping opportunities apply; assumed one size and no standard upsell path.', 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Customer: I need two mini blizzards, chocolate brownie extreme with chocolate ice cream.
+Operator: You said two mini chocolate brownie extremes with chocolate ice cream?
+Customer: Correct.
+Operator: A...
+Raw LLM response: {"1": "2 Mini Chocolate Brownie Extreme Blizzards (Chocolate Ice Cream)", "2": 2, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 2, "15": "Mini Chocolate Brownie Extreme Blizzard (Chocolate Ice Cream)", "16": 0, "17": 0, "18": 0, "19": "2 Mini Chocolate Brownie Extreme Blizzards (Chocolate Ice Cream)", "20": 2, "21": "Operator confirmed the order clearly but made no offers for additional toppings that could enhance the ticket. Since the customer specified Mini size, no upsizing chance existed, but offering add ins such as extra brownie pieces would have been appropriate.", "22": "Mini size is not listed in provided size table, so treated as a specific size resulting in no upsizing chance. Assumed Blizzards allow add on topping offers despite no explicit example."}
+==================================================
+Parsed JSON: {'1': '2 Mini Chocolate Brownie Extreme Blizzards (Chocolate Ice Cream)', '2': 2, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 2, '15': 'Mini Chocolate Brownie Extreme Blizzard (Chocolate Ice Cream)', '16': 0, '17': 0, '18': 0, '19': '2 Mini Chocolate Brownie Extreme Blizzards (Chocolate Ice Cream)', '20': 2, '21': 'Operator confirmed the order clearly but made no offers for additional toppings that could enhance the ticket. Since the customer specified Mini size, no upsizing chance existed, but offering add ins such as extra brownie pieces would have been appropriate.', '22': 'Mini size is not listed in provided size table, so treated as a specific size resulting in no upsizing chance. Assumed Blizzards allow add on topping offers despite no explicit example.'}
+GPT Price: $23.706000 (input: 4705 tokens, output: 1787 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': '2 Mini Chocolate Brownie Extreme Blizzards (Chocolate Ice Cream)', 'num_items_initial': 2, 'num_upsell_opportunities': 0, 'items_upsellable': 0, 'num_upsell_offers': 0, 'items_upsold': 0, 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': 0, 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 2, 'items_addonable': 'Mini Chocolate Brownie Extreme Blizzard (Chocolate Ice Cream)', 'num_addon_offers': 0, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': '2 Mini Chocolate Brownie Extreme Blizzards (Chocolate Ice Cream)', 'num_items_after': 2, 'feedback': 'Operator confirmed the order clearly but made no offers for additional toppings that could enhance the ticket. Since the customer specified Mini size, no upsizing chance existed, but offering add ins such as extra brownie pieces would have been appropriate.', 'issues': 'Mini size is not listed in provided size table, so treated as a specific size resulting in no upsizing chance. Assumed Blizzards allow add on topping offers despite no explicit example.', 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: Yeah, what can I get for you?
+Customer: Yeah, could you have some like cake in a cup, like the little mini ice cream cake in a cup?
+Operator: Uh, the cupcake?
+Customer: Yeah.
+Operator: Yeah,...
+Raw LLM response: {"1": "Cupcake, Medium Royal New York Cheesecake Blizzard", "2": 2, "3": 0, "4": "0", "5": 0, "6": "0", "7": 0, "8": 0, "9": 0, "10": "0", "11": 0, "12": 0, "13": "0", "14": 2, "15": "Cupcake, Medium Royal New York Cheesecake Blizzard", "16": 0, "17": 0, "18": "0", "19": "Cupcake, Medium Royal New York Cheesecake Blizzard", "20": 2, "21": "Operator was polite and efficient but did not attempt any upselling, upsizing, or additional topping offers, missing two add-on opportunities for the Cupcake and the Blizzard.", "22": "Cupcake item is not explicitly listed; treated it as a one-size Cupfection with topping opportunity, which may not perfectly match store policy."}
+==================================================
+Parsed JSON: {'1': 'Cupcake, Medium Royal New York Cheesecake Blizzard', '2': 2, '3': 0, '4': '0', '5': 0, '6': '0', '7': 0, '8': 0, '9': 0, '10': '0', '11': 0, '12': 0, '13': '0', '14': 2, '15': 'Cupcake, Medium Royal New York Cheesecake Blizzard', '16': 0, '17': 0, '18': '0', '19': 'Cupcake, Medium Royal New York Cheesecake Blizzard', '20': 2, '21': 'Operator was polite and efficient but did not attempt any upselling, upsizing, or additional topping offers, missing two add-on opportunities for the Cupcake and the Blizzard.', '22': 'Cupcake item is not explicitly listed; treated it as a one-size Cupfection with topping opportunity, which may not perfectly match store policy.'}
+GPT Price: $27.790000 (input: 4799 tokens, output: 2274 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': 'Cupcake, Medium Royal New York Cheesecake Blizzard', 'num_items_initial': 2, 'num_upsell_opportunities': 0, 'items_upsellable': '0', 'num_upsell_offers': 0, 'items_upsold': '0', 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': '0', 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': '0', 'num_addon_opportunities': 2, 'items_addonable': 'Cupcake, Medium Royal New York Cheesecake Blizzard', 'num_addon_offers': 0, 'num_addon_success': 0, 'items_addon_success': '0', 'items_after': 'Cupcake, Medium Royal New York Cheesecake Blizzard', 'num_items_after': 2, 'feedback': 'Operator was polite and efficient but did not attempt any upselling, upsizing, or additional topping offers, missing two add-on opportunities for the Cupcake and the Blizzard.', 'issues': 'Cupcake item is not explicitly listed; treated it as a one-size Cupfection with topping opportunity, which may not perfectly match store policy.', 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: Hello, welcome to Dairy Queen. Do you have the app?
+Customer: Oh no, I don't have the app. Thank you though.
+Operator: What can I get for you?
+Customer: Can I start with two medium Orange Ju...
+2025-08-24 03:33:56,370 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:34:16,853 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+Raw LLM response: {"1": "2 Medium Orange Julius, 1 Large Orange Julius, 1 Soft Pretzel Sticks, 1 Chili Cheese Dog", "2": 5, "3": 2, "4": "Soft Pretzel Sticks, Chili Cheese Dog", "5": 2, "6": "Soft Pretzel Sticks", "7": 1, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 0, "15": 0, "16": 0, "17": 0, "18": 0, "19": "2 Medium Orange Julius, 1 Large Orange Julius, 2 Soft Pretzel Sticks, 1 Chili Cheese Dog", "20": 6, "21": "The operator recognized both upselling chances, successfully converting the pretzel order into the 2-for-5 promotion and offering (but not forcing) the chili cheese dog combo. No legitimate upsizing or topping opportunities were missed, resulting in a solid, customer-focused interaction.", "22": "Uncertainty over which item completed the 2-for-5 deal; assumed a second pretzel order to match the operator’s pricing reference."}
+==================================================
+Parsed JSON: {'1': '2 Medium Orange Julius, 1 Large Orange Julius, 1 Soft Pretzel Sticks, 1 Chili Cheese Dog', '2': 5, '3': 2, '4': 'Soft Pretzel Sticks, Chili Cheese Dog', '5': 2, '6': 'Soft Pretzel Sticks', '7': 1, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 0, '15': 0, '16': 0, '17': 0, '18': 0, '19': '2 Medium Orange Julius, 1 Large Orange Julius, 2 Soft Pretzel Sticks, 1 Chili Cheese Dog', '20': 6, '21': 'The operator recognized both upselling chances, successfully converting the pretzel order into the 2-for-5 promotion and offering (but not forcing) the chili cheese dog combo. No legitimate upsizing or topping opportunities were missed, resulting in a solid, customer-focused interaction.', '22': 'Uncertainty over which item completed the 2-for-5 deal; assumed a second pretzel order to match the operator’s pricing reference.'}
+GPT Price: $39.040000 (input: 4840 tokens, output: 3670 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': '2 Medium Orange Julius, 1 Large Orange Julius, 1 Soft Pretzel Sticks, 1 Chili Cheese Dog', 'num_items_initial': 5, 'num_upsell_opportunities': 2, 'items_upsellable': 'Soft Pretzel Sticks, Chili Cheese Dog', 'num_upsell_offers': 2, 'items_upsold': 'Soft Pretzel Sticks', 'num_upsell_success': 1, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': 0, 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 0, 'items_addonable': 0, 'num_addon_offers': 0, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': '2 Medium Orange Julius, 1 Large Orange Julius, 2 Soft Pretzel Sticks, 1 Chili Cheese Dog', 'num_items_after': 6, 'feedback': 'The operator recognized both upselling chances, successfully converting the pretzel order into the 2-for-5 promotion and offering (but not forcing) the chili cheese dog combo. No legitimate upsizing or topping opportunities were missed, resulting in a solid, customer-focused interaction.', 'issues': 'Uncertainty over which item completed the 2-for-5 deal; assumed a second pretzel order to match the operator’s pricing reference.', 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: Hi.
+Customer: Hi.
+Operator: Can I get a mixing blizzard mashup? Medium.
+Operator: A medium mixing bowl, gotcha. Do you want extra cookie dough in that today?
+Customer: No, not today.
+Operato...
+Raw LLM response: {"1": "Medium Mixing Blizzard Mashup, Oreo Blizzard, Snickers Blizzard", "2": 3, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 2, "10": "Oreo Blizzard, Snickers Blizzard", "11": 0, "12": 0, "13": 0, "14": 3, "15": "Medium Mixing Blizzard Mashup, Oreo Blizzard, Snickers Blizzard", "16": 2, "17": 0, "18": 0, "19": "Medium Mixing Blizzard Mashup, Medium Oreo Blizzard, Medium Snickers Blizzard", "20": 3, "21": "Operator greeted and repeated orders clearly. Offered additional toppings for first two Blizzards, showing some suggestive selling effort. However failed to capitalize on two valid upsizing opportunities for Oreo and Snickers Blizzards and did not offer toppings on third Blizzard. No upsell opportunities existed, but add-on consistency and upsizing prompts should be improved.", "22": "Transcript labels mix up speaker roles, requiring inference to identify customer requests versus operator responses. Ambiguity around the term mixing blizzard mashup but treated as a standard Blizzard for scoring."}
+==================================================
+Parsed JSON: {'1': 'Medium Mixing Blizzard Mashup, Oreo Blizzard, Snickers Blizzard', '2': 3, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 2, '10': 'Oreo Blizzard, Snickers Blizzard', '11': 0, '12': 0, '13': 0, '14': 3, '15': 'Medium Mixing Blizzard Mashup, Oreo Blizzard, Snickers Blizzard', '16': 2, '17': 0, '18': 0, '19': 'Medium Mixing Blizzard Mashup, Medium Oreo Blizzard, Medium Snickers Blizzard', '20': 3, '21': 'Operator greeted and repeated orders clearly. Offered additional toppings for first two Blizzards, showing some suggestive selling effort. However failed to capitalize on two valid upsizing opportunities for Oreo and Snickers Blizzards and did not offer toppings on third Blizzard. No upsell opportunities existed, but add-on consistency and upsizing prompts should be improved.', '22': 'Transcript labels mix up speaker roles, requiring inference to identify customer requests versus operator responses. Ambiguity around the term mixing blizzard mashup but treated as a standard Blizzard for scoring.'}
+GPT Price: $26.704000 (input: 4796 tokens, output: 2139 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': 'Medium Mixing Blizzard Mashup, Oreo Blizzard, Snickers Blizzard', 'num_items_initial': 3, 'num_upsell_opportunities': 0, 'items_upsellable': 0, 'num_upsell_offers': 0, 'items_upsold': 0, 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 2, 'items_upsizeable': 'Oreo Blizzard, Snickers Blizzard', 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 3, 'items_addonable': 'Medium Mixing Blizzard Mashup, Oreo Blizzard, Snickers Blizzard', 'num_addon_offers': 2, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': 'Medium Mixing Blizzard Mashup, Medium Oreo Blizzard, Medium Snickers Blizzard', 'num_items_after': 3, 'feedback': 'Operator greeted and repeated orders clearly. Offered additional toppings for first two Blizzards, showing some suggestive selling effort. However failed to capitalize on two valid upsizing opportunities for Oreo and Snickers Blizzards and did not offer toppings on third Blizzard. No upsell opportunities existed, but add-on consistency and upsizing prompts should be improved.', 'issues': 'Transcript labels mix up speaker roles, requiring inference to identify customer requests versus operator responses. Ambiguity around the term mixing blizzard mashup but treated as a standard Blizzard for scoring.', 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: Hi.
+Customer: Hi.
+Operator: Alright, we would like one medium M&M with vanilla ice cream.
+Operator: I'm sorry, could you repeat that?
+Customer: Yes, one medium M&M with vanilla ice cream, no...
+2025-08-24 03:34:53,680 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:35:29,132 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+Raw LLM response: {"1": "Medium M&M Blizzard, Medium Snickers Blizzard", "2": 2, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 2, "15": "M&M Blizzard, Snickers Blizzard", "16": 0, "17": 0, "18": 0, "19": "Medium M&M Blizzard, Medium Snickers Blizzard", "20": 2, "21": "Operator accurately repeated the customer’s order but did not attempt any upsells, did not offer additional toppings, and did not attempt to upsize the Blizzards. Polite service but missed all sales opportunities.", "22": "Uncertainty whether the phrase 'no hot fudge or extra?' should count as an offer for extra toppings; treated as simple clarification because it mirrored the customer’s request rather than proposing an addition. Upsizing chance excluded since the customer specified medium sizes per scenario 18."}
+==================================================
+Parsed JSON: {'1': 'Medium M&M Blizzard, Medium Snickers Blizzard', '2': 2, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 2, '15': 'M&M Blizzard, Snickers Blizzard', '16': 0, '17': 0, '18': 0, '19': 'Medium M&M Blizzard, Medium Snickers Blizzard', '20': 2, '21': 'Operator accurately repeated the customer’s order but did not attempt any upsells, did not offer additional toppings, and did not attempt to upsize the Blizzards. Polite service but missed all sales opportunities.', '22': "Uncertainty whether the phrase 'no hot fudge or extra?' should count as an offer for extra toppings; treated as simple clarification because it mirrored the customer’s request rather than proposing an addition. Upsizing chance excluded since the customer specified medium sizes per scenario 18."}
+GPT Price: $26.424000 (input: 4780 tokens, output: 2108 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': 'Medium M&M Blizzard, Medium Snickers Blizzard', 'num_items_initial': 2, 'num_upsell_opportunities': 0, 'items_upsellable': 0, 'num_upsell_offers': 0, 'items_upsold': 0, 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': 0, 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 2, 'items_addonable': 'M&M Blizzard, Snickers Blizzard', 'num_addon_offers': 0, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': 'Medium M&M Blizzard, Medium Snickers Blizzard', 'num_items_after': 2, 'feedback': 'Operator accurately repeated the customer’s order but did not attempt any upsells, did not offer additional toppings, and did not attempt to upsize the Blizzards. Polite service but missed all sales opportunities.', 'issues': "Uncertainty whether the phrase 'no hot fudge or extra?' should count as an offer for extra toppings; treated as simple clarification because it mirrored the customer’s request rather than proposing an addition. Upsizing chance excluded since the customer specified medium sizes per scenario 18.", 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: Can I please have a small vanilla shake?
+Customer: Small vanilla shake?
+Operator: Yes, and a small caramel sundae.
+Customer: Small caramel sundae. Did you want chopped nuts, whipped cream, o...
+Raw LLM response: {"1": "Small Vanilla Shake, Small Caramel Sundae, Small Heath Blizzard", "2": 3, "3": 2, "4": "Small Vanilla Shake, Small Caramel Sundae", "5": 0, "6": 0, "7": 0, "8": 0, "9": 3, "10": "Vanilla Shake, Caramel Sundae, Heath Blizzard", "11": 0, "12": 0, "13": 0, "14": 3, "15": "Vanilla Shake, Caramel Sundae, Heath Blizzard", "16": 2, "17": 1, "18": "Caramel Sundae (Sprinkles)", "19": "Small Vanilla Shake, Small Caramel Sundae (Sprinkles), Small Heath Blizzard", "20": 3, "21": "Employee offered additional toppings on the sundae and extra mix-ins for the Blizzard which shows attentiveness, but missed every opportunity to upsize the three small items and did not suggest the 2 for 5 deal that would have benefited the customer and increased sales. Ordering process was clear and polite, but offering larger sizes or a value deal would have improved both check average and guest experience.", "22": "Role labels were reversed in transcript with the 'Operator' acting as the customer and 'Customer' as the employee, requiring interpretation. No explicit guideline example for shakes, but treated as drink eligible for 2-for-5. Additional topping classification relied on provided list though exact wording differed."}
+==================================================
+Parsed JSON: {'1': 'Small Vanilla Shake, Small Caramel Sundae, Small Heath Blizzard', '2': 3, '3': 2, '4': 'Small Vanilla Shake, Small Caramel Sundae', '5': 0, '6': 0, '7': 0, '8': 0, '9': 3, '10': 'Vanilla Shake, Caramel Sundae, Heath Blizzard', '11': 0, '12': 0, '13': 0, '14': 3, '15': 'Vanilla Shake, Caramel Sundae, Heath Blizzard', '16': 2, '17': 1, '18': 'Caramel Sundae (Sprinkles)', '19': 'Small Vanilla Shake, Small Caramel Sundae (Sprinkles), Small Heath Blizzard', '20': 3, '21': 'Employee offered additional toppings on the sundae and extra mix-ins for the Blizzard which shows attentiveness, but missed every opportunity to upsize the three small items and did not suggest the 2 for 5 deal that would have benefited the customer and increased sales. Ordering process was clear and polite, but offering larger sizes or a value deal would have improved both check average and guest experience.', '22': "Role labels were reversed in transcript with the 'Operator' acting as the customer and 'Customer' as the employee, requiring interpretation. No explicit guideline example for shakes, but treated as drink eligible for 2-for-5. Additional topping classification relied on provided list though exact wording differed."}
+GPT Price: $30.694000 (input: 4803 tokens, output: 2636 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': 'Small Vanilla Shake, Small Caramel Sundae, Small Heath Blizzard', 'num_items_initial': 3, 'num_upsell_opportunities': 2, 'items_upsellable': 'Small Vanilla Shake, Small Caramel Sundae', 'num_upsell_offers': 0, 'items_upsold': 0, 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 3, 'items_upsizeable': 'Vanilla Shake, Caramel Sundae, Heath Blizzard', 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 3, 'items_addonable': 'Vanilla Shake, Caramel Sundae, Heath Blizzard', 'num_addon_offers': 2, 'num_addon_success': 1, 'items_addon_success': 'Caramel Sundae (Sprinkles)', 'items_after': 'Small Vanilla Shake, Small Caramel Sundae (Sprinkles), Small Heath Blizzard', 'num_items_after': 3, 'feedback': 'Employee offered additional toppings on the sundae and extra mix-ins for the Blizzard which shows attentiveness, but missed every opportunity to upsize the three small items and did not suggest the 2 for 5 deal that would have benefited the customer and increased sales. Ordering process was clear and polite, but offering larger sizes or a value deal would have improved both check average and guest experience.', 'issues': "Role labels were reversed in transcript with the 'Operator' acting as the customer and 'Customer' as the employee, requiring interpretation. No explicit guideline example for shakes, but treated as drink eligible for 2-for-5. Additional topping classification relied on provided list though exact wording differed.", 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+2025-08-24 03:35:52,700 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:36:21,052 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+Input transcript: Operator: Hi, welcome to Dairy Queen. What can I get started for you?
+Customer: Hi, we're gonna do a kid twist cone.
+Operator: Kid twist cone, anything else?
+Customer: Yes, and then a medium strawberr...
+Raw LLM response: {"1": "Kid Twist Cone, Medium Strawberry Julius, Mini Reese's Cup Blizzard, Peanut Butter Parfait", "2": 4, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 3, "15": "Kid Twist Cone, Medium Strawberry Julius, Mini Reese's Cup Blizzard", "16": 0, "17": 0, "18": 0, "19": "Kid Twist Cone, Medium Strawberry Julius, Mini Reese's Cup Blizzard, Peanut Butter Parfait", "20": 4, "21": "Operator accurately captured order but missed three add-on opportunities (sprinkles, banana boost, extra Blizzard topping). No upsizing or upsell chances, but operator could still suggest premium toppings to boost sales.", "22": "Ambiguity on whether Peanut Butter Parfait has upsizing or add-on options and how to treat mini Blizzard size since not in provided sizes; assumed both have no upsizing chance."}
+==================================================
+Parsed JSON: {'1': "Kid Twist Cone, Medium Strawberry Julius, Mini Reese's Cup Blizzard, Peanut Butter Parfait", '2': 4, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 3, '15': "Kid Twist Cone, Medium Strawberry Julius, Mini Reese's Cup Blizzard", '16': 0, '17': 0, '18': 0, '19': "Kid Twist Cone, Medium Strawberry Julius, Mini Reese's Cup Blizzard, Peanut Butter Parfait", '20': 4, '21': 'Operator accurately captured order but missed three add-on opportunities (sprinkles, banana boost, extra Blizzard topping). No upsizing or upsell chances, but operator could still suggest premium toppings to boost sales.', '22': 'Ambiguity on whether Peanut Butter Parfait has upsizing or add-on options and how to treat mini Blizzard size since not in provided sizes; assumed both have no upsizing chance.'}
+GPT Price: $26.948000 (input: 4754 tokens, output: 2180 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': "Kid Twist Cone, Medium Strawberry Julius, Mini Reese's Cup Blizzard, Peanut Butter Parfait", 'num_items_initial': 4, 'num_upsell_opportunities': 0, 'items_upsellable': 0, 'num_upsell_offers': 0, 'items_upsold': 0, 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': 0, 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 3, 'items_addonable': "Kid Twist Cone, Medium Strawberry Julius, Mini Reese's Cup Blizzard", 'num_addon_offers': 0, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': "Kid Twist Cone, Medium Strawberry Julius, Mini Reese's Cup Blizzard, Peanut Butter Parfait", 'num_items_after': 4, 'feedback': 'Operator accurately captured order but missed three add-on opportunities (sprinkles, banana boost, extra Blizzard topping). No upsizing or upsell chances, but operator could still suggest premium toppings to boost sales.', 'issues': 'Ambiguity on whether Peanut Butter Parfait has upsizing or add-on options and how to treat mini Blizzard size since not in provided sizes; assumed both have no upsizing chance.', 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: Okay, that's ready.
+Customer: What can I get for you?
+Operator: Okay, can I get an Oreo blizzard?
+Customer: Two small.
+Operator: Two small Oreos? Do you want extra Oreos in those?
+Customer: ...
+Raw LLM response: {"1": "Small Oreo Blizzard (2)", "2": 2, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 2, "15": "Small Oreo Blizzard (2)", "16": 2, "17": 0, "18": 0, "19": "Small Oreo Blizzard (2)", "20": 2, "21": "Operator offered extra Oreos for each Blizzard which is a valid additional topping attempt but customer declined; no upsell or upsize opportunities were applicable because customer specified size. Interaction was clear and polite.", "22": "Speaker labels were reversed in the transcript, making it briefly unclear which lines belonged to the operator versus the customer."}
+==================================================
+Parsed JSON: {'1': 'Small Oreo Blizzard (2)', '2': 2, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 2, '15': 'Small Oreo Blizzard (2)', '16': 2, '17': 0, '18': 0, '19': 'Small Oreo Blizzard (2)', '20': 2, '21': 'Operator offered extra Oreos for each Blizzard which is a valid additional topping attempt but customer declined; no upsell or upsize opportunities were applicable because customer specified size. Interaction was clear and polite.', '22': 'Speaker labels were reversed in the transcript, making it briefly unclear which lines belonged to the operator versus the customer.'}
+GPT Price: $29.050000 (input: 4733 tokens, output: 2448 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': 'Small Oreo Blizzard (2)', 'num_items_initial': 2, 'num_upsell_opportunities': 0, 'items_upsellable': 0, 'num_upsell_offers': 0, 'items_upsold': 0, 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': 0, 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 2, 'items_addonable': 'Small Oreo Blizzard (2)', 'num_addon_offers': 2, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': 'Small Oreo Blizzard (2)', 'num_items_after': 2, 'feedback': 'Operator offered extra Oreos for each Blizzard which is a valid additional topping attempt but customer declined; no upsell or upsize opportunities were applicable because customer specified size. Interaction was clear and polite.', 'issues': 'Speaker labels were reversed in the transcript, making it briefly unclear which lines belonged to the operator versus the customer.', 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: Alright, what can I get started for you today?
+Customer: Can I do one chili cheese sauce?
+Operator: Gotcha.
+Customer: And a medium mixed bowl of mashed potatoes.
+Operator: Gotcha. Anything e...
+Raw LLM response: {"1": "Chili Cheese Dog, Medium Mixed Bowl of Mashed Potatoes", "2": 2, "3": 1, "4": "Chili Cheese Dog", "5": 1, "6": "Extra 50 Doughnuts", "7": 1, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 0, "15": 0, "16": 0, "17": 0, "18": 0, "19": "Chili Cheese Dog, Medium Mixed Bowl of Mashed Potatoes, Extra 50 Doughnuts", "20": 3, "21": "The operator successfully offered an additional item extra doughnuts which the customer accepted, constituting one upsell. No attempts were made to upsell the chili cheese dog to a meal or to upsize any items, and no opportunities for additional toppings were pursued. The agent confirmed the order efficiently but missed the chance to upsell the chili cheese dog to a combo meal.", "22": "The transcript included items not present on the provided DQ menu, creating ambiguity in mapping. Chili cheese sauce was interpreted as a chili cheese dog for upsell opportunity counting, and doughnuts were treated as a single upsell item despite unusual quantity wording."}
+==================================================
+2025-08-24 03:36:47,451 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-08-24 03:37:05,015 - INFO - HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+Parsed JSON: {'1': 'Chili Cheese Dog, Medium Mixed Bowl of Mashed Potatoes', '2': 2, '3': 1, '4': 'Chili Cheese Dog', '5': 1, '6': 'Extra 50 Doughnuts', '7': 1, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 0, '15': 0, '16': 0, '17': 0, '18': 0, '19': 'Chili Cheese Dog, Medium Mixed Bowl of Mashed Potatoes, Extra 50 Doughnuts', '20': 3, '21': 'The operator successfully offered an additional item extra doughnuts which the customer accepted, constituting one upsell. No attempts were made to upsell the chili cheese dog to a meal or to upsize any items, and no opportunities for additional toppings were pursued. The agent confirmed the order efficiently but missed the chance to upsell the chili cheese dog to a combo meal.', '22': 'The transcript included items not present on the provided DQ menu, creating ambiguity in mapping. Chili cheese sauce was interpreted as a chili cheese dog for upsell opportunity counting, and doughnuts were treated as a single upsell item despite unusual quantity wording.'}
+GPT Price: $31.808000 (input: 4740 tokens, output: 2791 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': 'Chili Cheese Dog, Medium Mixed Bowl of Mashed Potatoes', 'num_items_initial': 2, 'num_upsell_opportunities': 1, 'items_upsellable': 'Chili Cheese Dog', 'num_upsell_offers': 1, 'items_upsold': 'Extra 50 Doughnuts', 'num_upsell_success': 1, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': 0, 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 0, 'items_addonable': 0, 'num_addon_offers': 0, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': 'Chili Cheese Dog, Medium Mixed Bowl of Mashed Potatoes, Extra 50 Doughnuts', 'num_items_after': 3, 'feedback': 'The operator successfully offered an additional item extra doughnuts which the customer accepted, constituting one upsell. No attempts were made to upsell the chili cheese dog to a meal or to upsize any items, and no opportunities for additional toppings were pursued. The agent confirmed the order efficiently but missed the chance to upsell the chili cheese dog to a combo meal.', 'issues': 'The transcript included items not present on the provided DQ menu, creating ambiguity in mapping. Chili cheese sauce was interpreted as a chili cheese dog for upsell opportunity counting, and doughnuts were treated as a single upsell item despite unusual quantity wording.', 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: Look who it is!
+Operator: Alright, what can I get for you?
+Customer: Hi.
+Operator: No.
+Customer: I will do a medium Reese's Caramel Craze blizzard.
+Operator: A medium Reese's Caramel Craze, ...
+Raw LLM response: {"1": "Medium Reese's Caramel Craze Blizzard, Small S'mores Blizzard, 2 Pup Cups", "2": 4, "3": 0, "4": "0", "5": 0, "6": "0", "7": 0, "8": 0, "9": 0, "10": "0", "11": 0, "12": 0, "13": "0", "14": 2, "15": "Pup Cups (2)", "16": 2, "17": 0, "18": "0", "19": "Medium Reese's Caramel Craze Blizzard, Small S'mores Blizzard, 2 Pup Cups", "20": 4, "21": "The operator was friendly and took the order accurately, offered milk bones and peanut butter for the pup cups but made no upselling or upsizing attempts; with sizes already specified there were limited upsizing opportunities, overall performance satisfactory.", "22": "Ambiguity on whether pup cups count as menu items with paid additional toppings; puff cup spelling inconsistency in transcript; no explicit menu data for pup cups in provided lists."}
+==================================================
+Parsed JSON: {'1': "Medium Reese's Caramel Craze Blizzard, Small S'mores Blizzard, 2 Pup Cups", '2': 4, '3': 0, '4': '0', '5': 0, '6': '0', '7': 0, '8': 0, '9': 0, '10': '0', '11': 0, '12': 0, '13': '0', '14': 2, '15': 'Pup Cups (2)', '16': 2, '17': 0, '18': '0', '19': "Medium Reese's Caramel Craze Blizzard, Small S'mores Blizzard, 2 Pup Cups", '20': 4, '21': 'The operator was friendly and took the order accurately, offered milk bones and peanut butter for the pup cups but made no upselling or upsizing attempts; with sizes already specified there were limited upsizing opportunities, overall performance satisfactory.', '22': 'Ambiguity on whether pup cups count as menu items with paid additional toppings; puff cup spelling inconsistency in transcript; no explicit menu data for pup cups in provided lists.'}
+GPT Price: $23.896000 (input: 4784 tokens, output: 1791 tokens)
+==================================================
+Mapped details: {'complete_order': 1, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': '0', 'items_initial': "Medium Reese's Caramel Craze Blizzard, Small S'mores Blizzard, 2 Pup Cups", 'num_items_initial': 4, 'num_upsell_opportunities': 0, 'items_upsellable': '0', 'num_upsell_offers': 0, 'items_upsold': '0', 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': '0', 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': '0', 'num_addon_opportunities': 2, 'items_addonable': 'Pup Cups (2)', 'num_addon_offers': 2, 'num_addon_success': 0, 'items_addon_success': '0', 'items_after': "Medium Reese's Caramel Craze Blizzard, Small S'mores Blizzard, 2 Pup Cups", 'num_items_after': 4, 'feedback': 'The operator was friendly and took the order accurately, offered milk bones and peanut butter for the pup cups but made no upselling or upsizing attempts; with sizes already specified there were limited upsizing opportunities, overall performance satisfactory.', 'issues': 'Ambiguity on whether pup cups count as menu items with paid additional toppings; puff cup spelling inconsistency in transcript; no explicit menu data for pup cups in provided lists.', 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================
+
+=== STEP 2 (Grading) RAW OUTPUT ===
+Input transcript: Operator: Alright, what can I get for you?
+Customer: Uh, no.
+Operator: Okay, thank you.
+Customer: Um, can we please get two, like whatever your classic cheeseburger is?
+Operator: Uh, we don't have any...
+Raw LLM response: {"1": "Classic Cheeseburger (2)", "2": 2, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0, "10": 0, "11": 0, "12": 0, "13": 0, "14": 0, "15": 0, "16": 0, "17": 0, "18": 0, "19": 0, "20": 0, "21": "The operator politely informed the customer that cheeseburgers are unavailable but did not attempt to guide them toward alternative menu items or make any upsell or upsize offers, missing a potential sales opportunity.", "22": "Transcript ends before a final order is placed; cheeseburgers are not in the provided menu list, so no upsell/upsize mapping was possible."}
+==================================================
+Parsed JSON: {'1': 'Classic Cheeseburger (2)', '2': 2, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0, '12': 0, '13': 0, '14': 0, '15': 0, '16': 0, '17': 0, '18': 0, '19': 0, '20': 0, '21': 'The operator politely informed the customer that cheeseburgers are unavailable but did not attempt to guide them toward alternative menu items or make any upsell or upsize offers, missing a potential sales opportunity.', '22': 'Transcript ends before a final order is placed; cheeseburgers are not in the provided menu list, so no upsell/upsize mapping was possible.'}
+GPT Price: $19.916000 (input: 4762 tokens, output: 1299 tokens)
+==================================================
+2025-08-24 03:37:05,612 - INFO - Grading completed and uploaded to S3
+2025-08-24 03:37:05,612 - INFO - Upserting grades for 21 transactions
+2025-08-24 03:37:05,617 - INFO - Saved 21 grade records to exports/20250824_033705_grades.csv
+2025-08-24 03:37:06,329 - INFO - HTTP Request: POST https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/grades?on_conflict=transaction_id&columns=%22num_items_initial%22%2C%22upsize_possible%22%2C%22score%22%2C%22num_largest_offers%22%2C%22reasoning_summary%22%2C%22video_file_path%22%2C%22num_upsell_success%22%2C%22upsell_offered%22%2C%22mobile_order%22%2C%22complete_order%22%2C%22out_of_stock_items%22%2C%22num_upsize_offers%22%2C%22transaction_id%22%2C%22num_upsell_offers%22%2C%22num_upsize_opportunities%22%2C%22num_items_after%22%2C%22transcript%22%2C%22coupon_used%22%2C%22items_after%22%2C%22items_addon_success%22%2C%22feedback%22%2C%22details%22%2C%22issues%22%2C%22num_addon_opportunities%22%2C%22gpt_price%22%2C%22upsize_offered%22%2C%22num_addon_success%22%2C%22upsell_possible%22%2C%22num_upsize_success%22%2C%22items_upsizeable%22%2C%22items_addonable%22%2C%22items_upsellable%22%2C%22video_link%22%2C%22asked_more_time%22%2C%22items_initial%22%2C%22items_upsold%22%2C%22num_upsell_opportunities%22%2C%22num_addon_offers%22%2C%22items_upsize_success%22 "HTTP/2 201 Created"
+2025-08-24 03:37:06,332 - INFO - Successfully completed all processing steps for video c597c72f-b3cd-48ac-8413-8251a40ce880
+2025-08-24 03:37:07,916 - INFO - Cleaned up temporary files for video c597c72f-b3cd-48ac-8413-8251a40ce880
+2025-08-24 03:37:08,088 - INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.c597c72f-b3cd-48ac-8413-8251a40ce880 "HTTP/2 200 OK"
+2025-08-24 03:37:08,089 - INFO - ✅ Successfully processed video c597c72f-b3cd-48ac-8413-8251a40ce880 in 1151.31 seconds
+2025-08-24 03:37:08,329 - INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at&status=eq.uploaded&limit=1 "HTTP/2 200 OK"
+2025-08-24 03:37:08,330 - INFO - No more uploaded videos found in queue.
+2025-08-24 03:37:08,330 - INFO - Batch complete. Succeeded: 1, Failed: 0, Total: 1
+2025-08-24 03:37:08,330 - INFO - Processed video IDs: c597c72f-b3cd-48ac-8413-8251a40ce880
+2025-08-24 03:37:08,330 - INFO - === Batch session completed in 1151.99 seconds ===
+Mapped details: {'complete_order': 0, 'mobile_order': 0, 'coupon_used': 0, 'asked_more_time': 0, 'out_of_stock_items': 'cheeseburger', 'items_initial': 'Classic Cheeseburger (2)', 'num_items_initial': 2, 'num_upsell_opportunities': 0, 'items_upsellable': 0, 'num_upsell_offers': 0, 'items_upsold': 0, 'num_upsell_success': 0, 'num_largest_offers': 0, 'num_upsize_opportunities': 0, 'items_upsizeable': 0, 'num_upsize_offers': 0, 'num_upsize_success': 0, 'items_upsize_success': 0, 'num_addon_opportunities': 0, 'items_addonable': 0, 'num_addon_offers': 0, 'num_addon_success': 0, 'items_addon_success': 0, 'items_after': 0, 'num_items_after': 0, 'feedback': 'The operator politely informed the customer that cheeseburgers are unavailable but did not attempt to guide them toward alternative menu items or make any upsell or upsize offers, missing a potential sales opportunity.', 'issues': 'Transcript ends before a final order is placed; cheeseburgers are not in the provided menu list, so no upsell/upsize mapping was possible.', 'reasoning_summary': '', 'gpt_price': 0, 'video_file_path': '', 'video_link': ''}
+==================================================

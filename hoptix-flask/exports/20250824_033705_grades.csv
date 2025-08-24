@@ -1,0 +1,222 @@
+asked_more_time,complete_order,coupon_used,details,details.asked_more_time,details.complete_order,details.coupon_used,details.feedback,details.gpt_price,details.issues,details.items_addon_success,details.items_addonable,details.items_after,details.items_initial,details.items_upsellable,details.items_upsize_success,details.items_upsizeable,details.items_upsold,details.mobile_order,details.num_addon_offers,details.num_addon_opportunities,details.num_addon_success,details.num_items_after,details.num_items_initial,details.num_largest_offers,details.num_upsell_offers,details.num_upsell_opportunities,details.num_upsell_success,details.num_upsize_offers,details.num_upsize_opportunities,details.num_upsize_success,details.out_of_stock_items,details.reasoning_summary,details.video_file_path,details.video_link,feedback,gpt_price,issues,items_addon_success,items_addonable,items_after,items_initial,items_upsellable,items_upsize_success,items_upsizeable,items_upsold,mobile_order,num_addon_offers,num_addon_opportunities,num_addon_success,num_items_after,num_items_initial,num_largest_offers,num_upsell_offers,num_upsell_opportunities,num_upsell_success,num_upsize_offers,num_upsize_opportunities,num_upsize_success,out_of_stock_items,reasoning_summary,score,transaction_id,transcript,upsell_offered,upsell_possible,upsize_offered,upsize_possible,video_file_path,video_link
+0,1,0,,0,1,0,"The operator efficiently confirmed the customer’s single large Blizzard order but did not attempt any add-on toppings such as extra brownie pieces. Upsizing was not applicable because the customer already requested the largest size, and there were no valid upsell opportunities. Service was prompt but missed a small add-on opportunity.",0,"Speaker roles seem reversed in the transcript, creating minor ambiguity about who is ordering; treated the final order as a single large Blizzard from the customer.",0,Large Chocolate Brownie Extreme Blizzard,Large Chocolate Brownie Extreme Blizzard,Large Chocolate Brownie Extreme Blizzard,0,0,0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,0,,,,"The operator efficiently confirmed the customer’s single large Blizzard order but did not attempt any add-on toppings such as extra brownie pieces. Upsizing was not applicable because the customer already requested the largest size, and there were no valid upsell opportunities. Service was prompt but missed a small add-on opportunity.",21.022,"Speaker roles seem reversed in the transcript, creating minor ambiguity about who is ordering; treated the final order as a single large Blizzard from the customer.",0,Large Chocolate Brownie Extreme Blizzard,Large Chocolate Brownie Extreme Blizzard,Large Chocolate Brownie Extreme Blizzard,0,0,0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,0,,0.0,7badbb7d-f434-4d87-b400-1bd86c73788d,"Operator: Can I get a large chocolate brownie extreme blizzard?
+Customer: Yeah, a large chocolate brownie extreme blizzard.
+Operator: No, that's it.
+Customer: Alright, thank you.",False,False,False,False,,
+0,1,0,,0,1,0,"The employee accurately took the order but made no upsell or upsize attempts on the two Blizzards and only asked about peanut butter for the pup cup, which the customer declined. Numerous sales opportunities were missed.",0,"Pup cup is not in the provided menu list, so it is unclear whether it is a revenue item or whether the peanut butter question qualifies as a paid topping offer.",0,"Medium Hot Fudge Blizzard, Medium Chocolate Chip Cookie Dough Blizzard, Pup Cup (Vanilla)","Medium Hot Fudge Blizzard, Medium Chocolate Chip Cookie Dough Blizzard, Pup Cup (Vanilla)","Medium Hot Fudge Blizzard, Medium Chocolate Chip Cookie Dough Blizzard, Pup Cup (Vanilla)",0,0,0,0,0,1,3,0,3,3,0,0,0,0,0,0,0,0,,,,"The employee accurately took the order but made no upsell or upsize attempts on the two Blizzards and only asked about peanut butter for the pup cup, which the customer declined. Numerous sales opportunities were missed.",37.166,"Pup cup is not in the provided menu list, so it is unclear whether it is a revenue item or whether the peanut butter question qualifies as a paid topping offer.",0,"Medium Hot Fudge Blizzard, Medium Chocolate Chip Cookie Dough Blizzard, Pup Cup (Vanilla)","Medium Hot Fudge Blizzard, Medium Chocolate Chip Cookie Dough Blizzard, Pup Cup (Vanilla)","Medium Hot Fudge Blizzard, Medium Chocolate Chip Cookie Dough Blizzard, Pup Cup (Vanilla)",0,0,0,0,0,1,3,0,3,3,0,0,0,0,0,0,0,0,,0.0,e59a91dc-4f35-4f20-9ee5-4b6934833ec0,"Operator: No.
+Customer: I'd like to have a medium hot fudge blizzard and a medium chocolate chip cookie dough.
+Operator: Okay.
+Customer: And then the pup cup, just straight vanilla.
+Operator: No peanut butter?
+Customer: No.
+Operator: Alright, anything else for you?
+Customer: I think that'll do it.
+Operator: Alright, just go on up to the window, thank you.",False,False,False,False,,
+0,1,0,,0,1,0,"Agent greeted promptly and confirmed the single order. They attempted an add-on by asking if the customer wanted extra toppings, but did not pursue any upselling or upsizing opportunities, missing a chance to offer a large Blizzard. Overall service was clear but could improve revenue opportunities by consistently suggesting size upgrades and combo promotions where appropriate.",0,"Transcript labels the location as Burger King while evaluation criteria pertain to Dairy Queen, causing potential item confusion. The product 'medium Kit Kat' was interpreted as a Kit Kat Blizzard; if it were another product, some counts could differ. No explicit upsell scenarios for Blizzards beyond toppings created ambiguity in counting upsell chances.",0,Blizzard,Medium Kit Kat Blizzard,Medium Kit Kat Blizzard,0,0,0,0,0,1,1,0,1,1,0,0,0,0,0,0,0,0,,,,"Agent greeted promptly and confirmed the single order. They attempted an add-on by asking if the customer wanted extra toppings, but did not pursue any upselling or upsizing opportunities, missing a chance to offer a large Blizzard. Overall service was clear but could improve revenue opportunities by consistently suggesting size upgrades and combo promotions where appropriate.",18.8,"Transcript labels the location as Burger King while evaluation criteria pertain to Dairy Queen, causing potential item confusion. The product 'medium Kit Kat' was interpreted as a Kit Kat Blizzard; if it were another product, some counts could differ. No explicit upsell scenarios for Blizzards beyond toppings created ambiguity in counting upsell chances.",0,Blizzard,Medium Kit Kat Blizzard,Medium Kit Kat Blizzard,0,0,0,0,0,1,1,0,1,1,0,0,0,0,0,0,0,0,,0.0,0fd49604-3b74-425d-ad7f-741abdac2f6f,"Operator: Hello, welcome to Burger King, what can I get started for you?
+Customer: Can I get a medium Kit Kat?
+Operator: Gotcha, do you want extra anything on that today?
+Customer: No.
+Operator: Alright, anything else?
+Customer: No, that's all.
+Operator: Alrighty, $6.36 for you up at the window.",False,False,False,False,,
+0,1,0,,0,1,0,"Operator was polite and efficient but made no specific attempts to upsell, upsize, or add toppings. A valid add-on opportunity existed for sprinkles on the twist cone, yet no offer was presented. Overall, the interaction was smooth but lacking in sales initiative.",0,Ambiguity on whether the generic prompt anything else counts as an upsell offer; unclear if pup cup is considered a priced item or free treat; operator identified as Burger King while metrics are Dairy Queen specific.,0,Twist Cone,"Medium Twist Cone, Pup Cup","Medium Twist Cone, Pup Cup",0,0,0,0,0,0,1,0,2,2,0,0,0,0,0,0,0,0,,,,"Operator was polite and efficient but made no specific attempts to upsell, upsize, or add toppings. A valid add-on opportunity existed for sprinkles on the twist cone, yet no offer was presented. Overall, the interaction was smooth but lacking in sales initiative.",28.8,Ambiguity on whether the generic prompt anything else counts as an upsell offer; unclear if pup cup is considered a priced item or free treat; operator identified as Burger King while metrics are Dairy Queen specific.,0,Twist Cone,"Medium Twist Cone, Pup Cup","Medium Twist Cone, Pup Cup",0,0,0,0,0,0,1,0,2,2,0,0,0,0,0,0,0,0,,0.0,e9e548b9-0305-4a7f-9cbd-3fd6db7b8bfa,"Operator: Hi, welcome to Burger King, what can I get started for you?
+Customer: Hi, can I get a medium cone chocolate and vanilla twist, and can I get a pup cup, no peanut butter?
+Operator: Gotcha, anything else?
+Customer: Nope, that's it.
+Operator: Alrighty, $6.74 for you.
+Customer: Thank you.",False,False,False,False,,
+0,1,0,,0,1,0,"Operator greeted the customer and confirmed both Cupfection orders accurately but did not offer any add-on toppings, missing two revenue opportunities. No upsizing or upselling chances existed, so service was satisfactory but not sales focused.",0,"Cupfection topping opportunities are not explicitly described in the transcript, so evaluation of missed add ons relies on general menu guidance.",0,"Cupfection (Brownie and Oreo), Cupfection (Caramel Brownie)","Brownie and Oreo Cupfection, Caramel Brownie Cupfection","Brownie and Oreo Cupfection, Caramel Brownie Cupfection",0,0,0,0,0,0,2,0,2,2,0,0,0,0,0,0,0,0,,,,"Operator greeted the customer and confirmed both Cupfection orders accurately but did not offer any add-on toppings, missing two revenue opportunities. No upsizing or upselling chances existed, so service was satisfactory but not sales focused.",25.71,"Cupfection topping opportunities are not explicitly described in the transcript, so evaluation of missed add ons relies on general menu guidance.",0,"Cupfection (Brownie and Oreo), Cupfection (Caramel Brownie)","Brownie and Oreo Cupfection, Caramel Brownie Cupfection","Brownie and Oreo Cupfection, Caramel Brownie Cupfection",0,0,0,0,0,0,2,0,2,2,0,0,0,0,0,0,0,0,,0.0,9155c62b-3693-4329-b1d1-cd1aa8df4a92,"Operator: Hi, welcome. What can I get for you?
+Customer: Can I get a brownie and Oreo confection?
+Operator: Is that a brownie and Oreo confection?
+Customer: Yep, and then I'll get a caramel brownie confection as well, and then that's it.
+Operator: Alright, it's going to be $14.16 at the window.
+Customer: Thank you.",False,False,False,False,,
+0,1,0,,0,1,0,Operator successfully converted a combo upsell on the hot dog and executed a valid side upsize to pretzel sticks. Missed offering the large size for the blizzard and did not suggest toppings. Solid performance on primary upsell but some revenue left on the table.,0,Ambiguity on whether pretzel sticks are an upsize versus a separate premium side and on whether bottled water is sized; counted pretzel sticks as a valid side upsize and water as a single-size drink so no drink upsize chance.,0,Blizzard,"Hot Dog Combo (Hot Dog, Pretzel Sticks, Bottled Water), Small Royal Reese's Fluffernutter Blizzard","Hot Dog, Royal Reese's Fluffernutter Blizzard",Hot Dog,Chips to Pretzel Sticks,"Chips, Blizzard",Hot Dog to Hot Dog Combo,0,0,1,0,4,2,1,1,1,1,1,2,1,0,,,,Operator successfully converted a combo upsell on the hot dog and executed a valid side upsize to pretzel sticks. Missed offering the large size for the blizzard and did not suggest toppings. Solid performance on primary upsell but some revenue left on the table.,41.242,Ambiguity on whether pretzel sticks are an upsize versus a separate premium side and on whether bottled water is sized; counted pretzel sticks as a valid side upsize and water as a single-size drink so no drink upsize chance.,0,Blizzard,"Hot Dog Combo (Hot Dog, Pretzel Sticks, Bottled Water), Small Royal Reese's Fluffernutter Blizzard","Hot Dog, Royal Reese's Fluffernutter Blizzard",Hot Dog,Chips to Pretzel Sticks,"Chips, Blizzard",Hot Dog to Hot Dog Combo,0,0,1,0,4,2,1,1,1,1,1,2,1,0,,0.6666666666666666,3530481e-c088-44eb-9980-419d4b4a3050,"Operator: Hi, what can I get for you?
+Customer: I'd like a classic hot dog.
+Operator: Do you want anything on that hot dog?
+Customer: Just ketchup and mustard.
+Operator: Alright, and did you just want the hot dog or did you want a combo?
+Customer: I'll do a combo.
+Operator: Combo? What kind of chips would you want? We have Lay's, barbecue Doritos, or you can upgrade for some pretzels.
+Customer: I'll upgrade for pretzels.
+Operator: Pretzels? Alright. What kind of drink would you like?
+Customer: I'll do water.
+Operator: Water?
+Customer: And I'm going to do a blizzard.
+Operator: Okay, and you said ketchup and mustard on the hot dog?
+Customer: Yes.
+Operator: Alright, and what kind of blizzard would you like?
+Customer: I'll do the Royal Reese's Fluffernutter.
+Operator: Small?
+Customer: Small Royal Reese's Fluffernutter.
+Operator: Anything else?
+Customer: Nope, that'll be it.
+Operator: $3.16.88 at the window.",True,True,True,True,,
+0,1,0,,0,1,0,"Operator was polite and efficient, confirmed DoorDash pickup, but did not attempt any add-on sale such as extra toppings for the Cupfection; no upsell or upsize opportunities were applicable.",0,"Slight ambiguity on whether Cupfection allows add-on toppings, but menu indicates it does; no other conflicts.",0,Brownie and Oreo Cupfection,Brownie and Oreo Cupfection,Brownie and Oreo Cupfection,0,0,0,0,1,0,1,0,1,1,0,0,0,0,0,0,0,0,,,,"Operator was polite and efficient, confirmed DoorDash pickup, but did not attempt any add-on sale such as extra toppings for the Cupfection; no upsell or upsize opportunities were applicable.",24.168,"Slight ambiguity on whether Cupfection allows add-on toppings, but menu indicates it does; no other conflicts.",0,Brownie and Oreo Cupfection,Brownie and Oreo Cupfection,Brownie and Oreo Cupfection,0,0,0,0,1,0,1,0,1,1,0,0,0,0,0,0,0,0,,0.0,de2aba83-3d32-46e5-ae39-d49dae5145b1,"Operator: Hi, what can I get for you?
+Customer: Um, just a second please.
+Operator: No worries, take your time.
+Customer: Okay, I'm ready.
+Operator: What can I get for you?
+Customer: Can I please have a brownie and Oreo perfection?
+Operator: Anything else?
+Customer: Um, and then I also have a door dash.
+Operator: What was the name on it?
+Customer: Anthony G.
+Operator: Okay, you can talk to the window.
+Customer: Thank you.",False,False,False,False,,
+0,1,0,,0,1,0,"Operator efficiently took the order but did not attempt any upsell or upsize. While banana split may not fit standard promotions, operator could have suggested an added topping or beverage to grow the sale.",0,Banana Split not explicitly defined in reference menu so its upsell or upsize eligibility was unclear; assumed it is a single size item with no upsell opportunities.,0,0,Banana Split,Banana Split,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,,,,"Operator efficiently took the order but did not attempt any upsell or upsize. While banana split may not fit standard promotions, operator could have suggested an added topping or beverage to grow the sale.",22.352,Banana Split not explicitly defined in reference menu so its upsell or upsize eligibility was unclear; assumed it is a single size item with no upsell opportunities.,0,0,Banana Split,Banana Split,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,,0.0,7dbb4ee3-ecea-4918-b9d6-d30d54ee4de3,"Operator: Hi, welcome to Dairy Queen. What can I get for you?
+Customer: Can I do a banana split?
+Operator: Banana split, anything else?
+Customer: Nope, that's it.
+Operator: That'll be $6.86 at the window.",False,False,False,False,,
+0,1,0,,0,1,0,"Customer ordered a Kid's vanilla Blizzard and the employee only confirmed the order without offering any upsell, upsize, or additional toppings, missing clear opportunities to suggest a larger size or mix-ins. Clarification was given but no suggestive selling occurred; ensure future interactions include appropriate offers.",0,"Role labels appear swapped, requiring interpretation that Operator lines represent the customer. Because the customer explicitly requested the Kid's size, Scenario 18 applies, meaning no upsize chance was counted. An add-on chance was counted for the Blizzard even though not explicitly detailed in scenarios, based on the general menu guidance.",0,Kid's Vanilla Blizzard,Kid's Vanilla Blizzard,Kid's Vanilla Blizzard,0,0,0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,0,,,,"Customer ordered a Kid's vanilla Blizzard and the employee only confirmed the order without offering any upsell, upsize, or additional toppings, missing clear opportunities to suggest a larger size or mix-ins. Clarification was given but no suggestive selling occurred; ensure future interactions include appropriate offers.",22.310000000000002,"Role labels appear swapped, requiring interpretation that Operator lines represent the customer. Because the customer explicitly requested the Kid's size, Scenario 18 applies, meaning no upsize chance was counted. An add-on chance was counted for the Blizzard even though not explicitly detailed in scenarios, based on the general menu guidance.",0,Kid's Vanilla Blizzard,Kid's Vanilla Blizzard,Kid's Vanilla Blizzard,0,0,0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,0,,0.0,fad656db-7508-4ada-9994-14f4d06c0fbc,"Operator: Can I just have a plain kid's vanilla blizzard?
+Customer: You just want a mini blizzard, just vanilla?
+Operator: Just vanilla.
+Customer: Anything else?
+Operator: No.
+Customer: So it's just the one mini blizzard?
+Operator: Yes, put a top on it.
+Customer: 25.22 at the window.
+Operator: No.",False,False,False,False,,
+0,1,0,,0,1,0,"Operator was polite and closed the order quickly but did not attempt any suggestive selling; could have recommended additional dessert items, drinks, or toppings to increase ticket.",0,Banana split not listed in provided menu tables so unclear if upsize or topping opportunities apply; assumed one size and no standard upsell path.,0,0,Banana Split,Banana Split,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,,,,"Operator was polite and closed the order quickly but did not attempt any suggestive selling; could have recommended additional dessert items, drinks, or toppings to increase ticket.",18.634,Banana split not listed in provided menu tables so unclear if upsize or topping opportunities apply; assumed one size and no standard upsell path.,0,0,Banana Split,Banana Split,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,,0.0,282c7fed-9d36-4aad-b6f4-808761f71fbf,"Customer: Can I just get a banana split?
+Operator: Anything else?
+Customer: No, that's it.
+Operator: 360 at the window.",False,False,False,False,,
+0,1,0,,0,1,0,"Operator confirmed the order clearly but made no offers for additional toppings that could enhance the ticket. Since the customer specified Mini size, no upsizing chance existed, but offering add ins such as extra brownie pieces would have been appropriate.",0,"Mini size is not listed in provided size table, so treated as a specific size resulting in no upsizing chance. Assumed Blizzards allow add on topping offers despite no explicit example.",0,Mini Chocolate Brownie Extreme Blizzard (Chocolate Ice Cream),2 Mini Chocolate Brownie Extreme Blizzards (Chocolate Ice Cream),2 Mini Chocolate Brownie Extreme Blizzards (Chocolate Ice Cream),0,0,0,0,0,0,2,0,2,2,0,0,0,0,0,0,0,0,,,,"Operator confirmed the order clearly but made no offers for additional toppings that could enhance the ticket. Since the customer specified Mini size, no upsizing chance existed, but offering add ins such as extra brownie pieces would have been appropriate.",23.706,"Mini size is not listed in provided size table, so treated as a specific size resulting in no upsizing chance. Assumed Blizzards allow add on topping offers despite no explicit example.",0,Mini Chocolate Brownie Extreme Blizzard (Chocolate Ice Cream),2 Mini Chocolate Brownie Extreme Blizzards (Chocolate Ice Cream),2 Mini Chocolate Brownie Extreme Blizzards (Chocolate Ice Cream),0,0,0,0,0,0,2,0,2,2,0,0,0,0,0,0,0,0,,0.0,f577b40c-af0a-4dfa-a267-df91a01ac10b,"Customer: I need two mini blizzards, chocolate brownie extreme with chocolate ice cream.
+Operator: You said two mini chocolate brownie extremes with chocolate ice cream?
+Customer: Correct.
+Operator: Anything else?
+Customer: No, thank you.
+Operator: I'll have your total at the window.",False,False,False,False,,
+0,1,0,,0,1,0,"Operator was polite and efficient but did not attempt any upselling, upsizing, or additional topping offers, missing two add-on opportunities for the Cupcake and the Blizzard.",0,"Cupcake item is not explicitly listed; treated it as a one-size Cupfection with topping opportunity, which may not perfectly match store policy.",0,"Cupcake, Medium Royal New York Cheesecake Blizzard","Cupcake, Medium Royal New York Cheesecake Blizzard","Cupcake, Medium Royal New York Cheesecake Blizzard",0,0,0,0,0,0,2,0,2,2,0,0,0,0,0,0,0,0,,,,"Operator was polite and efficient but did not attempt any upselling, upsizing, or additional topping offers, missing two add-on opportunities for the Cupcake and the Blizzard.",27.79,"Cupcake item is not explicitly listed; treated it as a one-size Cupfection with topping opportunity, which may not perfectly match store policy.",0,"Cupcake, Medium Royal New York Cheesecake Blizzard","Cupcake, Medium Royal New York Cheesecake Blizzard","Cupcake, Medium Royal New York Cheesecake Blizzard",0,0,0,0,0,0,2,0,2,2,0,0,0,0,0,0,0,0,,0.0,9a014f61-6ae2-4878-aade-c39d985dfd1c,"Operator: Yeah, what can I get for you?
+Customer: Yeah, could you have some like cake in a cup, like the little mini ice cream cake in a cup?
+Operator: Uh, the cupcake?
+Customer: Yeah.
+Operator: Yeah, we have it.
+Customer: Yeah, can I get one of those please?
+Operator: Yeah, anything else?
+Customer: Uh, yeah, whatever you want.
+Customer: Can I get a medium Royal New York cheesecake?
+Operator: I'm so sorry, could you repeat that?
+Customer: Can I get a medium Blizzard Royal New York cheesecake?
+Operator: Medium Royal New York cheesecake, anything else?
+Customer: That'll be it.
+Operator: We'll see you at 11.04 at the window.",False,False,False,False,,
+0,1,0,,0,1,0,"The operator recognized both upselling chances, successfully converting the pretzel order into the 2-for-5 promotion and offering (but not forcing) the chili cheese dog combo. No legitimate upsizing or topping opportunities were missed, resulting in a solid, customer-focused interaction.",0,Uncertainty over which item completed the 2-for-5 deal; assumed a second pretzel order to match the operator’s pricing reference.,0,0,"2 Medium Orange Julius, 1 Large Orange Julius, 2 Soft Pretzel Sticks, 1 Chili Cheese Dog","2 Medium Orange Julius, 1 Large Orange Julius, 1 Soft Pretzel Sticks, 1 Chili Cheese Dog","Soft Pretzel Sticks, Chili Cheese Dog",0,0,Soft Pretzel Sticks,0,0,0,0,6,5,0,2,2,1,0,0,0,0,,,,"The operator recognized both upselling chances, successfully converting the pretzel order into the 2-for-5 promotion and offering (but not forcing) the chili cheese dog combo. No legitimate upsizing or topping opportunities were missed, resulting in a solid, customer-focused interaction.",39.04,Uncertainty over which item completed the 2-for-5 deal; assumed a second pretzel order to match the operator’s pricing reference.,0,0,"2 Medium Orange Julius, 1 Large Orange Julius, 2 Soft Pretzel Sticks, 1 Chili Cheese Dog","2 Medium Orange Julius, 1 Large Orange Julius, 1 Soft Pretzel Sticks, 1 Chili Cheese Dog","Soft Pretzel Sticks, Chili Cheese Dog",0,0,Soft Pretzel Sticks,0,0,0,0,6,5,0,2,2,1,0,0,0,0,,1.0,257aa447-50d6-4136-afd5-3588b93d9092,"Operator: Hello, welcome to Dairy Queen. Do you have the app?
+Customer: Oh no, I don't have the app. Thank you though.
+Operator: What can I get for you?
+Customer: Can I start with two medium Orange Julius?
+Operator: Okay, anything else?
+Customer: One large Orange Julius.
+Operator: Okay.
+Customer: And...
+Customer: One order of soft pretzel sticks.
+Operator: Okay, so one order is going to be $3.89. Did you want to do two for five?
+Customer: Yes, please.
+Operator: Alright, anything else?
+Customer: I want to get a chili cheese dog.
+Operator: Alright, did you just want the chili cheese dog or did you want the combo?
+Customer: Just the chili cheese dog.
+Operator: Alright, anything else tonight?
+Customer: That'll do it.
+Operator: It'll be $28.31 at the window.
+Customer: Thank you.",True,True,False,False,,
+0,1,0,,0,1,0,"Operator greeted and repeated orders clearly. Offered additional toppings for first two Blizzards, showing some suggestive selling effort. However failed to capitalize on two valid upsizing opportunities for Oreo and Snickers Blizzards and did not offer toppings on third Blizzard. No upsell opportunities existed, but add-on consistency and upsizing prompts should be improved.",0,"Transcript labels mix up speaker roles, requiring inference to identify customer requests versus operator responses. Ambiguity around the term mixing blizzard mashup but treated as a standard Blizzard for scoring.",0,"Medium Mixing Blizzard Mashup, Oreo Blizzard, Snickers Blizzard","Medium Mixing Blizzard Mashup, Medium Oreo Blizzard, Medium Snickers Blizzard","Medium Mixing Blizzard Mashup, Oreo Blizzard, Snickers Blizzard",0,0,"Oreo Blizzard, Snickers Blizzard",0,0,2,3,0,3,3,0,0,0,0,0,2,0,0,,,,"Operator greeted and repeated orders clearly. Offered additional toppings for first two Blizzards, showing some suggestive selling effort. However failed to capitalize on two valid upsizing opportunities for Oreo and Snickers Blizzards and did not offer toppings on third Blizzard. No upsell opportunities existed, but add-on consistency and upsizing prompts should be improved.",26.704,"Transcript labels mix up speaker roles, requiring inference to identify customer requests versus operator responses. Ambiguity around the term mixing blizzard mashup but treated as a standard Blizzard for scoring.",0,"Medium Mixing Blizzard Mashup, Oreo Blizzard, Snickers Blizzard","Medium Mixing Blizzard Mashup, Medium Oreo Blizzard, Medium Snickers Blizzard","Medium Mixing Blizzard Mashup, Oreo Blizzard, Snickers Blizzard",0,0,"Oreo Blizzard, Snickers Blizzard",0,0,2,3,0,3,3,0,0,0,0,0,2,0,0,,0.0,ed014aec-f313-4fb9-9766-dc8bab5de8f3,"Operator: Hi.
+Customer: Hi.
+Operator: Can I get a mixing blizzard mashup? Medium.
+Operator: A medium mixing bowl, gotcha. Do you want extra cookie dough in that today?
+Customer: No, not today.
+Operator: Alrighty.
+Customer: And then can I do an Oreo blizzard as well?
+Operator: A medium mint Oreo, gotcha. Do you want extra Oreo?
+Customer: No.
+Operator: Alrighty.
+Customer: And then I would do a Snickers blizzard as well.
+Operator: Gotcha, a medium Snickers. Anything else?
+Customer: That should do it.
+Operator: Alrighty, $20.58 for you.
+Customer: Awesome, thanks.",False,False,False,True,,
+0,1,0,,0,1,0,"Operator accurately repeated the customer’s order but did not attempt any upsells, did not offer additional toppings, and did not attempt to upsize the Blizzards. Polite service but missed all sales opportunities.",0,Uncertainty whether the phrase 'no hot fudge or extra?' should count as an offer for extra toppings; treated as simple clarification because it mirrored the customer’s request rather than proposing an addition. Upsizing chance excluded since the customer specified medium sizes per scenario 18.,0,"M&M Blizzard, Snickers Blizzard","Medium M&M Blizzard, Medium Snickers Blizzard","Medium M&M Blizzard, Medium Snickers Blizzard",0,0,0,0,0,0,2,0,2,2,0,0,0,0,0,0,0,0,,,,"Operator accurately repeated the customer’s order but did not attempt any upsells, did not offer additional toppings, and did not attempt to upsize the Blizzards. Polite service but missed all sales opportunities.",26.424,Uncertainty whether the phrase 'no hot fudge or extra?' should count as an offer for extra toppings; treated as simple clarification because it mirrored the customer’s request rather than proposing an addition. Upsizing chance excluded since the customer specified medium sizes per scenario 18.,0,"M&M Blizzard, Snickers Blizzard","Medium M&M Blizzard, Medium Snickers Blizzard","Medium M&M Blizzard, Medium Snickers Blizzard",0,0,0,0,0,0,2,0,2,2,0,0,0,0,0,0,0,0,,0.0,16d69293-1f96-4b78-84d2-8adb4ac8c74f,"Operator: Hi.
+Customer: Hi.
+Operator: Alright, we would like one medium M&M with vanilla ice cream.
+Operator: I'm sorry, could you repeat that?
+Customer: Yes, one medium M&M with vanilla ice cream, no chocolate syrup.
+Operator: You said no hot fudge or extra?
+Customer: No hot fudge.
+Operator: Alright, so it's a medium M&M with no chocolate?
+Customer: Right, with vanilla ice cream.
+Operator: Okay.
+Customer: And also one medium Snickers.
+Operator: Medium Snickers.
+Customer: You said that was it?
+Operator: Yep.
+Customer: $13.72 at the window.",False,False,False,False,,
+0,1,0,,0,1,0,"Employee offered additional toppings on the sundae and extra mix-ins for the Blizzard which shows attentiveness, but missed every opportunity to upsize the three small items and did not suggest the 2 for 5 deal that would have benefited the customer and increased sales. Ordering process was clear and polite, but offering larger sizes or a value deal would have improved both check average and guest experience.",0,"Role labels were reversed in transcript with the 'Operator' acting as the customer and 'Customer' as the employee, requiring interpretation. No explicit guideline example for shakes, but treated as drink eligible for 2-for-5. Additional topping classification relied on provided list though exact wording differed.",Caramel Sundae (Sprinkles),"Vanilla Shake, Caramel Sundae, Heath Blizzard","Small Vanilla Shake, Small Caramel Sundae (Sprinkles), Small Heath Blizzard","Small Vanilla Shake, Small Caramel Sundae, Small Heath Blizzard","Small Vanilla Shake, Small Caramel Sundae",0,"Vanilla Shake, Caramel Sundae, Heath Blizzard",0,0,2,3,1,3,3,0,0,2,0,0,3,0,0,,,,"Employee offered additional toppings on the sundae and extra mix-ins for the Blizzard which shows attentiveness, but missed every opportunity to upsize the three small items and did not suggest the 2 for 5 deal that would have benefited the customer and increased sales. Ordering process was clear and polite, but offering larger sizes or a value deal would have improved both check average and guest experience.",30.694000000000003,"Role labels were reversed in transcript with the 'Operator' acting as the customer and 'Customer' as the employee, requiring interpretation. No explicit guideline example for shakes, but treated as drink eligible for 2-for-5. Additional topping classification relied on provided list though exact wording differed.",Caramel Sundae (Sprinkles),"Vanilla Shake, Caramel Sundae, Heath Blizzard","Small Vanilla Shake, Small Caramel Sundae (Sprinkles), Small Heath Blizzard","Small Vanilla Shake, Small Caramel Sundae, Small Heath Blizzard","Small Vanilla Shake, Small Caramel Sundae",0,"Vanilla Shake, Caramel Sundae, Heath Blizzard",0,0,2,3,1,3,3,0,0,2,0,0,3,0,0,,0.0,b94f7773-0638-4e21-b081-dc7a314035de,"Operator: Can I please have a small vanilla shake?
+Customer: Small vanilla shake?
+Operator: Yes, and a small caramel sundae.
+Customer: Small caramel sundae. Did you want chopped nuts, whipped cream, or sprinkles on that?
+Operator: That'd be chopped nuts, whipped cream, sprinkles.
+Customer: Yeah.
+Operator: Sprinkles, please.
+Customer: Okay, anything else?
+Operator: Yes, ma'am, and a small Heath Blizzard.
+Customer: Small Heath. Do you want extra Heath in that?
+Operator: No, we're good, thank you.
+Customer: Alright, anything else tonight?
+Operator: That should do me, hon.
+Customer: It's gonna be $16.21 at the window.
+Operator: Great, thank you.",False,True,False,True,,
+0,1,0,,0,1,0,"Operator accurately captured order but missed three add-on opportunities (sprinkles, banana boost, extra Blizzard topping). No upsizing or upsell chances, but operator could still suggest premium toppings to boost sales.",0,Ambiguity on whether Peanut Butter Parfait has upsizing or add-on options and how to treat mini Blizzard size since not in provided sizes; assumed both have no upsizing chance.,0,"Kid Twist Cone, Medium Strawberry Julius, Mini Reese's Cup Blizzard","Kid Twist Cone, Medium Strawberry Julius, Mini Reese's Cup Blizzard, Peanut Butter Parfait","Kid Twist Cone, Medium Strawberry Julius, Mini Reese's Cup Blizzard, Peanut Butter Parfait",0,0,0,0,0,0,3,0,4,4,0,0,0,0,0,0,0,0,,,,"Operator accurately captured order but missed three add-on opportunities (sprinkles, banana boost, extra Blizzard topping). No upsizing or upsell chances, but operator could still suggest premium toppings to boost sales.",26.948,Ambiguity on whether Peanut Butter Parfait has upsizing or add-on options and how to treat mini Blizzard size since not in provided sizes; assumed both have no upsizing chance.,0,"Kid Twist Cone, Medium Strawberry Julius, Mini Reese's Cup Blizzard","Kid Twist Cone, Medium Strawberry Julius, Mini Reese's Cup Blizzard, Peanut Butter Parfait","Kid Twist Cone, Medium Strawberry Julius, Mini Reese's Cup Blizzard, Peanut Butter Parfait",0,0,0,0,0,0,3,0,4,4,0,0,0,0,0,0,0,0,,0.0,afdbb338-1199-4e57-9f58-660c9da297b9,"Operator: Hi, welcome to Dairy Queen. What can I get started for you?
+Customer: Hi, we're gonna do a kid twist cone.
+Operator: Kid twist cone, anything else?
+Customer: Yes, and then a medium strawberry Julius.
+Operator: Medium strawberry Julius.
+Customer: And a mini Reese's cup blizzard.
+Operator: Okay.
+Customer: And a peanut butter parfait.
+Operator: Anything else?
+Customer: That's it.
+Operator: Alright, your total is going to be $20.35 at the window.",False,False,False,False,,
+0,1,0,,0,1,0,Operator offered extra Oreos for each Blizzard which is a valid additional topping attempt but customer declined; no upsell or upsize opportunities were applicable because customer specified size. Interaction was clear and polite.,0,"Speaker labels were reversed in the transcript, making it briefly unclear which lines belonged to the operator versus the customer.",0,Small Oreo Blizzard (2),Small Oreo Blizzard (2),Small Oreo Blizzard (2),0,0,0,0,0,2,2,0,2,2,0,0,0,0,0,0,0,0,,,,Operator offered extra Oreos for each Blizzard which is a valid additional topping attempt but customer declined; no upsell or upsize opportunities were applicable because customer specified size. Interaction was clear and polite.,29.049999999999997,"Speaker labels were reversed in the transcript, making it briefly unclear which lines belonged to the operator versus the customer.",0,Small Oreo Blizzard (2),Small Oreo Blizzard (2),Small Oreo Blizzard (2),0,0,0,0,0,2,2,0,2,2,0,0,0,0,0,0,0,0,,0.0,c30bb333-b903-4461-9dec-9636a58e0aa6,"Operator: Okay, that's ready.
+Customer: What can I get for you?
+Operator: Okay, can I get an Oreo blizzard?
+Customer: Two small.
+Operator: Two small Oreos? Do you want extra Oreos in those?
+Customer: No, thank you.
+Operator: Alright, anything else?
+Customer: That's it.
+Operator: It'll be $12.19 at the window.
+Customer: Thank you.",False,False,False,False,,
+0,1,0,,0,1,0,"The operator successfully offered an additional item extra doughnuts which the customer accepted, constituting one upsell. No attempts were made to upsell the chili cheese dog to a meal or to upsize any items, and no opportunities for additional toppings were pursued. The agent confirmed the order efficiently but missed the chance to upsell the chili cheese dog to a combo meal.",0,"The transcript included items not present on the provided DQ menu, creating ambiguity in mapping. Chili cheese sauce was interpreted as a chili cheese dog for upsell opportunity counting, and doughnuts were treated as a single upsell item despite unusual quantity wording.",0,0,"Chili Cheese Dog, Medium Mixed Bowl of Mashed Potatoes, Extra 50 Doughnuts","Chili Cheese Dog, Medium Mixed Bowl of Mashed Potatoes",Chili Cheese Dog,0,0,Extra 50 Doughnuts,0,0,0,0,3,2,0,1,1,1,0,0,0,0,,,,"The operator successfully offered an additional item extra doughnuts which the customer accepted, constituting one upsell. No attempts were made to upsell the chili cheese dog to a meal or to upsize any items, and no opportunities for additional toppings were pursued. The agent confirmed the order efficiently but missed the chance to upsell the chili cheese dog to a combo meal.",31.808,"The transcript included items not present on the provided DQ menu, creating ambiguity in mapping. Chili cheese sauce was interpreted as a chili cheese dog for upsell opportunity counting, and doughnuts were treated as a single upsell item despite unusual quantity wording.",0,0,"Chili Cheese Dog, Medium Mixed Bowl of Mashed Potatoes, Extra 50 Doughnuts","Chili Cheese Dog, Medium Mixed Bowl of Mashed Potatoes",Chili Cheese Dog,0,0,Extra 50 Doughnuts,0,0,0,0,3,2,0,1,1,1,0,0,0,0,,1.0,18c3bdf2-9396-4c63-a096-9e6d48b60bf6,"Operator: Alright, what can I get started for you today?
+Customer: Can I do one chili cheese sauce?
+Operator: Gotcha.
+Customer: And a medium mixed bowl of mashed potatoes.
+Operator: Gotcha. Anything else? Do you want extra 50 doughnuts there?
+Customer: Sure.
+Operator: Gotcha. Anything else?
+Customer: That's it.
+Operator: Alrighty, $12.62 for you.
+Customer: Thank you.",True,True,False,False,,
+0,1,0,,0,1,0,"The operator was friendly and took the order accurately, offered milk bones and peanut butter for the pup cups but made no upselling or upsizing attempts; with sizes already specified there were limited upsizing opportunities, overall performance satisfactory.",0,Ambiguity on whether pup cups count as menu items with paid additional toppings; puff cup spelling inconsistency in transcript; no explicit menu data for pup cups in provided lists.,0,Pup Cups (2),"Medium Reese's Caramel Craze Blizzard, Small S'mores Blizzard, 2 Pup Cups","Medium Reese's Caramel Craze Blizzard, Small S'mores Blizzard, 2 Pup Cups",0,0,0,0,0,2,2,0,4,4,0,0,0,0,0,0,0,0,,,,"The operator was friendly and took the order accurately, offered milk bones and peanut butter for the pup cups but made no upselling or upsizing attempts; with sizes already specified there were limited upsizing opportunities, overall performance satisfactory.",23.896,Ambiguity on whether pup cups count as menu items with paid additional toppings; puff cup spelling inconsistency in transcript; no explicit menu data for pup cups in provided lists.,0,Pup Cups (2),"Medium Reese's Caramel Craze Blizzard, Small S'mores Blizzard, 2 Pup Cups","Medium Reese's Caramel Craze Blizzard, Small S'mores Blizzard, 2 Pup Cups",0,0,0,0,0,2,2,0,4,4,0,0,0,0,0,0,0,0,,0.0,af38615d-c15c-46ae-9bf3-ceddab9a4eba,"Operator: Look who it is!
+Operator: Alright, what can I get for you?
+Customer: Hi.
+Operator: No.
+Customer: I will do a medium Reese's Caramel Craze blizzard.
+Operator: A medium Reese's Caramel Craze, gotcha.
+Customer: And then a small s'mores blizzard.
+Operator: Gotcha.
+Customer: And then two puff cups.
+Operator: Two puff cups, is this for dogs today?
+Customer: Yes.
+Operator: Do you want milk bones and peanut butter on it?
+Customer: Um, no.
+Operator: No? Alrighty, $17.73 for you.
+Customer: Thank you.",False,False,False,False,,
+0,0,0,,0,0,0,"The operator politely informed the customer that cheeseburgers are unavailable but did not attempt to guide them toward alternative menu items or make any upsell or upsize offers, missing a potential sales opportunity.",0,"Transcript ends before a final order is placed; cheeseburgers are not in the provided menu list, so no upsell/upsize mapping was possible.",0,0,0,Classic Cheeseburger (2),0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,cheeseburger,,,,"The operator politely informed the customer that cheeseburgers are unavailable but did not attempt to guide them toward alternative menu items or make any upsell or upsize offers, missing a potential sales opportunity.",19.915999999999997,"Transcript ends before a final order is placed; cheeseburgers are not in the provided menu list, so no upsell/upsize mapping was possible.",0,0,0,Classic Cheeseburger (2),0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,cheeseburger,,0.0,3125b5e9-f25d-4d51-8445-4abc01e6c544,"Operator: Alright, what can I get for you?
+Customer: Uh, no.
+Operator: Okay, thank you.
+Customer: Um, can we please get two, like whatever your classic cheeseburger is?
+Operator: Uh, we don't have any fried food at this location or burgers. We only have hot dogs, chili dogs, and pretzel sticks. We're not a full-time store.
+Customer: Oh, okay, understood.
+Operator: No, yeah, you're all good.
+Customer: Uh, no worries about that, but can I just get the...",False,False,False,False,,

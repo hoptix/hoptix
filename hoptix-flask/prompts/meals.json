@@ -1,0 +1,26 @@
+[
+  {
+    "Item": "2 For $5 Meal (Mix and Match)",
+    "Ordered Items Count": 2,
+    "Order Inclusions for Combo/Meal": "1.) Two items from the following: Small Sundae, Chili Dog, Any Size Drink, Pretzel Sticks",
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  },
+  {
+    "Item": "Hot Dog Meal or combo [Sizes: None]",
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One Hot dog\n2. One Chips\n3. One M Drink (Upsize Option: Large)",
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  },
+  {
+    "Item": "$7 Chili Cheese Dog",
+    "Ordered Items Count": 4,
+    "Order Inclusions for Combo/Meal": "1.) Chili Cheese Dog\n2.) Chips\n3.) Small Sundae\n4.) Reguar drink",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Upsize Sundae to small Blizzard (1) or upgrade drink to large",
+    "Add on Chance": "Add Whipped Cream/Nuts/Sprinkles to Sundae OR Add Primary Topping/Ingredient to Blizzard (1)"
+  }
+]

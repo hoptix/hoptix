@@ -1,0 +1,841 @@
+ended_at,kind,meta,meta.asked_more_time,meta.complete_order,meta.coupon_used,meta.mobile_order,meta.out_of_stock_items,meta.s3_key,meta.segment_index,meta.step1_raw,meta.text,meta.total_segments_in_video,meta.video_end_seconds,meta.video_start_seconds,run_id,started_at,tx_range,video_id
+2025-08-17T18:08:46Z,order,,0,0,0,0,0,dev/sample/DT_File20250817180001000.avi,0,"{""1"": ""Operator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator:\nCustomer:\nOperator"", ""2"": ""0"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0""}","Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator:
+Customer:
+Operator",1,525.0,330.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T18:05:31Z,"[""2025-08-17T18:05:31Z"",""2025-08-17T18:08:46Z"")",c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-17T18:15:16Z,order,,0,1,0,0,0,dev/sample/DT_File20250817180001000.avi,0,"{""1"":""Operator: If you have any questions on the menu, order when you're ready.\nCustomer: Yeah, still looking, thank you.\nCustomer: We'll start with a small Blizzard of the Month.\nOperator: Okay, which one, the Superman?\nCustomer: The Caramel Craze.\nOperator: Okay, small Reese's Caramel Craze. Did you want a little extra Reese's peanut butter cups in there? Makes it really good.\nCustomer: We'll take that, and yeah.\nOperator: Okay.\nCustomer: And then we'll have a small Butterfinger Blizzard.\nOperator: Small Butterfinger, a little extra Butterfinger in there?\nCustomer: Yeah, like double or triple.\nOperator: We'll do triple, it's better that way.\nCustomer: Yeah, it is.\nOperator: Okay, and then we have our soft pretzel sticks with queso for $3.89 if you want a little food side snack with that today.\nCustomer: I think we're good with just the Blizzard.\nOperator: Okay, will that do it for you?\nCustomer: That is it.\nOperator: $14.78 at the window, thank you.\nCustomer: Thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: If you have any questions on the menu, order when you're ready.
+Customer: Yeah, still looking, thank you.
+Customer: We'll start with a small Blizzard of the Month.
+Operator: Okay, which one, the Superman?
+Customer: The Caramel Craze.
+Operator: Okay, small Reese's Caramel Craze. Did you want a little extra Reese's peanut butter cups in there? Makes it really good.
+Customer: We'll take that, and yeah.
+Operator: Okay.
+Customer: And then we'll have a small Butterfinger Blizzard.
+Operator: Small Butterfinger, a little extra Butterfinger in there?
+Customer: Yeah, like double or triple.
+Operator: We'll do triple, it's better that way.
+Customer: Yeah, it is.
+Operator: Okay, and then we have our soft pretzel sticks with queso for $3.89 if you want a little food side snack with that today.
+Customer: I think we're good with just the Blizzard.
+Operator: Okay, will that do it for you?
+Customer: That is it.
+Operator: $14.78 at the window, thank you.
+Customer: Thank you.",1,915.0,555.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T18:09:16Z,"[""2025-08-17T18:09:16Z"",""2025-08-17T18:15:16Z"")",c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-17T18:17:23.500000Z,order,,0,1,0,0,0,dev/sample/DT_File20250817180001000.avi,0,"{""1"":""Operator: Looks like a small Oreo cookie blizzard.\nCustomer: Oreo, do you want a little extra Oreo in that? It makes it really good.\nOperator: Sure.\nCustomer: And we do have our soft pretzel sticks with queso for $3.89 if you need a little food option with that today.\nOperator: No, thank you.\nCustomer: Anything else for you today?\nOperator: That'll be it.\nCustomer: $6.96 to the window, thank you.\nOperator: No, thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: Looks like a small Oreo cookie blizzard.
+Customer: Oreo, do you want a little extra Oreo in that? It makes it really good.
+Operator: Sure.
+Customer: And we do have our soft pretzel sticks with queso for $3.89 if you need a little food option with that today.
+Operator: No, thank you.
+Customer: Anything else for you today?
+Operator: That'll be it.
+Customer: $6.96 to the window, thank you.
+Operator: No, thank you.",2,1042.5,975.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T18:16:16Z,"[""2025-08-17T18:16:16Z"",""2025-08-17T18:17:23.500000Z"")",c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-17T18:18:31Z,order,,0,1,0,0,0,dev/sample/DT_File20250817180001000.avi,1,"{""1"":""Customer: Okay, we're ready.\nOperator: Order when you're ready.\nCustomer: Okay, thank you. Can we have the brownie and Oreo confection?\nOperator: The brownie Oreo confection, did you want a little extra Oreo in there? It makes it really good.\nCustomer: Yes, please, thank you. And then can we have a small chocolate cone double dipped in chocolate?\nOperator: Sure. So a small chocolate cone dipped in chocolate and then double dipped, okay?\nCustomer: Yeah, that's it.\nOperator: We do have our soft pretzel sticks with queso today for $3.89 if you need a food option today.\nCustomer: No, I'm good, thank you. I will take a small Diet Coke.\nOperator: Small Diet Coke, okay.\nCustomer: Okay, that's all, thank you.\nOperator: Your total is going to be $16.30 at the window, thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Customer: Okay, we're ready.
+Operator: Order when you're ready.
+Customer: Okay, thank you. Can we have the brownie and Oreo confection?
+Operator: The brownie Oreo confection, did you want a little extra Oreo in there? It makes it really good.
+Customer: Yes, please, thank you. And then can we have a small chocolate cone double dipped in chocolate?
+Operator: Sure. So a small chocolate cone dipped in chocolate and then double dipped, okay?
+Customer: Yeah, that's it.
+Operator: We do have our soft pretzel sticks with queso today for $3.89 if you need a food option today.
+Customer: No, I'm good, thank you. I will take a small Diet Coke.
+Operator: Small Diet Coke, okay.
+Customer: Okay, that's all, thank you.
+Operator: Your total is going to be $16.30 at the window, thank you.",2,1110.0,1042.5,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T18:17:23.500000Z,"[""2025-08-17T18:17:23.500000Z"",""2025-08-17T18:18:31Z"")",c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-17T18:21:01Z,order,,0,1,0,0,0,dev/sample/DT_File20250817180001000.avi,0,"{""1"":""Operator: Large vanilla cone?\nOperator: What was that? Large vanilla cone?\nOperator: Did you want that dipped in sprinkles?\nOperator: Yes sir, I can hardly hear you, sorry.\nOperator: No, okay. Large vanilla cone. Anything else for you? I've got soft pretzel sticks with queso for $3.89 if you need a food option to go with that.\nOperator: Just the cone then?\nOperator: $4.90 at the window, thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: Large vanilla cone?
+Operator: What was that? Large vanilla cone?
+Operator: Did you want that dipped in sprinkles?
+Operator: Yes sir, I can hardly hear you, sorry.
+Operator: No, okay. Large vanilla cone. Anything else for you? I've got soft pretzel sticks with queso for $3.89 if you need a food option to go with that.
+Operator: Just the cone then?
+Operator: $4.90 at the window, thank you.",2,1260.0,1170.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T18:19:31Z,"[""2025-08-17T18:19:31Z"",""2025-08-17T18:21:01Z"")",c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-17T18:22:31Z,order,,0,1,0,0,0,dev/sample/DT_File20250817180001000.avi,1,"{""1"":""Operator: All cherry dipped cones, do you want them double dipped in cherry because it keeps them colder longer in this hot weather?\nOperator: Yep.\nOperator: Okay, it doesn't melt as fast also. And we do have our soft pretzel sticks with queso for $3.89 if you need a food item to go with it.\nOperator: Anything else for you?\nOperator: And a small vanilla cone?\nOperator: And what else for you?\nOperator: Okay, so the two cherry dipped cones double dipped and the small vanilla cone.\nOperator: $14.01 at the window, thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: All cherry dipped cones, do you want them double dipped in cherry because it keeps them colder longer in this hot weather?
+Operator: Yep.
+Operator: Okay, it doesn't melt as fast also. And we do have our soft pretzel sticks with queso for $3.89 if you need a food item to go with it.
+Operator: Anything else for you?
+Operator: And a small vanilla cone?
+Operator: And what else for you?
+Operator: Okay, so the two cherry dipped cones double dipped and the small vanilla cone.
+Operator: $14.01 at the window, thank you.",2,1350.0,1260.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T18:21:01Z,"[""2025-08-17T18:21:01Z"",""2025-08-17T18:22:31Z"")",c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-17T18:33:01Z,order,,0,0,0,0,0,dev/sample/DT_File20250817180001000.avi,0,"{""1"":""Operator: Do you want some extra peanut butter cups in there?"",""2"":""0"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}",Operator: Do you want some extra peanut butter cups in there?,1,1980.0,1530.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T18:25:31Z,"[""2025-08-17T18:25:31Z"",""2025-08-17T18:33:01Z"")",c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-17T18:34:46Z,order,,0,0,0,0,0,dev/sample/DT_File20250817180001000.avi,0,"{""1"":""Operator:"",""2"":""0"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}",Operator:,1,2085.0,2070.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T18:34:31Z,"[""2025-08-17T18:34:31Z"",""2025-08-17T18:34:46Z"")",c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-17T18:35:31Z,order,,0,0,0,0,0,dev/sample/DT_File20250817180001000.avi,0,"{""1"": ""Operator: When you're ready."", ""2"": ""0"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0""}",Operator: When you're ready.,1,2130.0,2100.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T18:35:01Z,"[""2025-08-17T18:35:01Z"",""2025-08-17T18:35:31Z"")",c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-17T18:36:46Z,order,,1,0,0,0,0,dev/sample/DT_File20250817180001000.avi,0,"{""1"": ""Operator: I just dropped it. Hold on."", ""2"": ""0"", ""3"": ""0"", ""4"": ""0"", ""5"": ""1"", ""6"": ""0""}",Operator: I just dropped it. Hold on.,1,2205.0,2145.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T18:35:46Z,"[""2025-08-17T18:35:46Z"",""2025-08-17T18:36:46Z"")",c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-17T18:41:01Z,order,,0,0,0,0,0,dev/sample/DT_File20250817180001000.avi,0,"{""1"":""Operator: Are you ready?\nCustomer: Yeah.\nOperator: Two chili cheese dogs, okay?\nCustomer: Yeah, yeah. One sundae, strawberry.\nOperator: Strawberry smoothie?\nCustomer: Yeah.\nOperator: Okay, large? Large grande strawberry smoothie?\nCustomer: Sundae.\nOperator: Strawberry sundae, large?\nCustomer: Large.\nOperator: Large strawberry sundae?\nCustomer: Yeah.\nOperator: Okay, do you want whipped cream, chopped nuts, and sprinkles?\nCustomer: Chocolate."",""2"":""0"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: Are you ready?
+Customer: Yeah.
+Operator: Two chili cheese dogs, okay?
+Customer: Yeah, yeah. One sundae, strawberry.
+Operator: Strawberry smoothie?
+Customer: Yeah.
+Operator: Okay, large? Large grande strawberry smoothie?
+Customer: Sundae.
+Operator: Strawberry sundae, large?
+Customer: Large.
+Operator: Large strawberry sundae?
+Customer: Yeah.
+Operator: Okay, do you want whipped cream, chopped nuts, and sprinkles?
+Customer: Chocolate.",1,2460.0,2220.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T18:37:01Z,"[""2025-08-17T18:37:01Z"",""2025-08-17T18:41:01Z"")",c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-17T18:48:01Z,order,,0,0,0,0,0,dev/sample/DT_File20250817180001000.avi,0,"{""1"":""Operator: Welcome to Dairy Queen. May I take your order?\n\nCustomer: Hi. What's the dipped strawberry cheesecake?\n\nOperator: It's chocolate chunks with strawberry and cheesecake bites.\n\nCustomer: Is it basically just a royal cheesecake but with chocolate?\n\nOperator: Well, it's got chocolate chunks in it. It's just got chocolate chunks, strawberry, and cheesecake pieces. It doesn't have a core.\n\nCustomer: Can I have the regular, the royal cheesecake, but with Oreo?\n\nOperator: Okay, what size? I have a royal Oreo fudge royal.\n\nCustomer: Nah, I think it's just the royal New York cheesecake.\n\nOperator: Okay, large. Okay, large New York royal, okay. Anything else for you? We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that today.\n\nCustomer: Thank you. Actually, I do have a question about the dipped strawberry cheesecake.\n\nOperator: It's chocolate chunks with strawberry and cheesecake bites.\n\nCustomer: Is it basically just a royal cheesecake but with chocolate?\n\nOperator: Well, it's got chocolate chunks in it. It's just got chocolate chunks, strawberry, and cheesecake pieces. It doesn't have a core.\n\nCustomer: Can I have the regular, the royal cheesecake, but with Oreo?\n\nOperator: Okay, what size? I have a royal Oreo fudge royal.\n\nCustomer: Nah, I think it's just the royal New York cheesecake.\n\nOperator: Okay, large. Okay, large New York royal, okay. Anything else for you? We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that today.\n\nCustomer: Thank you. Actually, I do have a question about the dipped strawberry cheesecake.\n\nOperator: It's chocolate chunks with strawberry and cheesecake bites.\n\nCustomer: Is it basically just a royal cheesecake but with chocolate?\n\nOperator: Well, it's got chocolate chunks in it. It's just got chocolate chunks, strawberry, and cheesecake pieces. It doesn't have a core.\n\nCustomer: Can I have the regular, the royal cheesecake, but with Oreo?\n\nOperator: Okay, what size? I have a royal Oreo fudge royal.\n\nCustomer: Nah, I think it's just the royal New York cheesecake.\n\nOperator: Okay, large. Okay, large New York royal, okay. Anything else for you? We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that today.\n\nCustomer: Thank you. Actually, I do have a question about the dipped strawberry cheesecake.\n\nOperator: It's chocolate chunks with strawberry and cheesecake bites.\n\nCustomer: Is it basically just a royal cheesecake but with chocolate?\n\nOperator: Well, it's got chocolate chunks in it. It's just got chocolate chunks, strawberry, and cheesecake pieces. It doesn't have a core.\n\nCustomer: Can I have the regular, the royal cheesecake, but with Oreo?\n\nOperator: Okay, what size? I have a royal Oreo fudge royal.\n\nCustomer: Nah, I think it's just the royal New York cheesecake.\n\nOperator: Okay, large. Okay, large New York royal, okay. Anything else for you? We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that today.\n\nCustomer: Thank you. Actually, I do have a question about the dipped strawberry cheesecake.\n\nOperator: It's chocolate chunks with strawberry and cheesecake bites.\n\nCustomer: Is it basically just a royal cheesecake but with chocolate?\n\nOperator: Well, it's got chocolate chunks in it. It's just got chocolate chunks, strawberry, and cheesecake pieces. It doesn't have a core.\n\nCustomer: Can I have the regular, the royal cheesecake, but with Oreo?\n\nOperator: Okay, what size? I have a royal Oreo fudge royal.\n\nCustomer: Nah, I think it's just the royal New York cheesecake.\n\nOperator: Okay, large. Okay, large New York royal, okay. Anything else for you? We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that today.\n\nCustomer: Thank you. Actually, I do have a question about the dipped strawberry cheesecake.\n\nOperator: It's chocolate chunks with strawberry and cheesecake bites.\n\nCustomer: Is it basically just a royal cheesecake but with chocolate?\n\nOperator: Well, it's got chocolate chunks in it. It's just got chocolate chunks, strawberry, and cheesecake pieces. It doesn't have a core.\n\nCustomer: Can I have the regular, the royal cheesecake, but with Oreo?\n\nOperator: Okay, what size? I have a royal Oreo fudge royal.\n\nCustomer: Nah, I think it's just the royal New York cheesecake.\n\nOperator: Okay, large. Okay, large New York royal, okay. Anything else for you? We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that today.\n\nCustomer: Thank you. Actually, I do have a question about the dipped strawberry cheesecake.\n\nOperator: It's chocolate chunks with strawberry and cheesecake bites.\n\nCustomer: Is it basically just a royal cheesecake but with chocolate?\n\nOperator: Well, it's got chocolate chunks in it. It's just got chocolate chunks, strawberry, and cheesecake pieces. It doesn't have a core.\n\nCustomer: Can I have the regular, the royal cheesecake, but with Oreo?\n\nOperator: Okay, what size? I have a royal Oreo fudge royal.\n\nCustomer: Nah, I think it's just the royal New York cheesecake.\n\nOperator: Okay, large. Okay, large New York royal, okay. Anything else for you? We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that today.\n\nCustomer: Thank you. Actually, I do have a question about the dipped strawberry cheesecake.\n\nOperator: It's chocolate chunks with strawberry and cheesecake bites.\n\nCustomer: Is it basically just a royal cheesecake but with chocolate?\n\nOperator: Well, it's got chocolate chunks in it. It's just got chocolate chunks, strawberry, and cheesecake pieces. It doesn't have a core.\n\nCustomer: Can"",""2"":""0"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: Welcome to Dairy Queen. May I take your order?
+
+Customer: Hi. What's the dipped strawberry cheesecake?
+
+Operator: It's chocolate chunks with strawberry and cheesecake bites.
+
+Customer: Is it basically just a royal cheesecake but with chocolate?
+
+Operator: Well, it's got chocolate chunks in it. It's just got chocolate chunks, strawberry, and cheesecake pieces. It doesn't have a core.
+
+Customer: Can I have the regular, the royal cheesecake, but with Oreo?
+
+Operator: Okay, what size? I have a royal Oreo fudge royal.
+
+Customer: Nah, I think it's just the royal New York cheesecake.
+
+Operator: Okay, large. Okay, large New York royal, okay. Anything else for you? We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that today.
+
+Customer: Thank you. Actually, I do have a question about the dipped strawberry cheesecake.
+
+Operator: It's chocolate chunks with strawberry and cheesecake bites.
+
+Customer: Is it basically just a royal cheesecake but with chocolate?
+
+Operator: Well, it's got chocolate chunks in it. It's just got chocolate chunks, strawberry, and cheesecake pieces. It doesn't have a core.
+
+Customer: Can I have the regular, the royal cheesecake, but with Oreo?
+
+Operator: Okay, what size? I have a royal Oreo fudge royal.
+
+Customer: Nah, I think it's just the royal New York cheesecake.
+
+Operator: Okay, large. Okay, large New York royal, okay. Anything else for you? We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that today.
+
+Customer: Thank you. Actually, I do have a question about the dipped strawberry cheesecake.
+
+Operator: It's chocolate chunks with strawberry and cheesecake bites.
+
+Customer: Is it basically just a royal cheesecake but with chocolate?
+
+Operator: Well, it's got chocolate chunks in it. It's just got chocolate chunks, strawberry, and cheesecake pieces. It doesn't have a core.
+
+Customer: Can I have the regular, the royal cheesecake, but with Oreo?
+
+Operator: Okay, what size? I have a royal Oreo fudge royal.
+
+Customer: Nah, I think it's just the royal New York cheesecake.
+
+Operator: Okay, large. Okay, large New York royal, okay. Anything else for you? We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that today.
+
+Customer: Thank you. Actually, I do have a question about the dipped strawberry cheesecake.
+
+Operator: It's chocolate chunks with strawberry and cheesecake bites.
+
+Customer: Is it basically just a royal cheesecake but with chocolate?
+
+Operator: Well, it's got chocolate chunks in it. It's just got chocolate chunks, strawberry, and cheesecake pieces. It doesn't have a core.
+
+Customer: Can I have the regular, the royal cheesecake, but with Oreo?
+
+Operator: Okay, what size? I have a royal Oreo fudge royal.
+
+Customer: Nah, I think it's just the royal New York cheesecake.
+
+Operator: Okay, large. Okay, large New York royal, okay. Anything else for you? We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that today.
+
+Customer: Thank you. Actually, I do have a question about the dipped strawberry cheesecake.
+
+Operator: It's chocolate chunks with strawberry and cheesecake bites.
+
+Customer: Is it basically just a royal cheesecake but with chocolate?
+
+Operator: Well, it's got chocolate chunks in it. It's just got chocolate chunks, strawberry, and cheesecake pieces. It doesn't have a core.
+
+Customer: Can I have the regular, the royal cheesecake, but with Oreo?
+
+Operator: Okay, what size? I have a royal Oreo fudge royal.
+
+Customer: Nah, I think it's just the royal New York cheesecake.
+
+Operator: Okay, large. Okay, large New York royal, okay. Anything else for you? We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that today.
+
+Customer: Thank you. Actually, I do have a question about the dipped strawberry cheesecake.
+
+Operator: It's chocolate chunks with strawberry and cheesecake bites.
+
+Customer: Is it basically just a royal cheesecake but with chocolate?
+
+Operator: Well, it's got chocolate chunks in it. It's just got chocolate chunks, strawberry, and cheesecake pieces. It doesn't have a core.
+
+Customer: Can I have the regular, the royal cheesecake, but with Oreo?
+
+Operator: Okay, what size? I have a royal Oreo fudge royal.
+
+Customer: Nah, I think it's just the royal New York cheesecake.
+
+Operator: Okay, large. Okay, large New York royal, okay. Anything else for you? We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that today.
+
+Customer: Thank you. Actually, I do have a question about the dipped strawberry cheesecake.
+
+Operator: It's chocolate chunks with strawberry and cheesecake bites.
+
+Customer: Is it basically just a royal cheesecake but with chocolate?
+
+Operator: Well, it's got chocolate chunks in it. It's just got chocolate chunks, strawberry, and cheesecake pieces. It doesn't have a core.
+
+Customer: Can I have the regular, the royal cheesecake, but with Oreo?
+
+Operator: Okay, what size? I have a royal Oreo fudge royal.
+
+Customer: Nah, I think it's just the royal New York cheesecake.
+
+Operator: Okay, large. Okay, large New York royal, okay. Anything else for you? We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that today.
+
+Customer: Thank you. Actually, I do have a question about the dipped strawberry cheesecake.
+
+Operator: It's chocolate chunks with strawberry and cheesecake bites.
+
+Customer: Is it basically just a royal cheesecake but with chocolate?
+
+Operator: Well, it's got chocolate chunks in it. It's just got chocolate chunks, strawberry, and cheesecake pieces. It doesn't have a core.
+
+Customer: Can",1,2880.0,2625.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T18:43:46Z,"[""2025-08-17T18:43:46Z"",""2025-08-17T18:48:01Z"")",c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-17T18:50:31Z,order,,0,1,0,0,0,dev/sample/DT_File20250817180001000.avi,0,"{""1"":""Operator: Let me know if you have any questions on the menu.\nCustomer: Okay, thank you.\nCustomer: Can I do a small caramel craze blizzard?\nOperator: A small caramel craze? Reese's caramel craze? If you want a little extra Reese's in there, it makes it really good.\nCustomer: I'm okay.\nOperator: What's that?\nCustomer: I'm sure.\nOperator: Okay. Anything else for you today? I've got soft pretzel sticks with queso for $3.89 if you need a food option to go with that.\nCustomer: Can I do a small Oreo blizzard?\nOperator: Small Oreo? Do you want a little extra Oreo in that?\nCustomer: No, thank you.\nOperator: Okay. Anything else for you today?\nCustomer: Just a cup of vanilla soft serve.\nOperator: Okay. What size?\nCustomer: Small.\nOperator: You want a cup of small vanilla cup?\nCustomer: Yes, please.\nOperator: You want sprinkles on that today?\nCustomer: No, thank you.\nOperator: Okay, will that do it for you?\nCustomer: Yes, that's it.\nOperator: $16.75 at the window. Thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: Let me know if you have any questions on the menu.
+Customer: Okay, thank you.
+Customer: Can I do a small caramel craze blizzard?
+Operator: A small caramel craze? Reese's caramel craze? If you want a little extra Reese's in there, it makes it really good.
+Customer: I'm okay.
+Operator: What's that?
+Customer: I'm sure.
+Operator: Okay. Anything else for you today? I've got soft pretzel sticks with queso for $3.89 if you need a food option to go with that.
+Customer: Can I do a small Oreo blizzard?
+Operator: Small Oreo? Do you want a little extra Oreo in that?
+Customer: No, thank you.
+Operator: Okay. Anything else for you today?
+Customer: Just a cup of vanilla soft serve.
+Operator: Okay. What size?
+Customer: Small.
+Operator: You want a cup of small vanilla cup?
+Customer: Yes, please.
+Operator: You want sprinkles on that today?
+Customer: No, thank you.
+Operator: Okay, will that do it for you?
+Customer: Yes, that's it.
+Operator: $16.75 at the window. Thank you.",1,3030.0,2925.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T18:48:46Z,"[""2025-08-17T18:48:46Z"",""2025-08-17T18:50:31Z"")",c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-17T18:54:31Z,order,,0,1,0,0,0,dev/sample/DT_File20250817180001000.avi,0,"{""1"":""Operator: Hi, welcome to Duke.\nOperator: What do you have? Nothing. If you have any questions on the menu.\nCustomer: I'll take a peanut buster parfait please.\nOperator: Peanut buster, did you want whipped cream and sprinkles on that also? That's the new craze.\nCustomer: For the peanut buster parfait?\nOperator: Yeah, they've added whipped cream and sprinkles on top.\nCustomer: I'm okay, thanks.\nOperator: Okay, and we do have our soft pretzel sticks with queso for $3.89 if you need a side food order today.\nCustomer: I think I'm good, thank you though.\nOperator: Anything else for you?\nCustomer: That'll do it.\nOperator: $6.86 at the window, thank you.\nCustomer: Thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: Hi, welcome to Duke.
+Operator: What do you have? Nothing. If you have any questions on the menu.
+Customer: I'll take a peanut buster parfait please.
+Operator: Peanut buster, did you want whipped cream and sprinkles on that also? That's the new craze.
+Customer: For the peanut buster parfait?
+Operator: Yeah, they've added whipped cream and sprinkles on top.
+Customer: I'm okay, thanks.
+Operator: Okay, and we do have our soft pretzel sticks with queso for $3.89 if you need a side food order today.
+Customer: I think I'm good, thank you though.
+Operator: Anything else for you?
+Customer: That'll do it.
+Operator: $6.86 at the window, thank you.
+Customer: Thank you.",1,3270.0,3210.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T18:53:31Z,"[""2025-08-17T18:53:31Z"",""2025-08-17T18:54:31Z"")",c3ad8372-41bf-430d-9206-bc2df059f917
+2025-08-17T18:59:31Z,order,,0,1,0,0,0,dev/sample/DT_File20250817180001000.avi,0,"{""1"": ""Operator: Let me get a peanut butter parfait.\nCustomer: Peanut butter parfait for you?\nOperator: Yeah.\nCustomer: Do you want some whipped cream and chopped nuts on that? That's the new phase.\nOperator: I'll take the chopped nuts, not the whipped cream though.\nCustomer: Okay, it's already on it. It already has chopped nuts on it.\nOperator: Yeah, yeah, we're good.\nCustomer: Anything else for you?\nOperator: That'll be it.\nCustomer: So you just want a regular?\nOperator: Yeah.\nCustomer: Okay, $6.86."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0""}","Operator: Let me get a peanut butter parfait.
+Customer: Peanut butter parfait for you?
+Operator: Yeah.
+Customer: Do you want some whipped cream and chopped nuts on that? That's the new phase.
+Operator: I'll take the chopped nuts, not the whipped cream though.
+Customer: Okay, it's already on it. It already has chopped nuts on it.
+Operator: Yeah, yeah, we're good.
+Customer: Anything else for you?
+Operator: That'll be it.
+Customer: So you just want a regular?
+Operator: Yeah.
+Customer: Okay, $6.86.",1,3570.0,3510.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T18:58:31Z,"[""2025-08-17T18:58:31Z"",""2025-08-17T18:59:31Z"")",c3ad8372-41bf-430d-9206-bc2df059f917

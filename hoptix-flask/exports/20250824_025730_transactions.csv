@@ -1,0 +1,356 @@
+ended_at,kind,meta,meta.asked_more_time,meta.complete_order,meta.coupon_used,meta.mobile_order,meta.out_of_stock_items,meta.s3_key,meta.segment_index,meta.step1_raw,meta.text,meta.total_segments_in_video,meta.video_end_seconds,meta.video_start_seconds,run_id,started_at,tx_range,video_id
+2025-08-17T17:01:16Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,0,"{""1"":""Operator: Hi, welcome to Dairy Queen. What can I get for you today?\nCustomer: Uh, no, I don't think there's anything else. Okay, um, I will have a, um, if I could please just have a Reese's Blizzard.\nOperator: A large Reese's Blizzard. Do you want extra Reese's in there today?\nCustomer: Uh, no, and I don't think I need the large, um...\nOperator: What size then?\nCustomer: Um, I will take the, um, I'll take the small.\nOperator: Small Reese's, do you want a little extra Reese's in there?\nCustomer: Uh, no, thank you.\nOperator: Okay, and we do have our soft pretzel sticks with queso for $3.89 if you need a little food option today?\nCustomer: No, thank you.\nOperator: Anything else for you?\nCustomer: No, that's it.\nOperator: $6.10 at the window, thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: Hi, welcome to Dairy Queen. What can I get for you today?
+Customer: Uh, no, I don't think there's anything else. Okay, um, I will have a, um, if I could please just have a Reese's Blizzard.
+Operator: A large Reese's Blizzard. Do you want extra Reese's in there today?
+Customer: Uh, no, and I don't think I need the large, um...
+Operator: What size then?
+Customer: Um, I will take the, um, I'll take the small.
+Operator: Small Reese's, do you want a little extra Reese's in there?
+Customer: Uh, no, thank you.
+Operator: Okay, and we do have our soft pretzel sticks with queso for $3.89 if you need a little food option today?
+Customer: No, thank you.
+Operator: Anything else for you?
+Customer: No, that's it.
+Operator: $6.10 at the window, thank you.",2,75.0,0.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:00:01Z,"[""2025-08-17T17:00:01Z"",""2025-08-17T17:01:16Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:02:31Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,1,"{""1"":""Operator: Hi, welcome to Dairy Queen. What can I get for you today?\nCustomer: I'll do a medium Oreo Blizzard, and then a small vanilla dipped in cherry cone.\nOperator: Did you say large Oreo Blizzard?\nCustomer: Medium.\nOperator: Medium Oreo, do you want a little extra Oreo in that today?\nCustomer: No, thank you.\nOperator: And what else for you?\nCustomer: A small vanilla dipped in cherry cone.\nOperator: Small vanilla dipped in cherry, do you want a double dipped in cherry? It keeps it colder longer and it doesn't melt as fast on these hot days.\nCustomer: Do it.\nOperator: Okay, anything else for you?\nCustomer: That's it.\nOperator: Soft pretzel sticks with queso for $3.89 if you need a food option?\nCustomer: No, this is very good.\nOperator: $11.96 at the window, thank you.\nCustomer: Thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: Hi, welcome to Dairy Queen. What can I get for you today?
+Customer: I'll do a medium Oreo Blizzard, and then a small vanilla dipped in cherry cone.
+Operator: Did you say large Oreo Blizzard?
+Customer: Medium.
+Operator: Medium Oreo, do you want a little extra Oreo in that today?
+Customer: No, thank you.
+Operator: And what else for you?
+Customer: A small vanilla dipped in cherry cone.
+Operator: Small vanilla dipped in cherry, do you want a double dipped in cherry? It keeps it colder longer and it doesn't melt as fast on these hot days.
+Customer: Do it.
+Operator: Okay, anything else for you?
+Customer: That's it.
+Operator: Soft pretzel sticks with queso for $3.89 if you need a food option?
+Customer: No, this is very good.
+Operator: $11.96 at the window, thank you.
+Customer: Thank you.",2,150.0,75.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:01:16Z,"[""2025-08-17T17:01:16Z"",""2025-08-17T17:02:31Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:05:16Z,order,,1,1,0,0,0,dev/sample/DT_File20250817170001000.avi,0,"{""1"": ""Operator: Hi, what can I get for you?\nCustomer: I need a blizzard, huh?\nOperator: Blizzard for you?\nCustomer: Yeah, banana split, medium.\nOperator: A medium banana split blizzard, okay. We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that today.\nCustomer: No, just a regular banana split blizzard.\nOperator: Anything else for you?\nCustomer: Yeah, no chocolate with that.\nOperator: Okay, hold on, hold on, hold on. No chocolate sauce.\nCustomer: No chocolate syrup, just strawberry and pineapple.\nOperator: Anything else for you?\nCustomer: That'll work.\nOperator: $7.93 at the window, thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""1"", ""6"": ""0""}","Operator: Hi, what can I get for you?
+Customer: I need a blizzard, huh?
+Operator: Blizzard for you?
+Customer: Yeah, banana split, medium.
+Operator: A medium banana split blizzard, okay. We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that today.
+Customer: No, just a regular banana split blizzard.
+Operator: Anything else for you?
+Customer: Yeah, no chocolate with that.
+Operator: Okay, hold on, hold on, hold on. No chocolate sauce.
+Customer: No chocolate syrup, just strawberry and pineapple.
+Operator: Anything else for you?
+Customer: That'll work.
+Operator: $7.93 at the window, thank you.",1,315.0,225.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:03:46Z,"[""2025-08-17T17:03:46Z"",""2025-08-17T17:05:16Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:06:31Z,order,,0,0,0,0,0,dev/sample/DT_File20250817170001000.avi,0,"{""1"":""Operator: Need someone to grab counter."",""2"":""0"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}",Operator: Need someone to grab counter.,1,390.0,375.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:06:16Z,"[""2025-08-17T17:06:16Z"",""2025-08-17T17:06:31Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:07:53.500000Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,0,"{""1"": ""Operator: Hi, welcome to Dairy Queen. What can I get for you?\nCustomer: I would like a chocolate dilly bar and a small vanilla cone.\nOperator: A box of dilly bars, did you say?\nCustomer: No, no, no, a chocolate dilly bar.\nOperator: Oh, just a single dilly bar, okay.\nCustomer: Yeah, and then a small vanilla cone.\nOperator: A small vanilla cone? You want the vanilla cone dipped in sprinkles?\nCustomer: No.\nOperator: And we do have our soft pretzel sticks with queso today for $3.89 if you need a little food option to go with that.\nCustomer: I think we're good.\nOperator: $7.39 at the window, please pull forward, thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0""}","Operator: Hi, welcome to Dairy Queen. What can I get for you?
+Customer: I would like a chocolate dilly bar and a small vanilla cone.
+Operator: A box of dilly bars, did you say?
+Customer: No, no, no, a chocolate dilly bar.
+Operator: Oh, just a single dilly bar, okay.
+Customer: Yeah, and then a small vanilla cone.
+Operator: A small vanilla cone? You want the vanilla cone dipped in sprinkles?
+Customer: No.
+Operator: And we do have our soft pretzel sticks with queso today for $3.89 if you need a little food option to go with that.
+Customer: I think we're good.
+Operator: $7.39 at the window, please pull forward, thank you.",2,472.5,405.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:06:46Z,"[""2025-08-17T17:06:46Z"",""2025-08-17T17:07:53.500000Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:09:01Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,1,"{""1"": ""Operator: Ready whenever you are.\nCustomer: Can I get a medium dipped strawberry cheesecake?\nOperator: A medium dipped strawberry cheesecake? You want a little extra cheesecake in there? Makes it really good.\nCustomer: Yeah, I'll take some extra.\nOperator: Okay.\nCustomer: Then can I also get a medium... I had something in my mind, but not... Can I get the orange berry extreme smoothie?\nOperator: Okay, and a large on that?\nCustomer: Is there a medium?\nOperator: Yeah, I can do a medium orange berry extreme, okay.\nCustomer: Do that, that be it.\nOperator: Okay, $14.25 at the window, thank you.\nCustomer: Thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0""}","Operator: Ready whenever you are.
+Customer: Can I get a medium dipped strawberry cheesecake?
+Operator: A medium dipped strawberry cheesecake? You want a little extra cheesecake in there? Makes it really good.
+Customer: Yeah, I'll take some extra.
+Operator: Okay.
+Customer: Then can I also get a medium... I had something in my mind, but not... Can I get the orange berry extreme smoothie?
+Operator: Okay, and a large on that?
+Customer: Is there a medium?
+Operator: Yeah, I can do a medium orange berry extreme, okay.
+Customer: Do that, that be it.
+Operator: Okay, $14.25 at the window, thank you.
+Customer: Thank you.",2,540.0,472.5,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:07:53.500000Z,"[""2025-08-17T17:07:53.500000Z"",""2025-08-17T17:09:01Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:11:08.500000Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,0,"{""1"":""Operator: Okay, a small turtle blizzard. Did you want a little extra pecans in there? It makes it really good.\nCustomer: Yes.\nOperator: Okay. Anything else for you? I got my soft pretzel sticks with queso today for $3.89 if you need a little food item on the side. Anything else for you?\nCustomer: No, that'll be it.\nOperator: $6.63 at the window. Thank you.\nCustomer: Yes."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: Okay, a small turtle blizzard. Did you want a little extra pecans in there? It makes it really good.
+Customer: Yes.
+Operator: Okay. Anything else for you? I got my soft pretzel sticks with queso today for $3.89 if you need a little food item on the side. Anything else for you?
+Customer: No, that'll be it.
+Operator: $6.63 at the window. Thank you.
+Customer: Yes.",2,667.5,585.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:09:46Z,"[""2025-08-17T17:09:46Z"",""2025-08-17T17:11:08.500000Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:12:31Z,order,,1,1,0,0,0,dev/sample/DT_File20250817170001000.avi,1,"{""1"":""Operator: What can I get for you today?\nCustomer: Can we get a dipped strawberry cheesecake medium blizzard?\nOperator: Okay, medium dipped strawberry cheesecake. Do you want a little extra cheesecake in there? It makes it really good.\nCustomer: Actually, we want cherry dip in it.\nOperator: Okay, you want to add cherry cone dip?\nCustomer: Yes.\nOperator: Okay, that's what I have. I just have the cherry cone dip, okay?\nCustomer: Yep.\nOperator: And we do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go on the side today.\nCustomer: No, thank you. We also need a medium cherry dip blizzard.\nOperator: Okay, medium. Okay, hold on. Let me just do this. I'll just put, hold on. I'll just put cherry cone dip only, okay? Because I don't have a thing for it. Okay.\nCustomer: And then a small cherry dip blizzard.\nOperator: Okay, hold on. We'll do that. Cone dip only. Okay, anything else for you today?\nCustomer: That's it, thank you.\nOperator: Okay, $20.35 at the window. Thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""1"",""6"":""0""}","Operator: What can I get for you today?
+Customer: Can we get a dipped strawberry cheesecake medium blizzard?
+Operator: Okay, medium dipped strawberry cheesecake. Do you want a little extra cheesecake in there? It makes it really good.
+Customer: Actually, we want cherry dip in it.
+Operator: Okay, you want to add cherry cone dip?
+Customer: Yes.
+Operator: Okay, that's what I have. I just have the cherry cone dip, okay?
+Customer: Yep.
+Operator: And we do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go on the side today.
+Customer: No, thank you. We also need a medium cherry dip blizzard.
+Operator: Okay, medium. Okay, hold on. Let me just do this. I'll just put, hold on. I'll just put cherry cone dip only, okay? Because I don't have a thing for it. Okay.
+Customer: And then a small cherry dip blizzard.
+Operator: Okay, hold on. We'll do that. Cone dip only. Okay, anything else for you today?
+Customer: That's it, thank you.
+Operator: Okay, $20.35 at the window. Thank you.",2,750.0,667.5,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:11:08.500000Z,"[""2025-08-17T17:11:08.500000Z"",""2025-08-17T17:12:31Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:20:21Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,0,"{""1"": ""Operator: Hi, welcome to DQ. What can I get started for you today?\nCustomer: Can I have a medium peanut butter milkshake?\nOperator: Medium peanut butter milkshake, anything else for you today?\nCustomer: No, that'll be all.\nOperator: That'll be $5.80 at the window, thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0""}","Operator: Hi, welcome to DQ. What can I get started for you today?
+Customer: Can I have a medium peanut butter milkshake?
+Operator: Medium peanut butter milkshake, anything else for you today?
+Customer: No, that'll be all.
+Operator: That'll be $5.80 at the window, thank you.",3,1220.0,1170.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:19:31Z,"[""2025-08-17T17:19:31Z"",""2025-08-17T17:20:21Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:21:11Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,1,"{""1"": ""Operator: Hi, welcome to DQ. What can I get started for you today?\nCustomer: Hi, not today.\nOperator: Let me know if you have any questions on the menu.\nCustomer: Can I get one large Snickers Blizzard and a Heath Caramel Brownie?\nOperator: Yeah, anything else for you?\nCustomer: No, that's it.\nOperator: That'll be $13.70 at the window, thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0""}","Operator: Hi, welcome to DQ. What can I get started for you today?
+Customer: Hi, not today.
+Operator: Let me know if you have any questions on the menu.
+Customer: Can I get one large Snickers Blizzard and a Heath Caramel Brownie?
+Operator: Yeah, anything else for you?
+Customer: No, that's it.
+Operator: That'll be $13.70 at the window, thank you.",3,1270.0,1220.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:20:21Z,"[""2025-08-17T17:20:21Z"",""2025-08-17T17:21:11Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:22:01Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,2,"{""1"": ""Operator: Hi, welcome to DQ. What can I get started for you today?\nCustomer: Yes, could I have a small Heath Blizzard, please?\nOperator: A small Heath? Do you want a little extra Heath in there today? It makes it really good.\nCustomer: I think I'm going to pass, but thank you.\nOperator: Okay, and we have our soft pretzel sticks with queso for $3.89 if you need a little food option today.\nCustomer: No, thanks, I'll just go with the Blizzard.\nOperator: Okay, $6.10 at the window.\nCustomer: Thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0""}","Operator: Hi, welcome to DQ. What can I get started for you today?
+Customer: Yes, could I have a small Heath Blizzard, please?
+Operator: A small Heath? Do you want a little extra Heath in there today? It makes it really good.
+Customer: I think I'm going to pass, but thank you.
+Operator: Okay, and we have our soft pretzel sticks with queso for $3.89 if you need a little food option today.
+Customer: No, thanks, I'll just go with the Blizzard.
+Operator: Okay, $6.10 at the window.
+Customer: Thank you.",3,1320.0,1270.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:21:11Z,"[""2025-08-17T17:21:11Z"",""2025-08-17T17:22:01Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:27:04.750000Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,0,"{""1"":""Operator: Okay, do you want large caramel sundae with nuts and whipped cream? Do you want sprinkles also?\nCustomer: No sprinkles, I want a small one. A small caramel with nuts.\nOperator: Chopped nuts, whipped cream, do you want any extra caramel in it?\nCustomer: Sure.\nOperator: Okay, and we do have our soft pretzel sticks with queso today for $3.89 if you want a little side food item with that?\nCustomer: No, that's fine.\nOperator: Will that do it for you?\nCustomer: Yep.\nOperator: $5.95 at the window, thank you.\nCustomer: Okay, thank you.\nOperator: Hope you have any questions on the menu.\nCustomer: We're still viewing, thank you. One second.\nCustomer: Can I get a medium dipped strawberry cheesecake?\nOperator: Medium dipped strawberry cheesecake. Do you want a little extra cheesecake in there? Makes it really good.\nCustomer: Oh, yes, please.\nOperator: Okay.\nCustomer: Do you guys have anything with mocha in it?\nOperator: Yeah, I have an Oreo mocha mulatte, which is like a mulatte drink. It's frozen with chocolate and coffee.\nCustomer: Can I get a small one?\nOperator: Sure. Small mocha mulatte?\nCustomer: Yeah.\nOperator: Okay. We do have my soft pretzel sticks with queso for $3.89 if you need a little food option today.\nCustomer: No, thank you.\nOperator: Anything else for you today?\nCustomer: Can I get a Reese's caramel?\nOperator: The caramel craze?\nCustomer: Yeah.\nOperator: Large?\nCustomer: Medium.\nOperator: Medium Reese's caramel craze. A little extra Reese's peanut butter cups in there today?\nCustomer: Yes, please.\nOperator: Okay.\nCustomer: Can I get a brownie and Oreo confection?\nOperator: Okay, brownie, Oreo confection. Do you want a little extra Oreo in that?\nCustomer: No, thank you.\nOperator: Okay. Anything else for you?\nCustomer: That's it.\nOperator: Okay, your total's going to be $27.96 at the window. Please go forward. Thank you.\nCustomer: Okay."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: Okay, do you want large caramel sundae with nuts and whipped cream? Do you want sprinkles also?
+Customer: No sprinkles, I want a small one. A small caramel with nuts.
+Operator: Chopped nuts, whipped cream, do you want any extra caramel in it?
+Customer: Sure.
+Operator: Okay, and we do have our soft pretzel sticks with queso today for $3.89 if you want a little side food item with that?
+Customer: No, that's fine.
+Operator: Will that do it for you?
+Customer: Yep.
+Operator: $5.95 at the window, thank you.
+Customer: Okay, thank you.
+Operator: Hope you have any questions on the menu.
+Customer: We're still viewing, thank you. One second.
+Customer: Can I get a medium dipped strawberry cheesecake?
+Operator: Medium dipped strawberry cheesecake. Do you want a little extra cheesecake in there? Makes it really good.
+Customer: Oh, yes, please.
+Operator: Okay.
+Customer: Do you guys have anything with mocha in it?
+Operator: Yeah, I have an Oreo mocha mulatte, which is like a mulatte drink. It's frozen with chocolate and coffee.
+Customer: Can I get a small one?
+Operator: Sure. Small mocha mulatte?
+Customer: Yeah.
+Operator: Okay. We do have my soft pretzel sticks with queso for $3.89 if you need a little food option today.
+Customer: No, thank you.
+Operator: Anything else for you today?
+Customer: Can I get a Reese's caramel?
+Operator: The caramel craze?
+Customer: Yeah.
+Operator: Large?
+Customer: Medium.
+Operator: Medium Reese's caramel craze. A little extra Reese's peanut butter cups in there today?
+Customer: Yes, please.
+Operator: Okay.
+Customer: Can I get a brownie and Oreo confection?
+Operator: Okay, brownie, Oreo confection. Do you want a little extra Oreo in that?
+Customer: No, thank you.
+Operator: Okay. Anything else for you?
+Customer: That's it.
+Operator: Okay, your total's going to be $27.96 at the window. Please go forward. Thank you.
+Customer: Okay.",4,1623.75,1530.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:25:31Z,"[""2025-08-17T17:25:31Z"",""2025-08-17T17:27:04.750000Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:28:38.500000Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,1,"{""1"":""Operator: Oh, hi. How are you?\nCustomer: Oh, yes, I'm ready. Can I get three chocolate cookie dough?\nOperator: Large cookie dough blizzards?\nCustomer: Oh, yes, small. Three small.\nOperator: Okay, three small cookie dough. Do you want a little extra cookie dough in there? Makes it better.\nCustomer: Oh, no, thank you, sir.\nOperator: Okay, three of them?\nCustomer: Yes, sir.\nOperator: We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that?\nCustomer: Oh, no, thank you.\nOperator: Anything else for you?\nCustomer: Oh, that's all.\nOperator: $18.29 at the window. Thank you.\nCustomer: Oh, thank you. Can I get a cup holder?\nOperator: That at the window. At the window.\nCustomer: No, thanks."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: Oh, hi. How are you?
+Customer: Oh, yes, I'm ready. Can I get three chocolate cookie dough?
+Operator: Large cookie dough blizzards?
+Customer: Oh, yes, small. Three small.
+Operator: Okay, three small cookie dough. Do you want a little extra cookie dough in there? Makes it better.
+Customer: Oh, no, thank you, sir.
+Operator: Okay, three of them?
+Customer: Yes, sir.
+Operator: We do have our soft pretzel sticks with queso for $3.89 if you need a little food option to go with that?
+Customer: Oh, no, thank you.
+Operator: Anything else for you?
+Customer: Oh, that's all.
+Operator: $18.29 at the window. Thank you.
+Customer: Oh, thank you. Can I get a cup holder?
+Operator: That at the window. At the window.
+Customer: No, thanks.",4,1717.5,1623.75,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:27:04.750000Z,"[""2025-08-17T17:27:04.750000Z"",""2025-08-17T17:28:38.500000Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:30:12.250000Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,2,"{""1"":""Customer: Can I get a large peanut butter cup blizzard?\nOperator: That's Reese's. Do you want a little extra Reese's in there? Makes it really good.\nCustomer: Sounds great.\nOperator: Okay, anything else for you today?\nCustomer: That will do it.\nOperator: Okay, total's going to be $8.48 at the window. Thank you.\nCustomer: Thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Customer: Can I get a large peanut butter cup blizzard?
+Operator: That's Reese's. Do you want a little extra Reese's in there? Makes it really good.
+Customer: Sounds great.
+Operator: Okay, anything else for you today?
+Customer: That will do it.
+Operator: Okay, total's going to be $8.48 at the window. Thank you.
+Customer: Thank you.",4,1811.25,1717.5,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:28:38.500000Z,"[""2025-08-17T17:28:38.500000Z"",""2025-08-17T17:30:12.250000Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:31:46Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,3,"{""1"":""Customer: Can I get a vanilla cone, please? Just a plain.\nOperator: Small vanilla cone. Do you want that dipped in sprinkles?\nCustomer: No, just plain, please.\nOperator: Okay. We do have our soft pretzel sticks with queso for $3.89 if you need a food option with it today?\nCustomer: No, that's all right.\nOperator: Anything else for you?\nCustomer: Small strawberry Julius.\nOperator: Okay, small strawberry Julius, okay?\nCustomer: That's everything.\nOperator: Okay, your total's going to be $9.25 at the window. Thank you.\nCustomer: Thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Customer: Can I get a vanilla cone, please? Just a plain.
+Operator: Small vanilla cone. Do you want that dipped in sprinkles?
+Customer: No, just plain, please.
+Operator: Okay. We do have our soft pretzel sticks with queso for $3.89 if you need a food option with it today?
+Customer: No, that's all right.
+Operator: Anything else for you?
+Customer: Small strawberry Julius.
+Operator: Okay, small strawberry Julius, okay?
+Customer: That's everything.
+Operator: Okay, your total's going to be $9.25 at the window. Thank you.
+Customer: Thank you.",4,1905.0,1811.25,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:30:12.250000Z,"[""2025-08-17T17:30:12.250000Z"",""2025-08-17T17:31:46Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:35:08.500000Z,order,,0,1,1,0,0,dev/sample/DT_File20250817170001000.avi,0,"{""1"":""Operator: Hi.\nCustomer: No, uh-uh.\nOperator: Okay, thank you.\nOperator: Yeah, have fun.\nOperator: Yeah.\nOperator: So if you have any questions on the menu, order when you're ready.\nCustomer: Okay, I have a coupon. Is that okay?\nOperator: That's fine. Just order what you want and we'll take the coupon at the window.\nCustomer: Okay, I want a medium blizzard with, I guess, Butterfinger and Reese's Pieces.\nOperator: I have Reese's Peanut Butter Cups, yeah.\nCustomer: Yes.\nOperator: Okay.\nOperator: I do have my soft pretzel sticks with queso for $3.89 if you need a food option to go with that.\nCustomer: No, thank you.\nOperator: Anything else for you?\nCustomer: No, thanks.\nOperator: $7.72 at the window.\nCustomer: Thank you.\nOperator: Thank you."",""2"":""1"",""3"":""0"",""4"":""1"",""5"":""0"",""6"":""0""}","Operator: Hi.
+Customer: No, uh-uh.
+Operator: Okay, thank you.
+Operator: Yeah, have fun.
+Operator: Yeah.
+Operator: So if you have any questions on the menu, order when you're ready.
+Customer: Okay, I have a coupon. Is that okay?
+Operator: That's fine. Just order what you want and we'll take the coupon at the window.
+Customer: Okay, I want a medium blizzard with, I guess, Butterfinger and Reese's Pieces.
+Operator: I have Reese's Peanut Butter Cups, yeah.
+Customer: Yes.
+Operator: Okay.
+Operator: I do have my soft pretzel sticks with queso for $3.89 if you need a food option to go with that.
+Customer: No, thank you.
+Operator: Anything else for you?
+Customer: No, thanks.
+Operator: $7.72 at the window.
+Customer: Thank you.
+Operator: Thank you.",2,2107.5,2040.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:34:01Z,"[""2025-08-17T17:34:01Z"",""2025-08-17T17:35:08.500000Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:36:16Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,1,"{""1"":""Operator: Hi.\nCustomer: No.\nOperator: Thank you.\nOperator: Do you want to do the soft pretzel sticks?\nCustomer: Okay, two orders of pretzel sticks. And a large Coke, please.\nOperator: A large Coca-Cola. That's it.\nOperator: Okay, any ice cream cone for you today?\nCustomer: No, thank you.\nOperator: Okay, $9.15 at the window.\nCustomer: Thank you.\nOperator: Thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: Hi.
+Customer: No.
+Operator: Thank you.
+Operator: Do you want to do the soft pretzel sticks?
+Customer: Okay, two orders of pretzel sticks. And a large Coke, please.
+Operator: A large Coca-Cola. That's it.
+Operator: Okay, any ice cream cone for you today?
+Customer: No, thank you.
+Operator: Okay, $9.15 at the window.
+Customer: Thank you.
+Operator: Thank you.",2,2175.0,2107.5,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:35:08.500000Z,"[""2025-08-17T17:35:08.500000Z"",""2025-08-17T17:36:16Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:38:56Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,0,"{""1"": ""Operator: And hear you if you're trying to order. Make sure you're up, you're aligned with the speaker.\nCustomer: Oh, really? I can't.\nOperator: Now I can hear you. Just make sure you're aligned with the speaker. Yeah, it's not, we're not 21st century technology here.\nCustomer: Oh, I'm sorry about that. Can I have one mango pineapple smoothie?\nOperator: Okay, a mango pineapple smoothie?\nCustomer: Yeah.\nOperator: Large?\nCustomer: Large, yes.\nOperator: Okay.\nCustomer: And two plastic hot dogs?\nOperator: Okay, what do you want on the hot dogs? Ketchup, mustard, onions, relish?\nCustomer: Yes.\nOperator: Okay.\nCustomer: And one soft pretzel?\nOperator: Okay, one soft pretzel stick. Okay.\nOperator: Okay, any ice cream for you today? Like a shake or an ice cream cone?\nCustomer: One second.\nOperator: What was that?\nCustomer: Can I have one hot fudge sundae?\nOperator: One hot fudge sundae, large?\nCustomer: No, small.\nOperator: Small, do you want whipped cream, chopped nuts, or sprinkles?\nCustomer: No, no, nothing. Just chocolate.\nOperator: Okay. And anything else for you?\nCustomer: Can I have one mango pineapple smoothie?\nOperator: Okay, you want another mango pineapple? Another large one?\nCustomer: Yes.\nOperator: Okay.\nCustomer: What's that?\nOperator: Okay, it's $1.28, 10 at the window. Thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0""}","Operator: And hear you if you're trying to order. Make sure you're up, you're aligned with the speaker.
+Customer: Oh, really? I can't.
+Operator: Now I can hear you. Just make sure you're aligned with the speaker. Yeah, it's not, we're not 21st century technology here.
+Customer: Oh, I'm sorry about that. Can I have one mango pineapple smoothie?
+Operator: Okay, a mango pineapple smoothie?
+Customer: Yeah.
+Operator: Large?
+Customer: Large, yes.
+Operator: Okay.
+Customer: And two plastic hot dogs?
+Operator: Okay, what do you want on the hot dogs? Ketchup, mustard, onions, relish?
+Customer: Yes.
+Operator: Okay.
+Customer: And one soft pretzel?
+Operator: Okay, one soft pretzel stick. Okay.
+Operator: Okay, any ice cream for you today? Like a shake or an ice cream cone?
+Customer: One second.
+Operator: What was that?
+Customer: Can I have one hot fudge sundae?
+Operator: One hot fudge sundae, large?
+Customer: No, small.
+Operator: Small, do you want whipped cream, chopped nuts, or sprinkles?
+Customer: No, no, nothing. Just chocolate.
+Operator: Okay. And anything else for you?
+Customer: Can I have one mango pineapple smoothie?
+Operator: Okay, you want another mango pineapple? Another large one?
+Customer: Yes.
+Operator: Okay.
+Customer: What's that?
+Operator: Okay, it's $1.28, 10 at the window. Thank you.",3,2335.0,2235.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:37:16Z,"[""2025-08-17T17:37:16Z"",""2025-08-17T17:38:56Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:40:36Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,1,"{""1"": ""Customer: Can I get a small heat blizzard?\nOperator: Okay, small heat blizzard. Do you want a little extra heat in there? It makes it really good.\nCustomer: No, I'm good. Just the regular.\nOperator: Okay, we do have our soft pretzel sticks with queso today for $3.89 if you need a little food option to go with it.\nCustomer: All good, thank you.\nOperator: Anything else for you?\nCustomer: That's it.\nOperator: $6.10 at the window. Thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0""}","Customer: Can I get a small heat blizzard?
+Operator: Okay, small heat blizzard. Do you want a little extra heat in there? It makes it really good.
+Customer: No, I'm good. Just the regular.
+Operator: Okay, we do have our soft pretzel sticks with queso today for $3.89 if you need a little food option to go with it.
+Customer: All good, thank you.
+Operator: Anything else for you?
+Customer: That's it.
+Operator: $6.10 at the window. Thank you.",3,2435.0,2335.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:38:56Z,"[""2025-08-17T17:38:56Z"",""2025-08-17T17:40:36Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:42:16Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,2,"{""1"": ""Customer: I just want a plain kid-sized cone with an extra cone, please. I'm splitting it between two doggies.\nOperator: Okay, so you just want a small cone?\nCustomer: Actually, one of the kid-sized cones, yeah.\nOperator: Okay, kid's cone, okay.\nCustomer: A kiddie cone, but just an extra plain cone.\nOperator: Yeah, that's fine. We have our soft pretzel sticks with queso today if you need a little food snack to go on the side.\nCustomer: Oh, I'm good. I'm just getting ice cream for the dog.\nOperator: Okay, yep, $2.39 at the window. Thank you.\nCustomer: Thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0""}","Customer: I just want a plain kid-sized cone with an extra cone, please. I'm splitting it between two doggies.
+Operator: Okay, so you just want a small cone?
+Customer: Actually, one of the kid-sized cones, yeah.
+Operator: Okay, kid's cone, okay.
+Customer: A kiddie cone, but just an extra plain cone.
+Operator: Yeah, that's fine. We have our soft pretzel sticks with queso today if you need a little food snack to go on the side.
+Customer: Oh, I'm good. I'm just getting ice cream for the dog.
+Operator: Okay, yep, $2.39 at the window. Thank you.
+Customer: Thank you.",3,2535.0,2435.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:40:36Z,"[""2025-08-17T17:40:36Z"",""2025-08-17T17:42:16Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:43:46Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,0,"{""1"":""Operator: Can I have a small turtle pecan cluster blizzard?\nCustomer: Small turtle? Did you want a little extra pecans in there? Makes it really good.\nOperator: Sure.\nCustomer: Okay. And we do have our soft pretzel sticks with queso for $3.89 if you need a little food side order with that today?\nOperator: No, thank you.\nCustomer: Okay, anything else for you?\nOperator: That's it.\nCustomer: $6.63 at the window, thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: Can I have a small turtle pecan cluster blizzard?
+Customer: Small turtle? Did you want a little extra pecans in there? Makes it really good.
+Operator: Sure.
+Customer: Okay. And we do have our soft pretzel sticks with queso for $3.89 if you need a little food side order with that today?
+Operator: No, thank you.
+Customer: Okay, anything else for you?
+Operator: That's it.
+Customer: $6.63 at the window, thank you.",1,2625.0,2565.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:42:46Z,"[""2025-08-17T17:42:46Z"",""2025-08-17T17:43:46Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:48:01Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,0,"{""1"":""Operator: Repeat that, I can't hear what you're saying.\nCustomer: A small cotton candy blizzard.\nOperator: Small cotton candy, sure. You want a little extra cotton candy sprinkles on it? It makes it really good.\nCustomer: Sure.\nOperator: And then a small cookies and cream blizzard.\nCustomer: Yeah, small Oreo with a little extra Oreo.\nOperator: Sure. Okay, and we do have our soft pretzel sticks with queso for $3.89 if you need a little food snack to go along with that today.\nCustomer: No, thank you.\nOperator: Anything else for you?\nCustomer: And two small cookie dough blizzards.\nOperator: Small cookie dough, you want a little extra cookie dough on those?\nCustomer: Okay.\nOperator: Yeah, that's how it goes too. Those are good. Okay. Will that do it for you today then?\nCustomer: I hope so, yeah.\nOperator: $27.83 at the window, thank you.\nCustomer: Thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: Repeat that, I can't hear what you're saying.
+Customer: A small cotton candy blizzard.
+Operator: Small cotton candy, sure. You want a little extra cotton candy sprinkles on it? It makes it really good.
+Customer: Sure.
+Operator: And then a small cookies and cream blizzard.
+Customer: Yeah, small Oreo with a little extra Oreo.
+Operator: Sure. Okay, and we do have our soft pretzel sticks with queso for $3.89 if you need a little food snack to go along with that today.
+Customer: No, thank you.
+Operator: Anything else for you?
+Customer: And two small cookie dough blizzards.
+Operator: Small cookie dough, you want a little extra cookie dough on those?
+Customer: Okay.
+Operator: Yeah, that's how it goes too. Those are good. Okay. Will that do it for you today then?
+Customer: I hope so, yeah.
+Operator: $27.83 at the window, thank you.
+Customer: Thank you.",1,2880.0,2775.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:46:16Z,"[""2025-08-17T17:46:16Z"",""2025-08-17T17:48:01Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:51:01Z,order,,1,1,0,0,0,dev/sample/DT_File20250817170001000.avi,0,"{""1"":""Operator: No. What are you looking for?\nCustomer: Now I'll talk to you later.\nOperator: Sure.\nCustomer: Okay, I'm ready.\nOperator: We'll be with you in just a minute. Go ahead and order when you're ready.\nCustomer: Can I get a mini blizzard? Whatever you have that's chocolate.\nOperator: Chocolate brownie extreme?\nCustomer: Sure.\nOperator: Did you want a little extra chocolate brownie bites in there? It makes it really good.\nCustomer: No, it's fine.\nOperator: Okay. We do have our soft pretzel sticks with queso for $3.89 if you need a food option to go with it today.\nCustomer: No.\nOperator: Anything else for you?\nCustomer: Yeah, a large cherry slush with extra cherry.\nOperator: Sure. Okay, hold on. Just large cherry slush. I'll just put lots of cherry. Anything else for you?\nCustomer: No, that's it.\nOperator: That'll do it? Will that do it for you, sir?\nCustomer: Yes, that's it.\nOperator: Okay, so $9.14 at the window. Thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""1"",""6"":""0""}","Operator: No. What are you looking for?
+Customer: Now I'll talk to you later.
+Operator: Sure.
+Customer: Okay, I'm ready.
+Operator: We'll be with you in just a minute. Go ahead and order when you're ready.
+Customer: Can I get a mini blizzard? Whatever you have that's chocolate.
+Operator: Chocolate brownie extreme?
+Customer: Sure.
+Operator: Did you want a little extra chocolate brownie bites in there? It makes it really good.
+Customer: No, it's fine.
+Operator: Okay. We do have our soft pretzel sticks with queso for $3.89 if you need a food option to go with it today.
+Customer: No.
+Operator: Anything else for you?
+Customer: Yeah, a large cherry slush with extra cherry.
+Operator: Sure. Okay, hold on. Just large cherry slush. I'll just put lots of cherry. Anything else for you?
+Customer: No, that's it.
+Operator: That'll do it? Will that do it for you, sir?
+Customer: Yes, that's it.
+Operator: Okay, so $9.14 at the window. Thank you.",1,3060.0,2910.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:48:31Z,"[""2025-08-17T17:48:31Z"",""2025-08-17T17:51:01Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:53:42.250000Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,0,"{""1"": ""Operator: Hi, welcome to Dairy Queen. Would you like to try our dip cone today?\nCustomer: Oh, not today, thanks.\nOperator: Okay, what can I get for you?\nCustomer: Okay, two small twist, chocolate vanilla twist in a cup.\nOperator: Okay, so you just want two twist cups, small?\nCustomer: Small please, yeah.\nOperator: Did you want sprinkles on those today?\nCustomer: Not today, thanks.\nOperator: Okay, and we do have our soft pretzel sticks with queso for $3.89 if you need a little food item to go along with that today?\nCustomer: I'm good, thank you though.\nOperator: Anything else for you?\nCustomer: That should do it.\nOperator: $7.39 at the window, please pull forward, thank you.\nCustomer: Thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0""}","Operator: Hi, welcome to Dairy Queen. Would you like to try our dip cone today?
+Customer: Oh, not today, thanks.
+Operator: Okay, what can I get for you?
+Customer: Okay, two small twist, chocolate vanilla twist in a cup.
+Operator: Okay, so you just want two twist cups, small?
+Customer: Small please, yeah.
+Operator: Did you want sprinkles on those today?
+Customer: Not today, thanks.
+Operator: Okay, and we do have our soft pretzel sticks with queso for $3.89 if you need a little food item to go along with that today?
+Customer: I'm good, thank you though.
+Operator: Anything else for you?
+Customer: That should do it.
+Operator: $7.39 at the window, please pull forward, thank you.
+Customer: Thank you.",4,3221.25,3150.0,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:52:31Z,"[""2025-08-17T17:52:31Z"",""2025-08-17T17:53:42.250000Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:54:53.500000Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,1,"{""1"": ""Operator: Hi, welcome to Dairy Queen. Would you like to try our dip cone today?\nCustomer: No, not today.\nOperator: Alright, thank you.\nCustomer: Can I do a small chocolate dip cone?\nOperator: Small vanilla dipped in chocolate?\nCustomer: Yes.\nOperator: Okay, and do you want to double dip that in chocolate because in this hot weather it keeps it colder longer and it doesn't melt as fast?\nCustomer: No, one is fine, thank you.\nOperator: Okay, we do have our soft pretzel sticks with queso for $3.89 if you want a little food option to go with that today?\nCustomer: No, I'm okay, but thank you.\nOperator: Anything else for you?\nCustomer: Yeah, can I do a small strawberry sundae with extra strawberries?\nOperator: A small strawberry with extra strawberries, do you want chopped nuts, whipped cream, or sprinkles on there?\nCustomer: None of the above, but thank you.\nOperator: Okay, anything else today?\nCustomer: No, that's all.\nOperator: $9.46 at the window, please pull forward, thank you.\nCustomer: Thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0""}","Operator: Hi, welcome to Dairy Queen. Would you like to try our dip cone today?
+Customer: No, not today.
+Operator: Alright, thank you.
+Customer: Can I do a small chocolate dip cone?
+Operator: Small vanilla dipped in chocolate?
+Customer: Yes.
+Operator: Okay, and do you want to double dip that in chocolate because in this hot weather it keeps it colder longer and it doesn't melt as fast?
+Customer: No, one is fine, thank you.
+Operator: Okay, we do have our soft pretzel sticks with queso for $3.89 if you want a little food option to go with that today?
+Customer: No, I'm okay, but thank you.
+Operator: Anything else for you?
+Customer: Yeah, can I do a small strawberry sundae with extra strawberries?
+Operator: A small strawberry with extra strawberries, do you want chopped nuts, whipped cream, or sprinkles on there?
+Customer: None of the above, but thank you.
+Operator: Okay, anything else today?
+Customer: No, that's all.
+Operator: $9.46 at the window, please pull forward, thank you.
+Customer: Thank you.",4,3292.5,3221.25,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:53:42.250000Z,"[""2025-08-17T17:53:42.250000Z"",""2025-08-17T17:54:53.500000Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:56:04.750000Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,2,"{""1"": ""Operator: Hi, welcome to Dairy Queen. Would you like to try our dip cone today?\nCustomer: No.\nOperator: Can I just do a small Oreo blizzard?\nOperator: Small Oreo, anything else for you?\nCustomer: Nope.\nOperator: Want a little extra Oreo in that today?\nCustomer: No, that's okay, thank you.\nOperator: Okay, we do have our soft pretzel sticks with queso for $3.89 if you need a food side item today?\nCustomer: I'm okay.\nOperator: Okay, it's going to be $6.10 at the window, please pull forward, thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0""}","Operator: Hi, welcome to Dairy Queen. Would you like to try our dip cone today?
+Customer: No.
+Operator: Can I just do a small Oreo blizzard?
+Operator: Small Oreo, anything else for you?
+Customer: Nope.
+Operator: Want a little extra Oreo in that today?
+Customer: No, that's okay, thank you.
+Operator: Okay, we do have our soft pretzel sticks with queso for $3.89 if you need a food side item today?
+Customer: I'm okay.
+Operator: Okay, it's going to be $6.10 at the window, please pull forward, thank you.",4,3363.75,3292.5,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:54:53.500000Z,"[""2025-08-17T17:54:53.500000Z"",""2025-08-17T17:56:04.750000Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
+2025-08-17T17:57:16Z,order,,0,1,0,0,0,dev/sample/DT_File20250817170001000.avi,3,"{""1"": ""Operator: Hi, welcome to Dairy Queen. Would you like to try our dip cone today?\nCustomer: No, thank you.\nOperator: Can I have a strawberry sundae?\nOperator: Strawberry sundae or large strawberry sundae?\nCustomer: A large.\nOperator: Large strawberry sundae, do you want whipped cream, chopped nuts, or sprinkles on that?\nCustomer: No.\nOperator: Okay, we do have our soft pretzel sticks with queso for $3.89 if you need a side food order?\nCustomer: No, that's fine. I'll just take a large strawberry banana orange Julius with that.\nOperator: Yeah, large strawberry banana Julius, okay. Will that do it for you?\nCustomer: Yes.\nOperator: Okay, $11.65 at the window, thank you.\nCustomer: Thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0""}","Operator: Hi, welcome to Dairy Queen. Would you like to try our dip cone today?
+Customer: No, thank you.
+Operator: Can I have a strawberry sundae?
+Operator: Strawberry sundae or large strawberry sundae?
+Customer: A large.
+Operator: Large strawberry sundae, do you want whipped cream, chopped nuts, or sprinkles on that?
+Customer: No.
+Operator: Okay, we do have our soft pretzel sticks with queso for $3.89 if you need a side food order?
+Customer: No, that's fine. I'll just take a large strawberry banana orange Julius with that.
+Operator: Yeah, large strawberry banana Julius, okay. Will that do it for you?
+Customer: Yes.
+Operator: Okay, $11.65 at the window, thank you.
+Customer: Thank you.",4,3435.0,3363.75,18791011-afb5-4e20-b453-92b20913adb0,2025-08-17T17:56:04.750000Z,"[""2025-08-17T17:56:04.750000Z"",""2025-08-17T17:57:16Z"")",ddc154a6-29bf-47fc-9060-5f0fafaf1044
