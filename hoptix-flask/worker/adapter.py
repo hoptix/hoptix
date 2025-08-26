@@ -30,6 +30,9 @@ def _build_step2_prompt() -> str:
     items     = _read_json_or_empty(os.path.join(_settings.PROMPTS_DIR, _settings.ITEMS_JSON))
     meals     = _read_json_or_empty(os.path.join(_settings.PROMPTS_DIR, _settings.MEALS_JSON))
 
+    print(upselling, upsizing, addons, items, meals)
+
+
     template = """
 You are a performance reviewer assessing a Dairy Queen drive-thru operator's handling of an order, focusing on recording statistics about orders, upsizing opportunities, and upselling opportunities.
 
