@@ -44,7 +44,7 @@ upsert_one("runs", {
 # 4) videos in the folder: sample, sample1, ..., sample4
 #    We’ll stagger started_at by +15s each, just to differentiate.
 base_start = dt.datetime.now(dt.timezone.utc).replace(microsecond=0)
-video_names = ["DT_File20250817170001000", "DT_File20250817180001000", "DT_File20250817190001000", "DT_File20250817200001000", "DT_File20250817210001000"]
+video_names = ["DT_File20250817120001000"]
 
 created_ids = []
 for i, name in enumerate(video_names):

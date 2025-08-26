@@ -13,6 +13,12 @@ class Settings:
     AWS_REGION: str = os.getenv("AWS_REGION", "us-east-1")
     RAW_BUCKET: str = os.getenv("RAW_BUCKET", "hoptix-raw-devprod")
     DERIV_BUCKET: str = os.getenv("DERIV_BUCKET", "hoptix-deriv-devprod")
+    
+    # SQS Configuration
+    SQS_QUEUE_URL: str = os.getenv("SQS_QUEUE_URL", "")
+    SQS_DLQ_URL: str = os.getenv("SQS_DLQ_URL", "")  # Dead Letter Queue
+    SQS_VISIBILITY_TIMEOUT: int = int(os.getenv("SQS_VISIBILITY_TIMEOUT", "1800"))  # 30 minutes
+    SQS_WAIT_TIME: int = int(os.getenv("SQS_WAIT_TIME", "20"))  # Long polling
 
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
     ASR_MODEL: str = os.getenv("ASR_MODEL", "gpt-4o-transcribe")

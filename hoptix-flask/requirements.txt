@@ -1,11 +1,38 @@
-boto3==1.34.162
-botocore==1.34.162
+# Core Flask and Web Framework
+flask==3.0.0
+gunicorn==21.2.0
+
+# Environment and Configuration
+python-dotenv==1.0.0
+
+# AWS SDK and Cloud Services
+boto3==1.34.34
+botocore>=1.34.0
+
+# Database and ORM
+supabase==2.3.4
+
+# OpenAI API
+openai>=1.26.0
+
+# Audio and Video Processing
+librosa==0.10.1
 moviepy==1.0.3
-librosa==0.10.2.post1
-soundfile==0.12.1
-numpy==1.26.4
-pandas==2.2.2
-python-dateutil==2.9.0.post0
-openai>=1.40.0
-supabase==2.6.0
-psycopg2-binary==2.9.9
+numpy==1.26.3
+
+# Data Processing and Analysis
+pandas==2.1.4
+scikit-learn==1.4.0
+
+# Date and Time Utilities
+python-dateutil==2.8.2
+
+# HTTP Requests
+requests==2.31.0
+
+# Development and Testing
+pytest==7.4.3
+pytest-cov==4.1.0
+
+# Production Dependencies
+psutil==5.9.8

@@ -31,3 +31,7 @@ def download_to_file(s3, bucket: str, key: str, dest_path: str):
 def put_jsonl(s3, bucket: str, key: str, lines: list[dict]):
     body = "\n".join(json.dumps(x) for x in lines)
     s3.put_object(Bucket=bucket, Key=key, Body=body.encode("utf-8"), ContentType="application/jsonl")
+
+def put_file(s3, bucket: str, key: str, local_path: str, content_type: str = None):
+    extra = {"ContentType": content_type} if content_type else {}
+    s3.upload_file(local_path, bucket, key, ExtraArgs=extra)
