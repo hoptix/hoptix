@@ -4,7 +4,7 @@ from botocore.client import Config
 def get_s3(region: str):
     return boto3.client("s3", region_name=region, config=Config(s3={"addressing_style": "virtual"}))
 
-def create_multipart(s3, bucket: str, key: str, content_type: str = "video/mp4"):
+def create_multipart(s3, bucket: str, key: str, content_type: str = "audio/mpeg"):
     resp = s3.create_multipart_upload(Bucket=bucket, Key=key, ContentType=content_type)
     return resp["UploadId"]
 
@@ -23,6 +23,9 @@ def complete_multipart(s3, bucket: str, key: str, upload_id: str, parts: list[di
     s3.complete_multipart_upload(
         Bucket=bucket, Key=key, UploadId=upload_id, MultipartUpload={"Parts": parts}
     )
+
+def abort_multipart(s3, bucket: str, key: str, upload_id: str):
+    s3.abort_multipart_upload(Bucket=bucket, Key=key, UploadId=upload_id)
 
 def download_to_file(s3, bucket: str, key: str, dest_path: str):
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
