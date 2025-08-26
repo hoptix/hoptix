@@ -2,4 +2,7 @@
 venv/
 .env*
 .env.*
-__pycache__/
+__pycache__/*.avi
+*.mp4
+*.mov
+test_videos/
