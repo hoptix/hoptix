@@ -27,6 +27,10 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
+# Register blueprints
+from routes.runs import runs_bp
+app.register_blueprint(runs_bp, url_prefix="/runs")
+
 # Initialize global connections (reused across requests)
 try:
     settings = Settings()
@@ -48,6 +52,12 @@ try:
             logger.warning("Falling back to direct processing mode")
     else:
         logger.warning("SQS_QUEUE_URL not configured - using direct processing mode")
+    
+    # Configure app with services
+    app.config["SETTINGS"] = settings
+    app.config["DB"] = db
+    app.config["S3"] = s3
+    app.config["SQS"] = sqs_client
     
     logger.info("Successfully initialized database and S3 connections")
 except Exception as e:
