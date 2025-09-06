@@ -3,8 +3,12 @@ import sys
 import logging
 import argparse
 import tempfile
+import multiprocessing
 from datetime import datetime, timedelta, timezone
 from typing import List, Dict
+from concurrent.futures import ProcessPoolExecutor, as_completed
+import queue
+import threading
 
 # Add the parent directory to Python path so we can import from hoptix-flask
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -19,17 +23,17 @@ from dotenv import load_dotenv
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('video_processing.log'),
-        logging.StreamHandler()  # Also log to console
+        logging.FileHandler('parallel_video_processing.log'),
+        logging.StreamHandler()
     ]
 )
 logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-# Environment variables with logging
+# Environment variables
 try:
     supabase_url = os.environ["SUPABASE_URL"]
     supabase_service_key = os.environ["SUPABASE_SERVICE_KEY"]
@@ -38,8 +42,6 @@ try:
 
     if not openai_api_key:
         logger.warning("OPENAI_API_KEY not set - transcription will fail")
-    else:
-        logger.info("OpenAI API key found")
 
     logger.info(f"Loaded environment variables - AWS Region: {aws_region}")
 except KeyError as e:
@@ -50,7 +52,7 @@ except KeyError as e:
 SHARED_DRIVE_NAME = "Hoptix Video Server"
 FOLDER_NAME = "DQ Cary"
 S3_PREFIX = os.getenv("S3_PREFIX", "gdrive/dq_cary")
-DEFAULT_DURATION_SEC = int(os.getenv("GDRIVE_VIDEO_DURATION_SEC", "3600"))  # 1 hour default
+DEFAULT_DURATION_SEC = int(os.getenv("GDRIVE_VIDEO_DURATION_SEC", "3600"))
 
 def setup_database_entities(db: Supa):
     """Setup org, location entities for DQ Cary"""
@@ -117,7 +119,7 @@ def filter_videos_by_date(video_files: List, target_date: str) -> List:
             video_date = video_timestamp.date()
             if video_date == target_date_obj:
                 filtered_files.append(file_info)
-                logger.info(f"Including {file_info['name']} (date: {video_date})")
+                logger.debug(f"Including {file_info['name']} (date: {video_date})")
             else:
                 logger.debug(f"Skipping {file_info['name']} (date: {video_date}, target: {target_date_obj})")
         else:
@@ -128,8 +130,6 @@ def filter_videos_by_date(video_files: List, target_date: str) -> List:
 def import_videos_from_gdrive(db: Supa, s3, settings: Settings, run_date: str) -> List[str]:
     """Import videos from Google Drive for the specified date and return video IDs"""
     import uuid
-    import tempfile
-    from integrations.s3_client import put_file
     from dateutil import parser as dateparse
     
     logger.info(f"Starting Google Drive import for date: {run_date}")
@@ -181,8 +181,6 @@ def import_videos_from_gdrive(db: Supa, s3, settings: Settings, run_date: str) -
         file_basename = os.path.splitext(file_info['name'])[0]
         s3_key = f"{S3_PREFIX}/{file_basename}.mp4"
         
-        logger.info(f"Processing video directly from Google Drive: {file_info['name']}")
-        
         # Import to database
         video_data = {
             "id": video_id,
@@ -218,80 +216,128 @@ def import_videos_from_gdrive(db: Supa, s3, settings: Settings, run_date: str) -
     logger.info(f"Successfully imported {len(imported_video_ids)} videos from Google Drive")
     return imported_video_ids
 
-def process_video_from_local_file(db: Supa, video_row: Dict, local_video_path: str):
-    """Process a video from a local file path (adapted from process_one_video)"""
+def process_video_worker(video_id: str) -> Dict:
+    """Worker function to process a single video - runs in separate process"""
     from worker.adapter import transcribe_video, split_into_transactions, grade_transactions
     from worker.pipeline import insert_transactions, upsert_grades
     from integrations.s3_client import put_jsonl
-    from config import Settings
     
-    video_id = video_row["id"]
-    logger.info(f"Processing video {video_id} from local file: {local_video_path}")
+    worker_logger = logging.getLogger(f"worker-{os.getpid()}")
     
-    settings = Settings()
-    s3 = get_s3(settings.AWS_REGION)
-    
-    # 1) ASR segments
-    logger.info(f"Starting transcription for video {video_id}")
-    segments = transcribe_video(local_video_path)
-    logger.info(f"Transcription completed: {len(segments)} segments generated")
-
-    # 2) Step‑1 split
-    logger.info(f"Starting transaction splitting for video {video_id}")
-    txs = split_into_transactions(segments, video_row["started_at"], video_row.get("s3_key"))
-    logger.info(f"Transaction splitting completed: {len(txs)} transactions identified")
-
-    # 3) Upload artifacts to S3
-    prefix = f'deriv/session={video_id}/'
-    logger.info(f"Uploading artifacts to S3 with prefix: {prefix}")
-    put_jsonl(s3, settings.DERIV_BUCKET, prefix + "segments.jsonl", segments)
-    put_jsonl(s3, settings.DERIV_BUCKET, prefix + "transactions.jsonl", txs)
-    logger.info("Artifacts uploaded to S3")
-
-    # 4) persist transactions
-    logger.info(f"Inserting {len(txs)} transactions into database")
-    tx_ids = insert_transactions(db, video_row, txs)
-    logger.info(f"Inserted transactions with IDs: {tx_ids}")
-
-    # 5) step‑2 grading
-    logger.info(f"Starting grading for {len(txs)} transactions")
-    grades = grade_transactions(txs)
-    put_jsonl(s3, settings.DERIV_BUCKET, prefix + "grades.jsonl", grades)
-    logger.info("Grading completed and uploaded to S3")
-
-    # 6) upsert grades
-    logger.info(f"Upserting grades for {len(tx_ids)} transactions")
-    upsert_grades(db, tx_ids, grades)
-    logger.info("Grades upsertion completed")
-    
-    logger.info(f"Successfully completed all processing steps for video {video_id}")
-
-def main():
-    parser = argparse.ArgumentParser(
-        description='Import videos from Google Drive for a specific date and process them',
-        epilog='Example: python scripts/run_once.py --date 2025-08-29'
-    )
-    parser.add_argument('--date', type=str, required=True,
-                       help='Date in YYYY-MM-DD format (required) - import and process videos from this date')
-    
-    args = parser.parse_args()
-    run_date = args.date
-    
-    logger.info(f"=== Starting Google Drive import and processing for date: {run_date} ===")
-    start_time = datetime.now()
-
-    succeeded = 0
-    failed = 0
-    processed_ids = []
-
     try:
-        # Initialize connections
-        logger.info("Initializing database and S3 connections...")
+        # Initialize connections in worker process
         settings = Settings()
         db = Supa(supabase_url, supabase_service_key)
         s3 = get_s3(aws_region)
-        logger.info("Successfully connected to database and S3")
+        gdrive = GoogleDriveClient()
+        
+        worker_logger.info(f"Worker {os.getpid()} processing video: {video_id}")
+        
+        # Fetch the video record
+        video_result = db.client.table("videos").select(
+            "id, s3_key, run_id, location_id, started_at, ended_at, meta"
+        ).eq("id", video_id).limit(1).execute()
+        
+        if not video_result.data:
+            return {"video_id": video_id, "status": "error", "error": "Video record not found"}
+        
+        row = video_result.data[0]
+        gdrive_file_id = row["meta"]["gdrive_file_id"]
+        gdrive_file_name = row["meta"]["gdrive_file_name"]
+        
+        # Claim the video
+        if not claim_video(db, video_id):
+            return {"video_id": video_id, "status": "skipped", "error": "Could not claim video (already processing)"}
+        
+        start_time = datetime.now()
+        
+        # Download video temporarily from Google Drive for processing
+        with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as tmp_file:
+            tmp_video_path = tmp_file.name
+        
+        try:
+            worker_logger.info(f"Downloading {gdrive_file_name} from Google Drive...")
+            if not gdrive.download_file(gdrive_file_id, tmp_video_path):
+                return {"video_id": video_id, "status": "error", "error": "Failed to download from Google Drive"}
+            
+            # Process the video
+            worker_logger.info(f"Starting processing pipeline for {video_id}...")
+            
+            # 1) ASR segments
+            segments = transcribe_video(tmp_video_path)
+            worker_logger.info(f"Transcription completed: {len(segments)} segments")
 
+            # 2) Split into transactions
+            txs = split_into_transactions(segments, row["started_at"], row.get("s3_key"))
+            worker_logger.info(f"Transaction splitting completed: {len(txs)} transactions")
+
+            # 3) Upload artifacts to S3
+            prefix = f'deriv/session={video_id}/'
+            put_jsonl(s3, settings.DERIV_BUCKET, prefix + "segments.jsonl", segments)
+            put_jsonl(s3, settings.DERIV_BUCKET, prefix + "transactions.jsonl", txs)
+
+            # 4) Persist transactions
+            tx_ids = insert_transactions(db, row, txs)
+            worker_logger.info(f"Inserted {len(tx_ids)} transactions")
+
+            # 5) Grade transactions
+            grades = grade_transactions(txs)
+            put_jsonl(s3, settings.DERIV_BUCKET, prefix + "grades.jsonl", grades)
+
+            # 6) Upsert grades
+            upsert_grades(db, tx_ids, grades)
+            
+            # Mark as ready
+            mark_status(db, video_id, "ready")
+            
+            end_time = datetime.now()
+            duration = (end_time - start_time).total_seconds()
+            
+            worker_logger.info(f"✅ Successfully processed {video_id} in {duration:.2f}s")
+            return {"video_id": video_id, "status": "success", "duration": duration}
+            
+        finally:
+            # Always clean up temporary file
+            try:
+                os.remove(tmp_video_path)
+                worker_logger.debug(f"Cleaned up temporary file: {tmp_video_path}")
+            except Exception as cleanup_error:
+                worker_logger.warning(f"Failed to cleanup temporary file: {cleanup_error}")
+                
+    except Exception as e:
+        worker_logger.error(f"❌ Error processing video {video_id}: {str(e)}", exc_info=True)
+        try:
+            mark_status(db, video_id, "failed")
+        except:
+            pass
+        return {"video_id": video_id, "status": "error", "error": str(e)}
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='Import and process videos from Google Drive in parallel',
+        epilog='Example: python scripts/run_parallel.py --date 2025-08-29 --workers 8'
+    )
+    parser.add_argument('--date', type=str, required=True,
+                       help='Date in YYYY-MM-DD format (required)')
+    parser.add_argument('--workers', type=int, default=4,
+                       help='Number of parallel workers (default: 4)')
+    
+    args = parser.parse_args()
+    run_date = args.date
+    num_workers = args.workers
+    
+    logger.info(f"=== Starting parallel Google Drive processing ===")
+    logger.info(f"📅 Date: {run_date}")
+    logger.info(f"👥 Workers: {num_workers}")
+    
+    start_time = datetime.now()
+    
+    try:
+        # Initialize connections
+        settings = Settings()
+        db = Supa(supabase_url, supabase_service_key)
+        s3 = get_s3(aws_region)
+        
         # Import videos from Google Drive
         logger.info(f"Importing videos from Google Drive for date: {run_date}")
         imported_video_ids = import_videos_from_gdrive(db, s3, settings, run_date)
@@ -299,95 +345,63 @@ def main():
         if not imported_video_ids:
             logger.info("No videos imported from Google Drive. Nothing to process.")
             return
-
-        logger.info(f"Imported {len(imported_video_ids)} videos. Starting processing...")
-
-        # Process each imported video directly from Google Drive
-        gdrive = GoogleDriveClient()  # Reuse the authenticated client
         
-        for vid in imported_video_ids:
-            logger.info(f"Processing imported video: {vid}")
+        logger.info(f"📥 Imported {len(imported_video_ids)} videos")
+        logger.info(f"🚀 Starting parallel processing with {num_workers} workers...")
+        
+        # Process videos in parallel
+        succeeded = 0
+        failed = 0
+        skipped = 0
+        
+        with ProcessPoolExecutor(max_workers=num_workers) as executor:
+            # Submit all jobs
+            future_to_video = {
+                executor.submit(process_video_worker, video_id): video_id 
+                for video_id in imported_video_ids
+            }
             
-            # Fetch the video record
-            video_result = db.client.table("videos").select(
-                "id, s3_key, run_id, location_id, started_at, ended_at, meta"
-            ).eq("id", vid).limit(1).execute()
-            
-            if not video_result.data:
-                logger.error(f"Could not fetch video record for {vid}")
-                failed += 1
-                continue
-                
-            row = video_result.data[0]
-            gdrive_file_id = row["meta"]["gdrive_file_id"]
-            gdrive_file_name = row["meta"]["gdrive_file_name"]
-            logger.info(f"Found video to process - ID: {vid}, Google Drive file: {gdrive_file_name}")
-
-            # Claim the video (best-effort compare-and-set)
-            logger.info(f"Attempting to claim video {vid}...")
-            if not claim_video(db, vid):
-                logger.warning(f"Could not claim video {vid} (may already be processing). Skipping.")
-                continue
-            logger.info(f"Successfully claimed video {vid}")
-
-            # Process the video directly from Google Drive
-            logger.info(f"Starting video processing for {vid}...")
-            process_start = datetime.now()
-            
-            # Download video temporarily from Google Drive for processing
-            with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as tmp_file:
-                tmp_video_path = tmp_file.name
-            
-            try:
-                logger.info(f"Downloading video from Google Drive for processing...")
-                if gdrive.download_file(gdrive_file_id, tmp_video_path):
-                    # Process the video using our pipeline but with local file
-                    process_video_from_local_file(db, row, tmp_video_path)
+            # Process results as they complete
+            for future in as_completed(future_to_video):
+                video_id = future_to_video[future]
+                try:
+                    result = future.result()
+                    status = result["status"]
                     
-                    process_end = datetime.now()
-                    process_duration = (process_end - process_start).total_seconds()
-
-                    mark_status(db, vid, "ready")
-                    succeeded += 1
-                    processed_ids.append(vid)
-                    logger.info(f"✅ Successfully processed video {vid} in {process_duration:.2f} seconds")
-                else:
-                    logger.error(f"Failed to download video {gdrive_file_name} from Google Drive")
+                    if status == "success":
+                        succeeded += 1
+                        duration = result.get("duration", 0)
+                        logger.info(f"✅ {video_id} completed in {duration:.2f}s")
+                    elif status == "skipped":
+                        skipped += 1
+                        logger.warning(f"⏭️  {video_id} skipped: {result.get('error', 'Unknown')}")
+                    else:
+                        failed += 1
+                        error = result.get("error", "Unknown error")
+                        logger.error(f"❌ {video_id} failed: {error}")
+                        
+                except Exception as exc:
                     failed += 1
-
-            except Exception as e:
-                process_end = datetime.now()
-                process_duration = (process_end - process_start).total_seconds()
-                logger.error(
-                    f"❌ Error processing video {vid} after {process_duration:.2f} seconds: {str(e)}",
-                    exc_info=True
-                )
-                try:
-                    mark_status(db, vid, "failed")
-                    logger.info(f"Marked video {vid} as failed in database")
-                except Exception as mark_error:
-                    logger.error(f"Failed to mark video {vid} as failed: {str(mark_error)}")
-                failed += 1
-            finally:
-                # Always clean up temporary file, even if processing failed
-                try:
-                    os.remove(tmp_video_path)
-                    logger.debug(f"Cleaned up temporary file: {tmp_video_path}")
-                except Exception as cleanup_error:
-                    logger.warning(f"Failed to cleanup temporary file: {cleanup_error}")
-
-        logger.info(f"Batch complete. Succeeded: {succeeded}, Failed: {failed}, Total: {succeeded + failed}")
-        if processed_ids:
-            logger.info("Processed video IDs: " + ", ".join(processed_ids))
-
+                    logger.error(f"❌ {video_id} generated an exception: {exc}")
+        
+        # Final summary
+        total = succeeded + failed + skipped
+        end_time = datetime.now()
+        total_duration = (end_time - start_time).total_seconds()
+        
+        logger.info(f"")
+        logger.info(f"=== PROCESSING COMPLETE ===")
+        logger.info(f"✅ Succeeded: {succeeded}")
+        logger.info(f"❌ Failed: {failed}")
+        logger.info(f"⏭️  Skipped: {skipped}")
+        logger.info(f"📊 Total: {total}")
+        logger.info(f"⏱️  Total time: {total_duration:.2f}s")
+        if succeeded > 0:
+            logger.info(f"⚡ Average per video: {total_duration/succeeded:.2f}s")
+        
     except Exception as e:
         logger.error(f"Fatal error in main(): {str(e)}", exc_info=True)
         sys.exit(1)
-
-    finally:
-        end_time = datetime.now()
-        total_duration = (end_time - start_time).total_seconds()
-        logger.info(f"=== Session completed in {total_duration:.2f} seconds ===")
 
 if __name__ == "__main__":
     main()
