@@ -21,13 +21,13 @@ loc_id = str(uuid.uuid4())
 run_id = str(uuid.uuid4())
 
 # 1) org
-upsert_one("orgs", {"id": org_id, "name": "Test Org"}, ["id"])
+upsert_one("orgs", {"id": org_id, "name": "Dairy Queen"}, ["id"])
 
 # 2) location
 upsert_one("locations", {
     "id": loc_id,
     "org_id": org_id,
-    "name": "Test Location",
+    "name": "Cary",
     "tz": "America/New_York"
 }, ["id"])
 
@@ -44,7 +44,7 @@ upsert_one("runs", {
 # 4) videos in the folder: sample, sample1, ..., sample4
 #    We’ll stagger started_at by +15s each, just to differentiate.
 base_start = dt.datetime.now(dt.timezone.utc).replace(microsecond=0)
-video_names = ["DT_File20250817120001000"]
+video_names = ["DT_File20250817120001000", ""]
 
 created_ids = []
 for i, name in enumerate(video_names):
@@ -76,3 +76,9 @@ for vid, key in created_ids:
 print("\nNext:")
 print(" - Make sure these objects exist in S3 at the same keys shown above.")
 print(" - Run: `python -m worker.runner` (continuous) or `python -m worker.run_once` (single job).")
+print("\nAlternatively, to import and process videos from Google Drive:")
+print(" - Option 1 (Import + Process): `python scripts/run_once.py --date 2025-08-29`")
+print("   This will import videos for the date and immediately process them")
+print(" - Option 2 (Import only): `python scripts/import_from_gdrive.py --run-date 2025-08-29 --download-to-s3`")
+print("   This will only import videos, then run workers separately")
+print(" - Replace 2025-08-29 with your desired date (YYYY-MM-DD format)")

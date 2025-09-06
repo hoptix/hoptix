@@ -4,7 +4,6 @@ from dateutil import parser as dateparse
 from integrations.db_supabase import Supa
 from integrations.s3_client import get_s3, download_to_file, put_jsonl
 from worker.adapter import transcribe_video, split_into_transactions, grade_transactions
-from worker.clipper import cut_clip_for_transaction, update_tx_meta_with_clip
 
 # Configure logging for pipeline
 logger = logging.getLogger(__name__)
@@ -118,12 +117,7 @@ def insert_transactions(db: Supa, video_row: Dict, transactions: List[Dict]) -> 
         logger.error(f"Transaction data sample: {rows[0] if rows else 'No rows'}")
         raise
 
-def fetch_transactions_by_ids(db: Supa, ids: List[str]) -> List[Dict]:
-    """Fetch transaction records by their IDs to get the full data needed for clipping"""
-    if not ids:
-        return []
-    res = db.client.table("transactions").select("id, started_at, ended_at, meta").in_("id", ids).execute()
-    return res.data or []
+
 
 def upsert_grades(db: Supa, tx_ids: List[str], grades: List[Dict]):
     logger.debug(f"Preparing grades for {len(tx_ids)} transactions")
@@ -248,32 +242,6 @@ def process_one_video(db: Supa, s3, video_row: Dict):
         upsert_grades(db, tx_ids, grades)
         logger.info("Grades upsertion completed")
         
-        # 6) Generate clips for each transaction and store in S3
-        logger.info(f"Starting clip generation for {len(tx_ids)} transactions")
-        tx_rows = fetch_transactions_by_ids(db, tx_ids)
-        
-        for tx in tx_rows:
-            try:
-                logger.info(f"Generating clip for transaction {tx['id']}")
-                clip_url = cut_clip_for_transaction(
-                    db=db,
-                    s3=s3,
-                    deriv_bucket=settings.DERIV_BUCKET,
-                    region=settings.AWS_REGION,
-                    input_video_local=local_path,
-                    video_started_at_iso=video_row["started_at"],
-                    video_ended_at_iso=video_row["ended_at"],
-                    tx_row=tx,
-                    run_id=video_row["run_id"],
-                    video_id=video_row["id"]
-                )
-                update_tx_meta_with_clip(db, tx_id=tx["id"], clip_url=clip_url)
-                logger.info(f"Successfully generated and uploaded clip for transaction {tx['id']}: {clip_url}")
-            except Exception as e:
-                # We keep processing; a failed clip shouldn't fail the whole video
-                logger.error(f"Failed to generate clip for transaction {tx['id']}: {e}")
-                
-        logger.info(f"Clip generation completed for video {video_id}")
         logger.info(f"Successfully completed all processing steps for video {video_id}")
         
     finally:

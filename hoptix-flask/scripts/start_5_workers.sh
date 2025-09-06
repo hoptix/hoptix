@@ -1,39 +1,34 @@
 #!/bin/bash
 
-# Start 5 workers script
-# This script starts 5 separate instances of the video processor
+# Start parallel workers script for Google Drive processing
+# Automatically detects optimal number of workers based on CPU cores
 
-echo "🚀 Starting 5 Video Processing Workers"
-echo "====================================="
+# Detect number of CPU cores
+CPU_CORES=$(sysctl -n hw.ncpu)
+# Use 80% of cores, minimum 2, maximum 10 (to avoid overwhelming Google Drive API)
+WORKER_COUNT=$(python3 -c "import math; cores=$CPU_CORES; print(max(2, min(10, int(cores * 0.8))))")
+
+echo "🚀 Starting $WORKER_COUNT Parallel Video Processing Workers"
+echo "🖥️  Detected $CPU_CORES CPU cores, using $WORKER_COUNT workers"
+echo "========================================================="
+
+# Validate required argument
+if [ $# -eq 0 ]; then
+    echo "❌ Error: Date argument required"
+    echo "Usage: $0 YYYY-MM-DD"
+    echo "Example: $0 2025-08-29"
+    exit 1
+fi
+
+DATE_ARG=$1
+echo "📅 Processing date: $DATE_ARG"
 
 # Kill any existing workers first
 echo "🧹 Cleaning up any existing workers..."
 pkill -f "run_once.py" || true
+pkill -f "run_parallel.py" || true
 sleep 2
 
-# Start 5 workers in background
-echo "🔄 Starting workers..."
-
-for i in {1..5}; do
-    echo "   Starting Worker $i..."
-    python scripts/run_once.py > "worker_${i}.log" 2>&1 &
-    worker_pid=$!
-    echo "   ✅ Worker $i started (PID: $worker_pid)"
-    
-    # Small delay to avoid race conditions on startup
-    sleep 1
-done
-
-echo ""
-echo "🎯 All 5 workers are running!"
-echo "📊 Monitor logs: tail -f worker_1.log worker_2.log worker_3.log worker_4.log worker_5.log"
-echo "🛑 Stop all workers: ./scripts/stop_workers.sh"
-echo ""
-
-# Show running workers
-echo "📋 Current worker processes:"
-ps aux | grep "run_once.py" | grep -v grep
-
-echo ""
-echo "💡 Workers will automatically stop when no more videos are available"
-echo "   or you can stop them manually with: pkill -f run_once.py"
+# Start parallel processing
+echo "🔄 Starting parallel workers..."
+python scripts/run_parallel.py --date "$DATE_ARG" --workers $WORKER_COUNT
