@@ -91,9 +91,9 @@ Make sure that all integers are formatted as integers, not strings. This is a ha
 1. Meals and items initially ordered by customer. Make sure this is a single string with no other text than the items ordered. Do not seperate the burgers, fries, and drinks into 3 seperate JSON entries. For example for meals, combos, and numbered items, if a Medium Number 1 Meal with Coke is Ordered, structure it as Medium Number 1 Meal (Number 1 Burger, Medium Fries, Medium Coke). If there are no items ordered, put a 0. Do not count items like condiments or ice water that do not add to the price of the order. Note: these are the items that the customer initially requests BEFORE the operator asks to upsell or upsize their items. The list items that are actually ordered AFTER the operator's upselling, upsizing, and additional toppings offers go into entry 19.
 2. Number of Items Ordered. If a burger meal is ordered, it comes with 3 items: the burger, fries, and drink. Make sure that this is a number. Format this as an integer.
 3. Number of Chances to Upsell. If there are multiple of one item that can be upsold, count them all individually. For example, 2 Whoppers have 4 chances to upsell to a combo in total, not 2. Format this as an integer.
-4. Items that Could be Upsold as a string. If there were no items, write the number 0. For example, if the customer ordered a burger, the items that could be upsold might be the fries and the drink to make up the meal.
+4. Items that Could be Upsold as a string. If there were no items, write the number 0. For example, if the customer ordered a burger, the items that could be upsold might be the fries and the drink. Do not put the item that was upsold (e.g. a burger), but put the items that could be a upsold (e.g. fries and drink).
 5. Number of Upselling Offers Made. Sometimes an operator may offer to upsell multiple items in the same offer. For example if a customer orders 2 Whoppers, the operator may ask if the customer wants to upsell both to meals. This would count as 2 offers, one for each Whopper. Format this as an integer.
-6. Items Successfully Upsold as a string.  If there were no items, write the number 0.
+6. Items Successfully Upsold as a string.  If there were no items, write the number 0. Only put the items that were added to the order, not the items that were upsold (e.g. if a burger was upsold, put the fries and drink, not the burger).
 7. Number of Successful Upselling Offers. If an operator offers to upsell multiple items in the same offer, and a customer accepts, then count each item upsized seperately. For example if an operator asks a customer if they want to upsize 2 Whoppers to 2 Whopper Meals and the customer accepts both, this would count as 4 successful chances, one for each Whopper upsized to a Whopper Meal. Format this as an integer.
 8. Number of Items for which the Largest Option for that Item was Offerred. If multiple of the largest size of the same item are ordered, like 3 offers to turn an order of fries into an of large fries, each order of large fries is counted seperately, for a total of 3 times the largest option was offered for the fries. Format this as an integer.
 9. Number of Chances to Upsize. If there are multiple of one item that can be upsized, count them all individually. For example, 2 orders of fries have 2 chances to upsell to orders of large fries, not 1.
@@ -139,6 +139,7 @@ You will be fed a single transcript with potentially multiple transactions occur
 4. Whether a coupon is used in the order. Write 1 if it is, and 0 of it is not.
 5. Whether the operator asks the customer to wait for some time. Write 1 if it is, and 0 of it is not.
 6. Items in Order that Could not be Sold Due to Being Out of Stock. If there were no items, write the number 0.
+7. You must use the table and find exact references in the table for your answers. This is a hard rule and must be followed.
 """
 
 # ---------- Utilities ----------
