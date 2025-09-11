@@ -1,0 +1,128 @@
+[
+  {
+    "Updated Scenario Code": "Scenario VO-01",
+    "Description": "Customer did not order the 2 for $5 meal deal, but any item in the 2for5 menu",
+    "Employee Offer Statement": "Would you like to add a small Sundae, Pretzel, Chilli dog or any size drink to avail the 2 for $5 offer?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Upselling Offer"
+  },
+  {
+    "Updated Scenario Code": "Scenario VO-02",
+    "Description": "Customer ordered a chicken basket",
+    "Employee Offer Statement": "Would you like to add drink to that?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Upselling Offer"
+  },
+  {
+    "Updated Scenario Code": "Scenario VO-03",
+    "Description": "Customer ordered a hotdog",
+    "Employee Offer Statement": "Would you like that in a Meal?\"\n\"Would you like to add a side AND/OR a drink?\"\n\"Would you like that in a combo?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Upselling Offer"
+  },
+  {
+    "Updated Scenario Code": "Scenario VO-04",
+    "Description": "Customer ordered a hotdog and a side/chips",
+    "Employee Offer Statement": "Would you like to add a Drink to that?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Upselling Offer"
+  },
+  {
+    "Updated Scenario Code": "Scenario VO-05",
+    "Description": "Customer ordered a hotdog and a drink",
+    "Employee Offer Statement": "Would you like to add a side/chips to that?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Upselling Offer"
+  },
+  {
+    "Updated Scenario Code": "Scenario VO-06",
+    "Description": "Customer orders any kind of burger",
+    "Employee Offer Statement": "Would you like to make that a combo?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Upselling Offer"
+  },
+  {
+    "Updated Scenario Code": "Scenario VO-07",
+    "Description": "Customer orders chicken basket or a side of fries",
+    "Employee Offer Statement": "For Fries - \"Would you like ranch or gravy to go with that?\"\nFor Chicken basket - \"Would you like gravy with that?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Upselling Offer"
+  },
+  {
+    "Updated Scenario Code": "",
+    "Description": "",
+    "Employee Offer Statement": "",
+    "Chance Guide": "",
+    "Chance Guide__1": ""
+  },
+  {
+    "Updated Scenario Code": "Scenario NO-01",
+    "Description": "Customer ordered any item in the 2for5 menu",
+    "Employee Offer Statement": "Ok",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "No Offer"
+  },
+  {
+    "Updated Scenario Code": "Scenario NO-02",
+    "Description": "Customer ordered a chicken basket",
+    "Employee Offer Statement": "Ok",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "No Offer"
+  },
+  {
+    "Updated Scenario Code": "Scenario NO-03",
+    "Description": "Customer ordered a hotdog/any type of burger",
+    "Employee Offer Statement": "Ok",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "No Offer"
+  },
+  {
+    "Updated Scenario Code": "Scenario NO-04",
+    "Description": "Customer ordered a hotdog and a side/chips OR \nCustomer ordered a hotdog and a Drink",
+    "Employee Offer Statement": "Ok",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "No Offer"
+  },
+  {
+    "Updated Scenario Code": "Scenario NO-05",
+    "Description": "Customer orders chicken basket or a side of fries",
+    "Employee Offer Statement": "Ok",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "No Offer"
+  },
+  {
+    "Updated Scenario Code": "",
+    "Description": "",
+    "Employee Offer Statement": "",
+    "Chance Guide": "",
+    "Chance Guide__1": ""
+  },
+  {
+    "Updated Scenario Code": "Scenario IO-01",
+    "Description": "Customer ordered any item in the 2for5 menu",
+    "Employee Offer Statement": "No additional items today?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Inavlid Offer"
+  },
+  {
+    "Updated Scenario Code": "Scenario IO-02",
+    "Description": "Customer ordered a chicken basket",
+    "Employee Offer Statement": "No drink today?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Inavlid Offer"
+  },
+  {
+    "Updated Scenario Code": "Scenario IO-03",
+    "Description": "Customer ordered a hotdog/any type of burger",
+    "Employee Offer Statement": "No other items today?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Inavlid Offer"
+  },
+  {
+    "Updated Scenario Code": "Scenario IO-04",
+    "Description": "Customer ordered a hotdog and a side/chips OR \nCustomer ordered a hotdog and a Drink",
+    "Employee Offer Statement": "No other items today?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Inavlid Offer"
+  }
+]

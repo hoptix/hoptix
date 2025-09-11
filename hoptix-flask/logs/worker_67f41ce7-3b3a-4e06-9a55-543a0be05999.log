@@ -1,0 +1,65 @@
+2025-09-08 23:50:00,893:INFO - Found credentials in environment variables.
+2025-09-08 23:50:01,472:INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.67f41ce7-3b3a-4e06-9a55-543a0be05999&status=eq.uploaded "HTTP/1.1 200 OK"
+2025-09-08 23:50:01,839:INFO - HTTP Request: GET https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?select=id%2C%20s3_key%2C%20run_id%2C%20location_id%2C%20started_at%2C%20ended_at%2C%20meta&id=eq.67f41ce7-3b3a-4e06-9a55-543a0be05999&limit=1 "HTTP/1.1 200 OK"
+2025-09-08 23:50:01,871:INFO - file_cache is only supported with oauth2client<4.0.0
+2025-09-08 23:50:01,872:INFO - Successfully authenticated with Google Drive API
+2025-09-08 23:50:19,173:INFO - Download progress: 36%
+2025-09-08 23:50:31,949:INFO - Download progress: 73%
+2025-09-08 23:50:39,077:INFO - Download progress: 100%
+2025-09-08 23:50:39,077:INFO - Successfully downloaded file to: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/tmprjoxflck.mp4
+2025-09-08 23:50:39,079:INFO - Processing video 67f41ce7-3b3a-4e06-9a55-543a0be05999 from local file: /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/tmprjoxflck.mp4
+2025-09-08 23:50:39,079:INFO - Starting transcription for video 67f41ce7-3b3a-4e06-9a55-543a0be05999
+2025-09-08 23:50:39,411:WARNING - /opt/miniconda3/lib/python3.12/site-packages/moviepy/audio/io/readers.py:195: UserWarning: Error in file /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/tmprjoxflck.mp4, At time t=0.00-0.05 seconds, indices wanted: -77934--75936, but len(buffer)=22067
+index -77934 is out of bounds for axis 0 with size 22067
+  warnings.warn("Error in file %s, "%(self.filename)+
+
+[src/libmpg123/parse.c:do_readahead():1099] warning: Cannot read next header, a one-frame stream? Duh...
+2025-09-08 23:50:40,157:WARNING - /Users/ronitjain/Desktop/Hoptix/hoptix-flask/worker/adapter.py:331: UserWarning: PySoundFile failed. Trying audioread instead.
+  y, sr = librosa.load(audio_path, sr=None)
+
+2025-09-08 23:50:40,157:WARNING - /opt/miniconda3/lib/python3.12/site-packages/librosa/core/audio.py:183: FutureWarning: librosa.core.audio.__audioread_load
+	Deprecated as of librosa version 0.10.0.
+	It will be removed in librosa version 1.0.
+  y, sr_native = __audioread_load(path, offset, duration, dtype)
+
+[src/libmpg123/parse.c:do_readahead():1099] warning: Cannot read next header, a one-frame stream? Duh...
+2025-09-08 23:50:40,660:INFO - HTTP Request: PATCH https://ohuumgemptxrqrdavslz.supabase.co/rest/v1/videos?id=eq.67f41ce7-3b3a-4e06-9a55-543a0be05999 "HTTP/1.1 200 OK"
+Worker processing video: 67f41ce7-3b3a-4e06-9a55-543a0be05999
+MoviePy audio extraction failed (index -77934 is out of bounds for axis 0 with size 22067), falling back to ffmpeg
+librosa.load failed (), trying alternative methods
+soundfile failed (Error opening '/var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_asr_smbxmqc6/audio.mp3': File does not exist or is not a regular file (possibly a pipe?).), trying audioread
+audioread failed (), converting audio format
+Audio format conversion failed: ffmpeg version 7.1.1 Copyright (c) 2000-2025 the FFmpeg developers
+  built with Apple clang version 17.0.0 (clang-1700.0.13.3)
+  configuration: --prefix=/opt/homebrew/Cellar/ffmpeg/7.1.1_5 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags='-Wl,-ld_classic' --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libaribb24 --enable-libbluray --enable-libdav1d --enable-libharfbuzz --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librav1e --enable-librist --enable-librubberband --enable-libsnappy --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libspeex --enable-libsoxr --enable-libzmq --enable-libzimg --disable-libjack --disable-indev=jack --enable-videotoolbox --enable-audiotoolbox --enable-neon
+  libavutil      59. 39.100 / 59. 39.100
+  libavcodec     61. 19.101 / 61. 19.101
+  libavformat    61.  7.100 / 61.  7.100
+  libavdevice    61.  3.100 / 61.  3.100
+  libavfilter    10.  4.100 / 10.  4.100
+  libswscale      8.  3.100 /  8.  3.100
+  libswresample   5.  3.100 /  5.  3.100
+  libpostproc    58.  3.100 / 58.  3.100
+[mp3 @ 0x13a6331c0] Format mp3 detected only with low score of 1, misdetection possible!
+[mp3 @ 0x13a6331c0] Failed to find two consecutive MPEG audio frames.
+[in#0 @ 0x13a632f70] Error opening input: Invalid data found when processing input
+Error opening input file /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_asr_smbxmqc6/audio.mp3.
+Error opening input files: Invalid data found when processing input
+
+❌ Error processing video 67f41ce7-3b3a-4e06-9a55-543a0be05999: Could not load or convert audio file: ffmpeg version 7.1.1 Copyright (c) 2000-2025 the FFmpeg developers
+  built with Apple clang version 17.0.0 (clang-1700.0.13.3)
+  configuration: --prefix=/opt/homebrew/Cellar/ffmpeg/7.1.1_5 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags='-Wl,-ld_classic' --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libaribb24 --enable-libbluray --enable-libdav1d --enable-libharfbuzz --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librav1e --enable-librist --enable-librubberband --enable-libsnappy --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libspeex --enable-libsoxr --enable-libzmq --enable-libzimg --disable-libjack --disable-indev=jack --enable-videotoolbox --enable-audiotoolbox --enable-neon
+  libavutil      59. 39.100 / 59. 39.100
+  libavcodec     61. 19.101 / 61. 19.101
+  libavformat    61.  7.100 / 61.  7.100
+  libavdevice    61.  3.100 / 61.  3.100
+  libavfilter    10.  4.100 / 10.  4.100
+  libswscale      8.  3.100 /  8.  3.100
+  libswresample   5.  3.100 /  5.  3.100
+  libpostproc    58.  3.100 / 58.  3.100
+[mp3 @ 0x13a6331c0] Format mp3 detected only with low score of 1, misdetection possible!
+[mp3 @ 0x13a6331c0] Failed to find two consecutive MPEG audio frames.
+[in#0 @ 0x13a632f70] Error opening input: Invalid data found when processing input
+Error opening input file /var/folders/pl/7l52nm4d7zgdj2mnsccc2yyw0000gn/T/hoptix_asr_smbxmqc6/audio.mp3.
+Error opening input files: Invalid data found when processing input
+

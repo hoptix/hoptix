@@ -1,8 +1,7 @@
 """
 Later, import your existing functions and write results back to Supabase using db.client.
 """
-import time
-from config import Settings
+
 from integrations.db_supabase import Supa
 from worker.pipeline import main_loop
 
