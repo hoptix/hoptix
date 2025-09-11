@@ -1,0 +1,426 @@
+ended_at,kind,meta,meta.asked_more_time,meta.complete_order,meta.coupon_used,meta.mobile_order,meta.out_of_stock_items,meta.s3_key,meta.segment_index,meta.step1_raw,meta.text,meta.total_segments_in_video,meta.video_end_seconds,meta.video_start_seconds,run_id,started_at,tx_range,video_id
+2025-08-30T13:00:16Z,order,,0,0,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,0,"{""1"": ""Operator:"", ""2"": ""0"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""N/A""}",Operator:,1,15.0,0.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:00:01Z,"[""2025-08-30T13:00:01Z"",""2025-08-30T13:00:16Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T13:01:16Z,order,,0,0,0,1,0,gdrive/dq_cary/DT_File20250830130001000.mp4,0,"{""1"": ""Operator: Hi, welcome to Dairy Queen. How can I help you?\nCustomer: I have a mobile order under Pam or Pamela.\nOperator: Okay, just pull up to the window.\nCustomer: Thank you."", ""2"": ""0"", ""3"": ""1"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""Customer: I have a mobile order under Pam or Pamela. -> mobile order = 1; No mention of coupon -> coupon = 0; Operator never asks to wait -> wait = 0; No items out of stock mentioned -> out of stock = 0; Pickup only hence incomplete = 0""}","Operator: Hi, welcome to Dairy Queen. How can I help you?
+Customer: I have a mobile order under Pam or Pamela.
+Operator: Okay, just pull up to the window.
+Customer: Thank you.",1,75.0,45.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:00:46Z,"[""2025-08-30T13:00:46Z"",""2025-08-30T13:01:16Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T13:04:31Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,0,"{""1"":""Operator: Welcome to Dairy Queen, how can I help you?\nCustomer: Can I get a small chocolate extreme blizzard and a medium mixing bowl mashup?\nOperator: Okay, a small chocolate brownie extreme and a small mixing bowl mashup?\nCustomer: A medium mixing bowl mashup.\nOperator: Medium, okay. Okay, small chocolate brownie extreme, medium mixing bowl mashup. Would that be all?\nCustomer: Yes.\nOperator: Okay, your total is $11.45. Would you like to round up for the note in the pocket?\nCustomer: Not today.\nOperator: Okay, $11.45."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""Mobile-order keywords table: none of its phrases (e.g., “mobile order”, “online order”, “pick-up”) appear, so 3 = 0. Coupon keywords table: none of its phrases (e.g., “coupon”, “promo”, “code”, “discount”) appear, so 4 = 0. Wait-phrase table: none of its phrases (e.g., “one moment”, “please wait”, “I’ll be right with you”) appear, so 5 = 0. Menu items table: exact matches found for “Chocolate Brownie Extreme Blizzard” (small) and “Mixing Bowl Mashup” (medium), confirming items ordered and no out-of-stock situation, so 6 = 0.""}","Operator: Welcome to Dairy Queen, how can I help you?
+Customer: Can I get a small chocolate extreme blizzard and a medium mixing bowl mashup?
+Operator: Okay, a small chocolate brownie extreme and a small mixing bowl mashup?
+Customer: A medium mixing bowl mashup.
+Operator: Medium, okay. Okay, small chocolate brownie extreme, medium mixing bowl mashup. Would that be all?
+Customer: Yes.
+Operator: Okay, your total is $11.45. Would you like to round up for the note in the pocket?
+Customer: Not today.
+Operator: Okay, $11.45.",1,270.0,195.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:03:16Z,"[""2025-08-30T13:03:16Z"",""2025-08-30T13:04:31Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T13:09:46Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,0,"{""1"":""Operator: Hi, welcome to Dairy Queen. How can I help you?\nCustomer: Yeah, can I get the mini pumpkin pie blizzard?\nOperator: Okay, mini pumpkin pie blizzard. Is that all?\nCustomer: Yeah, that's it.\nOperator: Okay, $4.54. Would you like to round up for a note in your pocket?\nCustomer: Oh, no thanks.\nOperator: Okay."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""""}","Operator: Hi, welcome to Dairy Queen. How can I help you?
+Customer: Yeah, can I get the mini pumpkin pie blizzard?
+Operator: Okay, mini pumpkin pie blizzard. Is that all?
+Customer: Yeah, that's it.
+Operator: Okay, $4.54. Would you like to round up for a note in your pocket?
+Customer: Oh, no thanks.
+Operator: Okay.",1,585.0,330.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:05:31Z,"[""2025-08-30T13:05:31Z"",""2025-08-30T13:09:46Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T13:15:01Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,0,"{""1"": ""Operator: Wonderful day at Dairy Queen, how can I help you?\nCustomer: Yes, can I have a medium chocolate dipped strawberry blizzard?\nOperator: A medium chocolate dipped strawberry, no problem. Anything else for you today?\nCustomer: Sorry, say that again.\nOperator: Anything else for you today, sir?\nCustomer: Yeah, can I also have a medium heat bar blizzard?\nOperator: Okay.\nCustomer: That's it.\nOperator: Alright, that'll be $12.10. Would you like to round up for the pocket charity?"", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""N/A""}","Operator: Wonderful day at Dairy Queen, how can I help you?
+Customer: Yes, can I have a medium chocolate dipped strawberry blizzard?
+Operator: A medium chocolate dipped strawberry, no problem. Anything else for you today?
+Customer: Sorry, say that again.
+Operator: Anything else for you today, sir?
+Customer: Yeah, can I also have a medium heat bar blizzard?
+Operator: Okay.
+Customer: That's it.
+Operator: Alright, that'll be $12.10. Would you like to round up for the pocket charity?",1,900.0,675.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:11:16Z,"[""2025-08-30T13:11:16Z"",""2025-08-30T13:15:01Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T13:22:53.500000Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,0,"{""1"": ""Operator: Hey, can I get a four-piece chicken strip basket with double fries and a large lemonade?\nCustomer: Four-piece regular fry and a large lemonade?\nOperator: Yeah.\nCustomer: And then, what would you like for your dipping sauce?\nOperator: Can I get three ranches and a buffalo sauce?\nCustomer: Alright, anything else?\nOperator: That'll be it.\nCustomer: Alright, so it'll be $12.43. Would you like to run up in the pocket?\nOperator: No, thank you. Not today.\nCustomer: $12.43 at the window."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""0""}","Operator: Hey, can I get a four-piece chicken strip basket with double fries and a large lemonade?
+Customer: Four-piece regular fry and a large lemonade?
+Operator: Yeah.
+Customer: And then, what would you like for your dipping sauce?
+Operator: Can I get three ranches and a buffalo sauce?
+Customer: Alright, anything else?
+Operator: That'll be it.
+Customer: Alright, so it'll be $12.43. Would you like to run up in the pocket?
+Operator: No, thank you. Not today.
+Customer: $12.43 at the window.",2,1372.5,1320.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:22:01Z,"[""2025-08-30T13:22:01Z"",""2025-08-30T13:22:53.500000Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T13:23:46Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,1,"{""1"": ""Operator: Yes, I would like a medium Oreo Blizzard, please.\nCustomer: One medium Oreo Blizzard. Anything else today?\nOperator: Nope.\nCustomer: Alright, so it'll be $6.05. Would you like to run up in the pocket, Charity?\nOperator: No, I'll pass.\nCustomer: $6.05 at the window."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""0""}","Operator: Yes, I would like a medium Oreo Blizzard, please.
+Customer: One medium Oreo Blizzard. Anything else today?
+Operator: Nope.
+Customer: Alright, so it'll be $6.05. Would you like to run up in the pocket, Charity?
+Operator: No, I'll pass.
+Customer: $6.05 at the window.",2,1425.0,1372.5,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:22:53.500000Z,"[""2025-08-30T13:22:53.500000Z"",""2025-08-30T13:23:46Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T13:28:46Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,0,"{""1"":""Operator: Thank you for choosing Dairy Queen. What can I get started for you today?\nCustomer: I need a small pumpkin pie blizzard and a medium-sized vanilla ice cream cone and that'll be all.\nOperator: Okay, a medium vanilla cone. Total will be $9.29.\nCustomer: Alright, thank you, sir."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""Small Pumpkin Pie Blizzard; Medium Vanilla Cone""}","Operator: Thank you for choosing Dairy Queen. What can I get started for you today?
+Customer: I need a small pumpkin pie blizzard and a medium-sized vanilla ice cream cone and that'll be all.
+Operator: Okay, a medium vanilla cone. Total will be $9.29.
+Customer: Alright, thank you, sir.",2,1725.0,1680.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:28:01Z,"[""2025-08-30T13:28:01Z"",""2025-08-30T13:28:46Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T13:29:31Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,1,"{""1"":""Operator: Thank you for choosing Dairy Queen. What can I get started for you today?\nCustomer: Yes, I'd like a small milkshake, vanilla.\nOperator: Small vanilla milkshake. What else can I get for you?\nCustomer: How much is it?\nOperator: Okay, total is $4.32."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""Small Vanilla Milkshake""}","Operator: Thank you for choosing Dairy Queen. What can I get started for you today?
+Customer: Yes, I'd like a small milkshake, vanilla.
+Operator: Small vanilla milkshake. What else can I get for you?
+Customer: How much is it?
+Operator: Okay, total is $4.32.",2,1770.0,1725.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:28:46Z,"[""2025-08-30T13:28:46Z"",""2025-08-30T13:29:31Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T13:31:31Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,0,"{""1"": ""Operator: Hey, can I get a small pumpkin pie blizzard? That'll be it.\nCustomer: Alright, that'll be $5.40. You have to round up for the non-profit charity?\nOperator: No, not today.\nCustomer: Alright, $5.40 at the window.\nOperator: Thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""N/A""}","Operator: Hey, can I get a small pumpkin pie blizzard? That'll be it.
+Customer: Alright, that'll be $5.40. You have to round up for the non-profit charity?
+Operator: No, not today.
+Customer: Alright, $5.40 at the window.
+Operator: Thank you.",1,1890.0,1845.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:30:46Z,"[""2025-08-30T13:30:46Z"",""2025-08-30T13:31:31Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T13:33:46Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,0,"{""1"": ""Operator: I'd like the three-piece chicken strip, a $7 meal, please. I'd like country gravy, a lemonade, and a hot fudge sundae.\nCustomer: All right, no problem. Anything else for today, ma'am?\nOperator: That's it, thank you.\nCustomer: All right, that'll be $7.58. And do you want to round up for the pocket charity?\nOperator: Oh, sure.\nCustomer: Thank you for donating. It'll be $8 even at the window."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""N/A""}","Operator: I'd like the three-piece chicken strip, a $7 meal, please. I'd like country gravy, a lemonade, and a hot fudge sundae.
+Customer: All right, no problem. Anything else for today, ma'am?
+Operator: That's it, thank you.
+Customer: All right, that'll be $7.58. And do you want to round up for the pocket charity?
+Operator: Oh, sure.
+Customer: Thank you for donating. It'll be $8 even at the window.",1,2025.0,1980.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:33:01Z,"[""2025-08-30T13:33:01Z"",""2025-08-30T13:33:46Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T13:35:01Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,0,"{""1"":""Operator: Can I help you?\nCustomer: I'd like a hamburger with just ketchup and onion, that's it.\nOperator: I'm sorry, can you repeat that last part, sir?\nCustomer: Just a hamburger, ketchup and onion, and then a vanilla cone.\nOperator: A large vanilla cone, no problem. We'll have your total at the window, okay?\nCustomer: Thank you.\nOperator: You're welcome."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""N/A""}","Operator: Can I help you?
+Customer: I'd like a hamburger with just ketchup and onion, that's it.
+Operator: I'm sorry, can you repeat that last part, sir?
+Customer: Just a hamburger, ketchup and onion, and then a vanilla cone.
+Operator: A large vanilla cone, no problem. We'll have your total at the window, okay?
+Customer: Thank you.
+Operator: You're welcome.",1,2100.0,2055.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:34:16Z,"[""2025-08-30T13:34:16Z"",""2025-08-30T13:35:01Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T13:37:16Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,0,"{""1"":""Operator: What can I do for you?\nCustomer: Hi, I'd like a large number one with half and half sweet tea.\nOperator: Okay. Anything else today, ma'am?\nCustomer: That's it.\nOperator: Your total will be $14.26. Would you like to round up for the No Other Pocket charity?\nCustomer: Sure.\nOperator: Thank you for donating $15 even at the window.\nCustomer: Thank you.\nOperator: You're welcome."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""Operator line asking to round up confirms no coupon, mobile order, or wait; no mention of out-of-stock items.""}","Operator: What can I do for you?
+Customer: Hi, I'd like a large number one with half and half sweet tea.
+Operator: Okay. Anything else today, ma'am?
+Customer: That's it.
+Operator: Your total will be $14.26. Would you like to round up for the No Other Pocket charity?
+Customer: Sure.
+Operator: Thank you for donating $15 even at the window.
+Customer: Thank you.
+Operator: You're welcome.",1,2235.0,2190.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:36:31Z,"[""2025-08-30T13:36:31Z"",""2025-08-30T13:37:16Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T13:39:16Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,0,"{""1"": ""Operator: What can I get for you today?\nCustomer: Can I have a small pumpkin pie blizzard?\nOperator: Okay.\nCustomer: And that's all.\nOperator: All right, any extra pumpkin pie pieces in that for you?\nCustomer: No.\nOperator: All right, a small pumpkin pie is going to be $5.40. Did you want to round to $6 for note in the pocket?\nCustomer: No thanks.\nOperator: All right, come on down. Thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""Completeness: Operator says 'All right, come on down. Thank you.' indicating end of order.\nMobile order: No mention of a mobile pickup.\nCoupon: No coupon referenced.\nWait: Operator never asks customer to wait.\nOut of stock: No item declared out of stock.""}","Operator: What can I get for you today?
+Customer: Can I have a small pumpkin pie blizzard?
+Operator: Okay.
+Customer: And that's all.
+Operator: All right, any extra pumpkin pie pieces in that for you?
+Customer: No.
+Operator: All right, a small pumpkin pie is going to be $5.40. Did you want to round to $6 for note in the pocket?
+Customer: No thanks.
+Operator: All right, come on down. Thank you.",1,2355.0,2310.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:38:31Z,"[""2025-08-30T13:38:31Z"",""2025-08-30T13:39:16Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T13:42:01Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,0,"{""1"": ""Operator: Good day, Dairy Queen. What can I get for you today?\nCustomer: Let's do the triple combo flamethrower.\nOperator: Sure, large fry, large drink?\nCustomer: Yes.\nOperator: Everything okay on that burger?\nCustomer: No mustard, if we can do that.\nOperator: Okay, it doesn't come on. What kind of beverage may I get for you?\nCustomer: Coke.\nOperator: Okay, what else for you?\nCustomer: That's it.\nOperator: All right, $15.77. Did you want to round to $16 for note in the pocket today?\nCustomer: No, thanks.\nOperator: All right, come on down to the window."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0""}","Operator: Good day, Dairy Queen. What can I get for you today?
+Customer: Let's do the triple combo flamethrower.
+Operator: Sure, large fry, large drink?
+Customer: Yes.
+Operator: Everything okay on that burger?
+Customer: No mustard, if we can do that.
+Operator: Okay, it doesn't come on. What kind of beverage may I get for you?
+Customer: Coke.
+Operator: Okay, what else for you?
+Customer: That's it.
+Operator: All right, $15.77. Did you want to round to $16 for note in the pocket today?
+Customer: No, thanks.
+Operator: All right, come on down to the window.",1,2520.0,2460.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:41:01Z,"[""2025-08-30T13:41:01Z"",""2025-08-30T13:42:01Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T13:44:46Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,0,"{""1"":""Operator: How can I help you?\nCustomer: I'd like to order a basket with fries and a sweet tea and a number five with fries and a diet Pepsi Coke, whichever you have.\nOperator: All right, and then what, the big sauce with four piece?\nCustomer: No sauce, please.\nOperator: And did you want that to be a large or regular meal?\nCustomer: Regular.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator: Thank you.\nOperator:\n"",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""Basket with fries; Sweet tea; Number five with fries; Diet Pepsi or Coke""}","Operator: How can I help you?
+Customer: I'd like to order a basket with fries and a sweet tea and a number five with fries and a diet Pepsi Coke, whichever you have.
+Operator: All right, and then what, the big sauce with four piece?
+Customer: No sauce, please.
+Operator: And did you want that to be a large or regular meal?
+Customer: Regular.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator: Thank you.
+Operator:
+",1,2685.0,2565.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:42:46Z,"[""2025-08-30T13:42:46Z"",""2025-08-30T13:44:46Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T13:49:01Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,0,"{""1"":""Operator: Thank you for choosing Dairy Queen. What can I get started for you today?\nCustomer: We need two cones of ice cream, one small, one chocolate, one vanilla.\nOperator: Both of them are small?\nCustomer: Uh-huh.\nOperator: Okay, what else can I get for you?\nCustomer: Okay."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""Small Chocolate Cone; Small Vanilla Cone""}","Operator: Thank you for choosing Dairy Queen. What can I get started for you today?
+Customer: We need two cones of ice cream, one small, one chocolate, one vanilla.
+Operator: Both of them are small?
+Customer: Uh-huh.
+Operator: Okay, what else can I get for you?
+Customer: Okay.",1,2940.0,2895.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:48:16Z,"[""2025-08-30T13:48:16Z"",""2025-08-30T13:49:01Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T13:57:31.010000Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,0,"{""1"":""Operator: Hi, can I help you?\nCustomer: Hi, can I get a four-piece chicken strip basket?\nOperator: Four-piece chicken strip basket, and what would you like for your drink?\nCustomer: Can I have a lemonade?\nOperator: Okay, and any dipping sauce for you today?\nCustomer: No, thank you.\nOperator: All right, no problem. Anything else?\nCustomer: Actually, I do change my mind about that. Can I have some honey mustard?\nOperator: Honey mustard, no problem.\nCustomer: Uh-huh, and that's gonna be it.\nOperator: All right, that'll be $11.46. Would you like to round up for the On the Pocket charity?\nCustomer: No, thank you.\nOperator: All right, $11.46 at the window."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: Hi, can I help you?
+Customer: Hi, can I get a four-piece chicken strip basket?
+Operator: Four-piece chicken strip basket, and what would you like for your drink?
+Customer: Can I have a lemonade?
+Operator: Okay, and any dipping sauce for you today?
+Customer: No, thank you.
+Operator: All right, no problem. Anything else?
+Customer: Actually, I do change my mind about that. Can I have some honey mustard?
+Operator: Honey mustard, no problem.
+Customer: Uh-huh, and that's gonna be it.
+Operator: All right, that'll be $11.46. Would you like to round up for the On the Pocket charity?
+Customer: No, thank you.
+Operator: All right, $11.46 at the window.",2,3450.01,3300.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:55:01Z,"[""2025-08-30T13:55:01Z"",""2025-08-30T13:57:31.010000Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57
+2025-08-30T14:00:01.020000Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830130001000.mp4,1,"{""1"":""Operator: Hi, can I help you?\nCustomer: Yeah, let me get a chocolate ice cream cone.\nOperator: Okay.\nCustomer: And that's it.\nOperator: Okay, one medium chocolate cone will be $3.89. Would you like to round up for the On the Pocket today?\nCustomer: Say what now?\nOperator: Would you like to round up for the On the Pocket charity?\nCustomer: Go ahead.\nOperator: Thank you for donating. Four even at the window."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0""}","Operator: Hi, can I help you?
+Customer: Yeah, let me get a chocolate ice cream cone.
+Operator: Okay.
+Customer: And that's it.
+Operator: Okay, one medium chocolate cone will be $3.89. Would you like to round up for the On the Pocket today?
+Customer: Say what now?
+Operator: Would you like to round up for the On the Pocket charity?
+Customer: Go ahead.
+Operator: Thank you for donating. Four even at the window.",2,3600.02,3450.01,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T13:57:31.010000Z,"[""2025-08-30T13:57:31.010000Z"",""2025-08-30T14:00:01.020000Z"")",bac8b512-7bc4-45e8-ae7c-025068174b57

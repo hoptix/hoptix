@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  hoptix-flask:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # Database
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      
+      # AWS
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - RAW_BUCKET=${RAW_BUCKET:-hoptix-raw-devprod}
+      - DERIV_BUCKET=${DERIV_BUCKET:-hoptix-deriv-devprod}
+      
+      # SQS
+      - SQS_QUEUE_URL=${SQS_QUEUE_URL}
+      - SQS_DLQ_URL=${SQS_DLQ_URL}
+      - SQS_VISIBILITY_TIMEOUT=${SQS_VISIBILITY_TIMEOUT:-1800}
+      - SQS_WAIT_TIME=${SQS_WAIT_TIME:-20}
+      
+      # OpenAI
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ASR_MODEL=${ASR_MODEL:-gpt-4o-transcribe}
+      - STEP1_MODEL=${STEP1_MODEL:-o3}
+      - STEP2_MODEL=${STEP2_MODEL:-o3}
+      
+      # Prompts
+      - PROMPTS_DIR=${PROMPTS_DIR:-./prompts}
+      - ITEMS_JSON=${ITEMS_JSON:-items.json}
+      - MEALS_JSON=${MEALS_JSON:-meals.json}
+      - UPSELLING_JSON=${UPSELLING_JSON:-upselling.json}
+      - UPSIZING_JSON=${UPSIZING_JSON:-upsizing.json}
+      - ADDONS_JSON=${ADDONS_JSON:-addons.json}
+    
+    volumes:
+      # Mount logs directory for persistence
+      - ./logs:/app/logs
+      # Mount exports directory for CSV exports
+      - ./exports:/app/exports
+      # Mount token.json if it exists (for Google Drive API)
+      - ./token.json:/app/token.json:ro
+      # Mount prompts directory
+      - ./prompts:/app/prompts:ro
+    
+    restart: unless-stopped
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: SQS Worker service
+  hoptix-worker:
+    build: .
+    command: ["python", "-m", "worker.sqs_worker"]
+    environment:
+      # Same environment variables as the Flask app
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - RAW_BUCKET=${RAW_BUCKET:-hoptix-raw-devprod}
+      - DERIV_BUCKET=${DERIV_BUCKET:-hoptix-deriv-devprod}
+      - SQS_QUEUE_URL=${SQS_QUEUE_URL}
+      - SQS_DLQ_URL=${SQS_DLQ_URL}
+      - SQS_VISIBILITY_TIMEOUT=${SQS_VISIBILITY_TIMEOUT:-1800}
+      - SQS_WAIT_TIME=${SQS_WAIT_TIME:-20}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ASR_MODEL=${ASR_MODEL:-gpt-4o-transcribe}
+      - STEP1_MODEL=${STEP1_MODEL:-o3}
+      - STEP2_MODEL=${STEP2_MODEL:-o3}
+      - PROMPTS_DIR=${PROMPTS_DIR:-./prompts}
+      - ITEMS_JSON=${ITEMS_JSON:-items.json}
+      - MEALS_JSON=${MEALS_JSON:-meals.json}
+      - UPSELLING_JSON=${UPSELLING_JSON:-upselling.json}
+      - UPSIZING_JSON=${UPSIZING_JSON:-upsizing.json}
+      - ADDONS_JSON=${ADDONS_JSON:-addons.json}
+    
+    volumes:
+      # Same volumes as Flask app
+      - ./logs:/app/logs
+      - ./exports:/app/exports
+      - ./token.json:/app/token.json:ro
+      - ./prompts:/app/prompts:ro
+    
+    restart: unless-stopped
+    
+    # Scale workers as needed
+    deploy:
+      replicas: 2
+
+networks:
+  default:
+    name: hoptix-network
