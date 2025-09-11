@@ -24,7 +24,7 @@ class VideoService:
                     filtered_files.append(file_info)
                     logger.info(f"Including {file_info['name']} (date: {video_date})")
                 else:
-                    logger.debug(f"Skipping {file_info['name']} (date: {video_date}, target: {target_date_obj})")
+                    logger.info(f"Skipping {file_info['name']} (date: {video_date}, target: {target_date_obj})")
             else:
                 logger.warning(f"Skipping {file_info['name']} (could not parse date from filename)")
         

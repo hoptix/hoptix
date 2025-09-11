@@ -136,18 +136,31 @@ class GoogleDriveClient:
             mime_query = ' or '.join([f"mimeType='{mime}'" for mime in video_mimes])
             query = f"('{folder_id}' in parents) and ({mime_query}) and trashed=false"
             
-            results = self.service.files().list(
-                q=query,
-                driveId=drive_id,
-                corpora='drive',
-                includeItemsFromAllDrives=True,
-                supportsAllDrives=True,
-                fields='files(id,name,size,mimeType,createdTime,modifiedTime)'
-            ).execute()
+            # Handle pagination to get ALL files
+            files = []
+            page_token = None
             
-            files = results.get('files', [])
-            logger.info(f"Found {len(files)} video files in folder")
+            while True:
+                results = self.service.files().list(
+                    q=query,
+                    driveId=drive_id,
+                    corpora='drive',
+                    includeItemsFromAllDrives=True,
+                    supportsAllDrives=True,
+                    fields='nextPageToken,files(id,name,size,mimeType,createdTime,modifiedTime)',
+                    pageSize=1000,  # Maximum allowed
+                    pageToken=page_token
+                ).execute()
+                
+                page_files = results.get('files', [])
+                files.extend(page_files)
+                logger.info(f"Retrieved {len(page_files)} files in this page (total so far: {len(files)})")
+                
+                page_token = results.get('nextPageToken')
+                if not page_token:
+                    break
             
+            logger.info(f"Found {len(files)} total video files in folder")
             return files
             
         except Exception as e:
