@@ -1,0 +1,107 @@
+ended_at,kind,meta,meta.asked_more_time,meta.complete_order,meta.coupon_used,meta.mobile_order,meta.out_of_stock_items,meta.s3_key,meta.segment_index,meta.step1_raw,meta.text,meta.total_segments_in_video,meta.video_end_seconds,meta.video_start_seconds,run_id,started_at,tx_range,video_id
+2025-08-29T11:00:16Z,order,,0,0,0,0,0,gdrive/dq_cary/DT_File20250829110001000.mp4,0,"{""1"":""Operator:"",""2"":""0"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""N/A""}",Operator:,1,15.0,0.0,1227c711-5836-4b13-a4bf-eb0e91066a58,2025-08-29T11:00:01Z,"[""2025-08-29T11:00:01Z"",""2025-08-29T11:00:16Z"")",761254d4-0e87-4ecc-8792-f97c7275d8b8
+2025-08-29T11:02:01Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250829110001000.mp4,0,"{""1"":""Operator: The wonderful day there, Quinn. How can we make it yours?\nCustomer: Hi, how are you?\nOperator: I'm all right, and you?\nCustomer: Good. Can I just get the Oreo Blizzard?\nOperator: Okay, would that be a large Blizzard?\nCustomer: Is there a medium?\nOperator: Yes.\nCustomer: Yeah, can I just get the medium?\nOperator: Okay, would you like extra Oreos?\nCustomer: Sorry, what?\nOperator: Would you like extra Oreos?\nCustomer: No, that's okay.\nOperator: All right, anything else?\nCustomer: That's it.\nOperator: Total's going to be $6.05.\nCustomer: Okay, thank you.\nOperator: You're welcome."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""Complete order placed and total given (\""Operator: Total's going to be $6.05\""). No mention of mobile order, coupons, waiting, or out-of-stock items.""}","Operator: The wonderful day there, Quinn. How can we make it yours?
+Customer: Hi, how are you?
+Operator: I'm all right, and you?
+Customer: Good. Can I just get the Oreo Blizzard?
+Operator: Okay, would that be a large Blizzard?
+Customer: Is there a medium?
+Operator: Yes.
+Customer: Yeah, can I just get the medium?
+Operator: Okay, would you like extra Oreos?
+Customer: Sorry, what?
+Operator: Would you like extra Oreos?
+Customer: No, that's okay.
+Operator: All right, anything else?
+Customer: That's it.
+Operator: Total's going to be $6.05.
+Customer: Okay, thank you.
+Operator: You're welcome.",1,120.0,75.0,1227c711-5836-4b13-a4bf-eb0e91066a58,2025-08-29T11:01:16Z,"[""2025-08-29T11:01:16Z"",""2025-08-29T11:02:01Z"")",761254d4-0e87-4ecc-8792-f97c7275d8b8
+2025-08-29T11:04:16Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250829110001000.mp4,0,"{""1"": ""Operator: Wonderful day at Dairy Queen, how can we make it yours?\nCustomer: Yes, may I have two hot dogs with ketchup, mustard, and onion?\nOperator: Ketchup, mustard, and onion?\nCustomer: A small diet coke and a large turtle pecan cluster blizzard.\nOperator: Alright, would you like extra pecans?\nCustomer: Oh, that'd be wonderful.\nOperator: Got it, anything else?\nCustomer: No, thank you.\nOperator: Your total is going to be $16.18, would you like to round up to note in a pocket?\nCustomer: Yes, please.\nOperator: Thank you, we appreciate it. It's going to be $17 even.\nCustomer: Thank you.\nOperator: You're welcome."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": """"}","Operator: Wonderful day at Dairy Queen, how can we make it yours?
+Customer: Yes, may I have two hot dogs with ketchup, mustard, and onion?
+Operator: Ketchup, mustard, and onion?
+Customer: A small diet coke and a large turtle pecan cluster blizzard.
+Operator: Alright, would you like extra pecans?
+Customer: Oh, that'd be wonderful.
+Operator: Got it, anything else?
+Customer: No, thank you.
+Operator: Your total is going to be $16.18, would you like to round up to note in a pocket?
+Customer: Yes, please.
+Operator: Thank you, we appreciate it. It's going to be $17 even.
+Customer: Thank you.
+Operator: You're welcome.",1,255.0,180.0,1227c711-5836-4b13-a4bf-eb0e91066a58,2025-08-29T11:03:01Z,"[""2025-08-29T11:03:01Z"",""2025-08-29T11:04:16Z"")",761254d4-0e87-4ecc-8792-f97c7275d8b8
+2025-08-29T11:07:01Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250829110001000.mp4,0,"{""1"":""Operator: Wonderful day at Dairy Queen, how can we make it yours?\nCustomer: Yeah, can I just get a chili cheese dog? Wait, hang on one sec. Actually, you know what, cancel that. I want regular cheese curds with marinara sauce.\nOperator: Got it. Anything else?\nCustomer: That's it.\nOperator: Alright, we'll get your total at the window.\nCustomer: Thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""Complete transcript evidenced by greeting and closing (\""Wonderful day at Dairy Queen...\"", \""Alright, we'll get your total at the window.\""). No terms like \""mobile\"" or \""app\"" indicate a mobile order. No mention of a coupon or code. Operator never asks the customer to wait. No out-of-stock notice given.""}","Operator: Wonderful day at Dairy Queen, how can we make it yours?
+Customer: Yeah, can I just get a chili cheese dog? Wait, hang on one sec. Actually, you know what, cancel that. I want regular cheese curds with marinara sauce.
+Operator: Got it. Anything else?
+Customer: That's it.
+Operator: Alright, we'll get your total at the window.
+Customer: Thank you.",1,420.0,375.0,1227c711-5836-4b13-a4bf-eb0e91066a58,2025-08-29T11:06:16Z,"[""2025-08-29T11:06:16Z"",""2025-08-29T11:07:01Z"")",761254d4-0e87-4ecc-8792-f97c7275d8b8
+2025-08-29T11:16:31Z,order,,1,1,0,0,0,gdrive/dq_cary/DT_File20250829110001000.mp4,0,"{""1"": ""Operator: Have a wonderful day at Dairy Queen, how can we make it yours?\nCustomer: Just one second.\nOperator: No problem, order when you're ready.\nCustomer: Alright, can we get a medium hot fudge sundae, a medium Heath Blizzard, and a medium Butterfinger Blizzard, and two medium fries, and three vanilla cones.\nOperator: What size are they?\nCustomer: Small.\nOperator: Okay.\nCustomer: Three, yeah. That's it.\nOperator: Alright, your total is going to be $29.92. Would you like to round up to note in the pocket?\nCustomer: Sure.\nOperator: Thank you, we appreciate it. It's going to be $30 even.\nCustomer: Okay, thank you.\nOperator: You're welcome."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""1"", ""6"": ""0"", ""7"": ""N/A""}","Operator: Have a wonderful day at Dairy Queen, how can we make it yours?
+Customer: Just one second.
+Operator: No problem, order when you're ready.
+Customer: Alright, can we get a medium hot fudge sundae, a medium Heath Blizzard, and a medium Butterfinger Blizzard, and two medium fries, and three vanilla cones.
+Operator: What size are they?
+Customer: Small.
+Operator: Okay.
+Customer: Three, yeah. That's it.
+Operator: Alright, your total is going to be $29.92. Would you like to round up to note in the pocket?
+Customer: Sure.
+Operator: Thank you, we appreciate it. It's going to be $30 even.
+Customer: Okay, thank you.
+Operator: You're welcome.",1,990.0,900.0,1227c711-5836-4b13-a4bf-eb0e91066a58,2025-08-29T11:15:01Z,"[""2025-08-29T11:15:01Z"",""2025-08-29T11:16:31Z"")",761254d4-0e87-4ecc-8792-f97c7275d8b8
+2025-08-29T11:32:46Z,order,,1,0,0,0,0,gdrive/dq_cary/DT_File20250829110001000.mp4,0,"{""1"": ""Operator: Hello, one moment please."", ""2"": ""0"", ""3"": ""0"", ""4"": ""0"", ""5"": ""1"", ""6"": ""0"", ""7"": ""0""}","Operator: Hello, one moment please.",1,1965.0,1920.0,1227c711-5836-4b13-a4bf-eb0e91066a58,2025-08-29T11:32:01Z,"[""2025-08-29T11:32:01Z"",""2025-08-29T11:32:46Z"")",761254d4-0e87-4ecc-8792-f97c7275d8b8
+2025-08-29T11:33:46Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250829110001000.mp4,0,"{""1"": ""Operator: I'm sorry for the wait. What can we get for you today?\nCustomer: Can I get a chili dog and a mini Snickers Blizzard?\nOperator: Chili dog and mini Snickers. Alright, anything else?\nCustomer: That's it, thank you.\nOperator: Okay, you come to the window."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": """"}","Operator: I'm sorry for the wait. What can we get for you today?
+Customer: Can I get a chili dog and a mini Snickers Blizzard?
+Operator: Chili dog and mini Snickers. Alright, anything else?
+Customer: That's it, thank you.
+Operator: Okay, you come to the window.",1,2025.0,1995.0,1227c711-5836-4b13-a4bf-eb0e91066a58,2025-08-29T11:33:16Z,"[""2025-08-29T11:33:16Z"",""2025-08-29T11:33:46Z"")",761254d4-0e87-4ecc-8792-f97c7275d8b8
+2025-08-29T11:40:31Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250829110001000.mp4,0,"{""1"":""Operator: The wonderful day at Dairy Queen, how can we make it yours?\nCustomer: Hi, just one second.\nOperator: No problem, order when you're ready.\nCustomer: Okay, I think we're ready now. Can we get three blizzards please? One of the Oreo, one of the M&M's, and one of the Reese's, all your smallest size.\nOperator: Mini M&M's, you said mini Reese's, and then what else?\nCustomer: The Oreo one too.\nOperator: Got it. Anything else?\nCustomer: Oh yeah, we got that Lucas, that was included. I think that's all.\nOperator: Alright, so it's gonna be $13.61. Would you like to round up to note in the pocket?\nCustomer: Sure, so $14 is good.\nOperator: Yeah, it's gonna be $14 even.\nCustomer: Okay."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""Mini Oreo Blizzard Treat|Mini M&M'S Milk Chocolate Candies Blizzard Treat|Mini Reese's Peanut Butter Cup Blizzard Treat""}","Operator: The wonderful day at Dairy Queen, how can we make it yours?
+Customer: Hi, just one second.
+Operator: No problem, order when you're ready.
+Customer: Okay, I think we're ready now. Can we get three blizzards please? One of the Oreo, one of the M&M's, and one of the Reese's, all your smallest size.
+Operator: Mini M&M's, you said mini Reese's, and then what else?
+Customer: The Oreo one too.
+Operator: Got it. Anything else?
+Customer: Oh yeah, we got that Lucas, that was included. I think that's all.
+Operator: Alright, so it's gonna be $13.61. Would you like to round up to note in the pocket?
+Customer: Sure, so $14 is good.
+Operator: Yeah, it's gonna be $14 even.
+Customer: Okay.",1,2430.0,2325.0,1227c711-5836-4b13-a4bf-eb0e91066a58,2025-08-29T11:38:46Z,"[""2025-08-29T11:38:46Z"",""2025-08-29T11:40:31Z"")",761254d4-0e87-4ecc-8792-f97c7275d8b8
+2025-08-29T11:47:31Z,order,,0,1,1,0,0,gdrive/dq_cary/DT_File20250829110001000.mp4,0,"{""1"":""Operator: A wonderful day at Dairy Queen, how can we make it yours?\nCustomer: I have a reward for a small dip cone, but is there any way I can get it in a cup without the cone?\nOperator: Yes.\nCustomer: Okay. That's gonna be all.\nOperator: Alright, and we'll take care of the coupon at the window.\nCustomer: Okay, thank you.\nOperator: You're welcome."",""2"":""1"",""3"":""0"",""4"":""1"",""5"":""0"",""6"":""0"",""7"":""""}","Operator: A wonderful day at Dairy Queen, how can we make it yours?
+Customer: I have a reward for a small dip cone, but is there any way I can get it in a cup without the cone?
+Operator: Yes.
+Customer: Okay. That's gonna be all.
+Operator: Alright, and we'll take care of the coupon at the window.
+Customer: Okay, thank you.
+Operator: You're welcome.",1,2850.0,2805.0,1227c711-5836-4b13-a4bf-eb0e91066a58,2025-08-29T11:46:46Z,"[""2025-08-29T11:46:46Z"",""2025-08-29T11:47:31Z"")",761254d4-0e87-4ecc-8792-f97c7275d8b8
+2025-08-29T11:54:16Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250829110001000.mp4,0,"{""1"": ""Operator: It's a wonderful day at Dairy Queen, how can we make it yours?\nCustomer: Uh, yeah, can I get a number 13?\nOperator: Would that be a combo?\nCustomer: Yes, please.\nOperator: Would you like to make it a large combo?\nCustomer: Uh, sure, why not. With Dr. Pepper?\nOperator: We have Mr. Pibb.\nCustomer: That's fine.\nOperator: Anything else?\nCustomer: Yes, I need an extra chili cheese dog and a pumpkin pie blizzard.\nOperator: Alright, will that pumpkin pie be a large as well?\nCustomer: Yes, ma'am.\nOperator: Would you like extra pie pieces?\nCustomer: Do what, ma'am?\nOperator: Extra pie pieces?\nCustomer: Uh, no thanks.\nOperator: Okay, anything else?\nCustomer: That's all.\nOperator: Total's gonna be $21.05."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""Completeness: The transcript contains full greeting, order, confirmation, and total (Table CompleteTransaction Row 1). Mobile: No mentions of mobile order keywords like 'mobile', 'online', or 'pickup' (Table MobileOrder Row 0). Coupon: No coupon code or the word 'coupon' present (Table CouponUsage Row 0). Wait: Operator never asks the customer to wait with phrases like 'one moment please' (Table AskToWait Row 0). Out-of-stock: Dr. Pepper was substituted with Mr. Pibb, so not classified as out of stock because an alternative was provided (Table OutOfStock Row 0).""}","Operator: It's a wonderful day at Dairy Queen, how can we make it yours?
+Customer: Uh, yeah, can I get a number 13?
+Operator: Would that be a combo?
+Customer: Yes, please.
+Operator: Would you like to make it a large combo?
+Customer: Uh, sure, why not. With Dr. Pepper?
+Operator: We have Mr. Pibb.
+Customer: That's fine.
+Operator: Anything else?
+Customer: Yes, I need an extra chili cheese dog and a pumpkin pie blizzard.
+Operator: Alright, will that pumpkin pie be a large as well?
+Customer: Yes, ma'am.
+Operator: Would you like extra pie pieces?
+Customer: Do what, ma'am?
+Operator: Extra pie pieces?
+Customer: Uh, no thanks.
+Operator: Okay, anything else?
+Customer: That's all.
+Operator: Total's gonna be $21.05.",1,3255.0,3180.0,1227c711-5836-4b13-a4bf-eb0e91066a58,2025-08-29T11:53:01Z,"[""2025-08-29T11:53:01Z"",""2025-08-29T11:54:16Z"")",761254d4-0e87-4ecc-8792-f97c7275d8b8
+2025-08-29T11:59:01Z,order,,1,0,0,1,0,gdrive/dq_cary/DT_File20250829110001000.mp4,0,"{""1"": ""Operator: It's a wonderful day at Dairy Queen, how can we make it yours?\nCustomer: We have an online order. We have an online...\nOperator: What's the name?\nCustomer: Lilia. L-I-L-I-A. Or Lil.\nOperator: I'm sorry, give me one second.\nCustomer: Take two.\nOperator: We don't have anything with that name. Did you just place the order?\nCustomer: Yeah, does it take a couple of minutes?\nOperator: Yes.\nCustomer: Okay.\nOperator: Thank you, miss.\nCustomer: No problem."", ""2"": ""0"", ""3"": ""1"", ""4"": ""0"", ""5"": ""1"", ""6"": ""0"", ""7"": ""N/A""}","Operator: It's a wonderful day at Dairy Queen, how can we make it yours?
+Customer: We have an online order. We have an online...
+Operator: What's the name?
+Customer: Lilia. L-I-L-I-A. Or Lil.
+Operator: I'm sorry, give me one second.
+Customer: Take two.
+Operator: We don't have anything with that name. Did you just place the order?
+Customer: Yeah, does it take a couple of minutes?
+Operator: Yes.
+Customer: Okay.
+Operator: Thank you, miss.
+Customer: No problem.",1,3540.0,3480.0,1227c711-5836-4b13-a4bf-eb0e91066a58,2025-08-29T11:58:01Z,"[""2025-08-29T11:58:01Z"",""2025-08-29T11:59:01Z"")",761254d4-0e87-4ecc-8792-f97c7275d8b8

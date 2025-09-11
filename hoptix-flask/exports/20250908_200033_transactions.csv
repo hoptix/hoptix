@@ -1,0 +1,79 @@
+ended_at,kind,meta,meta.asked_more_time,meta.complete_order,meta.coupon_used,meta.mobile_order,meta.out_of_stock_items,meta.s3_key,meta.segment_index,meta.step1_raw,meta.text,meta.total_segments_in_video,meta.video_end_seconds,meta.video_start_seconds,run_id,started_at,tx_range,video_id
+2025-08-30T11:00:16Z,order,,0,0,0,0,0,gdrive/dq_cary/DT_File20250830110001000.mp4,0,"{""1"": ""Operator:"", ""2"": ""0"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""N/A""}",Operator:,1,15.0,0.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T11:00:01Z,"[""2025-08-30T11:00:01Z"",""2025-08-30T11:00:16Z"")",b479748f-83cc-4794-8959-1a23320dd4a8
+2025-08-30T11:17:16Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830110001000.mp4,0,"{""1"": ""Operator: Welcome to Dairy Queen, how can I help you?\nCustomer: Give me two chili dogs and a medium Diet Coke. That's all.\nOperator: Okay, you can pull up to the next window."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""Line 1 (Operator): Greeting indicates start of interaction; Line 2 (Customer): Contains full order showing completeness; No lines mention a mobile order, coupon, or request to wait; No out-of-stock statement present.""}","Operator: Welcome to Dairy Queen, how can I help you?
+Customer: Give me two chili dogs and a medium Diet Coke. That's all.
+Operator: Okay, you can pull up to the next window.",1,1035.0,1005.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T11:16:46Z,"[""2025-08-30T11:16:46Z"",""2025-08-30T11:17:16Z"")",b479748f-83cc-4794-8959-1a23320dd4a8
+2025-08-30T11:23:31Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830110001000.mp4,0,"{""1"": ""Operator: Hi, welcome to Dairy Queen. How can I help you?\nCustomer: Yes, let's see, I'll take one mini Oreo blizzard, one order large, one large fry, two orders of pretzel sticks, and...\nCustomer: Pardon?\nCustomer: I'm sorry, I can't hear you well.\nCustomer: That's right, yep.\nOperator: Okay, so one mini Oreo blizzard, large fry, and pretzel sticks?\nCustomer: Right, and then one original cheeseburger meal deal.\nOperator: Okay.\nCustomer: Sprite will be fine.\nOperator: Okay. Would that be all for you?\nCustomer: Yeah, that'll be it.\nOperator: Okay, 20.43 is your total.\nCustomer: Thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""Mini Oreo Blizzard | French Fries - Large | Pretzel Sticks (2 orders) | Original Cheeseburger Meal Deal | Sprite""}","Operator: Hi, welcome to Dairy Queen. How can I help you?
+Customer: Yes, let's see, I'll take one mini Oreo blizzard, one order large, one large fry, two orders of pretzel sticks, and...
+Customer: Pardon?
+Customer: I'm sorry, I can't hear you well.
+Customer: That's right, yep.
+Operator: Okay, so one mini Oreo blizzard, large fry, and pretzel sticks?
+Customer: Right, and then one original cheeseburger meal deal.
+Operator: Okay.
+Customer: Sprite will be fine.
+Operator: Okay. Would that be all for you?
+Customer: Yeah, that'll be it.
+Operator: Okay, 20.43 is your total.
+Customer: Thank you.",1,1410.0,1290.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T11:21:31Z,"[""2025-08-30T11:21:31Z"",""2025-08-30T11:23:31Z"")",b479748f-83cc-4794-8959-1a23320dd4a8
+2025-08-30T11:24:16Z,order,,0,0,0,0,0,gdrive/dq_cary/DT_File20250830110001000.mp4,0,"{""1"":""Operator:"",""2"":""0"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""0""}",Operator:,1,1455.0,1440.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T11:24:01Z,"[""2025-08-30T11:24:01Z"",""2025-08-30T11:24:16Z"")",b479748f-83cc-4794-8959-1a23320dd4a8
+2025-08-30T11:26:01Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830110001000.mp4,0,"{""1"": ""Customer: Can I do that? And then of the mix and match, can I get a two-piece chicken strip and the pretzel stick?\nOperator: The mix and match, a two-piece chicken strip.\nCustomer: And then actually instead of the pretzel stick, can I do a fry?\nOperator: What would be your dip for your chicken strip?\nCustomer: I'm sorry?\nOperator: Your dip for your chicken strip?\nCustomer: Just ketchup.\nCustomer: Okay. And can we do a small Oreo blizzard, please?\nOperator: Yes."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""Complete transcript: customer orders food items and dessert, operator confirms and asks follow-up questions. No lines mention a mobile pickup, coupon, wait request, or out-of-stock notice.""}","Customer: Can I do that? And then of the mix and match, can I get a two-piece chicken strip and the pretzel stick?
+Operator: The mix and match, a two-piece chicken strip.
+Customer: And then actually instead of the pretzel stick, can I do a fry?
+Operator: What would be your dip for your chicken strip?
+Customer: I'm sorry?
+Operator: Your dip for your chicken strip?
+Customer: Just ketchup.
+Customer: Okay. And can we do a small Oreo blizzard, please?
+Operator: Yes.",1,1560.0,1485.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T11:24:46Z,"[""2025-08-30T11:24:46Z"",""2025-08-30T11:26:01Z"")",b479748f-83cc-4794-8959-1a23320dd4a8
+2025-08-30T11:27:16Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830110001000.mp4,0,"{""1"": ""Operator: Just cheese and ketchup is all on that burger.\nCustomer: Okay.\nOperator: And you got a two-piece chicken strip mix and match?\nCustomer: Uh-huh.\nOperator: And a small Oreo blizzard?\nCustomer: Yeah, in the mix and match, I wanted the chicken strip and then a french fry.\nOperator: Okay.\nCustomer: And then, yeah, the small Oreo blizzard. And the onion rings with the first meal.\nOperator: Okay, yes, I got that. Okay, that will be all for you?\nCustomer: Yep, that'll be it.\nOperator: Okay, $16.76, your order.\nCustomer: Okay, thank you.\nOperator: You're welcome."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""Complete order confirmed with total given (\""Okay, $16.76, your order.\""); no mention of mobile order, coupons, wait request, or out-of-stock items.""}","Operator: Just cheese and ketchup is all on that burger.
+Customer: Okay.
+Operator: And you got a two-piece chicken strip mix and match?
+Customer: Uh-huh.
+Operator: And a small Oreo blizzard?
+Customer: Yeah, in the mix and match, I wanted the chicken strip and then a french fry.
+Operator: Okay.
+Customer: And then, yeah, the small Oreo blizzard. And the onion rings with the first meal.
+Operator: Okay, yes, I got that. Okay, that will be all for you?
+Customer: Yep, that'll be it.
+Operator: Okay, $16.76, your order.
+Customer: Okay, thank you.
+Operator: You're welcome.",1,1635.0,1575.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T11:26:16Z,"[""2025-08-30T11:26:16Z"",""2025-08-30T11:27:16Z"")",b479748f-83cc-4794-8959-1a23320dd4a8
+2025-08-30T11:35:16Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830110001000.mp4,0,"{""1"": ""Operator: Welcome to Dairy Queen, how can I help you?\nCustomer: Yeah, give me a small Oreo Blizzard.\nOperator: Okay, small Oreo Blizzard. Will that be it?\nCustomer: Yes, that's all.\nOperator: $5.40, thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""Small OREO Blizzard Treat""}","Operator: Welcome to Dairy Queen, how can I help you?
+Customer: Yeah, give me a small Oreo Blizzard.
+Operator: Okay, small Oreo Blizzard. Will that be it?
+Customer: Yes, that's all.
+Operator: $5.40, thank you.",1,2115.0,2070.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T11:34:31Z,"[""2025-08-30T11:34:31Z"",""2025-08-30T11:35:16Z"")",b479748f-83cc-4794-8959-1a23320dd4a8
+2025-08-30T11:38:01Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830110001000.mp4,0,"{""1"":""Operator: Hi, what can I get you?\nCustomer: Hi, could I get a medium M&M blizzard with no chocolate sauce, please?\nOperator: Okay, will that be it?\nCustomer: That's it.\nOperator: Okay, $6.05 at the first window."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""N/A""}","Operator: Hi, what can I get you?
+Customer: Hi, could I get a medium M&M blizzard with no chocolate sauce, please?
+Operator: Okay, will that be it?
+Customer: That's it.
+Operator: Okay, $6.05 at the first window.",1,2280.0,2235.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T11:37:16Z,"[""2025-08-30T11:37:16Z"",""2025-08-30T11:38:01Z"")",b479748f-83cc-4794-8959-1a23320dd4a8
+2025-08-30T11:52:31Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830110001000.mp4,0,"{""1"": ""Operator: Hi, welcome to Dairy Queen. How can I help you?\nCustomer: Yes, I'd like the chicken basket with gravy, please.\nOperator: Okay, a four-piece or six-piece?\nCustomer: Uh, let's see. Four-piece, I think.\nOperator: Do you want a drink or no drink?\nCustomer: No, ma'am.\nOperator: Okay, would that be it?\nCustomer: That'll be it.\nOperator: Okay, $9.52 is your total.\nCustomer: Thank you now."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""Chicken basket with gravy""}","Operator: Hi, welcome to Dairy Queen. How can I help you?
+Customer: Yes, I'd like the chicken basket with gravy, please.
+Operator: Okay, a four-piece or six-piece?
+Customer: Uh, let's see. Four-piece, I think.
+Operator: Do you want a drink or no drink?
+Customer: No, ma'am.
+Operator: Okay, would that be it?
+Customer: That'll be it.
+Operator: Okay, $9.52 is your total.
+Customer: Thank you now.",1,3150.0,3090.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T11:51:31Z,"[""2025-08-30T11:51:31Z"",""2025-08-30T11:52:31Z"")",b479748f-83cc-4794-8959-1a23320dd4a8
+2025-08-30T11:57:46Z,order,,1,1,0,0,0,gdrive/dq_cary/DT_File20250830110001000.mp4,0,"{""1"": ""Operator: What can I do? Can I help you?\nCustomer: One moment.\nOperator: Take your time.\nCustomer: Okay, um, can I get a four piece chicken strip basket please?\nOperator: What do you like to drink with that?\nCustomer: Water.\nOperator: What dipping sauce for your chicken strips?\nCustomer: No sauce.\nOperator: Okay, anything else?\nCustomer: Yes, I get a peanut buster parfait.\nOperator: Okay.\nCustomer: And a mini M&M blizzard but no chocolate sauce.\nOperator: Mini M&M no chocolate sauce?\nCustomer: Yes.\nOperator: All right, will that be everything for you ma'am?\nCustomer: That's it.\nOperator: It'll be $20.86 and just to round up for the pocket charity today.\nCustomer: Thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""1"", ""6"": ""0"", ""7"": ""N/A""}","Operator: What can I do? Can I help you?
+Customer: One moment.
+Operator: Take your time.
+Customer: Okay, um, can I get a four piece chicken strip basket please?
+Operator: What do you like to drink with that?
+Customer: Water.
+Operator: What dipping sauce for your chicken strips?
+Customer: No sauce.
+Operator: Okay, anything else?
+Customer: Yes, I get a peanut buster parfait.
+Operator: Okay.
+Customer: And a mini M&M blizzard but no chocolate sauce.
+Operator: Mini M&M no chocolate sauce?
+Customer: Yes.
+Operator: All right, will that be everything for you ma'am?
+Customer: That's it.
+Operator: It'll be $20.86 and just to round up for the pocket charity today.
+Customer: Thank you.",1,3465.0,3375.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T11:56:16Z,"[""2025-08-30T11:56:16Z"",""2025-08-30T11:57:46Z"")",b479748f-83cc-4794-8959-1a23320dd4a8
