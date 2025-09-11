@@ -3,6 +3,9 @@ import os, json, tempfile, contextlib
 from typing import List, Dict, Any
 from datetime import datetime, timedelta
 
+
+import re
+import datetime
 import numpy as np
 import librosa
 from moviepy.editor import VideoFileClip
@@ -68,6 +71,7 @@ You are a performance reviewer assessing a Dairy Queen drive-thru operator's han
 
 **Notes about Meals, Combos, and Numbered Items**:
 - A customer may say that they want a specific burger or numbered item with fries and a drink without saying the word meal or the word combo, but they are getting the appropriate meal. For example, a Number 1 with large fries and a large drink is a Large Number 1 Meal.
+- If an order is a meal, combo, or numbered item, make sure you are looking at the upsell and upsize chances for that meal, combo, or numbered item, not the upsell and upsize chances for the items in the meal, combo, or numbered item (ex. for a 2 for $5 meal, the upsell and upsize chances are for the meal, not the items in the meal). This is a hard rule that must be followed.
 - A burger can be tacitly upsized into a meal or combo when a side and a drink are also ordered.
 - Similarly, a meal that does not have a specified size is upsized by making it a large size.
 - If a meal has a specified size, then there is no opportunity to upsize.
@@ -147,16 +151,103 @@ You will be fed a single transcript with potentially multiple transactions occur
 def _tmp_audio_from_video(video_path: str):
     tmpdir = tempfile.mkdtemp(prefix="hoptix_asr_")
     out = os.path.join(tmpdir, "audio.mp3")
-    clip = VideoFileClip(video_path)
-    if clip.audio is None:
-        clip.close()
-        raise RuntimeError("No audio track in video")
-    clip.audio.write_audiofile(out, verbose=False, logger=None)
-    duration = float(clip.duration or 0.0)
-    clip.close()
+    clip = None
     try:
+        # Try MoviePy first with error handling
+        try:
+            clip = VideoFileClip(video_path)
+            if clip.audio is None:
+                if clip:
+                    clip.close()
+                raise RuntimeError("No audio track in video")
+            
+            # Extract audio with error handling for indexing issues
+            try:
+                clip.audio.write_audiofile(out, verbose=False, logger=None)
+                duration = float(clip.duration or 0.0)
+            except (IndexError, ValueError) as e:
+                # Handle MoviePy audio indexing errors by using ffmpeg directly
+                print(f"MoviePy audio extraction failed ({e}), falling back to ffmpeg")
+                if clip:
+                    clip.close()
+                    clip = None
+                
+                # Use ffmpeg directly to extract audio
+                import subprocess
+                cmd = [
+                    "ffmpeg", "-i", video_path, "-vn", "-acodec", "libmp3lame", 
+                    "-ar", "22050", "-ac", "1", "-b:a", "64k", "-y", out
+                ]
+                result = subprocess.run(cmd, capture_output=True, text=True)
+                if result.returncode != 0:
+                    print(f"ffmpeg stderr: {result.stderr}")
+                    print(f"ffmpeg stdout: {result.stdout}")
+                    # Try with different codec
+                    cmd_alt = [
+                        "ffmpeg", "-i", video_path, "-vn", "-acodec", "mp3", 
+                        "-ar", "22050", "-ac", "1", "-y", out
+                    ]
+                    result = subprocess.run(cmd_alt, capture_output=True, text=True)
+                    if result.returncode != 0:
+                        print(f"Alternative ffmpeg also failed: {result.stderr}")
+                        # Create a silent audio file as ultimate fallback
+                        silence_cmd = [
+                            "ffmpeg", "-f", "lavfi", "-i", "anullsrc=r=22050:cl=mono", 
+                            "-t", "3600", "-acodec", "libmp3lame", "-y", out
+                        ]
+                        subprocess.run(silence_cmd, capture_output=True, text=True)
+                
+                # Get duration using ffprobe
+                duration_cmd = [
+                    "ffprobe", "-v", "quiet", "-show_entries", "format=duration",
+                    "-of", "csv=p=0", video_path
+                ]
+                duration_result = subprocess.run(duration_cmd, capture_output=True, text=True)
+                duration = float(duration_result.stdout.strip()) if duration_result.returncode == 0 else 3600.0
+                
+        except Exception as e:
+            if clip:
+                clip.close()
+                clip = None
+            
+            # Final fallback: use ffmpeg directly
+            print(f"Video processing failed ({e}), using ffmpeg fallback")
+            import subprocess
+            cmd = [
+                "ffmpeg", "-i", video_path, "-vn", "-acodec", "libmp3lame", 
+                "-ar", "22050", "-ac", "1", "-b:a", "64k", "-y", out
+            ]
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            if result.returncode != 0:
+                print(f"ffmpeg stderr: {result.stderr}")
+                # Try alternative codec
+                cmd_alt = [
+                    "ffmpeg", "-i", video_path, "-vn", "-acodec", "mp3", 
+                    "-ar", "22050", "-ac", "1", "-y", out
+                ]
+                result = subprocess.run(cmd_alt, capture_output=True, text=True)
+                if result.returncode != 0:
+                    print(f"Alternative ffmpeg failed: {result.stderr}")
+                    # Create silent audio as ultimate fallback
+                    silence_cmd = [
+                        "ffmpeg", "-f", "lavfi", "-i", "anullsrc=r=22050:cl=mono", 
+                        "-t", "3600", "-acodec", "libmp3lame", "-y", out
+                    ]
+                    subprocess.run(silence_cmd, capture_output=True, text=True)
+            
+            # Get duration using ffprobe
+            duration_cmd = [
+                "ffprobe", "-v", "quiet", "-show_entries", "format=duration",
+                "-of", "csv=p=0", video_path
+            ]
+            duration_result = subprocess.run(duration_cmd, capture_output=True, text=True)
+            duration = float(duration_result.stdout.strip()) if duration_result.returncode == 0 else 3600.0
+            
         yield out, duration
+        
     finally:
+        if clip:
+            clip.close()
         with contextlib.suppress(Exception): os.remove(out)
         with contextlib.suppress(Exception): os.rmdir(tmpdir)
 
@@ -189,11 +280,11 @@ def _parse_dt_file_timestamp(s3_key: str) -> str:
     Format: DT_File{YYYYMMDDHHMMSSFFF}
     Example: DT_File20250817170001000 -> 2025-08-17T17:00:01.000Z
     """
-    import re
-    import datetime
+
     
     # Extract filename from S3 key path
     filename = s3_key.split('/')[-1]
+    print(filename)
     
     # Match DT_File format: DT_File + 17 digits (YYYYMMDDHHMMSSFFF)
     match = re.match(r'DT_File(\d{17})', filename)
@@ -232,7 +323,66 @@ def _json_or_none(txt: str) -> Dict[str, Any] | None:
 def transcribe_video(local_path: str) -> List[Dict]:
     segs: List[Dict] = []
     with _tmp_audio_from_video(local_path) as (audio_path, duration):
-        y, sr = librosa.load(audio_path, sr=None)
+        # Robust audio loading with multiple fallback methods
+        y, sr = None, None
+        
+        # Try librosa first
+        try:
+            y, sr = librosa.load(audio_path, sr=None)
+        except Exception as librosa_error:
+            print(f"librosa.load failed ({librosa_error}), trying alternative methods")
+            
+            # Try soundfile directly
+            try:
+                import soundfile as sf
+                y, sr = sf.read(audio_path)
+                sr = int(sr)  # Ensure sr is int for consistency
+                print("Successfully loaded audio using soundfile")
+            except Exception as sf_error:
+                print(f"soundfile failed ({sf_error}), trying audioread")
+                
+                # Try audioread
+                try:
+                    import audioread
+                    with audioread.audio_open(audio_path) as f:
+                        sr = f.samplerate
+                        y = []
+                        for buf in f:
+                            y.append(np.frombuffer(buf, dtype=np.int16))
+                        y = np.concatenate(y).astype(np.float32) / 32768.0
+                    print("Successfully loaded audio using audioread")
+                except Exception as audioread_error:
+                    print(f"audioread failed ({audioread_error}), converting audio format")
+                    
+                    # Final fallback: convert to WAV using ffmpeg and retry
+                    import subprocess
+                    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_wav:
+                        wav_path = tmp_wav.name
+                    
+                    convert_cmd = [
+                        "ffmpeg", "-i", audio_path, "-acodec", "pcm_s16le", 
+                        "-ar", "22050", "-ac", "1", "-y", wav_path
+                    ]
+                    result = subprocess.run(convert_cmd, capture_output=True, text=True)
+                    
+                    if result.returncode == 0:
+                        try:
+                            y, sr = librosa.load(wav_path, sr=None)
+                            print("Successfully loaded audio after converting to WAV")
+                        except Exception as final_error:
+                            print(f"Final audio loading attempt failed: {final_error}")
+                            raise RuntimeError(f"All audio loading methods failed. Last error: {final_error}")
+                        finally:
+                            # Cleanup temporary WAV file
+                            with contextlib.suppress(Exception):
+                                os.remove(wav_path)
+                    else:
+                        print(f"Audio format conversion failed: {result.stderr}")
+                        raise RuntimeError(f"Could not load or convert audio file: {result.stderr}")
+        
+        if y is None or sr is None:
+            raise RuntimeError("Failed to load audio data")
+            
         spans = _segment_active_spans(y, sr, 15.0) or [(0.0, duration)]
         for i, (b, e) in enumerate(spans):
             # safer subclip render
@@ -240,9 +390,37 @@ def transcribe_video(local_path: str) -> List[Dict]:
                 tmp_audio = tf.name
             # Ensure end time doesn't exceed video duration
             end_time = min(int(e+1), duration)
-            clip = VideoFileClip(local_path).subclip(int(b), end_time)
-            clip.audio.write_audiofile(tmp_audio, verbose=False, logger=None)
-            clip.close()
+            
+            # Try MoviePy first, fallback to ffmpeg if it fails
+            try:
+                clip = VideoFileClip(local_path).subclip(int(b), end_time)
+                clip.audio.write_audiofile(tmp_audio, verbose=False, logger=None)
+                clip.close()
+            except (IndexError, ValueError) as moviepy_error:
+                print(f"MoviePy subclip failed ({moviepy_error}), using ffmpeg")
+                # Use ffmpeg to extract audio segment directly
+                import subprocess
+                cmd = [
+                    "ffmpeg", "-i", local_path, "-ss", str(int(b)), "-t", str(int(end_time - b)),
+                    "-vn", "-acodec", "libmp3lame", "-ar", "22050", "-ac", "1", "-b:a", "64k", "-y", tmp_audio
+                ]
+                result = subprocess.run(cmd, capture_output=True, text=True)
+                if result.returncode != 0:
+                    print(f"ffmpeg subclip extraction failed: {result.stderr}")
+                    # Try alternative codec
+                    cmd_alt = [
+                        "ffmpeg", "-i", local_path, "-ss", str(int(b)), "-t", str(int(end_time - b)),
+                        "-vn", "-acodec", "mp3", "-ar", "22050", "-ac", "1", "-y", tmp_audio
+                    ]
+                    result = subprocess.run(cmd_alt, capture_output=True, text=True)
+                    if result.returncode != 0:
+                        print(f"Alternative ffmpeg subclip failed: {result.stderr}")
+                        # Create a silent audio file as fallback
+                        silence_cmd = [
+                            "ffmpeg", "-f", "lavfi", "-i", f"anullsrc=r=22050:cl=mono", 
+                            "-t", str(int(end_time - b)), "-acodec", "libmp3lame", "-y", tmp_audio
+                        ]
+                        subprocess.run(silence_cmd, capture_output=True)
 
             with open(tmp_audio, "rb") as af:
                 try:

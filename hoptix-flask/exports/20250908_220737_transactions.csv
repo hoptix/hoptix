@@ -1,0 +1,246 @@
+ended_at,kind,meta,meta.asked_more_time,meta.complete_order,meta.coupon_used,meta.mobile_order,meta.out_of_stock_items,meta.s3_key,meta.segment_index,meta.step1_raw,meta.text,meta.total_segments_in_video,meta.video_end_seconds,meta.video_start_seconds,run_id,started_at,tx_range,video_id
+2025-08-30T18:00:16Z,order,,0,0,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,0,"{""1"": ""Operator:"", ""2"": ""0"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""N/A""}",Operator:,1,15.0,0.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:00:01Z,"[""2025-08-30T18:00:01Z"",""2025-08-30T18:00:16Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:05:23.500000Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,0,"{""1"":""Operator: Thank you for calling DQ, what can I get for you today?\nCustomer: Yeah, let me get two original cheeseburgers. That'll be it.\nOperator: Alright, it's going to be $5.41, have a great day."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""0""}","Operator: Thank you for calling DQ, what can I get for you today?
+Customer: Yeah, let me get two original cheeseburgers. That'll be it.
+Operator: Alright, it's going to be $5.41, have a great day.",4,322.5,270.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:04:31Z,"[""2025-08-30T18:04:31Z"",""2025-08-30T18:05:23.500000Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:06:16Z,order,,1,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,1,"{""1"":""Operator: Thank you for calling DQ, what can I get for you?\nCustomer: Um, let's see.\nOperator: Take your time, I'm going to wait, ma'am.\nCustomer: Thank you.\nCustomer: Okay, yes, I'm ready.\nOperator: Alright, ma'am.\nCustomer: Can I have the brownie and Oreo cupcakes?\nOperator: Yes, ma'am.\nCustomer: Can I also, do y'all have something for kids? Like, small ice cream for kids?\nOperator: Yeah, we got kid-sized drinks. Like, kid-sized stuff.\nCustomer: Okay, well can I do two kid-sized, let's do the confetti cake.\nOperator: Okay, what else can I get for you?\nCustomer: Can I also have a cheeseburger with only ketchup?\nOperator: Okay.\nCustomer: And a small fry?\nOperator: Okay.\nCustomer: And I'll take a bottle of water, that's it.\nOperator: That's it, I appreciate it, ma'am. Would you like to round up our note in the pocket, kids, ready?\nCustomer: Uh-huh, that's fine.\nOperator: Thank you very much, ma'am. That's $25 even. Have a great day.\nCustomer: Thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""1"",""6"":""0"",""7"":""0""}","Operator: Thank you for calling DQ, what can I get for you?
+Customer: Um, let's see.
+Operator: Take your time, I'm going to wait, ma'am.
+Customer: Thank you.
+Customer: Okay, yes, I'm ready.
+Operator: Alright, ma'am.
+Customer: Can I have the brownie and Oreo cupcakes?
+Operator: Yes, ma'am.
+Customer: Can I also, do y'all have something for kids? Like, small ice cream for kids?
+Operator: Yeah, we got kid-sized drinks. Like, kid-sized stuff.
+Customer: Okay, well can I do two kid-sized, let's do the confetti cake.
+Operator: Okay, what else can I get for you?
+Customer: Can I also have a cheeseburger with only ketchup?
+Operator: Okay.
+Customer: And a small fry?
+Operator: Okay.
+Customer: And I'll take a bottle of water, that's it.
+Operator: That's it, I appreciate it, ma'am. Would you like to round up our note in the pocket, kids, ready?
+Customer: Uh-huh, that's fine.
+Operator: Thank you very much, ma'am. That's $25 even. Have a great day.
+Customer: Thank you.",4,375.0,322.5,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:05:23.500000Z,"[""2025-08-30T18:05:23.500000Z"",""2025-08-30T18:06:16Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:07:08.500000Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,2,"{""1"":""Operator: Thank you for choosing DQ, what can I get for you today?\nCustomer: A small vanilla cone, that's all.\nOperator: Alright, it's going to be $2.70, have a great night.\nCustomer: Okay."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""0""}","Operator: Thank you for choosing DQ, what can I get for you today?
+Customer: A small vanilla cone, that's all.
+Operator: Alright, it's going to be $2.70, have a great night.
+Customer: Okay.",4,427.5,375.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:06:16Z,"[""2025-08-30T18:06:16Z"",""2025-08-30T18:07:08.500000Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:08:01Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,3,"{""1"":""Operator: Thank you for choosing DQ, what can I get for you today?\nCustomer: Yes, can I get a medium chocolate chip cookie dough blizzard?\nOperator: Sure, what else?\nCustomer: I'm sorry?\nOperator: Would you like to add any extra cookie dough to that, ma'am?\nCustomer: I'm sorry, say that again?\nOperator: Would you like to add any extra cookie dough to that?\nCustomer: Yeah, I want to also get a medium Oreo cookie blizzard, and then a medium mulatte, I think it's called.\nOperator: No problem. What kind of mulatte would you like, ma'am?\nCustomer: Chocolate.\nOperator: Chocolate, alright.\nCustomer: That's going to be it.\nOperator: Alright, that's it, I appreciate it, ma'am. You're going to be looking at a total of $16.86, have a great day.\nCustomer: Thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""0""}","Operator: Thank you for choosing DQ, what can I get for you today?
+Customer: Yes, can I get a medium chocolate chip cookie dough blizzard?
+Operator: Sure, what else?
+Customer: I'm sorry?
+Operator: Would you like to add any extra cookie dough to that, ma'am?
+Customer: I'm sorry, say that again?
+Operator: Would you like to add any extra cookie dough to that?
+Customer: Yeah, I want to also get a medium Oreo cookie blizzard, and then a medium mulatte, I think it's called.
+Operator: No problem. What kind of mulatte would you like, ma'am?
+Customer: Chocolate.
+Operator: Chocolate, alright.
+Customer: That's going to be it.
+Operator: Alright, that's it, I appreciate it, ma'am. You're going to be looking at a total of $16.86, have a great day.
+Customer: Thank you.",4,480.0,427.5,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:07:08.500000Z,"[""2025-08-30T18:07:08.500000Z"",""2025-08-30T18:08:01Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:16:31Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,0,"{""1"": ""Operator: Welcome to DQ, how may I help you today?\nCustomer: I want to get two Turtle Pecan Cluster Blizzards, large, please.\nOperator: Is that two?\nCustomer: Yes, correct.\nOperator: That'll be all for today?\nCustomer: That'll be it.\nOperator: Total is $14.48 at the window.\nCustomer: Okay."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""2: The operator states a total (\""Total is $14.48 at the window.\""), indicating an order was completed.\n3: No mention of a mobile or app order.\n4: No mention of any coupon, discount, or promo code.\n5: The operator does not ask the customer to wait or hold.\n6: No items were mentioned as unavailable or out of stock.""}","Operator: Welcome to DQ, how may I help you today?
+Customer: I want to get two Turtle Pecan Cluster Blizzards, large, please.
+Operator: Is that two?
+Customer: Yes, correct.
+Operator: That'll be all for today?
+Customer: That'll be it.
+Operator: Total is $14.48 at the window.
+Customer: Okay.",1,990.0,915.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:15:16Z,"[""2025-08-30T18:15:16Z"",""2025-08-30T18:16:31Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:19:38.500000Z,order,,0,0,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,0,"{""1"":""Customer: Yeah, like a medium blizzard banana split.\nCustomer: That's it.\nOperator: Total is $6.05 at the window."",""2"":""0"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""N/A""}","Customer: Yeah, like a medium blizzard banana split.
+Customer: That's it.
+Operator: Total is $6.05 at the window.",2,1177.5,1095.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:18:16Z,"[""2025-08-30T18:18:16Z"",""2025-08-30T18:19:38.500000Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:21:01Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,1,"{""1"":""Operator: Home DQ, how may I help you today?\nCustomer: Yeah, I want a kid's meal with chicken strips and onion rings.\nOperator: And what will the beverage be with that?\nCustomer: I want two of them.\nOperator: And the beverage, the Coke beverage.\nCustomer: What? Does it come with a beverage?\nOperator: It comes with a beverage and a treat, which is usually a kid's cone.\nCustomer: Okay, just a Coke.\nOperator: Okay. And then you want the kid's cone?\nCustomer: And I want honey mustard and ranch dressing.\nOperator: You said you want two kid's meals?\nCustomer: Yes, please.\nOperator: Same thing?\nCustomer: Same thing. And senior discount.\nOperator: Put the Coke for the second one as well?\nCustomer: Yes, both the same.\nOperator: Okay, so you have the two kid's meals, chicken strips, both with regular onion rings, Cokes, and honey mustard dip and French dip?\nCustomer: Yes, please.\nOperator: Total is $14.25. I will give you that senior discount as well.\nCustomer: Okay, thank you.\nOperator: Total is..."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""N/A""}","Operator: Home DQ, how may I help you today?
+Customer: Yeah, I want a kid's meal with chicken strips and onion rings.
+Operator: And what will the beverage be with that?
+Customer: I want two of them.
+Operator: And the beverage, the Coke beverage.
+Customer: What? Does it come with a beverage?
+Operator: It comes with a beverage and a treat, which is usually a kid's cone.
+Customer: Okay, just a Coke.
+Operator: Okay. And then you want the kid's cone?
+Customer: And I want honey mustard and ranch dressing.
+Operator: You said you want two kid's meals?
+Customer: Yes, please.
+Operator: Same thing?
+Customer: Same thing. And senior discount.
+Operator: Put the Coke for the second one as well?
+Customer: Yes, both the same.
+Operator: Okay, so you have the two kid's meals, chicken strips, both with regular onion rings, Cokes, and honey mustard dip and French dip?
+Customer: Yes, please.
+Operator: Total is $14.25. I will give you that senior discount as well.
+Customer: Okay, thank you.
+Operator: Total is...",2,1260.0,1177.5,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:19:38.500000Z,"[""2025-08-30T18:19:38.500000Z"",""2025-08-30T18:21:01Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:25:08.500000Z,order,,1,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,0,"{""1"":""Operator: Thank you for the DQ copy. What can I get for you today?\nCustomer: Just a moment.\nOperator: All right, take your time.\nCustomer: Okay, I need a medium pumpkin pie blizzard and a medium caramel coffee cookie blizzard.\nOperator: All right, what else can I get for you?\nCustomer: That's it.\nOperator: All right, I do appreciate it. Now you're going to be looking at a total of $12.10. Have a great day."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""1"",""6"":""0"",""7"":""Pumpkin Pie Blizzard; Caramel Coffee Cookie Blizzard""}","Operator: Thank you for the DQ copy. What can I get for you today?
+Customer: Just a moment.
+Operator: All right, take your time.
+Customer: Okay, I need a medium pumpkin pie blizzard and a medium caramel coffee cookie blizzard.
+Operator: All right, what else can I get for you?
+Customer: That's it.
+Operator: All right, I do appreciate it. Now you're going to be looking at a total of $12.10. Have a great day.",2,1507.5,1455.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:24:16Z,"[""2025-08-30T18:24:16Z"",""2025-08-30T18:25:08.500000Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:26:01Z,order,,1,0,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,1,"{""1"":""Operator: Thank you for the DQ copy. What can I get for you?\nCustomer: Um, okay, now one second please.\nOperator: All right, take your time.\nCustomer: Thank you.\nCustomer: Okay, okay, I'm ready."",""2"":""0"",""3"":""0"",""4"":""0"",""5"":""1"",""6"":""0"",""7"":""None""}","Operator: Thank you for the DQ copy. What can I get for you?
+Customer: Um, okay, now one second please.
+Operator: All right, take your time.
+Customer: Thank you.
+Customer: Okay, okay, I'm ready.",2,1560.0,1507.5,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:25:08.500000Z,"[""2025-08-30T18:25:08.500000Z"",""2025-08-30T18:26:01Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:27:01Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,0,"{""1"":""Operator: Alright, what can I get for you?\nCustomer: Can I get a small confetti cake blizzard with cookie dough?\nOperator: Okay, what else can I get for you?\nCustomer: And another small pumpkin pie with cookie dough.\nOperator: Alright, confetti cake with cookie dough, small pumpkin pie with cookie dough, alright.\nCustomer: And then one more small with Oreo cookie dough and sprinkles.\nOperator: No problem at all, ma'am. What else can I get for you?\nCustomer: That's it, thank you.\nOperator: I appreciate it. Would you like to round up 16 cents for our note in the pocket, kids?\nCustomer: Sure.\nOperator: Thank you, ma'am. That's $20 even. Have a great day.\nCustomer: Thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""Transcript shows full ordering process including total; no mention of mobile order, coupon, waiting request, or out-of-stock items.""}","Operator: Alright, what can I get for you?
+Customer: Can I get a small confetti cake blizzard with cookie dough?
+Operator: Okay, what else can I get for you?
+Customer: And another small pumpkin pie with cookie dough.
+Operator: Alright, confetti cake with cookie dough, small pumpkin pie with cookie dough, alright.
+Customer: And then one more small with Oreo cookie dough and sprinkles.
+Operator: No problem at all, ma'am. What else can I get for you?
+Customer: That's it, thank you.
+Operator: I appreciate it. Would you like to round up 16 cents for our note in the pocket, kids?
+Customer: Sure.
+Operator: Thank you, ma'am. That's $20 even. Have a great day.
+Customer: Thank you.",1,1620.0,1575.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:26:16Z,"[""2025-08-30T18:26:16Z"",""2025-08-30T18:27:01Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:28:08.500000Z,order,,0,1,1,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,0,"{""1"": ""Operator: Thank you for choosing DQ, this is Topher, what can I get for you today?\nCustomer: I would like the four-piece chicken strip basket, no drink, with country gravy.\nOperator: No problem at all, sir. What else can I get for you?\nCustomer: Senior discount, that'll be it.\nOperator: I definitely do appreciate it, sir. You're going to be looking at a total of $8.56. Have a great day.\nCustomer: Thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""1"", ""5"": ""0"", ""6"": ""0"", ""7"": ""4-Piece Chicken Strip Basket with Country Gravy""}","Operator: Thank you for choosing DQ, this is Topher, what can I get for you today?
+Customer: I would like the four-piece chicken strip basket, no drink, with country gravy.
+Operator: No problem at all, sir. What else can I get for you?
+Customer: Senior discount, that'll be it.
+Operator: I definitely do appreciate it, sir. You're going to be looking at a total of $8.56. Have a great day.
+Customer: Thank you.",2,1687.5,1650.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:27:31Z,"[""2025-08-30T18:27:31Z"",""2025-08-30T18:28:08.500000Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:28:46Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,1,"{""1"": ""Operator: Welcome to Dairy Queen, how may I help you?\nCustomer: Yeah, I want to get a small turtle blizzard.\nOperator: Okay. That's it?\nOperator: Alright, it'll be $5.40."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""Small Turtle Blizzard""}","Operator: Welcome to Dairy Queen, how may I help you?
+Customer: Yeah, I want to get a small turtle blizzard.
+Operator: Okay. That's it?
+Operator: Alright, it'll be $5.40.",2,1725.0,1687.5,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:28:08.500000Z,"[""2025-08-30T18:28:08.500000Z"",""2025-08-30T18:28:46Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:31:26Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,0,"{""1"":""Operator: Welcome to Dairy Queen, how may I help you?\nCustomer: Hey, how are you doing?\nOperator: I'm good.\nCustomer: I'll have a bacon cheese deluxe, a double combo.\nOperator: You said the combo?\nCustomer: Yeah, the double combo.\nOperator: Okay.\nCustomer: Does it come with fries?\nOperator: Yes, it does.\nCustomer: I'll also add some cheese curds to that, some regular.\nOperator: Did you want to make this a large size combo today?\nCustomer: No, I think a regular is good.\nOperator: Okay.\nCustomer: I'll have two piece chicken strips with that as well.\nOperator: What was the drink with the combo?\nCustomer: I wouldn't take a drink, I don't need a drink, I guess that would be good enough.\nOperator: Do you want the number one just to sandwich with fries, cheese curds, and what was the other thing?\nCustomer: So the number one sandwich with fries and cheese curds as well.\nOperator: Okay.\nCustomer: And I'll have two piece chicken strips with that as well.\nOperator: What was the sauce with the strips?\nCustomer: The sauce, whichever one, standard.\nOperator: Anything else?\nCustomer: Nope, that's about it.\nOperator: It'll be $18.60.\nCustomer: Yep."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""N/A""}","Operator: Welcome to Dairy Queen, how may I help you?
+Customer: Hey, how are you doing?
+Operator: I'm good.
+Customer: I'll have a bacon cheese deluxe, a double combo.
+Operator: You said the combo?
+Customer: Yeah, the double combo.
+Operator: Okay.
+Customer: Does it come with fries?
+Operator: Yes, it does.
+Customer: I'll also add some cheese curds to that, some regular.
+Operator: Did you want to make this a large size combo today?
+Customer: No, I think a regular is good.
+Operator: Okay.
+Customer: I'll have two piece chicken strips with that as well.
+Operator: What was the drink with the combo?
+Customer: I wouldn't take a drink, I don't need a drink, I guess that would be good enough.
+Operator: Do you want the number one just to sandwich with fries, cheese curds, and what was the other thing?
+Customer: So the number one sandwich with fries and cheese curds as well.
+Operator: Okay.
+Customer: And I'll have two piece chicken strips with that as well.
+Operator: What was the sauce with the strips?
+Customer: The sauce, whichever one, standard.
+Operator: Anything else?
+Customer: Nope, that's about it.
+Operator: It'll be $18.60.
+Customer: Yep.",3,1885.0,1815.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:30:16Z,"[""2025-08-30T18:30:16Z"",""2025-08-30T18:31:26Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:32:36Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,1,"{""1"":""Operator: Welcome to Dairy Queen, how may I help you?\nCustomer: Hey, can I get one large Coke, one medium Coke, and a small dip cone? Vanilla.\nOperator: Alright, so two small chocolate dip cones, a medium Coke, and a large Coke?\nCustomer: Yeah, but can you give the cone to me vanilla, but dip the chocolate?\nOperator: Yes.\nOperator: Okay.\nCustomer: And that'll be everything.\nOperator: It'll be $11.45.\nCustomer: Thank you."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""N/A""}","Operator: Welcome to Dairy Queen, how may I help you?
+Customer: Hey, can I get one large Coke, one medium Coke, and a small dip cone? Vanilla.
+Operator: Alright, so two small chocolate dip cones, a medium Coke, and a large Coke?
+Customer: Yeah, but can you give the cone to me vanilla, but dip the chocolate?
+Operator: Yes.
+Operator: Okay.
+Customer: And that'll be everything.
+Operator: It'll be $11.45.
+Customer: Thank you.",3,1955.0,1885.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:31:26Z,"[""2025-08-30T18:31:26Z"",""2025-08-30T18:32:36Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:33:46Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,2,"{""1"":""Operator: Welcome to Dairy Queen, how may I help you?\nCustomer: Yes, I'd like a mini mint Oreo blizzard and a non-dairy Philly bar, please.\nOperator: You said a non-dairy Philly bar and what else?\nCustomer: A mini blizzard mint Oreo.\nOperator: Okay.\nOperator: Anything else?\nCustomer: That's it.\nOperator: Alright, it'll be $7.23.\nCustomer: Okay."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""N/A""}","Operator: Welcome to Dairy Queen, how may I help you?
+Customer: Yes, I'd like a mini mint Oreo blizzard and a non-dairy Philly bar, please.
+Operator: You said a non-dairy Philly bar and what else?
+Customer: A mini blizzard mint Oreo.
+Operator: Okay.
+Operator: Anything else?
+Customer: That's it.
+Operator: Alright, it'll be $7.23.
+Customer: Okay.",3,2025.0,1955.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:32:36Z,"[""2025-08-30T18:32:36Z"",""2025-08-30T18:33:46Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:35:31Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,0,"{""1"":""Operator: Welcome to Dairy Queen, how may I help you?\nCustomer: Can I get a medium s'mores blizzard?\nOperator: Okay.\nCustomer: That's it.\nOperator: Alright, we can still talk."",""2"":""1"",""3"":""0"",""4"":""0"",""5"":""0"",""6"":""0"",""7"":""N/A""}","Operator: Welcome to Dairy Queen, how may I help you?
+Customer: Can I get a medium s'mores blizzard?
+Operator: Okay.
+Customer: That's it.
+Operator: Alright, we can still talk.",1,2130.0,2085.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:34:46Z,"[""2025-08-30T18:34:46Z"",""2025-08-30T18:35:31Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:36:38.500000Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,0,"{""1"": ""Operator: Welcome to Dairy Queen, how may I help you?\nCustomer: Uh, yes, give me one sec.\nCustomer: Okay, I'll go with a Blizzard Oreo cookie.\nCustomer: You want Oreo in it?\nCustomer: Oreo.\nCustomer: Okay, make that two Oreo cookie.\nOperator: What size?\nCustomer: Uh, medium.\nOperator: Okay.\nCustomer: Hold on.\nCustomer: Y'all got milkshakes, right?\nOperator: Yes, we do.\nCustomer: Okay, they have chocolate, strawberry, hot pudding, vanilla, and caramel.\nCustomer: And then they have a strawberry milkshake.\nOperator: So two medium Oreo Blizzards and a strawberry milkshake?\nCustomer: Yes.\nOperator: Anything else?\nCustomer: That's it, and a lot of napkins.\nOperator: Alright, that'll be $16.98."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""0""}","Operator: Welcome to Dairy Queen, how may I help you?
+Customer: Uh, yes, give me one sec.
+Customer: Okay, I'll go with a Blizzard Oreo cookie.
+Customer: You want Oreo in it?
+Customer: Oreo.
+Customer: Okay, make that two Oreo cookie.
+Operator: What size?
+Customer: Uh, medium.
+Operator: Okay.
+Customer: Hold on.
+Customer: Y'all got milkshakes, right?
+Operator: Yes, we do.
+Customer: Okay, they have chocolate, strawberry, hot pudding, vanilla, and caramel.
+Customer: And then they have a strawberry milkshake.
+Operator: So two medium Oreo Blizzards and a strawberry milkshake?
+Customer: Yes.
+Operator: Anything else?
+Customer: That's it, and a lot of napkins.
+Operator: Alright, that'll be $16.98.",4,2197.5,2145.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:35:46Z,"[""2025-08-30T18:35:46Z"",""2025-08-30T18:36:38.500000Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:37:31Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,1,"{""1"": ""Operator: Welcome to Dairy Queen, how may I help you?\nCustomer: Hi, can I please get one chocolate dipped vanilla snow cone, please?\nOperator: A chocolate dipped cone?\nCustomer: Yep.\nOperator: What size?\nCustomer: Medium's fine.\nOperator: Anything else?\nCustomer: That's it.\nOperator: That'll be $4.21.\nCustomer: Thank you.\nOperator: You're welcome."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""0""}","Operator: Welcome to Dairy Queen, how may I help you?
+Customer: Hi, can I please get one chocolate dipped vanilla snow cone, please?
+Operator: A chocolate dipped cone?
+Customer: Yep.
+Operator: What size?
+Customer: Medium's fine.
+Operator: Anything else?
+Customer: That's it.
+Operator: That'll be $4.21.
+Customer: Thank you.
+Operator: You're welcome.",4,2250.0,2197.5,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:36:38.500000Z,"[""2025-08-30T18:36:38.500000Z"",""2025-08-30T18:37:31Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:38:23.500000Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,2,"{""1"": ""Operator: Welcome to Dairy Queen, how may I help you?\nCustomer: Hi there, can I please have two small strawberry sundaes?\nOperator: Two small strawberry sundaes, anything else?\nCustomer: That's all.\nOperator: That'll be $5.41."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""0""}","Operator: Welcome to Dairy Queen, how may I help you?
+Customer: Hi there, can I please have two small strawberry sundaes?
+Operator: Two small strawberry sundaes, anything else?
+Customer: That's all.
+Operator: That'll be $5.41.",4,2302.5,2250.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:37:31Z,"[""2025-08-30T18:37:31Z"",""2025-08-30T18:38:23.500000Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:39:16Z,order,,1,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,3,"{""1"": ""Operator: Welcome to Dairy Queen, how may I help you?\nCustomer: Hi, can I just get one second, please?\nOperator: Alright, let me know when you're ready.\nCustomer: Thank you.\nCustomer: Alright, I'm ready.\nOperator: What can I get for you?\nCustomer: Can I do a small s'mores blizzard, please?\nOperator: Okay.\nCustomer: And that'll be it.\nOperator: Alright, that'll be $5.40.\nCustomer: Thank you so much.\nOperator: You're welcome."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""1"", ""6"": ""0"", ""7"": ""0""}","Operator: Welcome to Dairy Queen, how may I help you?
+Customer: Hi, can I just get one second, please?
+Operator: Alright, let me know when you're ready.
+Customer: Thank you.
+Customer: Alright, I'm ready.
+Operator: What can I get for you?
+Customer: Can I do a small s'mores blizzard, please?
+Operator: Okay.
+Customer: And that'll be it.
+Operator: Alright, that'll be $5.40.
+Customer: Thank you so much.
+Operator: You're welcome.",4,2355.0,2302.5,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:38:23.500000Z,"[""2025-08-30T18:38:23.500000Z"",""2025-08-30T18:39:16Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:43:16Z,order,,0,1,1,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,0,"{""1"": ""Operator: Welcome to Dairy Queen, how may I help you?\nCustomer: I'd like a small kitty cone, vanilla cone. I'd like a medium vanilla dipped in chocolate.\nOperator: You want a medium cone with vanilla dipped in chocolate?\nCustomer: Yeah, vanilla dipped in chocolate and a Blizzard turtle pecan. Hold the nuts, or light on the nuts. Medium.\nOperator: Medium?\nCustomer: Yeah, senior discount.\nOperator: Anything else?\nCustomer: That'll do it.\nOperator: It'll be $11.17.\nCustomer: Thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""1"", ""5"": ""0"", ""6"": ""0"", ""7"": ""Customer requests senior discount (considered a coupon); no mention of mobile order; operator does not ask to wait; no out-of-stock items; transcript includes greeting, order, confirmation, total, and closing, indicating completeness.""}","Operator: Welcome to Dairy Queen, how may I help you?
+Customer: I'd like a small kitty cone, vanilla cone. I'd like a medium vanilla dipped in chocolate.
+Operator: You want a medium cone with vanilla dipped in chocolate?
+Customer: Yeah, vanilla dipped in chocolate and a Blizzard turtle pecan. Hold the nuts, or light on the nuts. Medium.
+Operator: Medium?
+Customer: Yeah, senior discount.
+Operator: Anything else?
+Customer: That'll do it.
+Operator: It'll be $11.17.
+Customer: Thank you.",1,2595.0,2505.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:41:46Z,"[""2025-08-30T18:41:46Z"",""2025-08-30T18:43:16Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:49:16Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,0,"{""1"": ""Operator: Welcome to Dairy Queen, how may I help you?\nCustomer: Can I have the chocolate dip cone?\nOperator: Would that be small, medium, or large?\nCustomer: Small.\nOperator: Okay.\nCustomer: And can I have an Oreo Blizzard?\nOperator: What size?\nCustomer: Let's do a medium.\nOperator: Anything else?\nCustomer: That'll be it.\nOperator: That'll be $9.07."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""0""}","Operator: Welcome to Dairy Queen, how may I help you?
+Customer: Can I have the chocolate dip cone?
+Operator: Would that be small, medium, or large?
+Customer: Small.
+Operator: Okay.
+Customer: And can I have an Oreo Blizzard?
+Operator: What size?
+Customer: Let's do a medium.
+Operator: Anything else?
+Customer: That'll be it.
+Operator: That'll be $9.07.",1,2955.0,2895.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:48:16Z,"[""2025-08-30T18:48:16Z"",""2025-08-30T18:49:16Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:54:31Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,0,"{""1"": ""Operator: Welcome to Dairy Queen, how may I help you?\nCustomer: Yeah, can I get two small Fluffernutter Blizzards?\nOperator: Anything else?\nCustomer: That's it.\nOperator: Alright, it'll be $12.54.\nCustomer: Thank you.\nOperator: You're welcome."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0"", ""7"": ""N/A""}","Operator: Welcome to Dairy Queen, how may I help you?
+Customer: Yeah, can I get two small Fluffernutter Blizzards?
+Operator: Anything else?
+Customer: That's it.
+Operator: Alright, it'll be $12.54.
+Customer: Thank you.
+Operator: You're welcome.",1,3270.0,3240.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:54:01Z,"[""2025-08-30T18:54:01Z"",""2025-08-30T18:54:31Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
+2025-08-30T18:58:20.300000Z,order,,0,1,0,0,0,gdrive/dq_cary/DT_File20250830180001000.mp4,0,"{""1"": ""Operator: Welcome to Dairy Queen, how may I help you?\nCustomer: Yes, can I get a hot fudge sundae?\nOperator: Would that be medium or large?\nCustomer: Medium.\nOperator: Okay.\nCustomer: And then can I also get a small cone, a vanilla cone?\nOperator: Anything else for you?\nCustomer: That'll do it.\nOperator: Will that be all?\nCustomer: That'll do it.\nOperator: Alright, it'll be $7.01.\nCustomer: Thank you."", ""2"": ""1"", ""3"": ""0"", ""4"": ""0"", ""5"": ""0"", ""6"": ""0""}","Operator: Welcome to Dairy Queen, how may I help you?
+Customer: Yes, can I get a hot fudge sundae?
+Operator: Would that be medium or large?
+Customer: Medium.
+Operator: Okay.
+Customer: And then can I also get a small cone, a vanilla cone?
+Operator: Anything else for you?
+Customer: That'll do it.
+Operator: Will that be all?
+Customer: That'll do it.
+Operator: Alright, it'll be $7.01.
+Customer: Thank you.",1,3499.3,3450.0,42a7212b-5c74-4e94-b42c-f2479402b71f,2025-08-30T18:57:31Z,"[""2025-08-30T18:57:31Z"",""2025-08-30T18:58:20.300000Z"")",06a63455-7313-4f88-a707-d3c8ecb62b78
