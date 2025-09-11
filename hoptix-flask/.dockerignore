@@ -93,3 +93,4 @@ token.json
 # Worker logs (generated at runtime)
 sqs_worker.log
 flask_app.log
+
