@@ -28,29 +28,50 @@ class GoogleDriveClient:
         """Authenticate with Google Drive API"""
         creds = None
         
-        # The file token.json stores the user's access and refresh tokens.
-        if os.path.exists(self.token_path):
-            creds = Credentials.from_authorized_user_file(self.token_path, SCOPES)
+        # Try to get credentials from environment variables first (for production)
+        google_creds_json = os.getenv('GOOGLE_DRIVE_CREDENTIALS')
+        if google_creds_json:
+            try:
+                creds_info = json.loads(google_creds_json)
+                creds = Credentials.from_authorized_user_info(creds_info, SCOPES)
+                logger.info("Using Google Drive credentials from environment variables")
+            except (json.JSONDecodeError, ValueError) as e:
+                logger.error(f"Error parsing Google Drive credentials from environment: {e}")
+                raise ValueError("Invalid Google Drive credentials in environment variable")
         
-        # If there are no (valid) credentials available, let the user log in.
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
+        # Fallback to file-based authentication (for development)
+        elif os.path.exists(self.token_path):
+            creds = Credentials.from_authorized_user_file(self.token_path, SCOPES)
+            logger.info("Using Google Drive credentials from token file")
+        
+        # Refresh credentials if needed
+        if creds and creds.expired and creds.refresh_token:
+            try:
                 creds.refresh(Request())
-            else:
-                if not os.path.exists(self.credentials_path):
-                    raise FileNotFoundError(
-                        f"Google Drive credentials file not found at {self.credentials_path}. "
-                        "Please download it from Google Cloud Console."
-                    )
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    self.credentials_path, SCOPES)
-                logger.info("Starting OAuth flow via local server")
-                logger.info("A browser window will open for authentication...")
-                creds = flow.run_local_server(port=0)
+                logger.info("Successfully refreshed Google Drive credentials")
+            except Exception as e:
+                logger.error(f"Error refreshing Google Drive credentials: {e}")
+                raise
+        
+        # Interactive authentication (development only)
+        elif not creds or not creds.valid:
+            if not os.path.exists(self.credentials_path):
+                raise FileNotFoundError(
+                    f"Google Drive credentials not found. Please set GOOGLE_DRIVE_CREDENTIALS "
+                    f"environment variable or provide {self.credentials_path} file."
+                )
+            flow = InstalledAppFlow.from_client_secrets_file(
+                self.credentials_path, SCOPES)
+            logger.info("Starting OAuth flow via local server")
+            logger.info("A browser window will open for authentication...")
+            creds = flow.run_local_server(port=0)
             
-            # Save the credentials for the next run
+            # Save the credentials for the next run (development only)
             with open(self.token_path, 'w') as token:
                 token.write(creds.to_json())
+        
+        if not creds or not creds.valid:
+            raise ValueError("Unable to obtain valid Google Drive credentials")
         
         self.service = build('drive', 'v3', credentials=creds)
         logger.info("Successfully authenticated with Google Drive API")
