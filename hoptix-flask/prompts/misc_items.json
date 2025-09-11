@@ -1,0 +1,102 @@
+[
+  {
+    "Item ID": 9001,
+    "Item": "Whipped Cream",
+    "Size IDs": [0],
+    "Ordered Items Count": 0,
+    "Store IDs": [1, 2],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  },
+  {
+    "Item ID": 9002,
+    "Item": "Nuts",
+    "Size IDs": [0],
+    "Ordered Items Count": 0,
+    "Store IDs": [1, 2],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  },
+  {
+    "Item ID": 9003,
+    "Item": "Sprinkles",
+    "Size IDs": [0],
+    "Ordered Items Count": 0,
+    "Store IDs": [1, 2],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  },
+  {
+    "Item ID": 9004,
+    "Item": "Double Dip",
+    "Size IDs": [0],
+    "Ordered Items Count": 0,
+    "Store IDs": [1, 2],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  },
+  {
+    "Item ID": 9005,
+    "Item": "Extra Malt",
+    "Size IDs": [0],
+    "Ordered Items Count": 0,
+    "Store IDs": [1, 2],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  },
+  {
+    "Item ID": 9006,
+    "Item": "Banana Boost",
+    "Size IDs": [0],
+    "Ordered Items Count": 0,
+    "Store IDs": [1, 2],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  },
+  {
+    "Item ID": 9007,
+    "Item": "Primary Topping",
+    "Size IDs": [0],
+    "Ordered Items Count": 0,
+    "Store IDs": [1, 2],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  },
+  {
+    "Item ID": 9008,
+    "Item": "Dipping Sauce",
+    "Size IDs": [0],
+    "Ordered Items Count": 0,
+    "Store IDs": [1, 2],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  },
+  {
+    "Item ID": 9009,
+    "Item": "Ice Cream Topping",
+    "Size IDs": [0],
+    "Ordered Items Count": 0,
+    "Store IDs": [1, 2],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  },
+  {
+    "Item ID": 9010,
+    "Item": "Pecans",
+    "Size IDs": [0],
+    "Ordered Items Count": 0,
+    "Store IDs": [1, 2],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0
+  }
+]

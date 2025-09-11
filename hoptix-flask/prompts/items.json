@@ -1,6 +1,9 @@
 [
   {
     "Item": "Sundae [Size: Small]",
+    "Item ID": 1,
+    "Size IDs": [1],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": "2 (valid items) for $5. Valid items: Small Sundae, Pretzel, Chilli dog or any size drink",
     "Upsizing Chance": "Large Sundae (1)",
@@ -8,6 +11,9 @@
   },
   {
     "Item": "Sundae [Size: Medium, Large, No Size]",
+    "Item ID": 2,
+    "Size IDs": [0, 2, 3],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Large Sundae (1)",
@@ -15,6 +21,9 @@
   },
   {
     "Item": "Chips",
+    "Item ID": 3,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Pretzel Sticks (1)",
@@ -22,6 +31,9 @@
   },
   {
     "Item": "Pretzel sticks [Size: None]",
+    "Item ID": 4,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "2 (valid items) for $5. Valid items: Small Sundae, Pretzel, Chilli dog or any size drink",
     "Upsizing Chance": 0,
@@ -29,6 +41,9 @@
   },
   {
     "Item": "Drink [Sizes: Small, Medium, Large]",
+    "Item ID": 5,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "2 (valid items) for $5. Valid items: Small Sundae, Pretzel, Chilli dog or any size drink",
     "Upsizing Chance": "Large Drink (1)",
@@ -36,13 +51,19 @@
   },
   {
     "Item": "Chilli dog",
-    "Ordered Items Count": "",
+    "Item ID": 6,
+    "Size IDs": [0],
+    "Store IDs": [1],
+    "Ordered Items Count": 1,
     "Upselling Chance": "2 (valid items) for $5. Valid items: Small Sundae, Pretzel, Chilli dog or any size drink",
     "Upsizing Chance": 0,
     "Add on Chance": 0
   },
   {
     "Item": "Cone [Sizes: Small, Medium, Large]",
+    "Item ID": 7,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Large Cone (1)",
@@ -50,6 +71,9 @@
   },
   {
     "Item": "Dipped Cone [Sizes: Small, Medium, Large]",
+    "Item ID": 8,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Large Dipped Cone (1)",
@@ -57,6 +81,9 @@
   },
   {
     "Item": "Churro Dipped Cone [Sizes: Small, Medium, Large]",
+    "Item ID": 9,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Large Dipped Cone (1)",
@@ -64,6 +91,9 @@
   },
   {
     "Item": "Twist Cone  [Sizes: Small, Medium, Large]",
+    "Item ID": 10,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Large Twist Cone (1)",
@@ -71,6 +101,9 @@
   },
   {
     "Item": "Triple Chocolate Brownie [Sizes: None]",
+    "Item ID": 11,
+    "Size IDs": [0],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": 0,
@@ -78,6 +111,9 @@
   },
   {
     "Item": "Dilly Bar",
+    "Item ID": 12,
+    "Size IDs": [0],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Box of 6 (1)",
@@ -85,6 +121,9 @@
   },
   {
     "Item": "Shakes & Malts [Sizes: Small, Medium, Large]",
+    "Item ID": 13,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Large Shake/Malt (1)",
@@ -92,6 +131,9 @@
   },
   {
     "Item": "MooLattes [Sizes: Small, Medium, Large]",
+    "Item ID": 14,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Large MooLatte (1)",
@@ -99,6 +141,9 @@
   },
   {
     "Item": "Misty Slush [Sizes: Small, Medium, Large]",
+    "Item ID": 15,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Large Misty Slush (1)",
@@ -106,6 +151,9 @@
   },
   {
     "Item": "Misty Freeze [Sizes: Small, Medium, Large]",
+    "Item ID": 16,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Large Misty Freeze (1)",
@@ -113,6 +161,9 @@
   },
   {
     "Item": "Bottled Water [Sizes: None]",
+    "Item ID": 17,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": 0,
@@ -120,6 +171,9 @@
   },
   {
     "Item": "Fruit Smoothies [Sizes: Small, Medium, Large]",
+    "Item ID": 18,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Large Fruit Smoothie (1)",
@@ -127,6 +181,9 @@
   },
   {
     "Item": "Julius Originals [Sizes: Small, Medium, Large]",
+    "Item ID": 19,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Large Julius Original (1)",
@@ -134,6 +191,9 @@
   },
   {
     "Item": "Frozen Cakes [Sizes: 11x14 (1/12 slice), 10\" (1/12 slice), 9\" (1/10 slice), 8\" (1/8 slice)]",
+    "Item ID": 20,
+    "Size IDs": [0],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Large Sheet Cake (1)",
@@ -141,6 +201,9 @@
   },
   {
     "Item": "Blizzard Cakes [Sizes: Kid's, Small, Medium, Large]",
+    "Item ID": 21,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Large Sheet Cake (1)",
@@ -148,6 +211,9 @@
   },
   {
     "Item": "Blizzard [Sizes: Small, Medium, Large]",
+    "Item ID": 22,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Large Blizzard (1)",
@@ -155,6 +221,9 @@
   },
   {
     "Item": "Cupfection [Sizes: None]",
+    "Item ID": 23,
+    "Size IDs": [0],
+    "Store IDs": [1, 2],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": 0,
@@ -162,6 +231,9 @@
   },
   {
     "Item": "Side Salad [Sizes: None]",
+    "Item ID": 24,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": 0,
@@ -169,6 +241,9 @@
   },
   {
     "Item": "Fries [Sizes: Kid's, Regular, Large, Basket]",
+    "Item ID": 25,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Large Fries (1)",
@@ -176,6 +251,9 @@
   },
   {
     "Item": "Onion Rings [Sizes: Regular, Large]",
+    "Item ID": 26,
+    "Size IDs": [2, 3],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Large Onion Rings (1)",
@@ -183,6 +261,9 @@
   },
   {
     "Item": "Cheese Curds [Sizes: Regular, Large]",
+    "Item ID": 27,
+    "Size IDs": [2, 3],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": 0,
     "Upsizing Chance": "Large Cheese Curds (1)",
@@ -190,6 +271,9 @@
   },
   {
     "Item": "Crispy Chicken Strips Salad [Sizes: None]",
+    "Item ID": 28,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "Drink (1)",
     "Upsizing Chance": 0,
@@ -197,6 +281,9 @@
   },
   {
     "Item": "Orignal Cheeseburger [Sizes: Single, Double, Triple]",
+    "Item ID": 29,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1) and/or Sundae/Blizzard (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -204,6 +291,9 @@
   },
   {
     "Item": "3-Piece Chicken Strips [Sizes: None]",
+    "Item ID": 30,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1) and/or Sundae/Blizzard (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -211,6 +301,9 @@
   },
   {
     "Item": "Bacon Cheeseburger delux double or triple",
+    "Item ID": 31,
+    "Size IDs": [2, 3],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1) and/or Sundae/Blizzard (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -218,6 +311,9 @@
   },
   {
     "Item": "Bacon Two Cheese Deluxe [Sizes: Single, Double, Triple]",
+    "Item ID": 32,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -225,6 +321,9 @@
   },
   {
     "Item": "Loaded A.1 [Sizes: Single, Double, Triple]",
+    "Item ID": 33,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -232,6 +331,9 @@
   },
   {
     "Item": "Cheese Deluxe [Sizes:  Double, Triple]",
+    "Item ID": 34,
+    "Size IDs": [2, 3],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -239,6 +341,9 @@
   },
   {
     "Item": "Flamethrower [Sizes: Double, Triple]",
+    "Item ID": 35,
+    "Size IDs": [2, 3],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -246,6 +351,9 @@
   },
   {
     "Item": "Original Cheeseburger [Sizes: Single, Double, Triple]",
+    "Item ID": 36,
+    "Size IDs": [1, 2, 3],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -253,6 +361,9 @@
   },
   {
     "Item": "Backyard Bacon Ranch [Sizes Double, Triple]",
+    "Item ID": 37,
+    "Size IDs": [2, 3],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -260,6 +371,9 @@
   },
   {
     "Item": "Grilled Cheese Sandwich [Sizes: None]",
+    "Item ID": 38,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -267,6 +381,9 @@
   },
   {
     "Item": "Wild Alaskan [Sizes: None]",
+    "Item ID": 39,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -274,6 +391,9 @@
   },
   {
     "Item": "Chili Cheese Dog [Sizes: None]",
+    "Item ID": 40,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -281,6 +401,9 @@
   },
   {
     "Item": "Chili Dog [Sizes: None]",
+    "Item ID": 41,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -288,6 +411,9 @@
   },
   {
     "Item": "Hot Dog [Sizes: None]",
+    "Item ID": 42,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -295,6 +421,9 @@
   },
   {
     "Item": "Popcorn Shrimp Basket [Sizes: None]",
+    "Item ID": 43,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -302,6 +431,9 @@
   },
   {
     "Item": "Original Chicken Strip Sandwich [Sizes: None]",
+    "Item ID": 44,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -309,6 +441,9 @@
   },
   {
     "Item": "Crispy Chicken (Original/Spicy) [Sizes: None]",
+    "Item ID": 45,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -316,6 +451,9 @@
   },
   {
     "Item": "Grilled Chicken [Sizes: None]",
+    "Item ID": 46,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -323,6 +461,9 @@
   },
   {
     "Item": "Grilled Cheese Sandwich [Sizes: None]",
+    "Item ID": 47,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -330,6 +471,9 @@
   },
   {
     "Item": "Wild Alaskan [Sizes: None]",
+    "Item ID": 48,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -337,6 +481,9 @@
   },
   {
     "Item": "Chili Cheese Dog [Sizes: None]",
+    "Item ID": 49,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -344,13 +491,9 @@
   },
   {
     "Item": "Hot Dog [Sizes: None]",
-    "Ordered Items Count": 1,
-    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
-    "Upsizing Chance": 0,
-    "Add on Chance": 0
-  },
-  {
-    "Item": "Original Chicken Strip Sandwich [Sizes: None]",
+    "Item ID": 50,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 1,
     "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
     "Upsizing Chance": 0,
@@ -358,6 +501,9 @@
   },
   {
     "Item": "Popcorn Shrimp Basket [Sizes: None] (Includes a Regular Fries)",
+    "Item ID": 51,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 2,
     "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
     "Upsizing Chance": "Large Fries (1)",
@@ -365,6 +511,9 @@
   },
   {
     "Item": "4-Piece CB Chicken (Strip) Basket (Includes a Regular Fries)",
+    "Item ID": 52,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 2,
     "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
     "Upsizing Chance": "Large Fries (1), Large drink (1)",
@@ -372,6 +521,9 @@
   },
   {
     "Item": "6-Piece CB Chicken (Strip) Basket (Includes a Regular Fries)",
+    "Item ID": 53,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 2,
     "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
     "Upsizing Chance": "Large Fries (1), Large drink (1)",
@@ -379,6 +531,9 @@
   },
   {
     "Item": "4-Piece Chicken Strips and Fry-Ring Basket (Includes a Regular Fries)",
+    "Item ID": 54,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 2,
     "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
     "Upsizing Chance": "Large Fries (1), Large drink (1)",
@@ -386,6 +541,9 @@
   },
   {
     "Item": "6-Piece Chicken Strips and Fry-Ring Basket (Includes a Regular Fries)",
+    "Item ID": 55,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 2,
     "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
     "Upsizing Chance": "Large Fries (1), Large drink (1)",
@@ -393,6 +551,9 @@
   },
   {
     "Item": "4-Piece Honey BBQ Chicken Basket (Includes a Regular Fries)",
+    "Item ID": 56,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 2,
     "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
     "Upsizing Chance": "Large Fries (1),Large drink(1)",
@@ -400,6 +561,9 @@
   },
   {
     "Item": "6-Piece Honey BBQ Chicken Basket (Includes a Regular Fries)",
+    "Item ID": 57,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 2,
     "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
     "Upsizing Chance": "Large Fries (1). Large drink (1)",
@@ -407,6 +571,9 @@
   },
   {
     "Item": "Regular Rotisserie-Style Chicken Basket (Includes a Regular Fries)",
+    "Item ID": 58,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 2,
     "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
     "Upsizing Chance": "Large Fries (1), Large drink (1)",
@@ -414,6 +581,9 @@
   },
   {
     "Item": "Large Rotisserie-Style Chicken Basket (Includes a Regular Fries) [Sizes: Regular, Large]",
+    "Item ID": 59,
+    "Size IDs": [0],
+    "Store IDs": [1],
     "Ordered Items Count": 2,
     "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
     "Upsizing Chance": "Large Fries (1). Large drink (1)",
