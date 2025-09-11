@@ -31,7 +31,6 @@ def setup_logging():
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler('hoptix_runner.log'),
             logging.StreamHandler()
         ]
     )
