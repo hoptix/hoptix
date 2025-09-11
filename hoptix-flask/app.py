@@ -12,12 +12,11 @@ load_dotenv()
 from config import Settings
 from integrations.db_supabase import Supa
 
-# Configure logging
+# Configure logging for production - only to console
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('flask_app.log'),
         logging.StreamHandler()
     ]
 )

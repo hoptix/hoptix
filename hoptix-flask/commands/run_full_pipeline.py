@@ -167,13 +167,12 @@ def main():
     """Main entry point for the full pipeline command."""
     import argparse
     
-    # Configure logging
+    # Configure logging for production - only to console
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler('video_processing.log'),
-            logging.StreamHandler()  # Also log to console
+            logging.StreamHandler()
         ]
     )
     
