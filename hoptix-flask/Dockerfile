@@ -1,58 +1,42 @@
-# Use Python 3.12 slim image as base
-FROM python:3.12-slim
+# Use a specific Python version tag for better reproducibility
+FROM python:3.11.12-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app
-
-# Set work directory
+# Set working directory
 WORKDIR /app
 
-# Install system dependencies required for audio/video processing
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    # Audio/video processing dependencies
-    ffmpeg \
-    libsndfile1 \
-    libsox-fmt-all \
-    # Build tools for Python packages
     gcc \
-    g++ \
-    pkg-config \
-    # Audio processing libraries
-    libasound2-dev \
-    libportaudio2 \
-    libportaudiocpp0 \
-    portaudio19-dev \
-    # System utilities
-    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better Docker layer caching
+# Copy requirements first to leverage Docker cache
 COPY requirements.txt .
+# Install dependencies with --no-cache-dir to reduce image size
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Copy only necessary files to reduce image size
+COPY app.py .
+COPY config.py .
+COPY integrations/ ./integrations/
+COPY routes/ ./routes/
+COPY services/ ./services/
+COPY worker/ ./worker/
+COPY commands/ ./commands/
+COPY prompts/ ./prompts/
 
-# Copy application code
-COPY . .
+# Create a non-root user
+RUN useradd -m -s /bin/bash appuser && \
+    chown -R appuser:appuser /app
 
-# Create necessary directories
-RUN mkdir -p logs exports && \
-    chmod -R 755 logs exports
+# Create output directory with proper permissions
+RUN mkdir -p /app/logs /app/exports && \
+    chmod 755 /app/logs /app/exports && \
+    chown -R appuser:appuser /app/logs /app/exports
+USER appuser
 
-# Create non-root user for security
-RUN groupadd -r hoptix && useradd -r -g hoptix hoptix && \
-    chown -R hoptix:hoptix /app
-USER hoptix
+# Set environment variables
+ENV PYTHONPATH=/app
 
-# Expose port
-EXPOSE 8000
+# Default command
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120", "app:app"]
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
-
-# Default command - can be overridden
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120", "--keep-alive", "2", "--max-requests", "1000", "--max-requests-jitter", "100", "app:app"]

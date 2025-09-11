@@ -93,3 +93,4 @@ dev: setup up-build logs
 # Production deployment
 prod: setup build
 	@echo "Built for production. Use 'docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d' to deploy"
+
