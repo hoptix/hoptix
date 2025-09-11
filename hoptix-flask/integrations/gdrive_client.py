@@ -99,7 +99,7 @@ class GoogleDriveClient:
             return None
     
     def list_video_files(self, folder_id: str, drive_id: str) -> List[Dict]:
-        """List video files in a specific folder with pagination support"""
+        """List video files in a specific folder"""
         try:
             # Query for video files (common video MIME types)
             video_mimes = [
@@ -115,34 +115,19 @@ class GoogleDriveClient:
             mime_query = ' or '.join([f"mimeType='{mime}'" for mime in video_mimes])
             query = f"('{folder_id}' in parents) and ({mime_query}) and trashed=false"
             
-            all_files = []
-            next_page_token = None
+            results = self.service.files().list(
+                q=query,
+                driveId=drive_id,
+                corpora='drive',
+                includeItemsFromAllDrives=True,
+                supportsAllDrives=True,
+                fields='files(id,name,size,mimeType,createdTime,modifiedTime)'
+            ).execute()
             
-            # Handle pagination to get ALL video files
-            while True:
-                results = self.service.files().list(
-                    q=query,
-                    driveId=drive_id,
-                    corpora='drive',
-                    includeItemsFromAllDrives=True,
-                    supportsAllDrives=True,
-                    fields='nextPageToken,files(id,name,size,mimeType,createdTime,modifiedTime)',
-                    pageSize=1000,  # Maximum page size
-                    pageToken=next_page_token
-                ).execute()
-                
-                files = results.get('files', [])
-                all_files.extend(files)
-                
-                next_page_token = results.get('nextPageToken')
-                if not next_page_token:
-                    break
-                    
-                logger.info(f"Fetched {len(files)} files, continuing pagination...")
+            files = results.get('files', [])
+            logger.info(f"Found {len(files)} video files in folder")
             
-            logger.info(f"Found {len(all_files)} video files in folder (all pages)")
-            
-            return all_files
+            return files
             
         except Exception as e:
             logger.error(f"Error listing video files: {e}")

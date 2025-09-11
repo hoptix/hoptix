@@ -1,4 +1,4 @@
- worke#!/bin/bash
+#!/bin/bash
 
 # Stop SQS workers script
 echo "🛑 Stopping SQS Video Processing Workers"
