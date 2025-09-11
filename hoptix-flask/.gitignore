@@ -10,3 +10,6 @@ test_videos/
 __pycache__/
 credentials.json
 token.json
+# Google OAuth files
+credentials.json
+token.json
