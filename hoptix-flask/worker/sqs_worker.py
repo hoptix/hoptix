@@ -56,7 +56,9 @@ class SQSVideoWorker:
             "processed": 0,
             "succeeded": 0,
             "failed": 0,
-            "started_at": datetime.now()
+            "started_at": datetime.now(),
+            "last_heartbeat": datetime.now(),
+            "last_activity": datetime.now()
         }
         
         logger.info(f"SQS Worker {self.worker_id} initialized")
@@ -97,6 +99,25 @@ class SQSVideoWorker:
             
         except Exception as e:
             logger.warning(f"Failed to extend message visibility: {e}")
+    
+    def _log_heartbeat(self):
+        """Log periodic heartbeat to show worker is alive"""
+        now = datetime.now()
+        runtime = now - self.stats["started_at"]
+        last_activity_ago = now - self.stats["last_activity"]
+        
+        logger.info(f"💓 Worker {self.worker_id} HEARTBEAT - Runtime: {runtime}, "
+                   f"Processed: {self.stats['processed']}, "
+                   f"Success Rate: {self._get_success_rate():.1f}%, "
+                   f"Last Activity: {last_activity_ago} ago")
+        
+        self.stats["last_heartbeat"] = now
+    
+    def _get_success_rate(self) -> float:
+        """Calculate success rate percentage"""
+        if self.stats["processed"] == 0:
+            return 100.0
+        return (self.stats["succeeded"] / self.stats["processed"]) * 100
     
     def _mark_video_processing(self, video_id: str) -> bool:
         """Mark video as processing in database"""
@@ -164,6 +185,7 @@ class SQSVideoWorker:
             # Update stats
             self.stats["processed"] += 1
             self.stats["succeeded"] += 1
+            self.stats["last_activity"] = datetime.now()
             
             logger.info(f"✅ Worker {self.worker_id} completed video {video_id} in {duration:.2f}s")
             return True
@@ -190,11 +212,19 @@ class SQSVideoWorker:
     def run(self):
         """Main worker loop"""
         logger.info(f"🚀 SQS Worker {self.worker_id} starting...")
+        logger.info(f"🔧 Worker PID: {os.getpid()}")
+        logger.info(f"⏰ Started at: {self.stats['started_at'].strftime('%Y-%m-%d %H:%M:%S')}")
+        logger.info(f"🌐 Region: {self.settings.AWS_REGION}")
         self._setup_signal_handlers()
         
         # Print queue stats on startup
         queue_stats = self.sqs.get_queue_attributes()
-        logger.info(f"Queue stats at startup: {queue_stats}")
+        logger.info(f"📊 Queue stats at startup: {queue_stats}")
+        logger.info(f"✅ Worker {self.worker_id} is ACTIVE and waiting for messages...")
+        
+        # Heartbeat counter for periodic status logging
+        heartbeat_counter = 0
+        heartbeat_interval = 60  # Log heartbeat every 60 iterations (roughly every 20 minutes with 20s polling)
         
         while not self.shutdown:
             try:
@@ -206,7 +236,14 @@ class SQSVideoWorker:
                 
                 if not message_data:
                     # No messages available, continue polling
-                    logger.debug(f"Worker {self.worker_id} - no messages available")
+                    logger.debug(f"🔍 Worker {self.worker_id} - no messages available, continuing to poll...")
+                    
+                    # Periodic heartbeat logging
+                    heartbeat_counter += 1
+                    if heartbeat_counter >= heartbeat_interval:
+                        self._log_heartbeat()
+                        heartbeat_counter = 0
+                    
                     continue
                 
                 # Process the message
