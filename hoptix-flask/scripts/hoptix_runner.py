@@ -88,8 +88,8 @@ def main():
         help='Date in YYYY-MM-DD format - import and process videos from this date'
     )
     pipeline_parser.add_argument(
-        '--workers', type=int, default=3,
-        help='Number of parallel workers for video processing (default: 3)'
+        '--workers', type=int, default=10,
+        help='Number of parallel workers for video processing (default: 10)'
     )
     pipeline_parser.set_defaults(func=cmd_full_pipeline)
     

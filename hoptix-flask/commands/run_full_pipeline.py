@@ -149,6 +149,13 @@ class FullPipelineCommand:
             settings = Settings()
             db = Supa(self.supabase_url, self.supabase_service_key)
             s3 = get_s3(self.aws_region)
+            
+            # Suppress verbose HTTP logs for cleaner output
+            logging.getLogger("httpx").setLevel(logging.WARNING)
+            logging.getLogger("urllib3").setLevel(logging.WARNING)
+            logging.getLogger("requests").setLevel(logging.WARNING)
+            logging.getLogger("googleapiclient").setLevel(logging.WARNING)
+            logging.getLogger("google_auth_httplib2").setLevel(logging.WARNING)
 
             # Initialize services
             import_service = ImportService(db, settings)
@@ -239,8 +246,8 @@ def main():
                        help='Location ID (required) - must exist in database and belong to the organization')
     parser.add_argument('--date', type=str, required=True,
                        help='Date in YYYY-MM-DD format (required) - import and process videos from this date')
-    parser.add_argument('--workers', type=int, default=3,
-                       help='Number of parallel workers for video processing (default: 3)')
+    parser.add_argument('--workers', type=int, default=10,
+                       help='Number of parallel workers for video processing (default: 10)')
     
     args = parser.parse_args()
     
