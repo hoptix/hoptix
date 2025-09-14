@@ -167,28 +167,41 @@ class GoogleDriveClient:
             logger.error(f"Error listing video files: {e}")
             return []
     
-    def download_file(self, file_id: str, local_path: str) -> bool:
-        """Download a file from Google Drive to local path"""
-        try:
-            request = self.service.files().get_media(fileId=file_id)
-            
-            # Create directory if it doesn't exist
-            os.makedirs(os.path.dirname(local_path), exist_ok=True)
-            
-            with io.FileIO(local_path, 'wb') as fh:
-                downloader = MediaIoBaseDownload(fh, request)
-                done = False
-                while done is False:
-                    status, done = downloader.next_chunk()
-                    if status:
-                        logger.info(f"Download progress: {int(status.progress() * 100)}%")
-            
-            logger.info(f"Successfully downloaded file to: {local_path}")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Error downloading file: {e}")
-            return False
+    def download_file(self, file_id: str, local_path: str, max_retries: int = 3) -> bool:
+        """Download a file from Google Drive to local path with retry logic"""
+        import time
+        import ssl
+        
+        for attempt in range(max_retries):
+            try:
+                request = self.service.files().get_media(fileId=file_id)
+                
+                # Create directory if it doesn't exist
+                os.makedirs(os.path.dirname(local_path), exist_ok=True)
+                
+                with io.FileIO(local_path, 'wb') as fh:
+                    downloader = MediaIoBaseDownload(fh, request)
+                    done = False
+                    while done is False:
+                        status, done = downloader.next_chunk()
+                        # Suppress progress logs for cleaner output
+                
+                logger.debug(f"Successfully downloaded file to: {local_path}")
+                return True
+                
+            except (ssl.SSLError, ConnectionError, OSError) as e:
+                if attempt < max_retries - 1:
+                    wait_time = (attempt + 1) * 2  # Exponential backoff: 2s, 4s, 6s
+                    logger.warning(f"Download attempt {attempt + 1} failed, retrying in {wait_time}s: {str(e)[:50]}")
+                    time.sleep(wait_time)
+                else:
+                    logger.error(f"Download failed after {max_retries} attempts: {str(e)[:50]}")
+                    return False
+            except Exception as e:
+                logger.error(f"Unexpected download error: {str(e)[:50]}")
+                return False
+        
+        return False
     
     def get_file_info(self, file_id: str) -> Optional[Dict]:
         """Get detailed information about a file"""

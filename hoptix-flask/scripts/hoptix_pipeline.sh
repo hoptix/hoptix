@@ -17,7 +17,7 @@ if [ $# -lt 2 ]; then
     echo "Note: This script is designed for single-tenant restaurant deployments."
     echo "The organization and location must already exist in the database."
     echo "If no date is provided, today's date will be used."
-    echo "If no worker count is provided, 3 workers will be used."
+    echo "If no worker count is provided, 10 workers will be used."
     exit 1
 fi
 
@@ -25,8 +25,8 @@ ORG_ID=$1
 LOCATION_ID=$2
 # Use current date if no date argument provided
 DATE_ARG=${3:-$(date +%Y-%m-%d)}
-# Use 3 workers if no worker count provided
-WORKERS=${4:-3}
+# Use 10 workers if no worker count provided
+WORKERS=${4:-10}
 
 echo "🏢 Organization ID: $ORG_ID"
 echo "📍 Location ID: $LOCATION_ID"
