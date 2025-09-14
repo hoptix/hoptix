@@ -7,19 +7,22 @@ echo "🚀 Hoptix Video Processing Pipeline"
 echo "===================================="
 
 # Validate required arguments
-if [ $# -lt 3 ]; then
-    echo "❌ Error: Organization ID, Location ID, and Date arguments required"
-    echo "Usage: $0 ORG_ID LOCATION_ID YYYY-MM-DD"
+if [ $# -lt 2 ]; then
+    echo "❌ Error: Organization ID and Location ID arguments required"
+    echo "Usage: $0 ORG_ID LOCATION_ID [YYYY-MM-DD]"
+    echo "Example: $0 abc123-def4-5678-90ab-cdef12345678 def456-789a-bcde-f012-3456789abcde"
     echo "Example: $0 abc123-def4-5678-90ab-cdef12345678 def456-789a-bcde-f012-3456789abcde 2025-08-29"
     echo ""
     echo "Note: This script is designed for single-tenant restaurant deployments."
     echo "The organization and location must already exist in the database."
+    echo "If no date is provided, today's date will be used."
     exit 1
 fi
 
 ORG_ID=$1
 LOCATION_ID=$2
-DATE_ARG=$3
+# Use current date if no date argument provided
+DATE_ARG=${3:-$(date +%Y-%m-%d)}
 
 echo "🏢 Organization ID: $ORG_ID"
 echo "📍 Location ID: $LOCATION_ID"
