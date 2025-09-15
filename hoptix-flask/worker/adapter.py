@@ -99,15 +99,7 @@ def _get_menu_data_from_json() -> tuple[list, list, list, list, list]:
     print("Using fallback JSON files for menu data")
     return upselling, upsizing, addons, items, meals
 
-def _build_step2_prompt(db=None, location_id: str = None) -> str:
-    """Build the step 2 prompt with menu data from database or JSON fallback"""
-    if db and location_id:
-        upselling, upsizing, addons, items, meals = _get_menu_data_from_db(db, location_id)
-    else:
-        upselling, upsizing, addons, items, meals = _get_menu_data_from_json()
-
-    print(f"Menu data loaded: {len(upselling)} upselling scenarios, {len(upsizing)} upsizing scenarios, {len(addons)} add-ons, {len(items)} items, {len(meals)} meals")
-
+    # Removed verbose debug print to prevent large console outputs and potential OOM kills in container runtimes
 
     template = """
 You are a performance reviewer assessing a Dairy Queen drive-thru operator's handling of an order, focusing on recording statistics about orders, upsizing opportunities, and upselling opportunities.
