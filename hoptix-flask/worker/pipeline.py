@@ -1,4 +1,4 @@
-import os, time, tempfile, json, datetime as dt, logging, csv
+import os, time, tempfile, json, datetime as dt, logging
 from typing import List, Dict, Tuple
 from dateutil import parser as dateparse
 from integrations.db_supabase import Supa
@@ -10,50 +10,6 @@ logger = logging.getLogger(__name__)
 
 from config import Settings
 
-def save_to_csv(data: List[Dict], filename: str, data_type: str = "data"):
-    """Save data to CSV file for backup before database insertion"""
-    if not data:
-        logger.warning(f"No {data_type} to save to CSV")
-        return
-    
-    # Create exports directory if it doesn't exist
-    os.makedirs("exports", exist_ok=True)
-    
-    # Generate timestamp for filename
-    timestamp = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
-    csv_path = f"exports/{timestamp}_{filename}"
-    
-    try:
-        with open(csv_path, 'w', newline='', encoding='utf-8') as csvfile:
-            if data:
-                # Get all possible fieldnames from all records
-                fieldnames = set()
-                for record in data:
-                    fieldnames.update(record.keys())
-                    # Also include nested dict keys if present
-                    for key, value in record.items():
-                        if isinstance(value, dict):
-                            for nested_key in value.keys():
-                                fieldnames.add(f"{key}.{nested_key}")
-                
-                fieldnames = sorted(list(fieldnames))
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                writer.writeheader()
-                
-                # Flatten nested dicts for CSV
-                for record in data:
-                    flat_record = {}
-                    for key, value in record.items():
-                        if isinstance(value, dict):
-                            for nested_key, nested_value in value.items():
-                                flat_record[f"{key}.{nested_key}"] = nested_value
-                        else:
-                            flat_record[key] = value
-                    writer.writerow(flat_record)
-                
-                logger.info(f"Saved {len(data)} {data_type} records to {csv_path}")
-    except Exception as e:
-        logger.error(f"Failed to save {data_type} to CSV: {e}")
 
 def fetch_one_uploaded_video(db: Supa):
     r = db.client.table("videos").select(
@@ -96,9 +52,6 @@ def insert_transactions(db: Supa, video_row: Dict, transactions: List[Dict]) -> 
         })
     
     try:
-        # Save transactions to CSV before database insertion
-        save_to_csv(rows, "transactions.csv", "transaction")
-        
         # Insert transactions - Supabase should return full records by default
         logger.debug(f"Inserting {len(rows)} transaction rows")
         ins = db.client.table("transactions").insert(rows).execute()
@@ -183,9 +136,6 @@ def upsert_grades(db: Supa, tx_ids: List[str], grades: List[Dict]):
     
     if grads:
         try:
-            # Save grades to CSV before database insertion
-            save_to_csv(grads, "grades.csv", "grade")
-            
             db.client.table("grades").upsert(grads, on_conflict="transaction_id").execute()
             logger.debug(f"Successfully upserted {len(grads)} grades")
         except Exception as e:
