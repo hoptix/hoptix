@@ -7,6 +7,8 @@ from typing import List
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
 from tqdm import tqdm
+import time
+import random
 
 # Add the parent directory to Python path so we can import from hoptix-flask
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -180,12 +182,16 @@ class FullPipelineCommand:
                          bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]",
                          ncols=100) as pbar:
                     
-                    # Submit all videos for processing
+                    # Submit all videos for processing with staggered start
                     future_to_video = {}
                     for i, vid in enumerate(imported_video_ids):
                         worker_id = f"{i % self.max_workers + 1:02d}"
                         future = executor.submit(self._process_single_video, vid, worker_id, db, gdrive, processing_service, pbar)
                         future_to_video[future] = vid
+                        
+                        # Add small delay between submissions to avoid overwhelming Google Drive
+                        if i < len(imported_video_ids) - 1:  # Don't delay after last submission
+                            time.sleep(random.uniform(0.1, 0.5))
                     
                     # Collect results as they complete
                     for future in as_completed(future_to_video):
