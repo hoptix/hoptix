@@ -37,7 +37,7 @@ def setup_logging():
 
 def cmd_full_pipeline(args):
     """Run the full pipeline: import from Google Drive and process videos."""
-    command = FullPipelineCommand()
+    command = FullPipelineCommand(max_workers=args.workers)
     command.run(args.org_id, args.location_id, args.date)
 
 def cmd_import(args):
@@ -86,6 +86,10 @@ def main():
     pipeline_parser.add_argument(
         '--date', type=str, required=True,
         help='Date in YYYY-MM-DD format - import and process videos from this date'
+    )
+    pipeline_parser.add_argument(
+        '--workers', type=int, default=10,
+        help='Number of parallel workers for video processing (default: 10)'
     )
     pipeline_parser.set_defaults(func=cmd_full_pipeline)
     
