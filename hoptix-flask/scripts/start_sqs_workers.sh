@@ -6,10 +6,6 @@ echo "========================================"
 
 # Configuration
 NUM_WORKERS=${1:-3}  # Default to 3 workers, can override with first argument
-LOG_DIR="logs"
-
-# Create logs directory
-mkdir -p "$LOG_DIR"
 
 # Kill any existing SQS workers first
 echo "🧹 Cleaning up any existing SQS workers..."
@@ -35,10 +31,9 @@ echo "🔄 Starting $NUM_WORKERS SQS workers..."
 
 for i in $(seq 1 $NUM_WORKERS); do
     WORKER_ID="sqs-worker-$i"
-    LOG_FILE="$LOG_DIR/sqs_worker_$i.log"
     
     echo "   Starting $WORKER_ID..."
-    python worker/sqs_worker.py --worker-id "$WORKER_ID" > "$LOG_FILE" 2>&1 &
+    python worker/sqs_worker.py --worker-id "$WORKER_ID" &
     
     worker_pid=$!
     echo "   ✅ $WORKER_ID started (PID: $worker_pid)"
@@ -49,7 +44,6 @@ done
 
 echo ""
 echo "🎯 All $NUM_WORKERS SQS workers are running!"
-echo "📊 Monitor logs: tail -f $LOG_DIR/sqs_worker_*.log"
 echo "🛑 Stop all workers: ./scripts/stop_sqs_workers.sh"
 echo ""
 
