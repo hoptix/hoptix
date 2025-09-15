@@ -25,7 +25,7 @@ FILES = {
     "items": BASE / "items.json",
     "meals": BASE / "meals.json",
     "misc_items": BASE / "misc_items.json",
-    "store_map": BASE / "store_map.json",
+    #"store_map": BASE / "store_map.json",
 }
 
 TABLE_MAP = {
