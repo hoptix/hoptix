@@ -240,11 +240,7 @@ secrets:
 
 ### Backup Important Data
 ```bash
-# Backup logs
-tar -czf logs-backup-$(date +%Y%m%d).tar.gz logs/
-
-# Backup exports
-tar -czf exports-backup-$(date +%Y%m%d).tar.gz exports/
+# Backup configuration files
 
 # Backup configuration
 cp .env env-backup-$(date +%Y%m%d)

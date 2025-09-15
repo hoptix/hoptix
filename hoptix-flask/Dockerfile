@@ -43,10 +43,6 @@ RUN chmod +x /app/scripts/*.py
 RUN useradd -m -s /bin/bash appuser && \
     chown -R appuser:appuser /app
 
-# Create output directory with proper permissions
-RUN mkdir -p /app/exports && \
-    chmod 755 /app/exports && \
-    chown -R appuser:appuser /app/exports
 
 USER appuser
 
