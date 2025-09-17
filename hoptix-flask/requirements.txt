@@ -36,6 +36,7 @@ pytest-cov==4.1.0
 
 # Production Dependencies
 psutil>=7.0.0
+tqdm>=4.66.0
 
 # Google Drive API
 google-api-python-client>=2.181.0
