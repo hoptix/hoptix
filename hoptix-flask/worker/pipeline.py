@@ -93,25 +93,31 @@ def upsert_grades(db: Supa, tx_ids: List[str], grades: List[Dict]):
             "upsize_offered":  g.get("upsize_offered"),
             "score":           g.get("score"),
 
-            # FULL column set from your request
+            # FULL column set including all creator columns
             "items_initial": d.get("items_initial"),
             "num_items_initial": d.get("num_items_initial"),
             "num_upsell_opportunities": d.get("num_upsell_opportunities"),
             "items_upsellable": d.get("items_upsellable"),
+            "items_upselling_creators": d.get("items_upselling_creators"),
             "num_upsell_offers": d.get("num_upsell_offers"),
             "items_upsold": d.get("items_upsold"),
+            "items_upsold_creators": d.get("items_upsold_creators"),
             "num_upsell_success": d.get("num_upsell_success"),
             "num_largest_offers": d.get("num_largest_offers"),
             "num_upsize_opportunities": d.get("num_upsize_opportunities"),
             "items_upsizeable": d.get("items_upsizeable"),
+            "items_upsizing_creators": d.get("items_upsizing_creators"),
             "num_upsize_offers": d.get("num_upsize_offers"),
             "num_upsize_success": d.get("num_upsize_success"),
             "items_upsize_success": d.get("items_upsize_success"),
+            "items_upsize_creators": d.get("items_upsize_creators"),
             "num_addon_opportunities": d.get("num_addon_opportunities"),
             "items_addonable": d.get("items_addonable"),
+            "items_addon_creators": d.get("items_addon_creators"),
             "num_addon_offers": d.get("num_addon_offers"),
             "num_addon_success": d.get("num_addon_success"),
             "items_addon_success": d.get("items_addon_success"),
+            "items_addon_final_creators": d.get("items_addon_final_creators"),
             "items_after": d.get("items_after"),
             "num_items_after": d.get("num_items_after"),
             "feedback": d.get("feedback"),
@@ -145,54 +151,74 @@ def upsert_grades(db: Supa, tx_ids: List[str], grades: List[Dict]):
         logger.warning("No grades to upsert")
 
 def process_one_video(db: Supa, s3, video_row: Dict):
+    """Process a single video with enhanced logging and progress tracking"""
+    from datetime import datetime
+    
     video_id = video_row["id"]
     s3_key = video_row["s3_key"]
-    logger.info(f"Starting video processing pipeline for {video_id}")
+    
+    logger.info(f"🎬 Starting video processing pipeline")
+    logger.info(f"   🆔 Video ID: {video_id}")
+    logger.info(f"   🗂️ S3 Key: {s3_key}")
     
     settings = Settings()
     tmpdir = tempfile.mkdtemp(prefix="hoptix_")
     local_path = os.path.join(tmpdir, "input.mp4")
+    start_time = datetime.now()
     
     try:
         # Download video
-        logger.info(f"Downloading video {video_id} from S3: {s3_key}")
+        logger.info(f"📥 [1/6] Downloading video from S3...")
         download_to_file(s3, settings.RAW_BUCKET, s3_key, local_path)
-        logger.info(f"Downloaded video to: {local_path}")
+        
+        # Get file size for logging
+        file_size = os.path.getsize(local_path)
+        logger.info(f"✅ [1/6] Video downloaded ({file_size:,} bytes) to: {local_path}")
 
         # 1) ASR segments
-        logger.info(f"Starting transcription for video {video_id}")
+        logger.info(f"🎤 [2/6] Starting audio transcription...")
         segments = transcribe_video(local_path)
-        logger.info(f"Transcription completed: {len(segments)} segments generated")
+        logger.info(f"✅ [2/6] Transcription completed: {len(segments)} segments generated")
 
         # 2) Step‑1 split
-        logger.info(f"Starting transaction splitting for video {video_id}")
+        logger.info(f"✂️ [3/6] Starting transaction splitting...")
         txs = split_into_transactions(segments, video_row["started_at"], s3_key)
-        logger.info(f"Transaction splitting completed: {len(txs)} transactions identified")
+        logger.info(f"✅ [3/6] Transaction splitting completed: {len(txs)} transactions identified")
 
         # artifacts
+        logger.info(f"☁️ [4/6] Uploading processing artifacts to S3...")
         prefix = f'deriv/session={video_id}/'
-        logger.info(f"Uploading artifacts to S3 with prefix: {prefix}")
         put_jsonl(s3, settings.DERIV_BUCKET, prefix + "segments.jsonl", segments)
         put_jsonl(s3, settings.DERIV_BUCKET, prefix + "transactions.jsonl", txs)
-        logger.info("Artifacts uploaded to S3")
+        logger.info(f"✅ [4/6] Artifacts uploaded to s3://{settings.DERIV_BUCKET}/{prefix}")
 
         # 3) persist transactions
-        logger.info(f"Inserting {len(txs)} transactions into database")
+        logger.info(f"💾 [5/6] Inserting {len(txs)} transactions into database...")
         tx_ids = insert_transactions(db, video_row, txs)
-        logger.info(f"Inserted transactions with IDs: {tx_ids}")
+        logger.info(f"✅ [5/6] Transactions inserted: {len(tx_ids)} records")
 
         # 4) step‑2 grading
-        logger.info(f"Starting grading for {len(txs)} transactions")
+        logger.info(f"🎯 [6/6] Starting AI grading for {len(txs)} transactions...")
         grades = grade_transactions(txs)
         put_jsonl(s3, settings.DERIV_BUCKET, prefix + "grades.jsonl", grades)
-        logger.info("Grading completed and uploaded to S3")
+        logger.info(f"✅ [6/6] Grading completed and uploaded to S3")
 
         # 5) upsert grades
-        logger.info(f"Upserting grades for {len(tx_ids)} transactions")
+        logger.info(f"📊 Upserting {len(tx_ids)} grades to database...")
         upsert_grades(db, tx_ids, grades)
-        logger.info("Grades upsertion completed")
+        logger.info(f"✅ Grades successfully stored in database")
         
-        logger.info(f"Successfully completed all processing steps for video {video_id}")
+        # Final success message
+        duration = datetime.now() - start_time
+        logger.info(f"🎉 Processing completed successfully!")
+        logger.info(f"   ⏱️ Total time: {duration.total_seconds():.1f} seconds")
+        logger.info(f"   📈 Results: {len(segments)} segments → {len(txs)} transactions → {len(grades)} grades")
+        
+    except Exception as e:
+        duration = datetime.now() - start_time
+        logger.error(f"💥 Processing failed after {duration.total_seconds():.1f} seconds")
+        logger.error(f"   🚨 Error: {str(e)}")
+        raise
         
     finally:
         # Cleanup temporary files

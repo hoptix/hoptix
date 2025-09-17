@@ -17,41 +17,64 @@ class ProcessingService:
         self.s3 = get_s3(settings.AWS_REGION)
     
     def process_video_from_local_file(self, video_row: Dict, local_video_path: str):
-        """Process a video from a local file path (adapted from process_one_video)"""
+        """Process a video from a local file path with enhanced logging"""
+        import os
+        from datetime import datetime
+        
         video_id = video_row["id"]
-        logger.info(f"Processing video {video_id} from local file: {local_video_path}")
+        file_name = video_row.get("meta", {}).get("gdrive_file_name", "Unknown")
+        file_size = os.path.getsize(local_video_path) if os.path.exists(local_video_path) else 0
         
-        # 1) ASR segments
-        logger.info(f"Starting transcription for video {video_id}")
-        segments = transcribe_video(local_video_path)
-        logger.info(f"Transcription completed: {len(segments)} segments generated")
-
-        # 2) Step‑1 split
-        logger.info(f"Starting transaction splitting for video {video_id}")
-        txs = split_into_transactions(segments, video_row["started_at"], video_row.get("s3_key"))
-        logger.info(f"Transaction splitting completed: {len(txs)} transactions identified")
-
-        # 3) Upload artifacts to S3
-        prefix = f'deriv/session={video_id}/'
-        logger.info(f"Uploading artifacts to S3 with prefix: {prefix}")
-        put_jsonl(self.s3, self.settings.DERIV_BUCKET, prefix + "segments.jsonl", segments)
-        put_jsonl(self.s3, self.settings.DERIV_BUCKET, prefix + "transactions.jsonl", txs)
-        logger.info("Artifacts uploaded to S3")
-
-        # 4) persist transactions
-        logger.info(f"Inserting {len(txs)} transactions into database")
-        tx_ids = insert_transactions(self.db, video_row, txs)
-        logger.info(f"Inserted transactions with IDs: {tx_ids}")
-
-        # 5) step‑2 grading
-        logger.info(f"Starting grading for {len(txs)} transactions")
-        grades = grade_transactions(txs)
-        put_jsonl(self.s3, self.settings.DERIV_BUCKET, prefix + "grades.jsonl", grades)
-        logger.info("Grading completed and uploaded to S3")
-
-        # 6) upsert grades
-        logger.info(f"Upserting grades for {len(tx_ids)} transactions")
-        upsert_grades(self.db, tx_ids, grades)
-        logger.info("Grades upsertion completed")
+        logger.info(f"🎬 Starting video processing pipeline")
+        logger.info(f"   📁 File: {file_name}")
+        logger.info(f"   🆔 Video ID: {video_id}")
+        logger.info(f"   📏 Size: {file_size:,} bytes")
+        logger.info(f"   📍 Local path: {local_video_path}")
         
-        logger.info(f"Successfully completed all processing steps for video {video_id}")
+        start_time = datetime.now()
+        
+        try:
+            # 1) ASR segments
+            logger.info(f"🎤 [1/6] Starting audio transcription...")
+            segments = transcribe_video(local_video_path)
+            logger.info(f"✅ [1/6] Transcription completed: {len(segments)} segments generated")
+
+            # 2) Step‑1 split
+            logger.info(f"✂️ [2/6] Starting transaction splitting...")
+            txs = split_into_transactions(segments, video_row["started_at"], video_row.get("s3_key"))
+            logger.info(f"✅ [2/6] Transaction splitting completed: {len(txs)} transactions identified")
+
+            # 3) Upload artifacts to S3
+            logger.info(f"☁️ [3/6] Uploading processing artifacts to S3...")
+            prefix = f'deriv/session={video_id}/'
+            put_jsonl(self.s3, self.settings.DERIV_BUCKET, prefix + "segments.jsonl", segments)
+            put_jsonl(self.s3, self.settings.DERIV_BUCKET, prefix + "transactions.jsonl", txs)
+            logger.info(f"✅ [3/6] Artifacts uploaded to s3://{self.settings.DERIV_BUCKET}/{prefix}")
+
+            # 4) persist transactions
+            logger.info(f"💾 [4/6] Inserting {len(txs)} transactions into database...")
+            tx_ids = insert_transactions(self.db, video_row, txs)
+            logger.info(f"✅ [4/6] Transactions inserted with IDs: {len(tx_ids)} records")
+
+            # 5) step‑2 grading
+            logger.info(f"🎯 [5/6] Starting AI grading for {len(txs)} transactions...")
+            grades = grade_transactions(txs)
+            put_jsonl(self.s3, self.settings.DERIV_BUCKET, prefix + "grades.jsonl", grades)
+            logger.info(f"✅ [5/6] Grading completed and uploaded to S3")
+
+            # 6) upsert grades
+            logger.info(f"📊 [6/6] Upserting {len(tx_ids)} grades to database...")
+            upsert_grades(self.db, tx_ids, grades)
+            logger.info(f"✅ [6/6] Grades successfully stored in database")
+            
+            # Final success message
+            duration = datetime.now() - start_time
+            logger.info(f"🎉 Processing completed successfully!")
+            logger.info(f"   ⏱️ Total time: {duration.total_seconds():.1f} seconds")
+            logger.info(f"   📈 Results: {len(segments)} segments → {len(txs)} transactions → {len(grades)} grades")
+            
+        except Exception as e:
+            duration = datetime.now() - start_time
+            logger.error(f"💥 Processing failed after {duration.total_seconds():.1f} seconds")
+            logger.error(f"   🚨 Error: {str(e)}")
+            raise
