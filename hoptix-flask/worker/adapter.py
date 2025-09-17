@@ -358,25 +358,32 @@ def _map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -
         "items_initial":              step2_obj.get("1", "0"),
         "num_items_initial":          _ii(step2_obj.get("2", 0)),
         "num_upsell_opportunities":   _ii(step2_obj.get("3", 0)),
-        "items_upsellable":           step2_obj.get("4", "0"),
-        "num_upsell_offers":          _ii(step2_obj.get("5", 0)),
-        "items_upsold":               step2_obj.get("6", "0"),
-        "num_upsell_success":         _ii(step2_obj.get("7", 0)),
-        "num_largest_offers":         _ii(step2_obj.get("8", 0)),
-        "num_upsize_opportunities":   _ii(step2_obj.get("9", 0)),
-        "items_upsizeable":           step2_obj.get("10", "0"),
-        "num_upsize_offers":          _ii(step2_obj.get("11", 0)),
-        "num_upsize_success":         _ii(step2_obj.get("12", 0)),
-        "items_upsize_success":       step2_obj.get("13", "0"),
-        "num_addon_opportunities":    _ii(step2_obj.get("14", 0)),
-        "items_addonable":            step2_obj.get("15", "0"),
-        "num_addon_offers":           _ii(step2_obj.get("16", 0)),
-        "num_addon_success":          _ii(step2_obj.get("17", 0)),
-        "items_addon_success":        step2_obj.get("18", "0"),
-        "items_after":                step2_obj.get("19", "0"),
-        "num_items_after":            _ii(step2_obj.get("20", 0)),
-        "feedback":                   step2_obj.get("21", ""),
-        "issues":                     step2_obj.get("22", ""),
+        # Complete mapping of prompt fields 1-28 to database schema (with new columns added)
+        "items_upsellable":           step2_obj.get("4", "0"),    # Field 4: Items that Could be Upsold
+        "items_upselling_creators":   step2_obj.get("5", "0"),    # Field 5: Items that created the Upselling Opportunities
+        "num_upsell_offers":          _ii(step2_obj.get("6", 0)), # Field 6: Number of Upselling Offers Made  
+        "items_upsold":               step2_obj.get("7", "0"),    # Field 7: Items Successfully Upsold
+        "items_upsold_creators":      step2_obj.get("8", "0"),    # Field 8: Items that created the Successful Upselling Opportunities
+        "num_upsell_success":         _ii(step2_obj.get("9", 0)), # Field 9: Number of Successful Upselling Offers
+        "num_largest_offers":         _ii(step2_obj.get("10", 0)), # Field 10: Number of Items for which the Largest Option was Offered
+        "num_upsize_opportunities":   _ii(step2_obj.get("11", 0)), # Field 11: Number of Chances to Upsize
+        "items_upsizeable":           step2_obj.get("12", "0"),   # Field 12: Items in Order that Could be Upsized
+        "items_upsizing_creators":    step2_obj.get("13", "0"),   # Field 13: Items that created the Upsizing Opportunity
+        "num_upsize_offers":          _ii(step2_obj.get("14", 0)), # Field 14: Number of Upsizing Offers Made
+        "num_upsize_success":         _ii(step2_obj.get("15", 0)), # Field 15: Number of Items Successfully Upsized
+        "items_upsize_success":       step2_obj.get("16", "0"),   # Field 16: Items Successfully Upsized
+        "items_upsize_creators":      step2_obj.get("17", "0"),   # Field 17: Items that created the Upsizing
+        "num_addon_opportunities":    _ii(step2_obj.get("18", 0)), # Field 18: # of Chances to add Additional Toppings
+        "items_addonable":            step2_obj.get("19", "0"),   # Field 19: Additional toppings that could have been added
+        "items_addon_creators":       step2_obj.get("20", "0"),   # Field 20: Items that created the Additional Topping Opportunities
+        "num_addon_offers":           _ii(step2_obj.get("21", 0)), # Field 21: Number of Additional Toppings Offers Made
+        "num_addon_success":          _ii(step2_obj.get("22", 0)), # Field 22: Number of Successful additional toppings offers
+        "items_addon_success":        step2_obj.get("23", "0"),   # Field 23: Items that additional toppings were added successfully
+        "items_addon_final_creators": step2_obj.get("24", "0"),   # Field 24: Items that created the Additional Toppings
+        "items_after":                step2_obj.get("25", "0"),   # Field 25: Items ordered AFTER upsells/upsizes/addons
+        "num_items_after":            _ii(step2_obj.get("26", 0)), # Field 26: Number of Items ordered AFTER changes
+        "feedback":                   step2_obj.get("27", ""),    # Field 27: Structured feedback
+        "issues":                     step2_obj.get("28", ""),    # Field 28: Difficulties and ambiguities
 
         # Extras used in your Colab
         "reasoning_summary":          step2_obj.get("24. Reasoning Summary", ""),
