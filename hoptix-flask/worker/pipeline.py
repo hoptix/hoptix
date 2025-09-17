@@ -93,7 +93,7 @@ def upsert_grades(db: Supa, tx_ids: List[str], grades: List[Dict]):
             "upsize_offered":  g.get("upsize_offered"),
             "score":           g.get("score"),
 
-            # FULL column set including all creator columns
+            # FULL column set from your request
             "items_initial": d.get("items_initial"),
             "num_items_initial": d.get("num_items_initial"),
             "num_upsell_opportunities": d.get("num_upsell_opportunities"),
