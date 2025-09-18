@@ -167,28 +167,25 @@ class GoogleDriveClient:
             logger.error(f"Error listing video files: {e}")
             return []
     
-    def download_file(self, file_id: str, local_path: str, max_retries: int = 5, show_progress: bool = True) -> bool:
-        """Download a file from Google Drive to local path with retry logic and progress bar"""
+    def download_file(self, file_id: str, local_path: str, max_retries: int = 5) -> bool:
+        """Download a file from Google Drive to local path with retry logic"""
         import time
         import ssl
         import random
-        from tqdm import tqdm
         
-        # Get file metadata for progress bar
-        file_metadata = None
-        if show_progress:
-            try:
-                file_metadata = self.service.files().get(fileId=file_id, fields="name,size").execute()
-                file_name = file_metadata.get('name', 'Unknown')
-                file_size = int(file_metadata.get('size', 0))
-            except Exception as e:
-                logger.warning(f"Could not get file metadata for progress bar: {e}")
-                file_name = 'Unknown'
-                file_size = 0
+        # Get file metadata for logging
+        file_name = "Unknown"
+        try:
+            file_metadata = self.service.files().get(fileId=file_id, fields="name,size").execute()
+            file_name = file_metadata.get('name', 'Unknown')
+            file_size = int(file_metadata.get('size', 0))
+            logger.info(f"📥 Starting download: {file_name} ({file_size:,} bytes)")
+        except Exception as e:
+            logger.info(f"📥 Starting download from Google Drive (file ID: {file_id})")
+            logger.debug(f"Could not get file metadata: {e}")
         
         for attempt in range(max_retries):
             fh = None
-            pbar = None
             try:
                 # Add random jitter to avoid thundering herd
                 if attempt > 0:
@@ -196,35 +193,26 @@ class GoogleDriveClient:
                     logger.info(f"⏳ Retry attempt {attempt + 1}/{max_retries} in {jitter:.1f}s...")
                     time.sleep(jitter)
                 
-                logger.info(f"🔄 Starting download from Google Drive (attempt {attempt + 1}/{max_retries})")
+                logger.info(f"🔄 Downloading from Google Drive (attempt {attempt + 1}/{max_retries})...")
                 request = self.service.files().get_media(fileId=file_id)
                 
                 # Create directory if it doesn't exist
                 os.makedirs(os.path.dirname(local_path), exist_ok=True)
                 
-                # Initialize progress bar
-                if show_progress and file_size > 0:
-                    pbar = tqdm(
-                        total=file_size,
-                        unit='B',
-                        unit_scale=True,
-                        desc=f"📥 {file_name[:30]}"
-                    )
-                
                 fh = io.FileIO(local_path, 'wb')
                 downloader = MediaIoBaseDownload(fh, request, chunksize=1024*1024)  # 1MB chunks
                 done = False
+                chunks_downloaded = 0
                 
                 while done is False:
                     status, done = downloader.next_chunk()
-                    if pbar and status:
-                        # Update progress bar with bytes downloaded
-                        progress = int(status.progress() * file_size) if file_size > 0 else 0
-                        pbar.n = progress
-                        pbar.refresh()
-                
-                if pbar:
-                    pbar.close()
+                    chunks_downloaded += 1
+                    if chunks_downloaded % 10 == 0:  # Log every 10MB downloaded
+                        if status:
+                            progress_pct = int(status.progress() * 100)
+                            logger.info(f"📊 Download progress: {progress_pct}% complete...")
+                        else:
+                            logger.info(f"📊 Downloaded {chunks_downloaded} MB...")
                 
                 fh.close()
                 fh = None
@@ -235,9 +223,7 @@ class GoogleDriveClient:
                 return True
                 
             except (ssl.SSLError, ConnectionError, OSError, TimeoutError) as e:
-                # Clean up progress bar and file handle
-                if pbar:
-                    pbar.close()
+                # Clean up file handle
                 if fh:
                     try:
                         fh.close()
@@ -263,9 +249,7 @@ class GoogleDriveClient:
                     return False
                     
             except Exception as e:
-                # Clean up progress bar and file handle
-                if pbar:
-                    pbar.close()
+                # Clean up file handle
                 if fh:
                     try:
                         fh.close()

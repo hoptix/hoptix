@@ -450,18 +450,23 @@ def grade_transactions(transactions: List[Dict]) -> List[Dict]:
         print(f"Mapped details: {details}")
         print("=" * 50)
 
+        # Helper function for safe integer conversion
+        def _ii(x, default=0): 
+            try: return int(x)
+            except: return default
+
         # Derive simple booleans + score (kept for backward compatibility)
-        upsell_possible = int(parsed.get("3", 0)) > 0
-        upsell_offered  = int(parsed.get("5", 0)) > 0
-        upsize_possible = int(parsed.get("9", 0)) > 0
-        upsize_offered  = int(parsed.get("11",0)) > 0
+        upsell_possible = _ii(parsed.get("3", 0)) > 0
+        upsell_offered  = _ii(parsed.get("6", 0)) > 0  # Field 6 is num_upsell_offers
+        upsize_possible = _ii(parsed.get("11", 0)) > 0  # Field 11 is num_upsize_opportunities
+        upsize_offered  = _ii(parsed.get("14", 0)) > 0  # Field 14 is num_upsize_offers
 
         # score: if present, else a light heuristic
         score = parsed.get("score", None)
         if score is None:
             try:
-                total_ops = int(parsed.get("3",0)) + int(parsed.get("9",0))
-                total_off = int(parsed.get("5",0)) + int(parsed.get("11",0))
+                total_ops = _ii(parsed.get("3",0)) + _ii(parsed.get("11",0))
+                total_off = _ii(parsed.get("6",0)) + _ii(parsed.get("14",0))
                 score = float(total_off) / float(total_ops) if total_ops > 0 else 0.0
             except Exception:
                 score = 0.0
