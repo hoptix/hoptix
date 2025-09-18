@@ -35,7 +35,7 @@ cd "$(dirname "$0")/.."
 # Step 1: Import videos from Google Drive (using import service directly)
 echo ""
 echo "📥 Step 1: Importing videos from Google Drive..."
-python -c "
+RUN_ID=$(python -c "
 import sys
 sys.path.insert(0, '.')
 from integrations.db_supabase import Supa
@@ -52,18 +52,37 @@ s3 = get_s3(settings.AWS_REGION)
 import_service = ImportService(db, settings)
 try:
     imported_video_ids = import_service.import_videos_from_gdrive(s3, '$ORG_ID', '$LOCATION_ID', '$DATE_ARG')
-    print(f'Successfully imported {len(imported_video_ids)} videos')
+    print(f'Successfully imported {len(imported_video_ids)} videos', file=sys.stderr)
     if imported_video_ids:
-        print('Imported video IDs:', ', '.join(imported_video_ids))
+        print('Imported video IDs:', ', '.join(imported_video_ids), file=sys.stderr)
+    
+    # Get the run_id from one of the imported videos
+    if imported_video_ids:
+        result = db.client.table('videos').select('run_id').eq('id', imported_video_ids[0]).limit(1).execute()
+        if result.data:
+            print(result.data[0]['run_id'])  # Print run_id to stdout for capture
+        else:
+            print('', file=sys.stderr)  # Empty run_id
+            sys.exit(1)
+    else:
+        print('', file=sys.stderr)  # No videos imported
+        
 except Exception as e:
-    print(f'Import failed: {e}')
+    print(f'Import failed: {e}', file=sys.stderr)
     sys.exit(1)
-"
+")
 
 if [ $? -ne 0 ]; then
     echo "❌ Import failed, exiting..."
     exit 1
 fi
+
+if [ -z "$RUN_ID" ]; then
+    echo "❌ No run ID found, exiting..."
+    exit 1
+fi
+
+echo "🔄 Run ID: $RUN_ID"
 
 # Step 2: Get list of videos to process
 echo ""
@@ -78,8 +97,8 @@ load_dotenv()
 settings = Settings()
 db = Supa(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_KEY)
 
-# Get uploaded videos for this location and date
-result = db.client.table('videos').select('id').eq('location_id', '$LOCATION_ID').eq('status', 'uploaded').execute()
+# Get uploaded videos for this run_id
+result = db.client.table('videos').select('id').eq('run_id', '$RUN_ID').eq('status', 'uploaded').execute()
 
 video_ids = [video['id'] for video in result.data]
 print(' '.join(video_ids))
@@ -210,14 +229,95 @@ load_dotenv()
 settings = Settings()
 db = Supa(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_KEY)
 
-# Get status counts for this location
-ready_result = db.client.table('videos').select('id', count='exact').eq('location_id', '$LOCATION_ID').eq('status', 'ready').execute()
-failed_result = db.client.table('videos').select('id', count='exact').eq('location_id', '$LOCATION_ID').eq('status', 'failed').execute()
-processing_result = db.client.table('videos').select('id', count='exact').eq('location_id', '$LOCATION_ID').eq('status', 'processing').execute()
+# Get status counts for this run
+ready_result = db.client.table('videos').select('id', count='exact').eq('run_id', '$RUN_ID').eq('status', 'ready').execute()
+failed_result = db.client.table('videos').select('id', count='exact').eq('run_id', '$RUN_ID').eq('status', 'failed').execute()
+processing_result = db.client.table('videos').select('id', count='exact').eq('run_id', '$RUN_ID').eq('status', 'processing').execute()
 
 print(f'✅ Successfully processed: {ready_result.count}')
 print(f'❌ Failed: {failed_result.count}') 
 print(f'🔄 Still processing: {processing_result.count}')
+"
+
+# Step 4: Run Analytics on processed transactions
+echo ""
+echo "📊 Step 4: Running analytics on processed transactions..."
+python -c "
+import sys
+sys.path.insert(0, '.')
+from integrations.db_supabase import Supa
+from config import Settings
+from services.analytics_service import HoptixAnalyticsService
+from services.analytics_storage_service import AnalyticsStorageService
+from dotenv import load_dotenv
+import json
+
+load_dotenv()
+settings = Settings()
+db = Supa(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_KEY)
+
+try:
+    # Query graded_rows_filtered view for this run_id
+    result = db.client.from_('graded_rows_filtered').select('*').eq('run_id', '$RUN_ID').execute()
+    
+    if not result.data:
+        print('ℹ️ No graded transactions found for this run')
+        sys.exit(0)
+    
+    print(f'📋 Found {len(result.data)} graded transactions for analysis')
+    
+    # Initialize analytics services and generate report
+    analytics_service = HoptixAnalyticsService()
+    storage_service = AnalyticsStorageService(db)
+    report = analytics_service.generate_comprehensive_report(result.data)
+    
+    # Display key metrics
+    print('')
+    print('📊 RUN ANALYTICS SUMMARY')
+    print('=' * 40)
+    summary = report['summary']
+    print(f'Total Transactions: {summary[\"total_transactions\"]}')
+    print(f'Complete Transactions: {summary[\"complete_transactions\"]}')
+    print(f'Completion Rate: {summary[\"completion_rate\"]:.1f}%')
+    
+    # Upselling summary
+    upselling = report['upselling']
+    print(f'\\n🎯 Upselling: {upselling[\"total_successes\"]}/{upselling[\"total_opportunities\"]} ({upselling[\"conversion_rate\"]:.1f}%) - \${upselling.get(\"total_revenue\", 0):.2f}')
+    
+    # Upsizing summary  
+    upsizing = report['upsizing']
+    print(f'📏 Upsizing: {upsizing[\"total_successes\"]}/{upsizing[\"total_opportunities\"]} ({upsizing[\"conversion_rate\"]:.1f}%) - \${upsizing.get(\"total_revenue\", 0):.2f}')
+    
+    # Add-ons summary
+    addons = report['addons']
+    print(f'🍟 Add-ons: {addons[\"total_successes\"]}/{addons[\"total_opportunities\"]} ({addons[\"conversion_rate\"]:.1f}%) - \${addons.get(\"total_revenue\", 0):.2f}')
+    
+    # Operator performance (if available)
+    operator_analytics = report.get('operator_analytics', {})
+    if operator_analytics.get('upselling'):
+        print('\\n👥 Top Performing Operators:')
+        upselling_by_op = operator_analytics['upselling']
+        sorted_operators = sorted(upselling_by_op.items(), key=lambda x: x[1]['conversion_rate'], reverse=True)[:3]
+        for operator, metrics in sorted_operators:
+            if metrics['total_opportunities'] > 0:
+                print(f'  • {operator}: {metrics[\"conversion_rate\"]:.1f}% conversion, \${metrics.get(\"total_revenue\", 0):.2f} revenue')
+    
+    # Store analytics in database
+    print('\\n💾 Storing analytics in database...')
+    if storage_service.store_run_analytics('$RUN_ID', report):
+        print('✅ Analytics successfully stored in database')
+    else:
+        print('❌ Failed to store analytics in database')
+    
+    # Also save detailed report as JSON file for backup
+    report_filename = f'analytics_report_run_{\"$RUN_ID\"}.json'
+    with open(report_filename, 'w') as f:
+        json.dump(report, f, indent=2)
+    print(f'💾 Detailed analytics also saved to {report_filename}')
+    
+except Exception as e:
+    print(f'❌ Analytics failed: {e}')
+    # Don't exit with error - analytics failure shouldn't fail the entire pipeline
 "
 
 echo ""
