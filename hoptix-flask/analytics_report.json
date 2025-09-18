@@ -1,0 +1,3837 @@
+{
+  "summary": {
+    "total_transactions": 100,
+    "complete_transactions": 84,
+    "completion_rate": 84.0,
+    "avg_items_initial": 1.91,
+    "avg_items_final": 2.0,
+    "avg_item_increase": 0.09,
+    "generated_at": "2025-09-17T23:33:54.643333"
+  },
+  "upselling": {
+    "total_opportunities": 50,
+    "total_offers": 11,
+    "total_successes": 9,
+    "total_revenue": 46.32000000000001,
+    "avg_revenue_per_success": 5.146666666666667,
+    "success_rate": 81.81818181818183,
+    "offer_rate": 22.0,
+    "conversion_rate": 18.0,
+    "by_item": {
+      "1_1": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "1001_0": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "Oreo Blizzard": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "Number 9 Original Cheeseburger Meal (Original Cheeseburger, Fries, Drink)": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "8_3": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "4_0": {
+        "opportunities": 5,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "2_0": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "30_0": {
+        "opportunities": 7,
+        "offers": 3,
+        "successes": 3,
+        "revenue": 17.9,
+        "success_rate": 100.0,
+        "offer_rate": 42.857142857142854
+      },
+      "6-Piece Chicken Strip Basket Meal (6 Chicken Strips, Regular Fries, Medium Drink)": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "$7 Meal Deal (3 Piece Chicken Strips, Regular Fries, Regular Coke, Small Strawberry Sundae)": {
+        "opportunities": 3,
+        "offers": 2,
+        "successes": 2,
+        "revenue": 4.036666666666666,
+        "success_rate": 100.0,
+        "offer_rate": 66.66666666666666
+      },
+      "27_2": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "Cheese Deluxe Double Burger (no pickles)": {
+        "opportunities": 3,
+        "offers": 2,
+        "successes": 2,
+        "revenue": 4.036666666666666,
+        "success_rate": 100.0,
+        "offer_rate": 66.66666666666666
+      },
+      "22_3": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "[1016_0]": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "5_1": {
+        "opportunities": 5,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Small Georgia Mud Fudge Blizzard": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "36_1": {
+        "opportunities": 18,
+        "offers": 2,
+        "successes": 2,
+        "revenue": 6.055,
+        "success_rate": 100.0,
+        "offer_rate": 11.11111111111111
+      },
+      "Medium Oreo Blizzard": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "$7 Meal deal Original Cheeseburger (Original Cheeseburger, Regular Fries, Regular Sprite, Small Vanilla Sundae)": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "25_2": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "22_1": {
+        "opportunities": 13,
+        "offers": 4,
+        "successes": 4,
+        "revenue": 7.341666666666667,
+        "success_rate": 100.0,
+        "offer_rate": 30.76923076923077
+      },
+      "25_3": {
+        "opportunities": 4,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "1019_0": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "#2 Bacon Cheese Deluxe Triple Meal (Triple Bacon Cheese Deluxe Burger, Regular Fries, Medium Drink)": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "Banana Split (Extra Whipped Cream, Peanuts, Sprinkles)": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "1016_0": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "$7 Meal Deal (3 Piece Chicken Strips, Regular Fries, Small Strawberry Sundae, Regular Root Beer)": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "Large Fries": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "13_1": {
+        "opportunities": 4,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "8_1": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "4-Piece Chicken Strip Basket Meal (4 Chicken Strips, Regular Fries, Medium Sprite, Ranch Dipping Sauce)": {
+        "opportunities": 3,
+        "offers": 2,
+        "successes": 2,
+        "revenue": 4.036666666666666,
+        "success_rate": 100.0,
+        "offer_rate": 66.66666666666666
+      },
+      "7_2": {
+        "opportunities": 4,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "42_0": {
+        "opportunities": 16,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "5_2": {
+        "opportunities": 4,
+        "offers": 2,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 50.0
+      },
+      "56_0": {
+        "opportunities": 2,
+        "offers": 1,
+        "successes": 1,
+        "revenue": 2.27,
+        "success_rate": 100.0,
+        "offer_rate": 50.0
+      },
+      "10_1": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "23_0": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "7_3": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "$7 Meal Deal (3 Piece Chicken Strips, Regular Fries, Small Strawberry Sundae, Regular Drink)": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "#9 Original Cheeseburger Meal (Original Cheeseburger, Fries, Unsweet Tea)": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "Medium Misty Slush": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "22_2": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "1004_0": {
+        "opportunities": 4,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Small Hot Fudge Sundae": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Small Dipped Cone": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "6-Piece CB Chicken Strip Basket (Includes Regular Fries)": {
+        "opportunities": 2,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 50.0
+      },
+      "52_0": {
+        "opportunities": 3,
+        "offers": 1,
+        "successes": 1,
+        "revenue": 0.6433333333333333,
+        "success_rate": 100.0,
+        "offer_rate": 33.33333333333333
+      },
+      "39_0": {
+        "opportunities": 8,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "2_2": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "1014_0": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "7_1": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "10_3": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "Small M&M Blizzard": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      }
+    },
+    "most_upsold_items": {
+      "5_2": 4,
+      "25_2": 3,
+      "1_1": 1,
+      "5_1": 1
+    }
+  },
+  "upsizing": {
+    "total_opportunities": 73,
+    "total_offers": 17,
+    "total_successes": 4,
+    "total_revenue": 33.35,
+    "avg_revenue_per_success": 8.3375,
+    "largest_offers": 14,
+    "success_rate": 23.52941176470588,
+    "offer_rate": 23.28767123287671,
+    "conversion_rate": 5.47945205479452,
+    "largest_offer_rate": 82.35294117647058,
+    "by_item": {
+      "1_1": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "1001_0": {
+        "opportunities": 11,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Oreo Blizzard": {
+        "opportunities": 3,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 33.33333333333333
+      },
+      "Number 9 Original Cheeseburger Meal (Original Cheeseburger, Fries, Drink)": {
+        "opportunities": 2,
+        "offers": 2,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 100.0
+      },
+      "8_3": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "4_0": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "2_0": {
+        "opportunities": 1,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 100.0
+      },
+      "30_0": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "6-Piece Chicken Strip Basket Meal (6 Chicken Strips, Regular Fries, Medium Drink)": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "$7 Meal Deal (3 Piece Chicken Strips, Regular Fries, Regular Coke, Small Strawberry Sundae)": {
+        "opportunities": 6,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "27_2": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "Cheese Deluxe Double Burger (no pickles)": {
+        "opportunities": 6,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "22_3": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "[1016_0]": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "5_1": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Small Georgia Mud Fudge Blizzard": {
+        "opportunities": 1,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 100.0
+      },
+      "36_1": {
+        "opportunities": 6,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Medium Oreo Blizzard": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "$7 Meal deal Original Cheeseburger (Original Cheeseburger, Regular Fries, Regular Sprite, Small Vanilla Sundae)": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "25_2": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "22_1": {
+        "opportunities": 21,
+        "offers": 9,
+        "successes": 3,
+        "revenue": 27.69,
+        "success_rate": 33.33333333333333,
+        "offer_rate": 42.857142857142854
+      },
+      "25_3": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "1019_0": {
+        "opportunities": 8,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 12.5
+      },
+      "#2 Bacon Cheese Deluxe Triple Meal (Triple Bacon Cheese Deluxe Burger, Regular Fries, Medium Drink)": {
+        "opportunities": 2,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 50.0
+      },
+      "Banana Split (Extra Whipped Cream, Peanuts, Sprinkles)": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "1016_0": {
+        "opportunities": 3,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "$7 Meal Deal (3 Piece Chicken Strips, Regular Fries, Small Strawberry Sundae, Regular Root Beer)": {
+        "opportunities": 3,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Large Fries": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "13_1": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "8_1": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "4-Piece Chicken Strip Basket Meal (4 Chicken Strips, Regular Fries, Medium Sprite, Ranch Dipping Sauce)": {
+        "opportunities": 6,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "7_2": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "42_0": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "5_2": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "56_0": {
+        "opportunities": 2,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 50.0
+      },
+      "10_1": {
+        "opportunities": 1,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 100.0
+      },
+      "23_0": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "7_3": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "$7 Meal Deal (3 Piece Chicken Strips, Regular Fries, Small Strawberry Sundae, Regular Drink)": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "#9 Original Cheeseburger Meal (Original Cheeseburger, Fries, Unsweet Tea)": {
+        "opportunities": 3,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 33.33333333333333
+      },
+      "Medium Misty Slush": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "22_2": {
+        "opportunities": 3,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "1004_0": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "Small Hot Fudge Sundae": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "Small Dipped Cone": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "6-Piece CB Chicken Strip Basket (Includes Regular Fries)": {
+        "opportunities": 1,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 100.0
+      },
+      "52_0": {
+        "opportunities": 6,
+        "offers": 2,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 33.33333333333333
+      },
+      "39_0": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "2_2": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "1014_0": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "7_1": {
+        "opportunities": 4,
+        "offers": 2,
+        "successes": 1,
+        "revenue": 5.66,
+        "success_rate": 50.0,
+        "offer_rate": 50.0
+      },
+      "10_3": {
+        "opportunities": 0,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0
+      },
+      "Small M&M Blizzard": {
+        "opportunities": 1,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 100.0
+      }
+    },
+    "most_upsized_items": {
+      "22_3": 3,
+      "7_3": 1
+    }
+  },
+  "addons": {
+    "total_opportunities": 80,
+    "total_offers": 10,
+    "total_successes": 2,
+    "total_revenue": 0.0,
+    "avg_revenue_per_success": 0.0,
+    "success_rate": 20.0,
+    "offer_rate": 12.5,
+    "conversion_rate": 2.5,
+    "by_item": {
+      "1_1": {
+        "opportunities": 3,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Extra Reese's Cup Pieces": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Sprinkles": {
+        "opportunities": 30,
+        "offers": 2,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 6.666666666666667
+      },
+      "Brownie pieces": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Double Dip": {
+        "opportunities": 3,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Nuts": {
+        "opportunities": 14,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 7.142857142857142
+      },
+      "Extra Blizzard Topping": {
+        "opportunities": 7,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "sprinkles": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "EXTRA_CONE_DIP": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "22_1": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Chocolate cone dip": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Extra Reese's Cups": {
+        "opportunities": 2,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 50.0
+      },
+      "Extra M&M": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Extra Mix-in": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "WhippedCream": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "22_0": {
+        "opportunities": 1,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 100.0
+      },
+      "Extra M&M's": {
+        "opportunities": 1,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 100.0
+      },
+      "Extra Oreo": {
+        "opportunities": 3,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Primary Topping": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "extra candy": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Extra brownie pieces": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Extra Reese's Peanut Butter Cups": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Extra Brownie": {
+        "opportunities": 1,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 100.0
+      },
+      "Extra primary topping/ingredient": {
+        "opportunities": 4,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Extra Fudge/Peanuts": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Extra cheesecake pieces": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Extra pumpkin pie pieces": {
+        "opportunities": 1,
+        "offers": 1,
+        "successes": 1,
+        "revenue": 0.0,
+        "success_rate": 100.0,
+        "offer_rate": 100.0
+      },
+      "whipped_cream": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Peanuts": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Extra_Oreos": {
+        "opportunities": 1,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 100.0
+      },
+      "16_2": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Extra_Pumpkin_Pie_Pieces": {
+        "opportunities": 1,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 100.0
+      },
+      "Whipped Cream": {
+        "opportunities": 14,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 7.142857142857142
+      },
+      "Cookie Dough": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Extra Brownie Pieces": {
+        "opportunities": 3,
+        "offers": 1,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0.0,
+        "offer_rate": 33.33333333333333
+      },
+      "Extra Strawberry": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Primary Topping/Ingredient": {
+        "opportunities": 4,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Extra Topping": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "nuts": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "ExtraMixIn": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "DoubleDip": {
+        "opportunities": 1,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "15_1": {
+        "opportunities": 2,
+        "offers": 0,
+        "successes": 0,
+        "revenue": 0.0,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Extra Oreos": {
+        "opportunities": 1,
+        "offers": 1,
+        "successes": 1,
+        "revenue": 0.0,
+        "success_rate": 100.0,
+        "offer_rate": 100.0
+      }
+    },
+    "most_successful_addons": {
+      "Extra pumpkin pie pieces": 1,
+      "Extra Oreos": 1
+    },
+    "most_offered_addon_types": {
+      "Sprinkles": 21,
+      "Whipped Cream": 10,
+      "Nuts": 10,
+      "Extra Blizzard Topping": 5,
+      "Extra Oreo": 3,
+      "Double Dip": 3,
+      "Primary Topping/Ingredient": 3,
+      "Extra Brownie Pieces": 2,
+      "1_1": 2,
+      "Extra primary topping/ingredient": 2
+    }
+  },
+  "operator_analytics": {
+    "upselling": {
+      "Alice Johnson": {
+        "total_opportunities": 13,
+        "total_offers": 2,
+        "total_successes": 2,
+        "total_revenue": 12.11,
+        "avg_revenue_per_success": 6.055,
+        "success_rate": 100.0,
+        "offer_rate": 15.384615384615385,
+        "conversion_rate": 15.384615384615385,
+        "by_item": {
+          "1001_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "Oreo Blizzard": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "8_3": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "4_0": {
+            "opportunities": 4,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "22_3": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "36_1": {
+            "opportunities": 2,
+            "offers": 2,
+            "successes": 2,
+            "revenue": 6.055,
+            "success_rate": 100.0,
+            "offer_rate": 100.0
+          },
+          "25_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "22_1": {
+            "opportunities": 8,
+            "offers": 2,
+            "successes": 2,
+            "revenue": 6.055,
+            "success_rate": 100.0,
+            "offer_rate": 25.0
+          },
+          "1016_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "$7 Meal Deal (3 Piece Chicken Strips, Regular Fries, Small Strawberry Sundae, Regular Root Beer)": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "8_1": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "7_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "42_0": {
+            "opportunities": 8,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "#9 Original Cheeseburger Meal (Original Cheeseburger, Fries, Unsweet Tea)": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "Medium Misty Slush": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "22_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "39_0": {
+            "opportunities": 8,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "2_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "1014_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          }
+        },
+        "most_upsold_items": {
+          "25_2": 1,
+          "5_2": 1
+        }
+      },
+      "Bob Chen": {
+        "total_opportunities": 11,
+        "total_offers": 4,
+        "total_successes": 3,
+        "total_revenue": 17.9,
+        "avg_revenue_per_success": 5.966666666666666,
+        "success_rate": 75.0,
+        "offer_rate": 36.36363636363637,
+        "conversion_rate": 27.27272727272727,
+        "by_item": {
+          "42_0": {
+            "opportunities": 8,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "5_2": {
+            "opportunities": 4,
+            "offers": 2,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 50.0
+          },
+          "Medium Oreo Blizzard": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "22_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "Small Hot Fudge Sundae": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "22_1": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "10_1": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "25_3": {
+            "opportunities": 4,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "1004_0": {
+            "opportunities": 4,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "1001_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "7_3": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "4_0": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "30_0": {
+            "opportunities": 3,
+            "offers": 3,
+            "successes": 3,
+            "revenue": 17.9,
+            "success_rate": 100.0,
+            "offer_rate": 100.0
+          },
+          "7_1": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          }
+        },
+        "most_upsold_items": {
+          "5_2": 1,
+          "25_2": 1,
+          "1_1": 1
+        }
+      },
+      "Carol Davis": {
+        "total_opportunities": 17,
+        "total_offers": 3,
+        "total_successes": 2,
+        "total_revenue": 12.11,
+        "avg_revenue_per_success": 6.055,
+        "success_rate": 66.66666666666666,
+        "offer_rate": 17.647058823529413,
+        "conversion_rate": 11.76470588235294,
+        "by_item": {
+          "1_1": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "1001_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "Number 9 Original Cheeseburger Meal (Original Cheeseburger, Fries, Drink)": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "2_0": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "30_0": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "$7 Meal Deal (3 Piece Chicken Strips, Regular Fries, Regular Coke, Small Strawberry Sundae)": {
+            "opportunities": 3,
+            "offers": 2,
+            "successes": 2,
+            "revenue": 4.036666666666666,
+            "success_rate": 100.0,
+            "offer_rate": 66.66666666666666
+          },
+          "Cheese Deluxe Double Burger (no pickles)": {
+            "opportunities": 3,
+            "offers": 2,
+            "successes": 2,
+            "revenue": 4.036666666666666,
+            "success_rate": 100.0,
+            "offer_rate": 66.66666666666666
+          },
+          "[1016_0]": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "5_1": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "36_1": {
+            "opportunities": 16,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "$7 Meal deal Original Cheeseburger (Original Cheeseburger, Regular Fries, Regular Sprite, Small Vanilla Sundae)": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "25_2": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "22_1": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "1019_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "#2 Bacon Cheese Deluxe Triple Meal (Triple Bacon Cheese Deluxe Burger, Regular Fries, Medium Drink)": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "13_1": {
+            "opportunities": 4,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "4-Piece Chicken Strip Basket Meal (4 Chicken Strips, Regular Fries, Medium Sprite, Ranch Dipping Sauce)": {
+            "opportunities": 3,
+            "offers": 2,
+            "successes": 2,
+            "revenue": 4.036666666666666,
+            "success_rate": 100.0,
+            "offer_rate": 66.66666666666666
+          },
+          "7_2": {
+            "opportunities": 4,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "22_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "6-Piece CB Chicken Strip Basket (Includes Regular Fries)": {
+            "opportunities": 2,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 50.0
+          },
+          "7_1": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          }
+        },
+        "most_upsold_items": {
+          "25_2": 1,
+          "5_2": 1
+        }
+      },
+      "David Wilson": {
+        "total_opportunities": 5,
+        "total_offers": 1,
+        "total_successes": 1,
+        "total_revenue": 1.93,
+        "avg_revenue_per_success": 1.93,
+        "success_rate": 100.0,
+        "offer_rate": 20.0,
+        "conversion_rate": 20.0,
+        "by_item": {
+          "5_1": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "22_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "1_1": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "10_1": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "22_1": {
+            "opportunities": 4,
+            "offers": 2,
+            "successes": 2,
+            "revenue": 1.2866666666666666,
+            "success_rate": 100.0,
+            "offer_rate": 50.0
+          },
+          "23_0": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "7_1": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "52_0": {
+            "opportunities": 3,
+            "offers": 1,
+            "successes": 1,
+            "revenue": 0.6433333333333333,
+            "success_rate": 100.0,
+            "offer_rate": 33.33333333333333
+          },
+          "1019_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "Large Fries": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          }
+        },
+        "most_upsold_items": {
+          "5_1": 1
+        }
+      },
+      "Emma Thompson": {
+        "total_opportunities": 0,
+        "total_offers": 0,
+        "total_successes": 0,
+        "total_revenue": 0.0,
+        "avg_revenue_per_success": 0,
+        "success_rate": 0,
+        "offer_rate": 0,
+        "conversion_rate": 0,
+        "by_item": {
+          "22_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "Small Dipped Cone": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "22_1": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "23_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "1001_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "1019_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "Banana Split (Extra Whipped Cream, Peanuts, Sprinkles)": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "10_3": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "$7 Meal Deal (3 Piece Chicken Strips, Regular Fries, Small Strawberry Sundae, Regular Drink)": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "6-Piece Chicken Strip Basket Meal (6 Chicken Strips, Regular Fries, Medium Drink)": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "27_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          }
+        },
+        "most_upsold_items": {}
+      },
+      "Frank Miller": {
+        "total_opportunities": 4,
+        "total_offers": 1,
+        "total_successes": 1,
+        "total_revenue": 2.27,
+        "avg_revenue_per_success": 2.27,
+        "success_rate": 100.0,
+        "offer_rate": 25.0,
+        "conversion_rate": 25.0,
+        "by_item": {
+          "7_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "5_1": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Small Georgia Mud Fudge Blizzard": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "56_0": {
+            "opportunities": 2,
+            "offers": 1,
+            "successes": 1,
+            "revenue": 2.27,
+            "success_rate": 100.0,
+            "offer_rate": 50.0
+          },
+          "22_1": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "23_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "30_0": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "7_1": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "Small M&M Blizzard": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "22_3": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          }
+        },
+        "most_upsold_items": {
+          "5_2": 1
+        }
+      }
+    },
+    "upsizing": {
+      "Alice Johnson": {
+        "total_opportunities": 15,
+        "total_offers": 2,
+        "total_successes": 1,
+        "total_revenue": 9.23,
+        "avg_revenue_per_success": 9.23,
+        "largest_offers": 2,
+        "success_rate": 50.0,
+        "offer_rate": 13.333333333333334,
+        "conversion_rate": 6.666666666666667,
+        "largest_offer_rate": 100.0,
+        "by_item": {
+          "1001_0": {
+            "opportunities": 3,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Oreo Blizzard": {
+            "opportunities": 3,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 33.33333333333333
+          },
+          "8_3": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "4_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "22_3": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "36_1": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "25_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "22_1": {
+            "opportunities": 3,
+            "offers": 1,
+            "successes": 1,
+            "revenue": 9.23,
+            "success_rate": 100.0,
+            "offer_rate": 33.33333333333333
+          },
+          "1016_0": {
+            "opportunities": 3,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "$7 Meal Deal (3 Piece Chicken Strips, Regular Fries, Small Strawberry Sundae, Regular Root Beer)": {
+            "opportunities": 3,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "8_1": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "7_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "42_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "#9 Original Cheeseburger Meal (Original Cheeseburger, Fries, Unsweet Tea)": {
+            "opportunities": 3,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 33.33333333333333
+          },
+          "Medium Misty Slush": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "22_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "39_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "2_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "1014_0": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          }
+        },
+        "most_upsized_items": {
+          "22_3": 1
+        }
+      },
+      "Bob Chen": {
+        "total_opportunities": 9,
+        "total_offers": 2,
+        "total_successes": 1,
+        "total_revenue": 9.23,
+        "avg_revenue_per_success": 9.23,
+        "largest_offers": 2,
+        "success_rate": 50.0,
+        "offer_rate": 22.22222222222222,
+        "conversion_rate": 11.11111111111111,
+        "largest_offer_rate": 100.0,
+        "by_item": {
+          "42_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "5_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "Medium Oreo Blizzard": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "22_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "Small Hot Fudge Sundae": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "22_1": {
+            "opportunities": 4,
+            "offers": 1,
+            "successes": 1,
+            "revenue": 9.23,
+            "success_rate": 100.0,
+            "offer_rate": 25.0
+          },
+          "10_1": {
+            "opportunities": 1,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 100.0
+          },
+          "25_3": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "1004_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "1001_0": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "7_3": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "4_0": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "30_0": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "7_1": {
+            "opportunities": 3,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 33.33333333333333
+          }
+        },
+        "most_upsized_items": {
+          "22_3": 1
+        }
+      },
+      "Carol Davis": {
+        "total_opportunities": 27,
+        "total_offers": 7,
+        "total_successes": 1,
+        "total_revenue": 5.66,
+        "avg_revenue_per_success": 5.66,
+        "largest_offers": 5,
+        "success_rate": 14.285714285714285,
+        "offer_rate": 25.925925925925924,
+        "conversion_rate": 3.7037037037037033,
+        "largest_offer_rate": 71.42857142857143,
+        "by_item": {
+          "1_1": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "1001_0": {
+            "opportunities": 3,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Number 9 Original Cheeseburger Meal (Original Cheeseburger, Fries, Drink)": {
+            "opportunities": 2,
+            "offers": 2,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 100.0
+          },
+          "2_0": {
+            "opportunities": 1,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 100.0
+          },
+          "30_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "$7 Meal Deal (3 Piece Chicken Strips, Regular Fries, Regular Coke, Small Strawberry Sundae)": {
+            "opportunities": 6,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Cheese Deluxe Double Burger (no pickles)": {
+            "opportunities": 6,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "[1016_0]": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "5_1": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "36_1": {
+            "opportunities": 4,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "$7 Meal deal Original Cheeseburger (Original Cheeseburger, Regular Fries, Regular Sprite, Small Vanilla Sundae)": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "25_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "22_1": {
+            "opportunities": 3,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 33.33333333333333
+          },
+          "1019_0": {
+            "opportunities": 5,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 20.0
+          },
+          "#2 Bacon Cheese Deluxe Triple Meal (Triple Bacon Cheese Deluxe Burger, Regular Fries, Medium Drink)": {
+            "opportunities": 2,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 50.0
+          },
+          "13_1": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "4-Piece Chicken Strip Basket Meal (4 Chicken Strips, Regular Fries, Medium Sprite, Ranch Dipping Sauce)": {
+            "opportunities": 6,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "7_2": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "22_2": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "6-Piece CB Chicken Strip Basket (Includes Regular Fries)": {
+            "opportunities": 1,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 100.0
+          },
+          "7_1": {
+            "opportunities": 1,
+            "offers": 1,
+            "successes": 1,
+            "revenue": 5.66,
+            "success_rate": 100.0,
+            "offer_rate": 100.0
+          }
+        },
+        "most_upsized_items": {
+          "7_3": 1
+        }
+      },
+      "David Wilson": {
+        "total_opportunities": 9,
+        "total_offers": 3,
+        "total_successes": 0,
+        "total_revenue": 0.0,
+        "avg_revenue_per_success": 0,
+        "largest_offers": 3,
+        "success_rate": 0.0,
+        "offer_rate": 33.33333333333333,
+        "conversion_rate": 0.0,
+        "largest_offer_rate": 100.0,
+        "by_item": {
+          "5_1": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "22_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "1_1": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "10_1": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "22_1": {
+            "opportunities": 9,
+            "offers": 5,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 55.55555555555556
+          },
+          "23_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "7_1": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "52_0": {
+            "opportunities": 6,
+            "offers": 2,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 33.33333333333333
+          },
+          "1019_0": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Large Fries": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          }
+        },
+        "most_upsized_items": {}
+      },
+      "Emma Thompson": {
+        "total_opportunities": 9,
+        "total_offers": 1,
+        "total_successes": 1,
+        "total_revenue": 9.23,
+        "avg_revenue_per_success": 9.23,
+        "largest_offers": 1,
+        "success_rate": 100.0,
+        "offer_rate": 11.11111111111111,
+        "conversion_rate": 11.11111111111111,
+        "largest_offer_rate": 100.0,
+        "by_item": {
+          "22_2": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Small Dipped Cone": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "22_1": {
+            "opportunities": 1,
+            "offers": 1,
+            "successes": 1,
+            "revenue": 9.23,
+            "success_rate": 100.0,
+            "offer_rate": 100.0
+          },
+          "23_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "1001_0": {
+            "opportunities": 3,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "1019_0": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Banana Split (Extra Whipped Cream, Peanuts, Sprinkles)": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "10_3": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "$7 Meal Deal (3 Piece Chicken Strips, Regular Fries, Small Strawberry Sundae, Regular Drink)": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "6-Piece Chicken Strip Basket Meal (6 Chicken Strips, Regular Fries, Medium Drink)": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "27_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          }
+        },
+        "most_upsized_items": {
+          "22_3": 1
+        }
+      },
+      "Frank Miller": {
+        "total_opportunities": 4,
+        "total_offers": 2,
+        "total_successes": 0,
+        "total_revenue": 0.0,
+        "avg_revenue_per_success": 0,
+        "largest_offers": 1,
+        "success_rate": 0.0,
+        "offer_rate": 50.0,
+        "conversion_rate": 0.0,
+        "largest_offer_rate": 50.0,
+        "by_item": {
+          "7_2": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "5_1": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "Small Georgia Mud Fudge Blizzard": {
+            "opportunities": 1,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 100.0
+          },
+          "56_0": {
+            "opportunities": 2,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 50.0
+          },
+          "22_1": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "23_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "30_0": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "7_1": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          },
+          "Small M&M Blizzard": {
+            "opportunities": 1,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 100.0
+          },
+          "22_3": {
+            "opportunities": 0,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0
+          }
+        },
+        "most_upsized_items": {}
+      }
+    },
+    "addons": {
+      "Alice Johnson": {
+        "total_opportunities": 25,
+        "total_offers": 4,
+        "total_successes": 2,
+        "total_revenue": 0.0,
+        "avg_revenue_per_success": 0.0,
+        "success_rate": 50.0,
+        "offer_rate": 16.0,
+        "conversion_rate": 8.0,
+        "by_item": {
+          "1_1": {
+            "opportunities": 3,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Sprinkles": {
+            "opportunities": 3,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Double Dip": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Nuts": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "EXTRA_CONE_DIP": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "22_1": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra M&M's": {
+            "opportunities": 1,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 100.0
+          },
+          "Extra Oreo": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra Reese's Peanut Butter Cups": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra pumpkin pie pieces": {
+            "opportunities": 1,
+            "offers": 1,
+            "successes": 1,
+            "revenue": 0.0,
+            "success_rate": 100.0,
+            "offer_rate": 100.0
+          },
+          "16_2": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra_Pumpkin_Pie_Pieces": {
+            "opportunities": 1,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 100.0
+          },
+          "Whipped Cream": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra Brownie Pieces": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra Strawberry": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "ExtraMixIn": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "DoubleDip": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "15_1": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra Oreos": {
+            "opportunities": 1,
+            "offers": 1,
+            "successes": 1,
+            "revenue": 0.0,
+            "success_rate": 100.0,
+            "offer_rate": 100.0
+          }
+        },
+        "most_successful_addons": {
+          "Extra pumpkin pie pieces": 1,
+          "Extra Oreos": 1
+        },
+        "most_offered_addon_types": {
+          "Sprinkles": 2,
+          "Double Dip": 2,
+          "1_1": 2,
+          "Extra Brownie Pieces": 1,
+          "Extra Reese's Peanut Butter Cups": 1,
+          "Extra M&M's": 1,
+          "Extra Strawberry": 1,
+          "16_2": 1,
+          "Whipped Cream": 1,
+          "Nuts": 1
+        }
+      },
+      "Bob Chen": {
+        "total_opportunities": 15,
+        "total_offers": 1,
+        "total_successes": 0,
+        "total_revenue": 0.0,
+        "avg_revenue_per_success": 0,
+        "success_rate": 0.0,
+        "offer_rate": 6.666666666666667,
+        "conversion_rate": 0.0,
+        "by_item": {
+          "Extra Oreo": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Chocolate cone dip": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra M&M": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra Reese's Cup Pieces": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Whipped Cream": {
+            "opportunities": 4,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra_Oreos": {
+            "opportunities": 1,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 100.0
+          },
+          "Sprinkles": {
+            "opportunities": 7,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Brownie pieces": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Nuts": {
+            "opportunities": 4,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra Blizzard Topping": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          }
+        },
+        "most_successful_addons": {},
+        "most_offered_addon_types": {
+          "Sprinkles": 5,
+          "Whipped Cream": 3,
+          "Nuts": 3,
+          "Extra Oreo": 1,
+          "Extra Reese's Cup Pieces": 1,
+          "Chocolate cone dip": 1,
+          "Extra M&M": 1,
+          "Extra Blizzard Topping": 1,
+          "Brownie pieces": 1,
+          "Extra_Oreos": 1
+        }
+      },
+      "Carol Davis": {
+        "total_opportunities": 14,
+        "total_offers": 1,
+        "total_successes": 0,
+        "total_revenue": 0.0,
+        "avg_revenue_per_success": 0,
+        "success_rate": 0.0,
+        "offer_rate": 7.142857142857142,
+        "conversion_rate": 0.0,
+        "by_item": {
+          "Whipped Cream": {
+            "opportunities": 5,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 20.0
+          },
+          "Extra Mix-in": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Sprinkles": {
+            "opportunities": 8,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 12.5
+          },
+          "Primary Topping/Ingredient": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra Topping": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "WhippedCream": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Nuts": {
+            "opportunities": 6,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 16.666666666666664
+          },
+          "Extra Blizzard Topping": {
+            "opportunities": 4,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          }
+        },
+        "most_successful_addons": {},
+        "most_offered_addon_types": {
+          "Sprinkles": 7,
+          "Nuts": 5,
+          "Whipped Cream": 4,
+          "Extra Blizzard Topping": 2,
+          "Extra Mix-in": 1,
+          "Primary Topping/Ingredient": 1,
+          "Extra Topping": 1,
+          "WhippedCream": 1
+        }
+      },
+      "David Wilson": {
+        "total_opportunities": 9,
+        "total_offers": 1,
+        "total_successes": 0,
+        "total_revenue": 0.0,
+        "avg_revenue_per_success": 0,
+        "success_rate": 0.0,
+        "offer_rate": 11.11111111111111,
+        "conversion_rate": 0.0,
+        "by_item": {
+          "Extra Fudge/Peanuts": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra Oreo": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Primary Topping": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "extra candy": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Whipped Cream": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Sprinkles": {
+            "opportunities": 6,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Cookie Dough": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Nuts": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "22_0": {
+            "opportunities": 1,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 100.0
+          }
+        },
+        "most_successful_addons": {},
+        "most_offered_addon_types": {
+          "Sprinkles": 3,
+          "Whipped Cream": 1,
+          "Nuts": 1,
+          "Extra Fudge/Peanuts": 1,
+          "extra candy": 1,
+          "Extra Oreo": 1,
+          "Cookie Dough": 1,
+          "Primary Topping": 1,
+          "22_0": 1
+        }
+      },
+      "Emma Thompson": {
+        "total_opportunities": 9,
+        "total_offers": 1,
+        "total_successes": 0,
+        "total_revenue": 0.0,
+        "avg_revenue_per_success": 0,
+        "success_rate": 0.0,
+        "offer_rate": 11.11111111111111,
+        "conversion_rate": 0.0,
+        "by_item": {
+          "Extra cheesecake pieces": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "whipped_cream": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Peanuts": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra brownie pieces": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Whipped Cream": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Sprinkles": {
+            "opportunities": 3,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra Brownie Pieces": {
+            "opportunities": 1,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 100.0
+          },
+          "Primary Topping/Ingredient": {
+            "opportunities": 2,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "nuts": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Double Dip": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra Blizzard Topping": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "sprinkles": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          }
+        },
+        "most_successful_addons": {},
+        "most_offered_addon_types": {
+          "Sprinkles": 2,
+          "Extra cheesecake pieces": 1,
+          "Extra brownie pieces": 1,
+          "whipped_cream": 1,
+          "nuts": 1,
+          "sprinkles": 1,
+          "Primary Topping/Ingredient": 1,
+          "Extra Blizzard Topping": 1,
+          "Whipped Cream": 1,
+          "Peanuts": 1
+        }
+      },
+      "Frank Miller": {
+        "total_opportunities": 8,
+        "total_offers": 2,
+        "total_successes": 0,
+        "total_revenue": 0.0,
+        "avg_revenue_per_success": 0,
+        "success_rate": 0.0,
+        "offer_rate": 25.0,
+        "conversion_rate": 0.0,
+        "by_item": {
+          "Extra Blizzard Topping": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra Reese's Cups": {
+            "opportunities": 2,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 50.0
+          },
+          "Sprinkles": {
+            "opportunities": 3,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 33.33333333333333
+          },
+          "Primary Topping/Ingredient": {
+            "opportunities": 1,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          },
+          "Extra Brownie": {
+            "opportunities": 1,
+            "offers": 1,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0.0,
+            "offer_rate": 100.0
+          },
+          "Extra primary topping/ingredient": {
+            "opportunities": 4,
+            "offers": 0,
+            "successes": 0,
+            "revenue": 0.0,
+            "success_rate": 0,
+            "offer_rate": 0.0
+          }
+        },
+        "most_successful_addons": {},
+        "most_offered_addon_types": {
+          "Sprinkles": 2,
+          "Extra primary topping/ingredient": 2,
+          "Extra Reese's Cups": 1,
+          "Extra Blizzard Topping": 1,
+          "Extra Brownie": 1,
+          "Primary Topping/Ingredient": 1
+        }
+      }
+    }
+  },
+  "top_performing_items": {
+    "most_frequent_items": {
+      "Small Blizzard": {
+        "total_opportunities": 61,
+        "total_offers": 19,
+        "total_successes": 8,
+        "upsell_successes": 4,
+        "upsize_successes": 3,
+        "addon_successes": 1,
+        "frequency": 24,
+        "success_rate": 42.10526315789473,
+        "offer_rate": 31.147540983606557
+      },
+      "Medium/Regular Blizzard": {
+        "total_opportunities": 23,
+        "total_offers": 2,
+        "total_successes": 0,
+        "upsell_successes": 0,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 16,
+        "success_rate": 0.0,
+        "offer_rate": 8.695652173913043
+      },
+      "Small Cone": {
+        "total_opportunities": 14,
+        "total_offers": 3,
+        "total_successes": 1,
+        "upsell_successes": 0,
+        "upsize_successes": 1,
+        "addon_successes": 0,
+        "frequency": 6,
+        "success_rate": 33.33333333333333,
+        "offer_rate": 21.428571428571427
+      },
+      "Small Original Cheeseburger": {
+        "total_opportunities": 27,
+        "total_offers": 2,
+        "total_successes": 2,
+        "upsell_successes": 2,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 5,
+        "success_rate": 100.0,
+        "offer_rate": 7.4074074074074066
+      },
+      "$7 Meal deal": {
+        "total_opportunities": 17,
+        "total_offers": 1,
+        "total_successes": 0,
+        "upsell_successes": 0,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 5,
+        "success_rate": 0.0,
+        "offer_rate": 5.88235294117647
+      },
+      "# 3 Backyard Bacon Ranch Meal [Sizes: Single, Double]": {
+        "total_opportunities": 10,
+        "total_offers": 2,
+        "total_successes": 0,
+        "upsell_successes": 0,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 4,
+        "success_rate": 0.0,
+        "offer_rate": 20.0
+      },
+      "Hot Dog": {
+        "total_opportunities": 20,
+        "total_offers": 0,
+        "total_successes": 0,
+        "upsell_successes": 0,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 4,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Medium/Regular Cone": {
+        "total_opportunities": 9,
+        "total_offers": 0,
+        "total_successes": 0,
+        "upsell_successes": 0,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 3,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "Cupfection": {
+        "total_opportunities": 6,
+        "total_offers": 0,
+        "total_successes": 0,
+        "upsell_successes": 0,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 3,
+        "success_rate": 0,
+        "offer_rate": 0.0
+      },
+      "3-Piece Chicken Strips": {
+        "total_opportunities": 10,
+        "total_offers": 3,
+        "total_successes": 3,
+        "upsell_successes": 3,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 3,
+        "success_rate": 100.0,
+        "offer_rate": 30.0
+      }
+    },
+    "highest_success_rate_items": {
+      "Small Original Cheeseburger": {
+        "total_opportunities": 27,
+        "total_offers": 2,
+        "total_successes": 2,
+        "upsell_successes": 2,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 5,
+        "success_rate": 100.0,
+        "offer_rate": 7.4074074074074066
+      },
+      "3-Piece Chicken Strips": {
+        "total_opportunities": 10,
+        "total_offers": 3,
+        "total_successes": 3,
+        "upsell_successes": 3,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 3,
+        "success_rate": 100.0,
+        "offer_rate": 30.0
+      },
+      "$7 Meal Deal (3 Piece Chicken Strips, Regular Fries, Regular Coke, Small Strawberry Sundae)": {
+        "total_opportunities": 10,
+        "total_offers": 2,
+        "total_successes": 2,
+        "upsell_successes": 2,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 1,
+        "success_rate": 100.0,
+        "offer_rate": 20.0
+      },
+      "Cheese Deluxe Double Burger (no pickles)": {
+        "total_opportunities": 10,
+        "total_offers": 2,
+        "total_successes": 2,
+        "upsell_successes": 2,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 1,
+        "success_rate": 100.0,
+        "offer_rate": 20.0
+      },
+      "4-Piece Chicken Strip Basket Meal (4 Chicken Strips, Regular Fries, Medium Sprite, Ranch Dipping Sauce)": {
+        "total_opportunities": 10,
+        "total_offers": 2,
+        "total_successes": 2,
+        "upsell_successes": 2,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 1,
+        "success_rate": 100.0,
+        "offer_rate": 20.0
+      },
+      "#9 Original Cheeseburger Meal (Original Cheeseburger, Fries, Unsweet Tea)": {
+        "total_opportunities": 4,
+        "total_offers": 2,
+        "total_successes": 1,
+        "upsell_successes": 0,
+        "upsize_successes": 0,
+        "addon_successes": 1,
+        "frequency": 1,
+        "success_rate": 50.0,
+        "offer_rate": 50.0
+      },
+      "Oreo Blizzard": {
+        "total_opportunities": 4,
+        "total_offers": 2,
+        "total_successes": 1,
+        "upsell_successes": 0,
+        "upsize_successes": 0,
+        "addon_successes": 1,
+        "frequency": 1,
+        "success_rate": 50.0,
+        "offer_rate": 50.0
+      },
+      "4-Piece Honey BBQ Chicken Basket (Includes a Regular Fries)": {
+        "total_opportunities": 4,
+        "total_offers": 2,
+        "total_successes": 1,
+        "upsell_successes": 1,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 1,
+        "success_rate": 50.0,
+        "offer_rate": 50.0
+      },
+      "Small Blizzard": {
+        "total_opportunities": 61,
+        "total_offers": 19,
+        "total_successes": 8,
+        "upsell_successes": 4,
+        "upsize_successes": 3,
+        "addon_successes": 1,
+        "frequency": 24,
+        "success_rate": 42.10526315789473,
+        "offer_rate": 31.147540983606557
+      },
+      "Small Cone": {
+        "total_opportunities": 14,
+        "total_offers": 3,
+        "total_successes": 1,
+        "upsell_successes": 0,
+        "upsize_successes": 1,
+        "addon_successes": 0,
+        "frequency": 6,
+        "success_rate": 33.33333333333333,
+        "offer_rate": 21.428571428571427
+      }
+    },
+    "most_successful_items": {
+      "Small Blizzard": {
+        "total_opportunities": 61,
+        "total_offers": 19,
+        "total_successes": 8,
+        "upsell_successes": 4,
+        "upsize_successes": 3,
+        "addon_successes": 1,
+        "frequency": 24,
+        "success_rate": 42.10526315789473,
+        "offer_rate": 31.147540983606557
+      },
+      "3-Piece Chicken Strips": {
+        "total_opportunities": 10,
+        "total_offers": 3,
+        "total_successes": 3,
+        "upsell_successes": 3,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 3,
+        "success_rate": 100.0,
+        "offer_rate": 30.0
+      },
+      "Small Original Cheeseburger": {
+        "total_opportunities": 27,
+        "total_offers": 2,
+        "total_successes": 2,
+        "upsell_successes": 2,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 5,
+        "success_rate": 100.0,
+        "offer_rate": 7.4074074074074066
+      },
+      "$7 Meal Deal (3 Piece Chicken Strips, Regular Fries, Regular Coke, Small Strawberry Sundae)": {
+        "total_opportunities": 10,
+        "total_offers": 2,
+        "total_successes": 2,
+        "upsell_successes": 2,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 1,
+        "success_rate": 100.0,
+        "offer_rate": 20.0
+      },
+      "Cheese Deluxe Double Burger (no pickles)": {
+        "total_opportunities": 10,
+        "total_offers": 2,
+        "total_successes": 2,
+        "upsell_successes": 2,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 1,
+        "success_rate": 100.0,
+        "offer_rate": 20.0
+      },
+      "4-Piece Chicken Strip Basket Meal (4 Chicken Strips, Regular Fries, Medium Sprite, Ranch Dipping Sauce)": {
+        "total_opportunities": 10,
+        "total_offers": 2,
+        "total_successes": 2,
+        "upsell_successes": 2,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 1,
+        "success_rate": 100.0,
+        "offer_rate": 20.0
+      },
+      "Small Cone": {
+        "total_opportunities": 14,
+        "total_offers": 3,
+        "total_successes": 1,
+        "upsell_successes": 0,
+        "upsize_successes": 1,
+        "addon_successes": 0,
+        "frequency": 6,
+        "success_rate": 33.33333333333333,
+        "offer_rate": 21.428571428571427
+      },
+      "4-Piece CB Chicken (Strip) Basket (Includes a Regular Fries)": {
+        "total_opportunities": 11,
+        "total_offers": 3,
+        "total_successes": 1,
+        "upsell_successes": 1,
+        "upsize_successes": 0,
+        "addon_successes": 0,
+        "frequency": 2,
+        "success_rate": 33.33333333333333,
+        "offer_rate": 27.27272727272727
+      },
+      "#9 Original Cheeseburger Meal (Original Cheeseburger, Fries, Unsweet Tea)": {
+        "total_opportunities": 4,
+        "total_offers": 2,
+        "total_successes": 1,
+        "upsell_successes": 0,
+        "upsize_successes": 0,
+        "addon_successes": 1,
+        "frequency": 1,
+        "success_rate": 50.0,
+        "offer_rate": 50.0
+      },
+      "Oreo Blizzard": {
+        "total_opportunities": 4,
+        "total_offers": 2,
+        "total_successes": 1,
+        "upsell_successes": 0,
+        "upsize_successes": 0,
+        "addon_successes": 1,
+        "frequency": 1,
+        "success_rate": 50.0,
+        "offer_rate": 50.0
+      }
+    }
+  },
+  "time_analysis": {
+    "2025-09-15": {
+      "transactions": 100,
+      "upsell_successes": 9,
+      "upsize_successes": 4,
+      "addon_successes": 2,
+      "total_opportunities": 203,
+      "success_rate": 7.389162561576355
+    }
+  },
+  "recommendations": [
+    "\ud83c\udfaf Upselling offer rate is only 22.0%. Train staff to identify and act on more upselling opportunities.",
+    "\ud83d\udccf Upsizing offer rate is 23.3%. Encourage staff to suggest larger sizes more consistently.",
+    "\ud83c\udf5f Add-on offer rate is 12.5%. Focus on suggesting extras like toppings, sides, and premium options.",
+    "\u2b50 '5_2' is your top upsold item. Create targeted promotions around this success."
+  ]
+}
