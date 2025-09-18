@@ -11,6 +11,7 @@ load_dotenv()
 # Import our modules
 from config import Settings
 from integrations.db_supabase import Supa
+from scripts.grade_from_csv import grade_from_csv
 
 # Configure logging for production - only to console
 logging.basicConfig(
@@ -110,6 +111,45 @@ def onboard_restaurant():
         
     except Exception as e:
         logger.error(f"Error onboarding restaurant: {str(e)}", exc_info=True)
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+@app.route("/grade-from-csv", methods=["POST"])
+def grade_from_csv_endpoint():
+    """Grade transactions directly from CSV export"""
+    try:
+        data = request.json or {}
+        csv_path = data.get("csv_path")
+        run_id_filter = data.get("run_id")
+        
+        if not csv_path:
+            return jsonify({
+                "success": False,
+                "error": "csv_path is required"
+            }), 400
+        
+        if not os.path.exists(csv_path):
+            return jsonify({
+                "success": False,
+                "error": f"CSV file not found: {csv_path}"
+            }), 404
+        
+        logger.info(f"Starting CSV grading for: {csv_path}")
+        
+        # Run the grading process
+        grade_from_csv(csv_path, run_id_filter)
+        
+        return jsonify({
+            "success": True,
+            "message": f"Successfully processed CSV: {csv_path}",
+            "csv_path": csv_path,
+            "run_id_filter": run_id_filter
+        })
+        
+    except Exception as e:
+        logger.error(f"Error grading from CSV: {str(e)}", exc_info=True)
         return jsonify({
             "success": False,
             "error": str(e)
