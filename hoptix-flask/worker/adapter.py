@@ -91,7 +91,58 @@ You are a performance reviewer assessing a Dairy Queen drive-thru operator's han
 **Response Guidelines**:
 You will be fed a several transcripts, with each transcript potentially with multiple transactions occurring in them. For each transaction, you will return the following in Python dictionary format. Format each entry and key of the dictionary as a single string. Do not add ```python to the front or ``` to the end. Wrap property names in double quotes. Make sure that the python dictionary ends with the right curly bracket, }. Make sure that there are no random line breaks. If there are multiple transactions in a single transcript, create one python dictionary for each transaction, with each dictionary seperated by the following 3 characters: @#& so that each transaction, even if they are from the same transcript, are in different rows in the spreadsheet and considered seperate from other transactions.. Generally, if there are multiple introductions like "Hello, welcome to Dairy Queen." in a transcript, there are multiple transactions in a transcript. Make the keys of the dictionary the number associated with the specific response guideline (e.g. 1 for the first entry, 2 for the second entry, etc.). For a transcript with multiple transactions, the transcript number for each transaction will be the same, but the transaction number will be different and the text of the transaction will be a section of the raw transcript.
 Make sure that all integers are formatted as integers, not strings. This is a hard rule and must be followed.
-When indicating items and meals, format them like this: [Item ID]_[Size ID]. For example, a Medium Misty Freeze has Item ID 16 and medium corresponds to a size ID of 2, so it would result in 16_2. For all rows where you list out items, like rows and 19, format the items and meals like this. Meals and combos should also be formatted exactly like this. this is a hard rule that must be followed. All add ons and miscelleanous items should be formatted exactly like this, with their item ID. This is a hard rule that must be followed. 
+
+CRITICAL FORMATTING RULE - ITEM ID USAGE:
+
+**NEVER use item names. ALWAYS use the [Item ID]_[Size ID] format for ALL items.**
+
+When indicating items, meals, add-ons, and any menu items, you MUST format them using ONLY the Item ID and Size ID numbers: [Item ID]_[Size ID]
+
+**Examples:**
+- Medium Misty Freeze (Item ID 16, Size ID 2) → Write as: 16_2
+- Small Sundae (Item ID 1, Size ID 1) → Write as: 1_1  
+- Pretzel Sticks (Item ID 4, Size ID 0) → Write as: 4_0
+- Large Blizzard (Item ID 22, Size ID 3) → Write as: 22_3
+
+**This applies to ALL item references including:**
+- Initial items ordered (Field 1)
+- Items that could be upsold (Field 4) 
+- Items successfully upsold (Field 7)
+- Items that could be upsized (Field 12)
+- Items successfully upsized (Field 16)
+- Additional toppings/add-ons (Field 19, 23)
+- Final items after all changes (Field 25)
+- ALL creator items (Fields 5, 8, 13, 17, 20, 24)
+
+**NEVER write:**
+- "Medium Misty Freeze"
+- "Small Sundae" 
+- "Pretzel Sticks"
+- "Large Blizzard"
+- Any descriptive item names
+
+**ALWAYS write:**
+- 16_2
+- 1_1
+- 4_0  
+- 22_3
+- Only the numeric Item ID and Size ID
+
+**Size ID Reference:**
+- 0 = No size/Default size
+- 1 = Small/Kid's
+- 2 = Medium/Regular  
+- 3 = Large
+
+**This is a HARD RULE that must be followed without exception. Any deviation from this format is incorrect.**
+
+**For JSON/JSONB fields:** Use the same format within JSON arrays or objects:
+- Correct: ["16_2", "1_1", "4_0"]
+- Incorrect: ["Medium Misty Freeze", "Small Sundae", "Pretzel Sticks"]
+
+**Reference the items.json file to find the correct Item ID and Size IDs for each menu item.**
+
+
 1. Meals and items initially ordered by customer as a jsonb. Make sure this is a jsonb with no other text than the items ordered. Do not seperate the burgers, fries, and drinks into 3 seperate JSON entries. For example for meals, combos, and numbered items, if a Medium Number 1 Meal with Coke is Ordered, structure it as Medium Number 1 Meal (Number 1 Burger, Medium Fries, Medium Coke). If there are no items ordered, put a 0. Do not count items like condiments or ice water that do not add to the price of the order. Note: these are the items that the customer initially requests BEFORE the operator asks to upsell or upsize their items. The list items that are actually ordered AFTER the operator's upselling, upsizing, and additional toppings offers go into entry 19.
 2. Number of Items Ordered. If a burger meal is ordered, it comes with 3 items: the burger, fries, and drink. Make sure that this is a number. Format this as an integer.
 3. Number of Chances to Upsell. If there are multiple of one item that can be upsold, count them all individually. For example, 2 Whoppers have 4 chances to upsell to a combo in total, not 2. Format this as an integer.
@@ -346,6 +397,27 @@ def _map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -
         try: return int(x)
         except: return default
 
+    # Helper function to parse JSON fields safely
+    def _parse_json_field(value, default="0"):
+        """Parse a field that should be JSONB, handling both string and dict inputs"""
+        if value is None:
+            return default
+        if isinstance(value, dict):
+            return value
+        if isinstance(value, str):
+            if value.strip() in ["", "0"]:
+                return default
+            try:
+                # Try to parse as JSON if it looks like JSON
+                if value.strip().startswith(('{', '[')):
+                    import json
+                    return json.loads(value)
+                else:
+                    return value
+            except:
+                return value
+        return value
+
     return {
         # Colab Step‑2 basic flags from Step‑1 meta for completeness
         "complete_order": _ii(tx_meta.get("complete_order", 0)),
@@ -359,26 +431,26 @@ def _map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -
         "num_items_initial":          _ii(step2_obj.get("2", 0)), # Field 2: Number of items ordered
         "num_upsell_opportunities":   _ii(step2_obj.get("3", 0)), # Field 3: Number of upsell chances
         "items_upsellable":           step2_obj.get("4", "0"),    # Field 4: Items that could be upsold
-        "items_upselling_creators":   step2_obj.get("5", "0"),    # Field 5: Items that created upselling opportunities
+        "items_upselling_creators":   _parse_json_field(step2_obj.get("5", "0")),    # Field 5: Items that created upselling opportunities (JSONB)
         "num_upsell_offers":          _ii(step2_obj.get("6", 0)), # Field 6: Number of upselling offers made  
         "items_upsold":               step2_obj.get("7", "0"),    # Field 7: Items successfully upsold
-        "items_upsold_creators":      step2_obj.get("8", "0"),    # Field 8: Items that created successful upselling
+        "items_upsold_creators":      _parse_json_field(step2_obj.get("8", "0")),    # Field 8: Items that created successful upselling (JSONB)
         "num_upsell_success":         _ii(step2_obj.get("9", 0)), # Field 9: Number of successful upselling offers
         "num_largest_offers":         _ii(step2_obj.get("10", 0)), # Field 10: Number of largest option offers
         "num_upsize_opportunities":   _ii(step2_obj.get("11", 0)), # Field 11: Number of upsize chances
         "items_upsizeable":           step2_obj.get("12", "0"),   # Field 12: Items that could be upsized
-        "items_upsizing_creators":    step2_obj.get("13", "0"),   # Field 13: Items that created upsizing opportunities
+        "items_upsizing_creators":    _parse_json_field(step2_obj.get("13", "0")),   # Field 13: Items that created upsizing opportunities (JSONB)
         "num_upsize_offers":          _ii(step2_obj.get("14", 0)), # Field 14: Number of upsizing offers made
         "num_upsize_success":         _ii(step2_obj.get("15", 0)), # Field 15: Number of items successfully upsized
         "items_upsize_success":       step2_obj.get("16", "0"),   # Field 16: Items successfully upsized
-        "items_upsize_creators":      step2_obj.get("17", "0"),   # Field 17: Items that created upsizing
+        "items_upsize_creators":      _parse_json_field(step2_obj.get("17", "0")),   # Field 17: Items that created upsizing (JSONB)
         "num_addon_opportunities":    _ii(step2_obj.get("18", 0)), # Field 18: Number of addon chances
         "items_addonable":            step2_obj.get("19", "0"),   # Field 19: Additional toppings that could be added
-        "items_addon_creators":       step2_obj.get("20", "0"),   # Field 20: Items that created addon opportunities
+        "items_addon_creators":       _parse_json_field(step2_obj.get("20", "0")),   # Field 20: Items that created addon opportunities (JSONB)
         "num_addon_offers":           _ii(step2_obj.get("21", 0)), # Field 21: Number of addon offers made
         "num_addon_success":          _ii(step2_obj.get("22", 0)), # Field 22: Number of successful addon offers
         "items_addon_success":        step2_obj.get("23", "0"),   # Field 23: Items with successful addons
-        "items_addon_final_creators": step2_obj.get("24", "0"),   # Field 24: Items that created final addons
+        "items_addon_final_creators": _parse_json_field(step2_obj.get("24", "0")),   # Field 24: Items that created final addons (JSONB)
         "items_after":                step2_obj.get("25", "0"),   # Field 25: Items after all changes
         "num_items_after":            _ii(step2_obj.get("26", 0)), # Field 26: Number of items after changes
         "feedback":                   step2_obj.get("27", ""),    # Field 27: Structured feedback
@@ -395,9 +467,11 @@ def grade_transactions(transactions: List[Dict]) -> List[Dict]:
     graded: List[Dict] = []
     for tx in transactions:
         transcript = (tx.get("meta") or {}).get("text","")
+        tx_meta = tx.get("meta") or {}
+        
         if not transcript.strip():
             # produce an empty row but keep columns
-            base = _map_step2_to_grade_cols({}, tx.get("meta") or {})
+            base = _map_step2_to_grade_cols({}, tx_meta)
             graded.append({
                 # 4 booleans + score (for backwards compatibility)
                 "upsell_possible": False,

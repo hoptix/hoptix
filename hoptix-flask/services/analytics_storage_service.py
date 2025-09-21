@@ -8,7 +8,6 @@ This service handles storing and retrieving analytics results from the database.
 import json
 import logging
 from typing import Dict, List, Any, Optional
-from datetime import datetime
 from integrations.db_supabase import Supa
 
 logger = logging.getLogger(__name__)
