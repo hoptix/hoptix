@@ -98,7 +98,15 @@ def grade_from_csv(csv_path: str, run_id_filter: str = None) -> None:
     start_time = datetime.now()
     
     try:
-        grades = grade_transactions(transactions)
+        # For CSV grading, we'll use the first transaction's location_id if available
+        location_id = None
+        if transactions and 'location_id' in transactions[0]:
+            location_id = transactions[0]['location_id']
+            print(f"📍 Using location ID: {location_id}")
+        else:
+            print("⚠️ No location_id found in transactions, using JSON fallback")
+        
+        grades = grade_transactions(transactions, db, location_id)
         print(f"✅ Grading completed: {len(grades)} grades generated")
         
         # For CSV-based grading, we need to find the actual transaction IDs from the database

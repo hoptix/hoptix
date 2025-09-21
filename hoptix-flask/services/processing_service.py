@@ -56,9 +56,10 @@ class ProcessingService:
             tx_ids = insert_transactions(self.db, video_row, txs)
             logger.info(f"✅ [4/6] Transactions inserted with IDs: {len(tx_ids)} records")
 
-            # 5) step‑2 grading
-            logger.info(f"🎯 [5/6] Starting AI grading for {len(txs)} transactions...")
-            grades = grade_transactions(txs)
+            # 5) step‑2 grading with location-specific menu data
+            location_id = video_row.get("location_id")
+            logger.info(f"🎯 [5/6] Starting AI grading for {len(txs)} transactions (location: {location_id})...")
+            grades = grade_transactions(txs, self.db, location_id)
             put_jsonl(self.s3, self.settings.DERIV_BUCKET, prefix + "grades.jsonl", grades)
             logger.info(f"✅ [5/6] Grading completed and uploaded to S3")
 
