@@ -14,23 +14,99 @@ from config import Settings
 _settings = Settings()
 client = OpenAI(api_key=_settings.OPENAI_API_KEY)
 
-# ---------- Load menu JSONs (local files) ----------
+# ---------- Load menu data from database ----------
+def _get_menu_data_from_db(db, location_id: str) -> tuple[list, list, list, list, list]:
+    """Fetch menu data from database tables for the given location"""
+    try:
+        # Get items for this location
+        items_result = db.client.table("items").select(
+            "item_id, item_name, ordered_cnt, size_ids, upsell, upsize, addon"
+        ).eq("location_id", location_id).execute()
+        
+        # Get meals for this location
+        meals_result = db.client.table("meals").select(
+            "item_id, item_name, ordered_cnt, inclusions, upsell, upsize, addon, size_ids"
+        ).eq("location_id", location_id).execute()
+        
+        # Get add-ons for this location
+        addons_result = db.client.table("add_ons").select(
+            "item_id, item_name, size_ids"
+        ).eq("location_id", location_id).execute()
+        
+        # Convert to the format expected by the prompt
+        items = []
+        for item in items_result.data:
+            items.append({
+                "Item": item["item_name"],
+                "Item ID": item["item_id"],
+                "Size IDs": item["size_ids"],
+                "Ordered Items Count": item["ordered_cnt"] or 1,
+                "Upselling Chance": item["upsell"] or "0",
+                "Upsizing Chance": item["upsize"] or "0",
+                "Add on Chance": item["addon"] or "0"
+            })
+        
+        meals = []
+        for meal in meals_result.data:
+            meals.append({
+                "Item": meal["item_name"],
+                "Item ID": meal["item_id"],
+                "Size IDs": meal["size_ids"],
+                "Ordered Items Count": meal["ordered_cnt"] or 1,
+                "Inclusions": meal["inclusions"] or "",
+                "Upselling Chance": meal["upsell"] or "0",
+                "Upsizing Chance": meal["upsize"] or "0",
+                "Add on Chance": meal["addon"] or "0"
+            })
+        
+        addons = []
+        for addon in addons_result.data:
+            addons.append({
+                "Item": addon["item_name"],
+                "Item ID": addon["item_id"],
+                "Size IDs": addon["size_ids"]
+            })
+        
+        # For now, keep upselling and upsizing as static (can be moved to DB later if needed)
+        upselling = _read_json_or_empty(os.path.join(_settings.PROMPTS_DIR, _settings.UPSELLING_JSON))
+        upsizing  = _read_json_or_empty(os.path.join(_settings.PROMPTS_DIR, _settings.UPSIZING_JSON))
+        
+        print(f"Loaded menu data for location {location_id}: {len(items)} items, {len(meals)} meals, {len(addons)} add-ons")
+        
+        return upselling, upsizing, addons, items, meals
+        
+    except Exception as e:
+        print(f"Error loading menu data from database: {e}")
+        # Fallback to JSON files if database fails
+        return _get_menu_data_from_json()
+
 def _read_json_or_empty(path: str) -> list | dict:
+    """Fallback function to read JSON files"""
     try:
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     except Exception:
         return []
 
-def _build_step2_prompt() -> str:
-    # Inline your long prompt (kept exactly as shared) but with placeholders replaced by local JSON
+def _get_menu_data_from_json() -> tuple[list, list, list, list, list]:
+    """Fallback to load menu data from JSON files"""
     upselling = _read_json_or_empty(os.path.join(_settings.PROMPTS_DIR, _settings.UPSELLING_JSON))
     upsizing  = _read_json_or_empty(os.path.join(_settings.PROMPTS_DIR, _settings.UPSIZING_JSON))
     addons    = _read_json_or_empty(os.path.join(_settings.PROMPTS_DIR, _settings.ADDONS_JSON))
     items     = _read_json_or_empty(os.path.join(_settings.PROMPTS_DIR, _settings.ITEMS_JSON))
     meals     = _read_json_or_empty(os.path.join(_settings.PROMPTS_DIR, _settings.MEALS_JSON))
+    
+    print("Using fallback JSON files for menu data")
+    return upselling, upsizing, addons, items, meals
 
-    print(upselling, upsizing, addons, items, meals)
+def _build_step2_prompt(db=None, location_id: str = None) -> str:
+    """Build the step 2 prompt with menu data from database or JSON fallback"""
+    if db and location_id:
+        upselling, upsizing, addons, items, meals = _get_menu_data_from_db(db, location_id)
+    else:
+        upselling, upsizing, addons, items, meals = _get_menu_data_from_json()
+
+    print(f"Menu data loaded: {len(upselling)} upselling scenarios, {len(upsizing)} upsizing scenarios, {len(addons)} add-ons, {len(items)} items, {len(meals)} meals")
 
 
     template = """
@@ -189,7 +265,8 @@ When indicating items, meals, add-ons, and any menu items, you MUST format them 
             .replace("<<ITEMS_JSON>>", json.dumps(items))
             .replace("<<MEALS_JSON>>", json.dumps(meals)))
 
-STEP2_PROMPT = _build_step2_prompt()
+# STEP2_PROMPT will be built dynamically with location-specific data
+# This is now handled in grade_transactions() function
 
 INITIAL_PROMPT = """
 **Response Guidelines**:
@@ -463,7 +540,7 @@ def _map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -
         "video_link":                 step2_obj.get("29. Google Drive Video Link", ""),
     }
 
-def grade_transactions(transactions: List[Dict]) -> List[Dict]:
+def grade_transactions(transactions: List[Dict], db=None, location_id: str = None) -> List[Dict]:
     graded: List[Dict] = []
     for tx in transactions:
         transcript = (tx.get("meta") or {}).get("text","")
@@ -485,8 +562,9 @@ def grade_transactions(transactions: List[Dict]) -> List[Dict]:
             })
             continue
 
-        # Run Step‑2
-        prompt = STEP2_PROMPT + "\n\nProcess this transcript:\n" + transcript
+        # Run Step‑2 with location-specific menu data
+        step2_prompt = _build_step2_prompt(db, location_id)
+        prompt = step2_prompt + "\n\nProcess this transcript:\n" + transcript
         try:
             resp = client.responses.create(
                 model=_settings.STEP2_MODEL,
