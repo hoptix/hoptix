@@ -7,7 +7,7 @@ from transaction grading data. It analyzes both overall performance and item-spe
 """
 
 import json
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Optional
 from collections import defaultdict, Counter
 from datetime import datetime
 import logging
@@ -89,6 +89,7 @@ class UpsellAnalytics:
                     "offer_rate": (item_offers[item] / item_opportunities[item] * 100) if item_opportunities[item] > 0 else 0
                 }
                 for item in set(list(item_opportunities.keys()) + list(item_offers.keys()) + list(item_successes.keys()))
+                if item_opportunities[item] > 0 or item_offers[item] > 0 or item_successes[item] > 0
             },
             "most_upsold_items": dict(upsell_items_counter.most_common(10))
         }
@@ -168,6 +169,7 @@ class UpsellAnalytics:
                         "offer_rate": (data["item_offers"][item] / data["item_opportunities"][item] * 100) if data["item_opportunities"][item] > 0 else 0
                     }
                     for item in set(list(data["item_opportunities"].keys()) + list(data["item_offers"].keys()) + list(data["item_successes"].keys()))
+                    if data["item_opportunities"][item] > 0 or data["item_offers"][item] > 0 or data["item_successes"][item] > 0
                 },
                 "most_upsold_items": dict(data["upsell_items_counter"].most_common(10))
             }
@@ -283,6 +285,7 @@ class UpsizeAnalytics:
                     "offer_rate": (item_offers[item] / item_opportunities[item] * 100) if item_opportunities[item] > 0 else 0
                 }
                 for item in set(list(item_opportunities.keys()) + list(item_offers.keys()) + list(item_successes.keys()))
+                if item_opportunities[item] > 0 or item_offers[item] > 0 or item_successes[item] > 0
             },
             "most_upsized_items": dict(upsize_items_counter.most_common(10))
         }
@@ -367,6 +370,7 @@ class UpsizeAnalytics:
                         "offer_rate": (data["item_offers"][item] / data["item_opportunities"][item] * 100) if data["item_opportunities"][item] > 0 else 0
                     }
                     for item in set(list(data["item_opportunities"].keys()) + list(data["item_offers"].keys()) + list(data["item_successes"].keys()))
+                    if data["item_opportunities"][item] > 0 or data["item_offers"][item] > 0 or data["item_successes"][item] > 0
                 },
                 "most_upsized_items": dict(data["upsize_items_counter"].most_common(10))
             }
@@ -455,6 +459,7 @@ class AddonAnalytics:
                     "offer_rate": (item_offers[item] / item_opportunities[item] * 100) if item_opportunities[item] > 0 else 0
                 }
                 for item in set(list(item_opportunities.keys()) + list(item_offers.keys()) + list(item_successes.keys()))
+                if item_opportunities[item] > 0 or item_offers[item] > 0 or item_successes[item] > 0
             },
             "most_successful_addons": dict(addon_items_counter.most_common(10)),
             "most_offered_addon_types": dict(addon_types_counter.most_common(10))
@@ -537,6 +542,7 @@ class AddonAnalytics:
                         "offer_rate": (data["item_offers"][item] / data["item_opportunities"][item] * 100) if data["item_opportunities"][item] > 0 else 0
                     }
                     for item in set(list(data["item_opportunities"].keys()) + list(data["item_offers"].keys()) + list(data["item_successes"].keys()))
+                    if data["item_opportunities"][item] > 0 or data["item_offers"][item] > 0 or data["item_successes"][item] > 0
                 },
                 "most_successful_addons": dict(data["addon_items_counter"].most_common(10)),
                 "most_offered_addon_types": dict(data["addon_types_counter"].most_common(10))
@@ -553,20 +559,26 @@ class AddonAnalytics:
 class HoptixAnalyticsService:
     """Main analytics service for Hoptix grading data"""
     
-    def __init__(self):
+    def __init__(self, db=None, location_id=None):
+        self.db = db
+        self.location_id = location_id
         self.upsell_analytics = UpsellAnalytics()
         self.upsize_analytics = UpsizeAnalytics()
         self.addon_analytics = AddonAnalytics()
-        self.item_lookup = get_item_lookup_service()
+        # Create item lookup service with database connection if available
+        self.item_lookup = get_item_lookup_service(db, location_id)
     
     def generate_comprehensive_report(self, transactions: List[Dict]) -> Dict[str, Any]:
-        """Generate a comprehensive analytics report"""
+        """Generate a comprehensive analytics report with structured store -> operator breakdown"""
         logger.info(f"Generating analytics report for {len(transactions)} transactions")
         
-        # Calculate individual metrics
-        upsell_metrics = self.upsell_analytics.calculate_upsell_metrics(transactions, self.item_lookup)
-        upsize_metrics = self.upsize_analytics.calculate_upsize_metrics(transactions, self.item_lookup)
-        addon_metrics = self.addon_analytics.calculate_addon_metrics(transactions, self.item_lookup)
+        # Get location information
+        location_info = self._get_location_info(transactions)
+        
+        # Calculate store-level metrics
+        store_upsell_metrics = self.upsell_analytics.calculate_upsell_metrics(transactions, self.item_lookup)
+        store_upsize_metrics = self.upsize_analytics.calculate_upsize_metrics(transactions, self.item_lookup)
+        store_addon_metrics = self.addon_analytics.calculate_addon_metrics(transactions, self.item_lookup)
         
         # Calculate operator-level metrics
         upsell_by_operator = self.upsell_analytics.calculate_upsell_metrics_by_operator(transactions, self.item_lookup)
@@ -581,13 +593,62 @@ class HoptixAnalyticsService:
         total_items_initial = sum(t.get("# of Items Ordered", 0) for t in transactions)
         total_items_final = sum(t.get("# of Items Ordered After Upselling, Upsizing, and Add-on Offers", 0) for t in transactions)
         
-        # Top performing items analysis
-        top_items = self._analyze_top_performing_items(transactions)
-        
-        # Time-based analysis if dates are available
-        time_analysis = self._analyze_by_time_period(transactions)
-        
+        # Structure the report in the requested format: Store -> Summary + Items -> Operator -> Items
         report = {
+            "store": {
+                "location_id": location_info["location_id"],
+                "location_name": location_info["location_name"],
+                "summary": {
+                    "total_transactions": total_transactions,
+                    "complete_transactions": complete_transactions,
+                    "completion_rate": (complete_transactions / total_transactions * 100) if total_transactions > 0 else 0,
+                    "avg_items_initial": total_items_initial / total_transactions if total_transactions > 0 else 0,
+                    "avg_items_final": total_items_final / total_transactions if total_transactions > 0 else 0,
+                    "avg_item_increase": (total_items_final - total_items_initial) / total_transactions if total_transactions > 0 else 0,
+                    "generated_at": datetime.now().isoformat()
+                },
+                "upselling": {
+                    "summary": {
+                        "total_opportunities": store_upsell_metrics["total_opportunities"],
+                        "total_offers": store_upsell_metrics["total_offers"],
+                        "total_successes": store_upsell_metrics["total_successes"],
+                        "conversion_rate": store_upsell_metrics["conversion_rate"],
+                        "offer_rate": store_upsell_metrics["offer_rate"],
+                        "success_rate": store_upsell_metrics["success_rate"],
+                        "total_revenue": store_upsell_metrics["total_revenue"]
+                    },
+                    "item_breakdown": store_upsell_metrics["by_item"]
+                },
+                "upsizing": {
+                    "summary": {
+                        "total_opportunities": store_upsize_metrics["total_opportunities"],
+                        "total_offers": store_upsize_metrics["total_offers"],
+                        "total_successes": store_upsize_metrics["total_successes"],
+                        "conversion_rate": store_upsize_metrics["conversion_rate"],
+                        "offer_rate": store_upsize_metrics["offer_rate"],
+                        "success_rate": store_upsize_metrics["success_rate"],
+                        "total_revenue": store_upsize_metrics["total_revenue"],
+                        "largest_offers": store_upsize_metrics["largest_offers"],
+                        "largest_offer_rate": store_upsize_metrics["largest_offer_rate"]
+                    },
+                    "item_breakdown": store_upsize_metrics["by_item"]
+                },
+                "addons": {
+                    "summary": {
+                        "total_opportunities": store_addon_metrics["total_opportunities"],
+                        "total_offers": store_addon_metrics["total_offers"],
+                        "total_successes": store_addon_metrics["total_successes"],
+                        "conversion_rate": store_addon_metrics["conversion_rate"],
+                        "offer_rate": store_addon_metrics["offer_rate"],
+                        "success_rate": store_addon_metrics["success_rate"],
+                        "total_revenue": store_addon_metrics["total_revenue"]
+                    },
+                    "item_breakdown": store_addon_metrics["by_item"]
+                },
+                "operators": self._structure_operator_analytics(upsell_by_operator, upsize_by_operator, addon_by_operator)
+            },
+            
+            # Keep legacy format for backward compatibility
             "summary": {
                 "total_transactions": total_transactions,
                 "complete_transactions": complete_transactions,
@@ -597,17 +658,17 @@ class HoptixAnalyticsService:
                 "avg_item_increase": (total_items_final - total_items_initial) / total_transactions if total_transactions > 0 else 0,
                 "generated_at": datetime.now().isoformat()
             },
-            "upselling": upsell_metrics,
-            "upsizing": upsize_metrics,
-            "addons": addon_metrics,
+            "upselling": store_upsell_metrics,
+            "upsizing": store_upsize_metrics,
+            "addons": store_addon_metrics,
             "operator_analytics": {
                 "upselling": upsell_by_operator,
                 "upsizing": upsize_by_operator,
                 "addons": addon_by_operator
             },
-            "top_performing_items": top_items,
-            "time_analysis": time_analysis,
-            "recommendations": self._generate_recommendations(upsell_metrics, upsize_metrics, addon_metrics)
+            "top_performing_items": self._analyze_top_performing_items(transactions),
+            "time_analysis": self._analyze_by_time_period(transactions),
+            "recommendations": self._generate_recommendations(store_upsell_metrics, store_upsize_metrics, store_addon_metrics)
         }
         
         # Enhance report with actual item names
@@ -615,6 +676,86 @@ class HoptixAnalyticsService:
         
         logger.info("Analytics report generated successfully")
         return enhanced_report
+    
+    def _get_location_info(self, transactions: List[Dict]) -> Dict[str, str]:
+        """Extract location information from transactions"""
+        location_id = "unknown"
+        location_name = "Unknown Location"
+        
+        if self.location_id:
+            location_id = self.location_id
+            
+        # Try to get location name from database if we have a connection
+        if self.db and location_id != "unknown":
+            try:
+                result = self.db.client.table('locations').select('id, name').eq('id', location_id).execute()
+                if result.data:
+                    location_name = result.data[0].get('name', 'Unknown Location')
+            except Exception as e:
+                logger.warning(f"Could not fetch location name: {e}")
+                
+        return {
+            "location_id": location_id,
+            "location_name": location_name
+        }
+    
+    def _structure_operator_analytics(self, upsell_by_operator: Dict, upsize_by_operator: Dict, addon_by_operator: Dict) -> Dict[str, Any]:
+        """Structure operator analytics in the requested format: Operator -> Summary + Items for each category"""
+        structured_operators = {}
+        
+        # Get all unique operators
+        all_operators = set()
+        all_operators.update(upsell_by_operator.keys())
+        all_operators.update(upsize_by_operator.keys())
+        all_operators.update(addon_by_operator.keys())
+        
+        for operator in all_operators:
+            upsell_data = upsell_by_operator.get(operator, {})
+            upsize_data = upsize_by_operator.get(operator, {})
+            addon_data = addon_by_operator.get(operator, {})
+            
+            structured_operators[operator] = {
+                "upselling": {
+                    "summary": {
+                        "total_opportunities": upsell_data.get("total_opportunities", 0),
+                        "total_offers": upsell_data.get("total_offers", 0),
+                        "total_successes": upsell_data.get("total_successes", 0),
+                        "conversion_rate": upsell_data.get("conversion_rate", 0),
+                        "offer_rate": upsell_data.get("offer_rate", 0),
+                        "success_rate": upsell_data.get("success_rate", 0),
+                        "total_revenue": upsell_data.get("total_revenue", 0.0)
+                    },
+                    "item_breakdown": upsell_data.get("by_item", {})
+                },
+                "upsizing": {
+                    "summary": {
+                        "total_opportunities": upsize_data.get("total_opportunities", 0),
+                        "total_offers": upsize_data.get("total_offers", 0),
+                        "total_successes": upsize_data.get("total_successes", 0),
+                        "conversion_rate": upsize_data.get("conversion_rate", 0),
+                        "offer_rate": upsize_data.get("offer_rate", 0),
+                        "success_rate": upsize_data.get("success_rate", 0),
+                        "total_revenue": upsize_data.get("total_revenue", 0.0),
+                        "largest_offers": upsize_data.get("largest_offers", 0),
+                        "largest_offer_rate": upsize_data.get("largest_offer_rate", 0)
+                    },
+                    "item_breakdown": upsize_data.get("by_item", {})
+                },
+                "addons": {
+                    "summary": {
+                        "total_opportunities": addon_data.get("total_opportunities", 0),
+                        "total_offers": addon_data.get("total_offers", 0),
+                        "total_successes": addon_data.get("total_successes", 0),
+                        "conversion_rate": addon_data.get("conversion_rate", 0),
+                        "offer_rate": addon_data.get("offer_rate", 0),
+                        "success_rate": addon_data.get("success_rate", 0),
+                        "total_revenue": addon_data.get("total_revenue", 0.0)
+                    },
+                    "item_breakdown": addon_data.get("by_item", {})
+                }
+            }
+        
+        return structured_operators
     
     def _analyze_top_performing_items(self, transactions: List[Dict]) -> Dict[str, Any]:
         """Analyze top performing items across all categories"""

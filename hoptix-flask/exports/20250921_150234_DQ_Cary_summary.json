@@ -1,0 +1,37 @@
+{
+  "export_info": {
+    "run_id": "9ba8c21f-3991-4aa9-8c56-c6d8374c72d3",
+    "location_id": "c3607cc3-0f0c-4725-9c42-eb2fdb5e016a",
+    "location_name": "DQ Cary",
+    "export_timestamp": "2025-09-21T15:02:34.960193",
+    "total_transactions": 187,
+    "complete_transactions": 147,
+    "completion_rate": 78.6096256684492
+  },
+  "revenue_summary": {
+    "upselling_revenue": 40.8,
+    "upsizing_revenue": 6.87,
+    "addon_revenue": 8.5,
+    "total_revenue": 56.169999999999995
+  },
+  "performance_summary": {
+    "upselling": {
+      "opportunities": 88,
+      "offers": 21,
+      "successes": 13,
+      "conversion_rate": 14.772727272727273
+    },
+    "upsizing": {
+      "opportunities": 98,
+      "offers": 23,
+      "successes": 1,
+      "conversion_rate": 1.0204081632653061
+    },
+    "addons": {
+      "opportunities": 231,
+      "offers": 3,
+      "successes": 1,
+      "conversion_rate": 0.4329004329004329
+    }
+  }
+}

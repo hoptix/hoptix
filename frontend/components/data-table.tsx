@@ -603,7 +603,6 @@ export function DataTable({
         <Select defaultValue="daily-metrics">
           <SelectTrigger
             className="flex w-fit @4xl/main:hidden"
-            size="sm"
             id="view-selector"
           >
             <SelectValue placeholder="Select a view" />
@@ -854,7 +853,7 @@ export function DataTable({
                   table.setPageSize(Number(value))
                 }}
               >
-                <SelectTrigger size="sm" className="w-20" id="rows-per-page">
+                <SelectTrigger className="w-20" id="rows-per-page">
                   <SelectValue
                     placeholder={table.getState().pagination.pageSize}
                   />
