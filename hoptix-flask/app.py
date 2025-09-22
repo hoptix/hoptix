@@ -3,6 +3,7 @@ import uuid
 import logging
 from datetime import datetime
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -14,6 +15,7 @@ from integrations.db_supabase import Supa
 from scripts.grade_from_csv import grade_from_csv
 from services.analytics_service import HoptixAnalyticsService
 from routes.analytics import analytics_bp
+from routes.runs import runs_bp
 
 # Configure logging for production - only to console
 logging.basicConfig(
@@ -27,8 +29,24 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
+# Enable CORS for all routes
+CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000"])
+
 # Register blueprints
 app.register_blueprint(analytics_bp)
+app.register_blueprint(runs_bp)
+
+# Debug route to list all registered routes
+@app.get("/debug/routes")
+def list_routes():
+    routes = []
+    for rule in app.url_map.iter_rules():
+        routes.append({
+            "rule": rule.rule,
+            "endpoint": rule.endpoint,
+            "methods": list(rule.methods)
+        })
+    return jsonify({"routes": routes})
 
 # Initialize database connection
 try:

@@ -1,18 +1,13 @@
 "use client"
 
 import { AppSidebar } from "@/components/app-sidebar"
-import { ChartAreaInteractive } from "@/components/chart-area-interactive"
-import { RunsDataTable } from "@/components/runs-data-table"
-import { SectionCards } from "@/components/section-cards"
-import { TopTransactionsHighlight } from "@/components/top-transactions-highlight"
+import { RunsTable } from "@/components/runs-table"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { useState } from "react"
 import type { Location } from "@/hooks/getLocations"
 
-import data from "./data.json"
-
-export default function Page() {
+export default function RunsPage() {
   const [selectedLocationId, setSelectedLocationId] = useState<string>("")
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null)
 
@@ -26,7 +21,7 @@ export default function Page() {
       <AppSidebar variant="inset" />
       <SidebarInset>
         <SiteHeader 
-          title="Hoptix Dashboard"
+          title="Runs Management"
           showLocationDropdown={true}
           selectedLocationId={selectedLocationId}
           onLocationChange={handleLocationChange}
@@ -34,22 +29,38 @@ export default function Page() {
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <SectionCards data={data} />
-              <div className="px-4 lg:px-6">
-                <ChartAreaInteractive />
-              </div>
-              {selectedLocationId && (
+              
+              {/* Info Banner */}
+              {selectedLocation ? (
                 <div className="px-4 lg:px-6">
-                  <TopTransactionsHighlight 
-                    locationId={selectedLocationId}
-                    className="mb-6"
-                  />
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h3 className="font-semibold text-green-900 mb-1">
+                      Showing runs for: {selectedLocation.display_name}
+                    </h3>
+                    <p className="text-green-700 text-sm">
+                      Location ID: <code className="bg-green-100 px-1 rounded text-xs">{selectedLocation.id}</code>
+                      {selectedLocation.timezone && (
+                        <span className="ml-3">Timezone: {selectedLocation.timezone}</span>
+                      )}
+                    </p>
+                  </div>
                 </div>
-              )}
-              {selectedLocationId ? (
-                <RunsDataTable locationId={selectedLocationId} />
               ) : (
                 <div className="px-4 lg:px-6">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 className="font-semibold text-blue-900 mb-1">Select a Location</h3>
+                    <p className="text-blue-700 text-sm">
+                      Use the location dropdown in the header to select a location and view its runs.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Runs Table */}
+              <div className="px-4 lg:px-6">
+                {selectedLocationId ? (
+                  <RunsTable locationId={selectedLocationId} limit={100} />
+                ) : (
                   <div className="flex flex-col items-center justify-center p-12 text-center border rounded-lg bg-muted/20">
                     <div className="text-muted-foreground mb-2">
                       <svg 
@@ -72,13 +83,13 @@ export default function Page() {
                         />
                       </svg>
                     </div>
-                    <h3 className="text-lg font-semibold mb-2">Select a Location</h3>
+                    <h3 className="text-lg font-semibold mb-2">No Location Selected</h3>
                     <p className="text-muted-foreground max-w-md">
-                      Choose a location from the dropdown in the header to view runs and performance data.
+                      Select a location from the dropdown in the header to view runs data for that location.
                     </p>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>

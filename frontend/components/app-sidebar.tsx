@@ -8,6 +8,8 @@ import {
   FileText,
   UtensilsCrossed,
   CircleDot,
+  BarChart3,
+  PlayCircle,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -35,9 +37,19 @@ const data = {
       icon: LayoutDashboard,
     },
     {
+      title: "Runs",
+      url: "/runs",
+      icon: PlayCircle,
+    },
+    {
       title: "Videos",
       url: "/videos",
       icon: Video,
+    },
+    {
+      title: "Analytics",
+      url: "/analytics",
+      icon: BarChart3,
     },
     {
       title: "Reports",

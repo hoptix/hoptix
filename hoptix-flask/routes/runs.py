@@ -23,6 +23,120 @@ def read_run(run_id):
     if not data: return {"error": "not found"}, 404
     return data
 
+@runs_bp.get("/locations")
+def get_all_locations():
+    """Get all locations with their organization details"""
+    db = current_app.config["DB"]
+    logger = logging.getLogger(__name__)
+    
+    try:
+        logger.info("Fetching all locations...")
+        
+        # First, get all locations - start with basic columns
+        locations_result = db.client.table("locations").select("*").execute()
+        
+        if not locations_result.data:
+            logger.info("No locations found")
+            return {"locations": [], "count": 0}, 200
+        
+        logger.info(f"Found {len(locations_result.data)} locations")
+        
+        # Get all organizations to map org_id to org_name
+        orgs_result = db.client.table("orgs").select("id, name").execute()
+        orgs_map = {org["id"]: org["name"] for org in orgs_result.data} if orgs_result.data else {}
+        
+        logger.info(f"Found {len(orgs_map)} organizations")
+        
+        # Transform the data to include organization name
+        locations = []
+        for location in locations_result.data:
+            org_name = orgs_map.get(location.get("org_id"), "Unknown Organization")
+            locations.append({
+                "id": location.get("id"),
+                "name": location.get("name"),
+                "org_id": location.get("org_id"),
+                "org_name": org_name,
+                "timezone": location.get("tz", ""),
+                "created_at": location.get("created_at", ""),
+                "display_name": f"{org_name} - {location.get('name', 'Unknown Location')}"
+            })
+        
+        logger.info(f"Successfully retrieved {len(locations)} locations")
+        return {"locations": locations, "count": len(locations)}, 200
+        
+    except Exception as e:
+        logger.error(f"Error retrieving locations: {str(e)}", exc_info=True)
+        return {"error": f"Internal server error: {str(e)}"}, 500
+
+@runs_bp.get("/locations/<location_id>/runs")
+def get_runs_by_location(location_id):
+    """Get all runs for a specific location with analytics data"""
+    db = current_app.config["DB"]
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # Get query parameters
+        limit = int(request.args.get("limit", 50))
+        limit = min(limit, 200)  # Cap at 200 for performance
+        include_analytics = request.args.get("include_analytics", "true").lower() == "true"
+        
+        if include_analytics:
+            # Use the comprehensive view that includes analytics data
+            result = db.client.table("run_analytics_with_details").select(
+                "run_id, run_date, location_id, org_id, "
+                "total_transactions, upsell_successes, upsize_successes, "
+                "total_revenue, upsell_revenue, upsize_revenue, addon_revenue"
+            ).eq("location_id", location_id).order("run_date", desc=True).limit(limit).execute()
+            
+            if not result.data:
+                return {"runs": [], "count": 0}, 200
+            
+            # Transform the data from the analytics view
+            runs = []
+            for row in result.data:
+                runs.append({
+                    "id": row["run_id"],
+                    "runId": row["run_id"],
+                    "date": row["run_date"],
+                    "status": "ready",  # Analytics view only contains completed runs
+                    "created_at": row["run_date"],  # Use run_date as created_at
+                    "org_id": row["org_id"],
+                    "location_id": row["location_id"],
+                    "totalTransactions": row.get("total_transactions", 0),
+                    "successfulUpsells": row.get("upsell_successes", 0),
+                    "successfulUpsizes": row.get("upsize_successes", 0),
+                    "totalRevenue": float(row.get("total_revenue", 0) or 0)
+                })
+        else:
+            # Query basic runs data without analytics
+            result = db.client.table("runs").select(
+                "id, org_id, location_id, run_date, status, created_at"
+            ).eq("location_id", location_id).order("created_at", desc=True).limit(limit).execute()
+            
+            if not result.data:
+                return {"runs": [], "count": 0}, 200
+            
+            # Transform basic runs data
+            runs = []
+            for run in result.data:
+                runs.append({
+                    "id": run["id"],
+                    "runId": run["id"],
+                    "date": run["run_date"],
+                    "status": run["status"],
+                    "created_at": run["created_at"],
+                    "org_id": run["org_id"],
+                    "location_id": run["location_id"]
+                })
+        
+        logger.info(f"Retrieved {len(runs)} runs for location {location_id}")
+        return {"runs": runs, "count": len(runs)}, 200
+        
+    except Exception as e:
+        logger.error(f"Error retrieving runs for location {location_id}: {str(e)}", exc_info=True)
+        return {"error": f"Internal server error: {str(e)}"}, 500
+
+
 
 @runs_bp.post("/run-one-video")
 def run_one_video():
