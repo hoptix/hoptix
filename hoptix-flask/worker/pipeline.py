@@ -1,4 +1,4 @@
-import os, time, tempfile, json, datetime as dt, logging
+import os, time, tempfile, json, datetime as dt, logging, shutil
 from typing import List, Dict, Tuple
 from dateutil import parser as dateparse
 from integrations.db_supabase import Supa
@@ -226,8 +226,8 @@ def process_one_video(db: Supa, s3, video_row: Dict):
         try:
             if os.path.exists(local_path):
                 os.remove(local_path)
-            if os.path.exists(tmpdir):
-                os.rmdir(tmpdir)
+                if os.path.exists(tmpdir):
+                    shutil.rmtree(tmpdir, ignore_errors=True)
             logger.info(f"Cleaned up temporary files for video {video_id}")
         except Exception as cleanup_error:
             logger.warning(f"Failed to cleanup temporary files: {cleanup_error}")
