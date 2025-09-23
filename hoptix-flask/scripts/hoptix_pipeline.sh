@@ -35,7 +35,7 @@ cd "$(dirname "$0")/.."
 # Step 1: Import videos from Google Drive (using import service directly)
 echo ""
 echo "📥 Step 1: Importing videos from Google Drive..."
-RUN_ID=$(python -c "
+RUN_ID=$(python3 -c "
 import sys
 sys.path.insert(0, '.')
 from integrations.db_supabase import Supa
@@ -87,7 +87,7 @@ echo "🔄 Run ID: $RUN_ID"
 # Step 2: Get list of videos to process
 echo ""
 echo "📋 Step 2: Getting list of videos to process..."
-VIDEOS=$(python -c "
+VIDEOS=$(python3 -c "
 from integrations.db_supabase import Supa
 from config import Settings
 import os
@@ -141,7 +141,7 @@ for video_id in "${VIDEO_ARRAY[@]}"; do
     
     # Process video in background
     (
-        python -c "
+        python3 -c "
 import sys
 sys.path.insert(0, '.')
 from integrations.db_supabase import Supa
@@ -219,7 +219,7 @@ echo "📊 Processing Summary:"
 echo "=============================="
 
 # Get final status counts
-python -c "
+python3 -c "
 from integrations.db_supabase import Supa
 from config import Settings
 import os
@@ -242,7 +242,7 @@ print(f'🔄 Still processing: {processing_result.count}')
 # Step 4: Run Analytics on processed transactions
 echo ""
 echo "📊 Step 4: Running analytics on processed transactions..."
-python -c "
+python3 -c "
 import sys
 sys.path.insert(0, '.')
 from integrations.db_supabase import Supa
