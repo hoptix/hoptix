@@ -22,8 +22,8 @@ class ImportService:
         
         # Configuration for Google Drive
         self.SHARED_DRIVE_NAME = "Hoptix Video Server"
-        self.FOLDER_NAME = "Hoptix Video Server"
-        self.S3_PREFIX = os.getenv("S3_PREFIX", "gdrive/hoptix-video-server")
+        self.FOLDER_NAME = "SDQ DQ Lafayette"
+        self.S3_PREFIX = os.getenv("S3_PREFIX", "gdrive/sdq_dq_lafayette")
         self.DEFAULT_DURATION_SEC = int(os.getenv("GDRIVE_VIDEO_DURATION_SEC", "3600"))  # 1 hour default
     
     def import_videos_from_gdrive(self, s3, org_id: str, location_id: str, run_date: str) -> List[str]:
