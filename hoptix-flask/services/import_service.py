@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class ImportService:
     """Google Drive video import operations."""
     
-    def __init__(self, db: Supa, settings: Settings):
+    def __init__(self, db: Supa, settings: Settings, folder_name: str):
         self.db = db
         self.settings = settings
         self.database_service = DatabaseService(db)
@@ -22,8 +22,8 @@ class ImportService:
         
         # Configuration for Google Drive
         self.SHARED_DRIVE_NAME = "Hoptix Video Server"
-        self.FOLDER_NAME = "SDQ DQ Lafayette"
-        self.S3_PREFIX = os.getenv("S3_PREFIX", "gdrive/sdq_dq_lafayette")
+        self.FOLDER_NAME = folder_name
+        self.S3_PREFIX = os.getenv("S3_PREFIX", f"gdrive/{folder_name}")
         self.DEFAULT_DURATION_SEC = int(os.getenv("GDRIVE_VIDEO_DURATION_SEC", "3600"))  # 1 hour default
     
     def import_videos_from_gdrive(self, s3, org_id: str, location_id: str, run_date: str) -> List[str]:

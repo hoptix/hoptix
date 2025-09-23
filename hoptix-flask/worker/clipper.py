@@ -1,5 +1,6 @@
 # hoptix-flask/worker/clipper.py
 import os
+import shutil
 import tempfile
 import subprocess
 import datetime as dt
@@ -182,7 +183,16 @@ def cut_clip_for_transaction(
     
     # Upload to S3
     put_file(s3, deriv_bucket, s3_key, out_local, content_type="video/mp4")
-    
+
+    # Cleanup local clip and temp dir aggressively
+    try:
+        if os.path.exists(out_local):
+            os.remove(out_local)
+        if os.path.exists(tmpdir):
+            shutil.rmtree(tmpdir, ignore_errors=True)
+    except Exception:
+        pass
+
     # Generate and return full URL
     full_url = generate_full_clip_url(deriv_bucket, region, s3_key)
     return full_url

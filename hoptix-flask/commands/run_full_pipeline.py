@@ -151,6 +151,7 @@ class FullPipelineCommand:
             settings = Settings()
             db = Supa(self.supabase_url, self.supabase_service_key)
             s3 = get_s3(self.aws_region)
+            folder_name = db.client.table("locations").select("name").eq("id", location_id).limit(1).execute().data[0]["name"]
             
             # Suppress verbose HTTP logs for cleaner output
             logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -160,11 +161,11 @@ class FullPipelineCommand:
             logging.getLogger("google_auth_httplib2").setLevel(logging.WARNING)
 
             # Initialize services
-            import_service = ImportService(db, settings)
+            import_service = ImportService(db, settings, folder_name)
             processing_service = ProcessingService(db, settings)
 
             # Import videos from Google Drive
-            print(f"📥 Importing videos from Google Drive...")
+            print(f"📥 Importing videos from Google Drive for {folder_name}...")
             imported_video_ids = import_service.import_videos_from_gdrive(s3, org_id, location_id, run_date)
             
             if not imported_video_ids:

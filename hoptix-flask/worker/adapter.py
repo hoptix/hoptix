@@ -1,5 +1,5 @@
 from __future__ import annotations
-import os, json, tempfile, contextlib
+import os, json, tempfile, contextlib, shutil
 from typing import List, Dict, Any
 from datetime import datetime, timedelta
 
@@ -296,7 +296,7 @@ def _tmp_audio_from_video(video_path: str):
         yield out, duration
     finally:
         with contextlib.suppress(Exception): os.remove(out)
-        with contextlib.suppress(Exception): os.rmdir(tmpdir)
+        with contextlib.suppress(Exception): shutil.rmtree(tmpdir, ignore_errors=True)
 
 def _segment_active_spans(y: np.ndarray, sr: int, window_s: float = 15.0) -> List[tuple[float,float]]:
     # Mirrors your simple “average==0 → silence” logic to carve spans.
