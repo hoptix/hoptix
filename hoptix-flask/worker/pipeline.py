@@ -3,7 +3,7 @@ from typing import List, Dict, Tuple
 from dateutil import parser as dateparse
 from integrations.db_supabase import Supa
 from integrations.s3_client import get_s3, download_to_file, put_jsonl
-from worker.adapter import transcribe_video, split_into_transactions, grade_transactions
+from worker.adapter import transcribe_video, transcribe_audio, split_into_transactions, grade_transactions
 
 # Configure logging for pipeline
 logger = logging.getLogger(__name__)
@@ -16,6 +16,23 @@ def fetch_one_uploaded_video(db: Supa):
         "id, s3_key, run_id, location_id, started_at, ended_at"
     ).eq("status","uploaded").limit(1).execute()
     return r.data[0] if r.data else None
+
+def is_audio_file(s3_key: str) -> bool:
+    """Determine if a file is audio based on its extension"""
+    audio_extensions = {'.mp3', '.wav', '.m4a', '.aac', '.flac', '.ogg', '.wma', '.mkv'}
+    file_ext = os.path.splitext(s3_key.lower())[1]
+    return file_ext in audio_extensions
+
+def process_one_media(db: Supa, s3, media_row: Dict):
+    """Process either video or audio file based on file type"""
+    s3_key = media_row["s3_key"]
+    
+    if is_audio_file(s3_key):
+        logger.info(f"🎵 Detected audio file: {s3_key}")
+        return process_one_audio(db, s3, media_row)
+    else:
+        logger.info(f"🎬 Detected video file: {s3_key}")
+        return process_one_video(db, s3, media_row)
 
 def claim_video(db: Supa, video_id: str) -> bool:
     r = db.client.table("videos").update({"status":"processing"}) \
@@ -232,6 +249,91 @@ def process_one_video(db: Supa, s3, video_row: Dict):
         except Exception as cleanup_error:
             logger.warning(f"Failed to cleanup temporary files: {cleanup_error}")
 
+def process_one_audio(db: Supa, s3, audio_row: Dict):
+    """Process a single audio file with enhanced logging and progress tracking"""
+    from datetime import datetime
+    
+    audio_id = audio_row["id"]
+    s3_key = audio_row["s3_key"]
+    
+    logger.info(f"🎵 Starting audio processing pipeline")
+    logger.info(f"   🆔 Audio ID: {audio_id}")
+    logger.info(f"   🗂️ S3 Key: {s3_key}")
+    
+    settings = Settings()
+    tmpdir = tempfile.mkdtemp(prefix="hoptix_audio_")
+    
+    # Determine file extension from S3 key
+    file_ext = os.path.splitext(s3_key)[1] or ".mp3"
+    local_path = os.path.join(tmpdir, f"input{file_ext}")
+    start_time = datetime.now()
+    
+    try:
+        # Download audio
+        logger.info(f"📥 [1/6] Downloading audio from S3...")
+        download_to_file(s3, settings.RAW_BUCKET, s3_key, local_path)
+        
+        # Get file size for logging
+        file_size = os.path.getsize(local_path)
+        logger.info(f"✅ [1/6] Audio downloaded ({file_size:,} bytes) to: {local_path}")
+
+        # 1) ASR segments
+        logger.info(f"🎤 [2/6] Starting audio transcription...")
+        segments = transcribe_audio(local_path)
+        logger.info(f"✅ [2/6] Transcription completed: {len(segments)} segments generated")
+
+        # 2) Step‑1 split
+        logger.info(f"✂️ [3/6] Starting transaction splitting...")
+        txs = split_into_transactions(segments, audio_row["started_at"], s3_key)
+        logger.info(f"✅ [3/6] Transaction splitting completed: {len(txs)} transactions identified")
+
+        # artifacts
+        logger.info(f"☁️ [4/6] Uploading processing artifacts to S3...")
+        prefix = f'deriv/session={audio_id}/'
+        put_jsonl(s3, settings.DERIV_BUCKET, prefix + "segments.jsonl", segments)
+        put_jsonl(s3, settings.DERIV_BUCKET, prefix + "transactions.jsonl", txs)
+        logger.info(f"✅ [4/6] Artifacts uploaded to s3://{settings.DERIV_BUCKET}/{prefix}")
+
+        # 3) persist transactions
+        logger.info(f"💾 [5/6] Inserting {len(txs)} transactions into database...")
+        tx_ids = insert_transactions(db, audio_row, txs)
+        logger.info(f"✅ [5/6] Transactions inserted: {len(tx_ids)} records")
+
+        # 4) step‑2 grading with location-specific menu data
+        location_id = audio_row.get("location_id")
+        logger.info(f"🎯 [6/6] Starting AI grading for {len(txs)} transactions (location: {location_id})...")
+        grades = grade_transactions(txs, db, location_id)
+        put_jsonl(s3, settings.DERIV_BUCKET, prefix + "grades.jsonl", grades)
+        logger.info(f"✅ [6/6] Grading completed and uploaded to S3")
+
+        # 5) upsert grades
+        logger.info(f"📊 Upserting {len(tx_ids)} grades to database...")
+        upsert_grades(db, tx_ids, grades)
+        logger.info(f"✅ Grades successfully stored in database")
+        
+        # Final success message
+        duration = datetime.now() - start_time
+        logger.info(f"🎉 Audio processing completed successfully!")
+        logger.info(f"   ⏱️ Total time: {duration.total_seconds():.1f} seconds")
+        logger.info(f"   📈 Results: {len(segments)} segments → {len(txs)} transactions → {len(grades)} grades")
+        
+    except Exception as e:
+        duration = datetime.now() - start_time
+        logger.error(f"💥 Audio processing failed after {duration.total_seconds():.1f} seconds")
+        logger.error(f"   🚨 Error: {str(e)}")
+        raise
+        
+    finally:
+        # Cleanup temporary files
+        try:
+            if os.path.exists(local_path):
+                os.remove(local_path)
+                if os.path.exists(tmpdir):
+                    shutil.rmtree(tmpdir, ignore_errors=True)
+            logger.info(f"Cleaned up temporary files for audio {audio_id}")
+        except Exception as cleanup_error:
+            logger.warning(f"Failed to cleanup temporary files: {cleanup_error}")
+
 def main_loop():
     s = Settings()
     db = Supa(s.SUPABASE_URL, s.SUPABASE_SERVICE_KEY)
@@ -241,13 +343,13 @@ def main_loop():
         row = fetch_one_uploaded_video(db)
         if not row:
             time.sleep(3); continue
-        vid = row["id"]
-        if not claim_video(db, vid):
+        media_id = row["id"]
+        if not claim_video(db, media_id):
             continue
         try:
-            process_one_video(db, s3, row)
-            mark_status(db, vid, "ready")
+            process_one_media(db, s3, row)
+            mark_status(db, media_id, "ready")
         except Exception as e:
             print("worker error:", e)
-            mark_status(db, vid, "failed")
+            mark_status(db, media_id, "failed")
             time.sleep(2)

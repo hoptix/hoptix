@@ -1,5 +1,5 @@
 from flask import Blueprint, current_app, request
-from worker.pipeline import process_one_video, claim_video, mark_status
+from worker.pipeline import process_one_media, claim_video, mark_status
 import logging
 
 runs_bp = Blueprint("runs", __name__)
@@ -242,8 +242,8 @@ def run_one_video():
             sqs.delete_message(receipt_handle)
             return {"error": f"Could not claim video {video_id} (may already be processing)"}, 409
         
-        # 3. Process the video (same as run_once.py)
-        video_row = {
+        # 3. Process the media file (same as run_once.py)
+        media_row = {
             "id": video_data["video_id"],
             "s3_key": video_data["s3_key"], 
             "run_id": video_data["run_id"],
@@ -252,7 +252,7 @@ def run_one_video():
             "ended_at": video_data["ended_at"]
         }
         
-        process_one_video(db, s3, video_row)
+        process_one_media(db, s3, media_row)
         
         # 4. Mark as processed (using same function as run_once.py)
         mark_status(db, video_id, "ready")

@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Hoptix Production Runner - Parallel Version
-# Parallel video processing pipeline with configurable workers
+# Parallel media processing pipeline with configurable workers (video and audio)
 
-echo "🚀 Hoptix Parallel Video Processing Pipeline"
+echo "🚀 Hoptix Parallel Media Processing Pipeline"
 echo "============================================="
 
 # Validate required arguments
@@ -32,9 +32,9 @@ echo "👥 Number of workers: $NUM_WORKERS"
 # Change to the hoptix-flask directory
 cd "$(dirname "$0")/.."
 
-# Step 1: Import videos from Google Drive (using import service directly)
+# Step 1: Import media files from Google Drive (using import service directly)
 echo ""
-echo "📥 Step 1: Importing videos from Google Drive..."
+echo "📥 Step 1: Importing media files from Google Drive..."
 RUN_ID=$(python3 -c "
 import sys
 sys.path.insert(0, '.')
@@ -49,9 +49,12 @@ settings = Settings()
 db = Supa(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_KEY)
 s3 = get_s3(settings.AWS_REGION)
 
-import_service = ImportService(db, settings)
+# Get folder_name from location_id
+folder_name = db.client.table(\"locations\").select(\"name\").eq(\"id\", \"$LOCATION_ID\").limit(1).execute().data[0][\"name\"]
+
+import_service = ImportService(db, settings, folder_name)
 try:
-    imported_video_ids = import_service.import_videos_from_gdrive(s3, '$ORG_ID', '$LOCATION_ID', '$DATE_ARG')
+    imported_video_ids = import_service.import_videos_from_gdrive(s3, \"$ORG_ID\", \"$LOCATION_ID\", \"$DATE_ARG\")
     print(f'Successfully imported {len(imported_video_ids)} videos', file=sys.stderr)
     if imported_video_ids:
         print('Imported video IDs:', ', '.join(imported_video_ids), file=sys.stderr)
@@ -84,10 +87,10 @@ fi
 
 echo "🔄 Run ID: $RUN_ID"
 
-# Step 2: Get list of videos to process
+# Step 2: Get list of media files to process
 echo ""
-echo "📋 Step 2: Getting list of videos to process..."
-VIDEOS=$(python3 -c "
+echo "📋 Step 2: Getting list of media files to process..."
+MEDIA_FILES=$(python3 -c "
 from integrations.db_supabase import Supa
 from config import Settings
 import os
@@ -97,30 +100,30 @@ load_dotenv()
 settings = Settings()
 db = Supa(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_KEY)
 
-# Get uploaded videos for this run_id
+# Get uploaded media files for this run_id
 result = db.client.table('videos').select('id').eq('run_id', '$RUN_ID').eq('status', 'uploaded').execute()
 
-video_ids = [video['id'] for video in result.data]
-print(' '.join(video_ids))
+media_ids = [media['id'] for media in result.data]
+print(' '.join(media_ids))
 ")
 
-if [ -z "$VIDEOS" ]; then
-    echo "ℹ️ No videos found to process"
+if [ -z "$MEDIA_FILES" ]; then
+    echo "ℹ️ No media files found to process"
     exit 0
 fi
 
-VIDEO_ARRAY=($VIDEOS)
-TOTAL_VIDEOS=${#VIDEO_ARRAY[@]}
+MEDIA_ARRAY=($MEDIA_FILES)
+TOTAL_MEDIA=${#MEDIA_ARRAY[@]}
 
-echo "📊 Found $TOTAL_VIDEOS videos to process"
+echo "📊 Found $TOTAL_MEDIA media files to process"
 echo "🚀 Starting $NUM_WORKERS parallel workers..."
 echo ""
 
-# Step 3: Process videos in parallel
+# Step 3: Process media files in parallel
 PIDS=()
 WORKER_COUNT=0
 
-for video_id in "${VIDEO_ARRAY[@]}"; do
+for media_id in "${MEDIA_ARRAY[@]}"; do
     # Wait if we've reached max workers
     while [ ${#PIDS[@]} -ge $NUM_WORKERS ]; do
         # Check for completed processes
@@ -137,9 +140,9 @@ for video_id in "${VIDEO_ARRAY[@]}"; do
     
     # Start new worker
     WORKER_COUNT=$((WORKER_COUNT + 1))
-    echo "🔄 Worker $WORKER_COUNT: Starting video $video_id"
+    echo "🔄 Worker $WORKER_COUNT: Starting media $media_id"
     
-    # Process video in background
+    # Process media file in background
     (
         python3 -c "
 import sys
@@ -147,7 +150,7 @@ sys.path.insert(0, '.')
 from integrations.db_supabase import Supa
 from integrations.s3_client import get_s3
 from config import Settings
-from worker.pipeline import claim_video, mark_status, process_one_video
+from worker.pipeline import claim_video, mark_status, process_one_media
 from services.processing_service import ProcessingService
 from integrations.gdrive_client import GoogleDriveClient
 import tempfile
@@ -159,46 +162,60 @@ settings = Settings()
 db = Supa(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_KEY)
 s3 = get_s3(settings.AWS_REGION)
 
-video_id = '$video_id'
-print(f'Worker processing video: {video_id}')
+media_id = '$media_id'
+print(f'Worker processing media: {media_id}')
 
 try:
-    # Claim video
-    if not claim_video(db, video_id):
-        print(f'Could not claim video {video_id}')
+    # Claim media file
+    if not claim_video(db, media_id):
+        print(f'Could not claim media {media_id}')
         sys.exit(1)
     
-    # Get video details
-    result = db.client.table('videos').select('id, s3_key, run_id, location_id, started_at, ended_at, meta').eq('id', video_id).limit(1).execute()
+    # Get media details
+    result = db.client.table('videos').select('id, s3_key, run_id, location_id, started_at, ended_at, meta').eq('id', media_id).limit(1).execute()
     if not result.data:
-        print(f'Video {video_id} not found')
+        print(f'Media {media_id} not found')
         sys.exit(1)
     
     row = result.data[0]
     gdrive_file_id = row['meta']['gdrive_file_id']
+    s3_key = row['s3_key']
+    
+    # Determine file extension from S3 key
+    import os
+    file_ext = os.path.splitext(s3_key)[1] or '.mp4'
     
     # Download from Google Drive and process
     gdrive = GoogleDriveClient()
-    with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as tmp_file:
-        tmp_video_path = tmp_file.name
+    with tempfile.NamedTemporaryFile(suffix=file_ext, delete=False) as tmp_file:
+        tmp_media_path = tmp_file.name
     
     try:
-        if gdrive.download_file(gdrive_file_id, tmp_video_path):
+        if gdrive.download_file(gdrive_file_id, tmp_media_path):
             processing_service = ProcessingService(db, settings)
-            processing_service.process_video_from_local_file(row, tmp_video_path)
-            mark_status(db, video_id, 'ready')
-            print(f'✅ Successfully processed video {video_id}')
+            
+            # Check if it's audio or video and process accordingly
+            audio_extensions = {'.mp3', '.wav', '.m4a', '.aac', '.flac', '.ogg', '.wma'}
+            if file_ext.lower() in audio_extensions:
+                print(f'Processing as audio file: {file_ext}')
+                processing_service.process_audio_from_local_file(row, tmp_media_path)
+            else:
+                print(f'Processing as video file: {file_ext}')
+                processing_service.process_video_from_local_file(row, tmp_media_path)
+            
+            mark_status(db, media_id, 'ready')
+            print(f'✅ Successfully processed media {media_id}')
         else:
-            print(f'❌ Failed to download video {video_id}')
-            mark_status(db, video_id, 'failed')
+            print(f'❌ Failed to download media {media_id}')
+            mark_status(db, media_id, 'failed')
             sys.exit(1)
     finally:
-        if os.path.exists(tmp_video_path):
-            os.remove(tmp_video_path)
+        if os.path.exists(tmp_media_path):
+            os.remove(tmp_media_path)
             
 except Exception as e:
-    print(f'❌ Error processing video {video_id}: {e}')
-    mark_status(db, video_id, 'failed')
+    print(f'❌ Error processing media {media_id}: {e}')
+    mark_status(db, media_id, 'failed')
     sys.exit(1)
 "
     ) &
