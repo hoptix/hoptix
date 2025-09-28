@@ -410,6 +410,55 @@ def transcribe_video(local_path: str) -> List[Dict]:
             segs.append({"start": float(b), "end": float(e), "text": text})
     return segs
 
+def transcribe_audio(local_path: str) -> List[Dict]:
+    """Transcribe audio file directly without video processing"""
+    segs: List[Dict] = []
+    
+    # Load audio file and get duration
+    y, sr = librosa.load(local_path, sr=None)
+    duration = len(y) / sr
+    
+    # Segment active spans (same logic as video)
+    spans = _segment_active_spans(y, sr, 15.0) or [(0.0, duration)]
+    
+    for i, (b, e) in enumerate(spans):
+        # Create temporary audio file for this segment
+        with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tf:
+            tmp_audio = tf.name
+        
+        try:
+            # Extract audio segment using librosa
+            start_sample = int(b * sr)
+            end_sample = int(min(e, duration) * sr)
+            segment_audio = y[start_sample:end_sample]
+            
+            # Save segment to temporary file
+            import soundfile as sf
+            sf.write(tmp_audio, segment_audio, sr)
+            
+            # Transcribe using OpenAI
+            with open(tmp_audio, "rb") as af:
+                try:
+                    txt = client.audio.transcriptions.create(
+                        model=_settings.ASR_MODEL,
+                        file=af,
+                        response_format="text",
+                        temperature=0.001,
+                        prompt="Label each line as Operator: or Customer: where possible."
+                    )
+                    text = str(txt)
+                except Exception as ex:
+                    print("ASR error:", ex)
+                    text = ""
+            
+            segs.append({"start": float(b), "end": float(e), "text": text})
+            
+        finally:
+            with contextlib.suppress(Exception): 
+                os.remove(tmp_audio)
+    
+    return segs
+
 # ---------- 2) SPLIT (Step‑1 prompt per segment, preserve your @#& format) ----------
 def split_into_transactions(transcript_segments: List[Dict], video_started_at_iso: str, s3_key: str = None) -> List[Dict]:
     # Use actual video timestamp from filename if available, otherwise use database timestamp
