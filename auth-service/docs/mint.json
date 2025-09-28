@@ -1,0 +1,149 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Strike Auth Service",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#07C983",
+    "dark": "#0D9373",
+    "anchors": {
+      "from": "#0D9373",
+      "to": "#07C983"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Support",
+      "url": "mailto:support@strike.com"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Dashboard",
+    "url": "https://dashboard.strike.com"
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "Documentation",
+      "icon": "book-open-cover",
+      "url": "https://docs.strike.com"
+    },
+    {
+      "name": "Community",
+      "icon": "slack",
+      "url": "https://slack.strike.com"
+    },
+    {
+      "name": "Blog",
+      "icon": "newspaper",
+      "url": "https://blog.strike.com"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": [
+        "introduction",
+        "quickstart",
+        "authentication"
+      ]
+    },
+    {
+      "group": "Core Concepts",
+      "pages": [
+        "concepts/user-management",
+        "concepts/security",
+        "concepts/rate-limiting",
+        "concepts/error-handling"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "guides/signup-flow",
+        "guides/login-flow",
+        "guides/password-recovery",
+        "guides/magic-links",
+        "guides/oauth-integration",
+        "guides/admin-operations"
+      ]
+    },
+    {
+      "group": "API Documentation",
+      "pages": [
+        "api-reference/introduction"
+      ]
+    },
+    {
+      "group": "System",
+      "pages": [
+        "api-reference/system/health-check"
+      ]
+    },
+    {
+      "group": "Public",
+      "pages": [
+        "api-reference/public/get-settings"
+      ]
+    },
+    {
+      "group": "Authentication",
+      "pages": [
+        "api-reference/authentication/signup",
+        "api-reference/authentication/login",
+        "api-reference/authentication/admin-login",
+        "api-reference/authentication/verify-get",
+        "api-reference/authentication/verify-post",
+        "api-reference/authentication/resend",
+        "api-reference/authentication/recover",
+        "api-reference/authentication/magic-link",
+        "api-reference/authentication/otp"
+      ]
+    },
+    {
+      "group": "User Management",
+      "pages": [
+        "api-reference/user/get-profile",
+        "api-reference/user/update-profile",
+        "api-reference/user/reauthenticate",
+        "api-reference/user/logout"
+      ]
+    },
+    {
+      "group": "Admin",
+      "pages": [
+        "api-reference/admin/create-user",
+        "api-reference/admin/update-user",
+        "api-reference/admin/generate-link",
+        "api-reference/admin/invite-user"
+      ]
+    },
+    {
+      "group": "OAuth",
+      "pages": [
+        "api-reference/oauth/authorize",
+        "api-reference/oauth/callback"
+      ]
+    },
+    {
+      "group": "Debug",
+      "pages": [
+        "api-reference/debug/token-inspection"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "x": "https://x.com/strike",
+    "github": "https://github.com/strike",
+    "linkedin": "https://www.linkedin.com/company/strike"
+  }
+} 

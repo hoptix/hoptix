@@ -23,6 +23,71 @@ def read_run(run_id):
     if not data: return {"error": "not found"}, 404
     return data
 
+@runs_bp.get("/runs")
+def list_runs():
+    """List runs across all locations, optionally filtered by location, with optional analytics."""
+    db = current_app.config["DB"]
+    logger = logging.getLogger(__name__)
+    
+    try:
+        # Query parameters
+        limit = int(request.args.get("limit", 50))
+        limit = min(limit, 200)
+        include_analytics = request.args.get("include_analytics", "true").lower() == "true"
+        location_id = request.args.get("location_id")
+        
+        if include_analytics:
+            query = db.client.table("run_analytics_with_details").select(
+                "run_id, run_date, location_id, org_id, "
+                "total_transactions, upsell_successes, upsize_successes, "
+                "total_revenue, upsell_revenue, upsize_revenue, addon_revenue"
+            )
+            if location_id:
+                query = query.eq("location_id", location_id)
+            result = query.order("run_date", desc=True).limit(limit).execute()
+            if not result.data:
+                return {"runs": [], "count": 0}, 200
+            runs = []
+            for row in result.data:
+                runs.append({
+                    "id": row["run_id"],
+                    "runId": row["run_id"],
+                    "date": row["run_date"],
+                    "status": "ready",
+                    "created_at": row["run_date"],
+                    "org_id": row["org_id"],
+                    "location_id": row["location_id"],
+                    "totalTransactions": row.get("total_transactions", 0),
+                    "successfulUpsells": row.get("upsell_successes", 0),
+                    "successfulUpsizes": row.get("upsize_successes", 0),
+                    "totalRevenue": float(row.get("total_revenue", 0) or 0)
+                })
+        else:
+            query = db.client.table("runs").select(
+                "id, org_id, location_id, run_date, status, created_at"
+            )
+            if location_id:
+                query = query.eq("location_id", location_id)
+            result = query.order("created_at", desc=True).limit(limit).execute()
+            if not result.data:
+                return {"runs": [], "count": 0}, 200
+            runs = []
+            for run in result.data:
+                runs.append({
+                    "id": run["id"],
+                    "runId": run["id"],
+                    "date": run["run_date"],
+                    "status": run["status"],
+                    "created_at": run["created_at"],
+                    "org_id": run["org_id"],
+                    "location_id": run["location_id"]
+                })
+        logger.info(f"Listed {len(runs)} runs" + (f" for location {location_id}" if location_id else ""))
+        return {"runs": runs, "count": len(runs)}, 200
+    except Exception as e:
+        logger.error(f"Error listing runs: {str(e)}", exc_info=True)
+        return {"error": f"Internal server error: {str(e)}"}, 500
+
 @runs_bp.get("/locations")
 def get_all_locations():
     """Get all locations with their organization details"""
@@ -30,16 +95,22 @@ def get_all_locations():
     logger = logging.getLogger(__name__)
     
     try:
-        logger.info("Fetching all locations...")
+        logger.info("Fetching locations (default: all; filter by owner if provided)...")
         
-        # First, get all locations - start with basic columns
-        locations_result = db.client.table("locations").select("*").execute()
+        owner_id = request.args.get("owner_id")
+        
+        # Build base query
+        query = db.client.table("locations").select("*")
+        if owner_id:
+            query = query.eq("owner_id", owner_id)
+        
+        locations_result = query.execute()
         
         if not locations_result.data:
             logger.info("No locations found")
             return {"locations": [], "count": 0}, 200
         
-        logger.info(f"Found {len(locations_result.data)} locations")
+        logger.info(f"Found {len(locations_result.data)} locations" + (f" for owner {owner_id}" if owner_id else ""))
         
         # Get all organizations to map org_id to org_name
         orgs_result = db.client.table("orgs").select("id, name").execute()

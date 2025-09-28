@@ -358,7 +358,7 @@ def get_item_analytics():
         logger.info(f"Fetching item analytics for run_id={run_id}, limit={limit}")
         
         # Build query
-        query = db.client.table("grades").select("*")
+        query = db.client.view("graded_rows_filtered").select("*")
         if run_id:
             query = query.eq("run_id", run_id)
         
@@ -372,21 +372,7 @@ def get_item_analytics():
             })
         
         # Convert to format expected by analytics service
-        transactions = []
-        for row in result.data:
-            transaction = {
-                "Items Initially Requested": row.get("items_initial", "0"),
-                "# of Chances to Upsell": row.get("num_upsell_opportunities", 0),
-                "# of Upselling Offers Made": row.get("num_upsell_offers", 0),
-                "# of Sucessfull Upselling chances": row.get("num_upsell_success", 0),
-                "# of Chances to Upsize": row.get("num_upsize_opportunities", 0),
-                "# of Upsizing Offers Made": row.get("num_upsize_offers", 0),
-                "# of Sucessfull Upsizing chances": row.get("num_upsize_success", 0),
-                "# of Chances to Add-on": row.get("num_addon_opportunities", 0),
-                "# of Add-on Offers": row.get("num_addon_offers", 0),
-                "# of Succesful Add-on Offers": row.get("num_addon_success", 0),
-            }
-            transactions.append(transaction)
+        transactions = result.data
         
         # Generate analytics
         analytics_service = HoptixAnalyticsService()
@@ -404,8 +390,8 @@ def get_item_analytics():
         item_analytics = {}
         for item in all_items:
             item_analytics[item] = {
-                "upselling": upsell_metrics["by_item"].get(item, {"opportunities": 0, "offers": 0, "successes": 0, "success_rate": 0, "offer_rate": 0}),
-                "upsizing": upsize_metrics["by_item"].get(item, {"opportunities": 0, "offers": 0, "successes": 0, "success_rate": 0, "offer_rate": 0}),
+                "upselling": upsell_metrics["by_item"].get(item, {"upsellable_count": 0, "upsold_count": 0, "upsell_rate": 0, "revenue": 0}),
+                "upsizing": upsize_metrics["by_item"].get(item, {"upsizeable_count": 0, "upsized_count": 0, "upsize_rate": 0, "revenue": 0}),
                 "addons": addon_metrics["by_item"].get(item, {"opportunities": 0, "offers": 0, "successes": 0, "success_rate": 0, "offer_rate": 0})
             }
         
@@ -413,8 +399,8 @@ def get_item_analytics():
         sorted_items = sorted(
             item_analytics.items(),
             key=lambda x: (
-                x[1]["upselling"]["opportunities"] +
-                x[1]["upsizing"]["opportunities"] +
+                x[1]["upselling"]["upsellable_count"] +
+                x[1]["upsizing"]["upsizeable_count"] +
                 x[1]["addons"]["opportunities"]
             ),
             reverse=True

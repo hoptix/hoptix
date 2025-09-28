@@ -1,0 +1,340 @@
+---
+title: "Verify User (Redirect)"
+api: "GET /verify"
+description: "Verify email/phone confirmation via GET redirect (used in email links)"
+---
+
+Verify email or phone confirmation via GET redirect. This endpoint is typically used in email verification links and redirects users to your application with authentication tokens.
+
+<Note>
+This endpoint does not require authentication and is designed to be called from email links.
+</Note>
+
+<RequestExample>
+
+```bash cURL
+curl -X GET "http://localhost:8080/verify?type=signup&token=verification_token&redirect_to=https://yourapp.com/dashboard"
+```
+
+```javascript JavaScript
+// This endpoint is typically called automatically when users click email links
+// But you can also call it programmatically:
+
+const params = new URLSearchParams({
+  type: 'signup',
+  token: 'verification_token',
+  redirect_to: 'https://yourapp.com/dashboard'
+});
+
+window.location.href = `http://localhost:8080/verify?${params}`;
+```
+
+```python Python
+import requests
+
+params = {
+    'type': 'signup',
+    'token': 'verification_token',
+    'redirect_to': 'https://yourapp.com/dashboard'
+}
+
+response = requests.get('http://localhost:8080/verify', params=params)
+# This will return a redirect response
+```
+
+</RequestExample>
+
+## Query Parameters
+
+<ParamField query="type" type="string" required>
+  The type of verification being performed.
+  
+  **Options:**
+  - `signup` - Email/phone confirmation after registration
+  - `recovery` - Password recovery verification
+  - `magiclink` - Magic link authentication
+  - `invite` - User invitation acceptance
+  - `email_change` - Email change confirmation
+</ParamField>
+
+<ParamField query="token" type="string" required>
+  The verification token sent via email or SMS.
+</ParamField>
+
+<ParamField query="redirect_to" type="string">
+  URL to redirect to after successful verification. If not provided, uses default redirect URL.
+</ParamField>
+
+## Response
+
+This endpoint returns a redirect response rather than JSON data.
+
+### Successful Verification
+
+<ResponseExample>
+
+```http 303 - Redirect with Tokens
+HTTP/1.1 303 See Other
+Location: https://yourapp.com/dashboard#access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&refresh_token=refresh_token_string&expires_in=3600&token_type=bearer
+```
+
+</ResponseExample>
+
+The redirect URL will include authentication tokens in the URL fragment:
+
+| Parameter | Description |
+|-----------|-------------|
+| `access_token` | JWT access token for API authentication |
+| `refresh_token` | Refresh token for obtaining new access tokens |
+| `expires_in` | Token expiration time in seconds |
+| `token_type` | Token type (always "bearer") |
+
+### Failed Verification
+
+<ResponseExample>
+
+```json 400 - Invalid Token
+{
+  "code": 400,
+  "msg": "Invalid or expired token",
+  "details": "The verification token is invalid or has expired"
+}
+```
+
+```json 400 - Invalid Type
+{
+  "code": 400,
+  "msg": "Invalid verification type",
+  "details": "Verification type must be one of: signup, recovery, magiclink, invite, email_change"
+}
+```
+
+</ResponseExample>
+
+## Verification Types
+
+### Signup Verification
+
+Confirms email or phone after user registration:
+
+```
+GET /verify?type=signup&token=abc123&redirect_to=https://yourapp.com/welcome
+```
+
+### Password Recovery
+
+Verifies password reset requests:
+
+```
+GET /verify?type=recovery&token=def456&redirect_to=https://yourapp.com/reset-password
+```
+
+### Magic Link
+
+Passwordless authentication via email:
+
+```
+GET /verify?type=magiclink&token=ghi789&redirect_to=https://yourapp.com/dashboard
+```
+
+### Email Change
+
+Confirms email address changes:
+
+```
+GET /verify?type=email_change&token=jkl012&redirect_to=https://yourapp.com/profile
+```
+
+### User Invitation
+
+Accepts user invitations:
+
+```
+GET /verify?type=invite&token=mno345&redirect_to=https://yourapp.com/setup
+```
+
+## Handling Redirects in Your Application
+
+### Frontend Token Extraction
+
+```javascript
+// Extract tokens from URL fragment after redirect
+function extractTokensFromURL() {
+  const hash = window.location.hash.substring(1);
+  const params = new URLSearchParams(hash);
+  
+  return {
+    access_token: params.get('access_token'),
+    refresh_token: params.get('refresh_token'),
+    expires_in: parseInt(params.get('expires_in')),
+    token_type: params.get('token_type')
+  };
+}
+
+// Use on your redirect page
+if (window.location.hash.includes('access_token')) {
+  const tokens = extractTokensFromURL();
+  
+  // Store tokens securely
+  localStorage.setItem('access_token', tokens.access_token);
+  localStorage.setItem('refresh_token', tokens.refresh_token);
+  
+  // Clean up URL
+  window.history.replaceState({}, document.title, window.location.pathname);
+  
+  // Redirect to dashboard or show success message
+  window.location.href = '/dashboard';
+}
+```
+
+### React Hook for Token Handling
+
+```jsx
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+
+function useAuthCallback() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if we're on the callback page with tokens
+    if (window.location.hash.includes('access_token')) {
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      
+      const tokens = {
+        access_token: params.get('access_token'),
+        refresh_token: params.get('refresh_token'),
+        expires_in: parseInt(params.get('expires_in'))
+      };
+
+      if (tokens.access_token) {
+        // Store tokens and redirect
+        localStorage.setItem('auth_tokens', JSON.stringify(tokens));
+        
+        // Clean URL and redirect
+        window.history.replaceState({}, document.title, window.location.pathname);
+        router.push('/dashboard');
+      }
+    }
+  }, [router]);
+}
+
+// Use in your callback component
+function AuthCallback() {
+  useAuthCallback();
+  
+  return (
+    <div>
+      <h2>Verifying your account...</h2>
+      <p>Please wait while we complete the verification process.</p>
+    </div>
+  );
+}
+```
+
+## Security Considerations
+
+- **Token Expiration**: Verification tokens have limited lifetime (typically 24 hours)
+- **Single Use**: Tokens can only be used once for security
+- **HTTPS Required**: Always use HTTPS in production to protect tokens
+- **URL Fragments**: Tokens are passed in URL fragments to prevent server-side logging
+
+## Error Handling
+
+Handle verification errors gracefully in your application:
+
+```javascript
+// Check for error parameters in URL
+const urlParams = new URLSearchParams(window.location.search);
+const error = urlParams.get('error');
+const errorDescription = urlParams.get('error_description');
+
+if (error) {
+  switch (error) {
+    case 'invalid_token':
+      showError('The verification link is invalid or has expired. Please request a new one.');
+      break;
+    case 'expired_token':
+      showError('The verification link has expired. Please request a new one.');
+      break;
+    default:
+      showError('Verification failed. Please try again or contact support.');
+  }
+}
+```
+
+## Testing Verification Links
+
+### Development Testing
+
+```bash
+# Test signup verification
+curl -X GET "http://localhost:8080/verify?type=signup&token=test_token&redirect_to=http://localhost:3000/callback"
+
+# Test with invalid token
+curl -X GET "http://localhost:8080/verify?type=signup&token=invalid_token"
+```
+
+### Integration Testing
+
+```javascript
+describe('Verification Endpoint', () => {
+  test('should redirect with tokens on valid verification', async () => {
+    const response = await request(app)
+      .get('/verify')
+      .query({
+        type: 'signup',
+        token: 'valid_test_token',
+        redirect_to: 'http://localhost:3000/callback'
+      })
+      .expect(303);
+
+    expect(response.headers.location).toContain('access_token=');
+    expect(response.headers.location).toContain('refresh_token=');
+  });
+
+  test('should return error for invalid token', async () => {
+    await request(app)
+      .get('/verify')
+      .query({
+        type: 'signup',
+        token: 'invalid_token'
+      })
+      .expect(400);
+  });
+});
+```
+
+## Related Endpoints
+
+<CardGroup cols={2}>
+  <Card
+    title="Verify (JSON)"
+    icon="check"
+    href="/api-reference/authentication/verify-post"
+  >
+    POST endpoint for JSON verification responses
+  </Card>
+  <Card
+    title="Resend Confirmation"
+    icon="paper-plane"
+    href="/api-reference/authentication/resend"
+  >
+    Resend verification emails or SMS
+  </Card>
+  <Card
+    title="User Signup"
+    icon="user-plus"
+    href="/api-reference/authentication/signup"
+  >
+    Create new user accounts
+  </Card>
+  <Card
+    title="Magic Links"
+    icon="link"
+    href="/api-reference/authentication/magic-link"
+  >
+    Passwordless authentication
+  </Card>
+</CardGroup> 

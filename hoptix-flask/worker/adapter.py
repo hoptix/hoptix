@@ -218,35 +218,45 @@ When indicating items, meals, add-ons, and any menu items, you MUST format them 
 
 **Reference the items.json file to find the correct Item ID and Size IDs for each menu item.**
 
-
 1. Meals and items initially ordered by customer as a jsonb. Make sure this is a jsonb with no other text than the items ordered. Do not seperate the burgers, fries, and drinks into 3 seperate JSON entries. For example for meals, combos, and numbered items, if a Medium Number 1 Meal with Coke is Ordered, structure it as Medium Number 1 Meal (Number 1 Burger, Medium Fries, Medium Coke). If there are no items ordered, put a 0. Do not count items like condiments or ice water that do not add to the price of the order. Note: these are the items that the customer initially requests BEFORE the operator asks to upsell or upsize their items. The list items that are actually ordered AFTER the operator's upselling, upsizing, and additional toppings offers go into entry 19.
 2. Number of Items Ordered. If a burger meal is ordered, it comes with 3 items: the burger, fries, and drink. Make sure that this is a number. Format this as an integer.
+
+**Upsell**
 3. Number of Chances to Upsell. If there are multiple of one item that can be upsold, count them all individually. For example, 2 Whoppers have 4 chances to upsell to a combo in total, not 2. Format this as an integer.
-4. Items that Could be Upsold as a jsonb. If there were no items, write the number 0. For example, if the customer ordered a burger, the items that could be upsold might be the fries and the drink. Do not put the item that was upsold (e.g. a burger), but put the items that could be a upsold (e.g. fries and drink).
-5. Items that created the Upselling Opportunities as a jsonb. These are the items that caused the upsell opportunities to happen. For example, if fries and a drink were upsold because a burger was ordered, the put the burger.
-6. Number of Upselling Offers Made. Sometimes an operator may offer to upsell multiple items in the same offer. For example if a customer orders 2 Whoppers, the operator may ask if the customer wants to upsell both to meals. This would count as 2 offers, one for each Whopper. Format this as an integer.
-7. Items Successfully Upsold as a jsonb.  If there were no items, write the number 0. Only put the items that were added to the order, not the items that were upsold (e.g. if a burger was upsold, put the fries and drink, not the burger).
-8. Items that created the Successful Upselling Opportunities as a jsonb. These are the items that caused the upsell to happen. For example, if fries and a drink were upsold because a burger was ordered, the put the burger.
-9. Number of Successful Upselling Offers. If an operator offers to upsell multiple items in the same offer, and a customer accepts, then count each item upsized seperately. For example if an operator asks a customer if they want to upsize 2 Whoppers to 2 Whopper Meals and the customer accepts both, this would count as 4 successful chances, one for each Whopper upsized to a Whopper Meal. Format this as an integer.
-10. Number of Items for which the Largest Option for that Item was Offerred. If multiple of the largest size of the same item are ordered, like 3 offers to turn an order of fries into an of large fries, each order of large fries is counted seperately, for a total of 3 times the largest option was offered for the fries. Format this as an integer.
-11. Number of Chances to Upsize. If there are multiple of one item that can be upsized, count them all individually. For example, 2 orders of fries have 2 chances to upsell to orders of large fries, not 1.
+4. Items that are candidates for upselling as a jsonb. If there were no items, write the number 0. For example, if the customer ordered a burger only, the items that are candidates for upselling would be the fries and the drink.
+Also output (non-numbered): 4_base — a jsonb array of the base items that created the upsell opportunities (e.g., the burgers that could be turned into meals). If none, write 0.
+5. Number of Upselling Offers Made. Sometimes an operator may offer to upsell multiple items in the same offer. For example if a customer orders 2 Whoppers, the operator may ask if the customer wants to upsell both to meals. This would count as 2 offers, one for each Whopper. Format this as an integer.
+6. Item candidates that were offered for upselling as a jsonb. If there were no candidates offered, write the number 0. For example, if the customer ordered a burger, the candidates that were offered for upselling would be the fries and the drink.
+7. Items Successfully Upsold as a jsonb. If there were no items, write the number 0. Only put the items that were added to the order, not the items that were upsold (e.g. if a burger was upsold, put the fries and drink, not the burger).
+8. Items that created the Successful Upselling Opportunities as a jsonb. These are the items that caused the upsell to happen. For example, if fries and a drink were upsold because a burger was ordered, then put the burger.
+9. Number of Successful Upselling Offers. If an operator offers to upsell multiple items in the same offer, and a customer accepts, then count each item upsized separately. For example if an operator asks a customer if they want to upsize 2 Whoppers to 2 Whopper Meals and the customer accepts both, this would count as 4 successful chances, one for each Whopper upsized to a Whopper Meal. Format this as an integer.
+10. Number of Items for which the Largest Option for that Item was Offered. If multiple of the largest size of the same item are ordered, like 3 offers to turn an order of fries into large fries, each order of large fries is counted separately, for a total of 3 times the largest option was offered. Format this as an integer.
+
+**Upsize**
+11. Number of Chances to Upsize. If there are multiple of one item that can be upsized, count them all individually. For example, 2 orders of fries have 2 chances to upsize to large fries, not 1.
+Also output (non-numbered): 11_base — a jsonb array of the base items that created the upsize opportunities (e.g., small fries that could be upsized). If none, write 0.
 12. Items in Order that Could be Upsized as a jsonb. If there were no items, write the number 0.
-13. Items that created the Upsizing Opportunity as a jsonb. These are the items that caused the upsizing opportunity to happen. For example, if large fries were sold because fries of unspecified size were ordered, then put small fries. Note: If a size is not specified for an item that gets upsized, then assume that it is the smallest size of that item.
+13. Items that created the Upsizing Opportunity as a jsonb. For example, if large fries were sold because fries of unspecified size were ordered, then put small fries. If a size is not specified, assume it is the smallest size. If there were no items, write the number 0.
 14. Number of Upsizing Offers Made. Sometimes an operator may offer to upsize multiple items in the same offer. For example if a customer orders 2 fries, the operator may ask if the customer wants to upsize both to a large. This would count as 2 offers, one for each order of fries. Format this as an integer.
-15. Number of Items Successfully Upsized. If an operator offers to upsize multiple items in the same offer, and a customer accepts, then count each item upsized seperately. If 3 orders of fries were upsized, count each one separately, for a total count of 3. Format this as an integer.
+15. Number of Items Successfully Upsized. If an operator offers to upsize multiple items in the same offer, and a customer accepts, then count each item upsized separately. If 3 orders of fries were upsized, count each one separately, for a total count of 3. Format this as an integer.
 16. Items Successfully Upsized as a jsonb. If there were no items, write the number 0.
-17. Items that created the Upsizing as a strjsonbing. These are the items that caused the upsizing to happen. For example, if large fries were sold because fries of unspecified size were ordered, then put small fries. Note: If a size is not specified for an item that gets upsized, then assume that it is the smallest size of that item.
-18. # of Chances to add Additional Toppings. If there are multiple of one item that can have additional toppings, count them all individually. For example, 2 orders of Blizzards have 2 chances to add additional toppings to orders of Blizzards, not 1.
-19. Addtional toppings that could have been added as a jsonb. If there were no items, write the number 0.
-20. Items that created the Additional Topping Opportunities as a jsonb. These are the items that caused the additional topping opportunity to happen. For example, if whipped cream was added because a sundae was ordered, then put the sundae.
+17. Items that created the Upsizing as a jsonb. These are the items that caused the upsizing to happen. For example, if large fries were sold because fries of unspecified size were ordered, then put small fries. If none, write 0.
+
+**Add-ons**
+18. Number of Chances to add Additional Toppings. If there are multiple of one item that can have additional toppings, count them all individually. For example, 2 Blizzards = 2 chances. Format this as an integer.
+Also output (non-numbered): 17_base — a jsonb array of the base items that created the add-on opportunities (e.g., sundae that can have extra toppings). If none, write 0.
+19. Additional toppings that could have been added as a jsonb. If there were no items, write the number 0.
+20. Items that created the Additional Topping Opportunities as a jsonb. For example, if whipped cream was offered because a sundae was ordered, then put the sundae. If none, write 0.
 21. Number of Additional Toppings Offers Made. Format this as an integer.
-22. Number of Successfull additional toppings offers. Format this as an integer.
+22. Number of Successful Additional Toppings offers. Format this as an integer.
 23. Items that additional toppings were added successfully. If there were no items, write the number 0.
-24. Items that created the Additional Toppings as a jsonb. These are the items that caused the additional toppings to happen. For example, if whipped cream was added because a sundae was ordered, then put the sundae.
-25. Meals and items ordered by customer AFTER upsells, upsizes, and additional toppings offers. Make sure this is a single jsonb with no other text than the items ordered. Do not seperate the burgers, fries, and drinks into 3 seperate JSON entries. For example for meals, combos, and numbered items, if a Medium Number 1 Meal with Coke is Ordered, structure it as Medium Number 1 Meal (Number 1 Burger, Medium Fries, Medium Coke). If there are no items ordered, put a 0. Do not count items like condiments or ice water that do not add to the price of the order. Note: these are the items that the customer initially requests AFTER the operator asks to upsell or upsize their items.
+24. Items that created the Additional Toppings as a jsonb. For example, if whipped cream was added because a sundae was ordered, then put the sundae. If none, write 0.
+
+**After Order**
+25. Meals and items ordered by customer AFTER upsells, upsizes, and additional toppings offers. Single jsonb, same rules as field 1. If no items, put 0.
 26. Number of Items ordered by customer AFTER upsells, upsizes, and additional toppings offers. Format this as an integer.
-27. Structured feedback, as a string with no line breaks. Make sure not to use double quotes inside of the feedback since it is formatted as a string inside of a JSON.
-28. List where in the table you found your answer, and then list out any and all difficulties, ambiguities, or conflicting instructions encountered when processing the transcript and returning response guidelines 1 through 21. You must list where in the table you found your answer. This is a hard rule that must be followed. 
+27. Structured feedback, as a string with no line breaks. Do not use double quotes inside the feedback.
+28. List where in the table you found your answer, and list any difficulties, ambiguities, or conflicting instructions encountered. You must list where you found your answer. This is a hard rule.
 
 **JSON of Menu Items with Ordered Item Counts, Upselling Opportunities, and Upsizing Opportunities**:
 - Below this line, a JSON file will be inserted containing all items on the Dairy Queen menu along with relevant information like the ordered item count, item inclusions, opportunities for upselling, and oportunities for upsizing.
@@ -468,77 +478,85 @@ def split_into_transactions(transcript_segments: List[Dict], video_started_at_is
 
 # ---------- 3) GRADE (Step‑2 prompt per transaction, return ALL columns) ----------
 def _map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -> Dict[str,Any]:
-    """Map your numbered keys to explicit grade columns."""
+    """Map numbered Step-2 keys (UPDATED) to `public.grades` columns with candidates + offered + converted."""
     # Defaults
-    def _ii(x, default=0): 
-        try: return int(x)
-        except: return default
+    def _ii(x, default=0):
+        try:
+            return int(x)
+        except:
+            return default
 
-    # Helper function to parse JSON fields safely
+    # Parse JSON/JSONB-like fields
     def _parse_json_field(value, default="0"):
-        """Parse a field that should be JSONB, handling both string and dict inputs"""
         if value is None:
             return default
-        if isinstance(value, dict):
+        if isinstance(value, (list, dict)):
             return value
         if isinstance(value, str):
-            if value.strip() in ["", "0"]:
+            s = value.strip()
+            if s in ("", "0"):
                 return default
             try:
-                # Try to parse as JSON if it looks like JSON
-                if value.strip().startswith(('{', '[')):
+                if s[0] in "{[":
                     import json
-                    return json.loads(value)
-                else:
-                    return value
+                    return json.loads(s)
+                return value  # already a plain string like "0" or a CSV that upstream expects
             except:
                 return value
         return value
 
-    return {
-        # Colab Step‑2 basic flags from Step‑1 meta for completeness
-        "complete_order": _ii(tx_meta.get("complete_order", 0)),
-        "mobile_order":   _ii(tx_meta.get("mobile_order", 0)),
-        "coupon_used":    _ii(tx_meta.get("coupon_used", 0)),
-        "asked_more_time":_ii(tx_meta.get("asked_more_time", 0)),
-        "out_of_stock_items": tx_meta.get("out_of_stock_items","0"),
+    out = {
+        # Meta flags from tx, unchanged
+        "complete_order":   _ii(tx_meta.get("complete_order", 0)),
+        "mobile_order":     _ii(tx_meta.get("mobile_order", 0)),
+        "coupon_used":      _ii(tx_meta.get("coupon_used", 0)),
+        "asked_more_time":  _ii(tx_meta.get("asked_more_time", 0)),
+        "out_of_stock_items": tx_meta.get("out_of_stock_items", "0"),
 
-        # Complete mapping of prompt fields 1-28 to database schema (CORRECTED)
-        "items_initial":              step2_obj.get("1", "0"),    # Field 1: Initial items ordered
-        "num_items_initial":          _ii(step2_obj.get("2", 0)), # Field 2: Number of items ordered
-        "num_upsell_opportunities":   _ii(step2_obj.get("3", 0)), # Field 3: Number of upsell chances
-        "items_upsellable":           step2_obj.get("4", "0"),    # Field 4: Items that could be upsold
-        "items_upselling_creators":   _parse_json_field(step2_obj.get("5", "0")),    # Field 5: Items that created upselling opportunities (JSONB)
-        "num_upsell_offers":          _ii(step2_obj.get("6", 0)), # Field 6: Number of upselling offers made  
-        "items_upsold":               step2_obj.get("7", "0"),    # Field 7: Items successfully upsold
-        "items_upsold_creators":      _parse_json_field(step2_obj.get("8", "0")),    # Field 8: Items that created successful upselling (JSONB)
-        "num_upsell_success":         _ii(step2_obj.get("9", 0)), # Field 9: Number of successful upselling offers
-        "num_largest_offers":         _ii(step2_obj.get("10", 0)), # Field 10: Number of largest option offers
-        "num_upsize_opportunities":   _ii(step2_obj.get("11", 0)), # Field 11: Number of upsize chances
-        "items_upsizeable":           step2_obj.get("12", "0"),   # Field 12: Items that could be upsized
-        "items_upsizing_creators":    _parse_json_field(step2_obj.get("13", "0")),   # Field 13: Items that created upsizing opportunities (JSONB)
-        "num_upsize_offers":          _ii(step2_obj.get("14", 0)), # Field 14: Number of upsizing offers made
-        "num_upsize_success":         _ii(step2_obj.get("15", 0)), # Field 15: Number of items successfully upsized
-        "items_upsize_success":       step2_obj.get("16", "0"),   # Field 16: Items successfully upsized
-        "items_upsize_creators":      _parse_json_field(step2_obj.get("17", "0")),   # Field 17: Items that created upsizing (JSONB)
-        "num_addon_opportunities":    _ii(step2_obj.get("18", 0)), # Field 18: Number of addon chances
-        "items_addonable":            step2_obj.get("19", "0"),   # Field 19: Additional toppings that could be added
-        "items_addon_creators":       _parse_json_field(step2_obj.get("20", "0")),   # Field 20: Items that created addon opportunities (JSONB)
-        "num_addon_offers":           _ii(step2_obj.get("21", 0)), # Field 21: Number of addon offers made
-        "num_addon_success":          _ii(step2_obj.get("22", 0)), # Field 22: Number of successful addon offers
-        "items_addon_success":        step2_obj.get("23", "0"),   # Field 23: Items with successful addons
-        "items_addon_final_creators": _parse_json_field(step2_obj.get("24", "0")),   # Field 24: Items that created final addons (JSONB)
-        "items_after":                step2_obj.get("25", "0"),   # Field 25: Items after all changes
-        "num_items_after":            _ii(step2_obj.get("26", 0)), # Field 26: Number of items after changes
-        "feedback":                   step2_obj.get("27", ""),    # Field 27: Structured feedback
-        "issues":                     step2_obj.get("28", ""),    # Field 28: Difficulties and ambiguities
+        # BEFORE items
+        "items_initial":         step2_obj.get("1", "0"),
+        "num_items_initial":     _ii(step2_obj.get("2", 0)),
 
-        # Extras used in your Colab
-        "reasoning_summary":          step2_obj.get("24. Reasoning Summary", ""),
-        "gpt_price":                  step2_obj.get("25. GPT Price", 0),
-        "video_file_path":            step2_obj.get("28. Video File Path", ""),
-        "video_link":                 step2_obj.get("29. Google Drive Video Link", ""),
+        # ---- Upsell (candidates → offered → converted) ----
+        "num_upsell_opportunities": _ii(step2_obj.get("3", 0)),
+        "upsell_base_items":        _parse_json_field(step2_obj.get("4_base", "0")),  # was items_upsellable
+        "upsell_candidate_items":   _parse_json_field(step2_obj.get("4", "0")),
+        "num_upsell_offers":        _ii(step2_obj.get("5", 0)),
+        "upsell_offered_items":     _parse_json_field(step2_obj.get("6", "0")),
+        "upsell_success_items":     _parse_json_field(step2_obj.get("7", "0")),       # was items_upsold
+        "num_upsell_success":       _ii(step2_obj.get("8", 0)),
+        "num_largest_offers":       _ii(step2_obj.get("9", 0)),
+
+        # ---- Upsize (candidates → offered → converted) ----
+        "num_upsize_opportunities": _ii(step2_obj.get("11", 0)),
+        "upsize_base_items":        _parse_json_field(step2_obj.get("11_base", "0")), # was items_upsizeable
+        "upsize_candidate_items":   _parse_json_field(step2_obj.get("12", "0")),
+        "num_upsize_offers":        _ii(step2_obj.get("13", 0)),
+        "upsize_offered_items":     _parse_json_field(step2_obj.get("13_offered", "0")),
+        "upsize_success_items":     _parse_json_field(step2_obj.get("15", "0")),      # was items_upsize_success
+        "num_upsize_success":       _ii(step2_obj.get("14", 0)),
+
+        # ---- Add-on (candidates → offered → converted) ----
+        "num_addon_opportunities":  _ii(step2_obj.get("18", 0)),
+        "addon_base_items":         _parse_json_field(step2_obj.get("17_base", "0")), # was items_addonable
+        "addon_candidate_items":    _parse_json_field(step2_obj.get("19", "0")),
+        "num_addon_offers":         _ii(step2_obj.get("21", 0)),
+        "addon_offered_items":      _parse_json_field(step2_obj.get("20", "0")),
+        "addon_success_items":      _parse_json_field(step2_obj.get("23", "0")),      # was items_addon_success
+        "num_addon_success":        _ii(step2_obj.get("22", 0)),
+
+        # AFTER items
+        "items_after":              step2_obj.get("22", "0"),
+        "num_items_after":          _ii(step2_obj.get("23", 0)),
+
+        # Text feedback
+        "feedback":                 step2_obj.get("24", ""),
+        "issues":                   step2_obj.get("25", ""),
+
+        # Optional extras
+        "reasoning_summary":        step2_obj.get("26", "")
     }
+
 
 def grade_transactions(transactions: List[Dict], db=None, location_id: str = None) -> List[Dict]:
     graded: List[Dict] = []

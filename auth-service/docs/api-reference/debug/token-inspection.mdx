@@ -1,0 +1,675 @@
+---
+title: "Token Inspection"
+api: "POST /debug/token"
+description: "Inspect and validate JWT tokens for debugging purposes. This endpoint provides detailed information about token structure, claims, and validity status."
+---
+
+## Overview
+
+The token inspection endpoint allows administrators and developers to debug JWT tokens by providing detailed information about their structure, claims, expiration, and validity. This is particularly useful for troubleshooting authentication issues and verifying token integrity.
+
+<Warning>
+This endpoint is intended for debugging purposes only and should be used with caution in production environments. Ensure proper access controls are in place.
+</Warning>
+
+## Authentication
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.strike.com/auth/debug/token" \
+  -H "Authorization: Bearer YOUR_SERVICE_ROLE_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.strike.com/auth/debug/token', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_SERVICE_ROLE_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+  })
+});
+
+const tokenInfo = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.strike.com/auth/debug/token',
+    headers={
+        'Authorization': 'Bearer YOUR_SERVICE_ROLE_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+    }
+)
+
+token_info = response.json()
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "net/http"
+)
+
+func inspectToken(token string) (*TokenInfo, error) {
+    payload := map[string]string{
+        "token": token,
+    }
+    
+    jsonData, _ := json.Marshal(payload)
+    
+    req, _ := http.NewRequest("POST", "https://api.strike.com/auth/debug/token", bytes.NewBuffer(jsonData))
+    req.Header.Set("Authorization", "Bearer YOUR_SERVICE_ROLE_KEY")
+    req.Header.Set("Content-Type", "application/json")
+    
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        return nil, err
+    }
+    defer resp.Body.Close()
+    
+    var tokenInfo TokenInfo
+    json.NewDecoder(resp.Body).Decode(&tokenInfo)
+    return &tokenInfo, nil
+}
+```
+</CodeGroup>
+
+## Request Body
+
+<ParamField body="token" type="string" required>
+  The JWT token to inspect and validate
+</ParamField>
+
+<ParamField body="validate_signature" type="boolean" default="true">
+  Whether to validate the token signature
+</ParamField>
+
+<ParamField body="check_expiration" type="boolean" default="true">
+  Whether to check if the token has expired
+</ParamField>
+
+## Response
+
+<ResponseField name="valid" type="boolean">
+  Whether the token is valid and properly formatted
+</ResponseField>
+
+<ResponseField name="expired" type="boolean">
+  Whether the token has expired
+</ResponseField>
+
+<ResponseField name="header" type="object">
+  The JWT header containing algorithm and token type information
+  <Expandable title="header properties">
+    <ResponseField name="alg" type="string">
+      The signing algorithm used (e.g., "HS256", "RS256")
+    </ResponseField>
+    <ResponseField name="typ" type="string">
+      The token type (typically "JWT")
+    </ResponseField>
+    <ResponseField name="kid" type="string">
+      Key ID used for signature verification (if applicable)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="payload" type="object">
+  The JWT payload containing claims and user information
+  <Expandable title="payload properties">
+    <ResponseField name="sub" type="string">
+      Subject (user ID)
+    </ResponseField>
+    <ResponseField name="email" type="string">
+      User's email address
+    </ResponseField>
+    <ResponseField name="iat" type="number">
+      Issued at timestamp
+    </ResponseField>
+    <ResponseField name="exp" type="number">
+      Expiration timestamp
+    </ResponseField>
+    <ResponseField name="aud" type="string">
+      Audience
+    </ResponseField>
+    <ResponseField name="iss" type="string">
+      Issuer
+    </ResponseField>
+    <ResponseField name="role" type="string">
+      User's role
+    </ResponseField>
+    <ResponseField name="app_metadata" type="object">
+      Application-specific metadata
+    </ResponseField>
+    <ResponseField name="user_metadata" type="object">
+      User-specific metadata
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="signature_valid" type="boolean">
+  Whether the token signature is valid
+</ResponseField>
+
+<ResponseField name="issued_at" type="string">
+  Human-readable issued at time
+</ResponseField>
+
+<ResponseField name="expires_at" type="string">
+  Human-readable expiration time
+</ResponseField>
+
+<ResponseField name="time_until_expiry" type="string">
+  Time remaining until token expires
+</ResponseField>
+
+<ResponseField name="errors" type="array">
+  Array of validation errors if any
+</ResponseField>
+
+## Example Response
+
+<ResponseExample>
+```json Success Response
+{
+  "valid": true,
+  "expired": false,
+  "header": {
+    "alg": "HS256",
+    "typ": "JWT"
+  },
+  "payload": {
+    "sub": "user_123456789",
+    "email": "john.doe@example.com",
+    "iat": 1703097600,
+    "exp": 1703184000,
+    "aud": "authenticated",
+    "iss": "https://api.strike.com/auth",
+    "role": "authenticated",
+    "app_metadata": {
+      "provider": "email",
+      "providers": ["email"]
+    },
+    "user_metadata": {
+      "name": "John Doe",
+      "avatar_url": "https://example.com/avatar.jpg"
+    }
+  },
+  "signature_valid": true,
+  "issued_at": "2023-12-20T12:00:00Z",
+  "expires_at": "2023-12-21T12:00:00Z",
+  "time_until_expiry": "23h 45m 30s",
+  "errors": []
+}
+```
+
+```json Invalid Token Response
+{
+  "valid": false,
+  "expired": true,
+  "header": {
+    "alg": "HS256",
+    "typ": "JWT"
+  },
+  "payload": {
+    "sub": "user_123456789",
+    "email": "john.doe@example.com",
+    "iat": 1703011200,
+    "exp": 1703097600,
+    "aud": "authenticated",
+    "iss": "https://api.strike.com/auth",
+    "role": "authenticated"
+  },
+  "signature_valid": true,
+  "issued_at": "2023-12-19T12:00:00Z",
+  "expires_at": "2023-12-20T12:00:00Z",
+  "time_until_expiry": "expired",
+  "errors": [
+    "Token has expired"
+  ]
+}
+```
+
+```json Malformed Token Response
+{
+  "valid": false,
+  "expired": null,
+  "header": null,
+  "payload": null,
+  "signature_valid": false,
+  "issued_at": null,
+  "expires_at": null,
+  "time_until_expiry": null,
+  "errors": [
+    "Invalid JWT format",
+    "Unable to decode token"
+  ]
+}
+```
+</ResponseExample>
+
+## Implementation Examples
+
+### React Token Inspector Component
+
+```jsx
+import React, { useState } from 'react';
+
+const TokenInspector = () => {
+  const [token, setToken] = useState('');
+  const [inspection, setInspection] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const inspectToken = async () => {
+    if (!token.trim()) return;
+    
+    setLoading(true);
+    try {
+      const response = await fetch('/api/auth/debug/token', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.REACT_APP_SERVICE_ROLE_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ token: token.trim() })
+      });
+      
+      const result = await response.json();
+      setInspection(result);
+    } catch (error) {
+      console.error('Token inspection failed:', error);
+      setInspection({ 
+        valid: false, 
+        errors: ['Failed to inspect token'] 
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="token-inspector">
+      <div className="input-section">
+        <label htmlFor="token">JWT Token:</label>
+        <textarea
+          id="token"
+          value={token}
+          onChange={(e) => setToken(e.target.value)}
+          placeholder="Paste your JWT token here..."
+          rows={4}
+          className="token-input"
+        />
+        <button 
+          onClick={inspectToken} 
+          disabled={loading || !token.trim()}
+          className="inspect-button"
+        >
+          {loading ? 'Inspecting...' : 'Inspect Token'}
+        </button>
+      </div>
+
+      {inspection && (
+        <div className="inspection-results">
+          <div className={`status ${inspection.valid ? 'valid' : 'invalid'}`}>
+            Status: {inspection.valid ? 'Valid' : 'Invalid'}
+            {inspection.expired && ' (Expired)'}
+          </div>
+
+          {inspection.payload && (
+            <div className="token-details">
+              <h3>Token Details</h3>
+              <div className="detail-grid">
+                <div>
+                  <strong>User ID:</strong> {inspection.payload.sub}
+                </div>
+                <div>
+                  <strong>Email:</strong> {inspection.payload.email}
+                </div>
+                <div>
+                  <strong>Role:</strong> {inspection.payload.role}
+                </div>
+                <div>
+                  <strong>Issued:</strong> {inspection.issued_at}
+                </div>
+                <div>
+                  <strong>Expires:</strong> {inspection.expires_at}
+                </div>
+                <div>
+                  <strong>Time Until Expiry:</strong> {inspection.time_until_expiry}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {inspection.errors && inspection.errors.length > 0 && (
+            <div className="errors">
+              <h3>Errors</h3>
+              <ul>
+                {inspection.errors.map((error, index) => (
+                  <li key={index} className="error">{error}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default TokenInspector;
+```
+
+### Node.js Backend Handler
+
+```javascript
+const jwt = require('jsonwebtoken');
+const { createClient } = require('@supabase/supabase-js');
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
+async function inspectToken(req, res) {
+  try {
+    const { token, validate_signature = true, check_expiration = true } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        error: 'Token is required'
+      });
+    }
+
+    const inspection = {
+      valid: false,
+      expired: null,
+      header: null,
+      payload: null,
+      signature_valid: false,
+      issued_at: null,
+      expires_at: null,
+      time_until_expiry: null,
+      errors: []
+    };
+
+    try {
+      // Decode without verification first to get header and payload
+      const decoded = jwt.decode(token, { complete: true });
+      
+      if (!decoded) {
+        inspection.errors.push('Invalid JWT format');
+        return res.json(inspection);
+      }
+
+      inspection.header = decoded.header;
+      inspection.payload = decoded.payload;
+
+      // Check expiration
+      if (check_expiration && decoded.payload.exp) {
+        const now = Math.floor(Date.now() / 1000);
+        inspection.expired = decoded.payload.exp < now;
+        
+        if (inspection.expired) {
+          inspection.errors.push('Token has expired');
+        }
+      }
+
+      // Validate signature if requested
+      if (validate_signature) {
+        try {
+          jwt.verify(token, process.env.JWT_SECRET);
+          inspection.signature_valid = true;
+        } catch (verifyError) {
+          inspection.signature_valid = false;
+          inspection.errors.push(`Signature validation failed: ${verifyError.message}`);
+        }
+      }
+
+      // Format timestamps
+      if (decoded.payload.iat) {
+        inspection.issued_at = new Date(decoded.payload.iat * 1000).toISOString();
+      }
+      
+      if (decoded.payload.exp) {
+        inspection.expires_at = new Date(decoded.payload.exp * 1000).toISOString();
+        
+        const now = Date.now();
+        const expiry = decoded.payload.exp * 1000;
+        
+        if (expiry > now) {
+          const diff = expiry - now;
+          const hours = Math.floor(diff / (1000 * 60 * 60));
+          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+          inspection.time_until_expiry = `${hours}h ${minutes}m ${seconds}s`;
+        } else {
+          inspection.time_until_expiry = 'expired';
+        }
+      }
+
+      // Determine overall validity
+      inspection.valid = inspection.errors.length === 0;
+
+    } catch (decodeError) {
+      inspection.errors.push(`Unable to decode token: ${decodeError.message}`);
+    }
+
+    res.json(inspection);
+
+  } catch (error) {
+    console.error('Token inspection error:', error);
+    res.status(500).json({
+      error: 'Internal server error during token inspection'
+    });
+  }
+}
+
+module.exports = { inspectToken };
+```
+
+### Bulk Token Inspection
+
+```javascript
+// Utility for inspecting multiple tokens
+async function inspectMultipleTokens(tokens) {
+  const results = await Promise.all(
+    tokens.map(async (token, index) => {
+      try {
+        const response = await fetch('/api/auth/debug/token', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.SERVICE_ROLE_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ token })
+        });
+        
+        const inspection = await response.json();
+        return { index, token: token.substring(0, 20) + '...', ...inspection };
+      } catch (error) {
+        return { 
+          index, 
+          token: token.substring(0, 20) + '...', 
+          valid: false, 
+          errors: [error.message] 
+        };
+      }
+    })
+  );
+  
+  return results;
+}
+```
+
+## Security Considerations
+
+<Warning>
+**Important Security Notes:**
+- This endpoint requires service role authentication
+- Never expose service role keys in client-side code
+- Use this endpoint only in secure, controlled environments
+- Consider rate limiting to prevent abuse
+- Log all token inspection requests for audit purposes
+</Warning>
+
+### Access Control
+
+```javascript
+// Middleware to restrict access to token inspection
+function requireDebugAccess(req, res, next) {
+  const userRole = req.user?.role;
+  const allowedRoles = ['admin', 'developer', 'support'];
+  
+  if (!allowedRoles.includes(userRole)) {
+    return res.status(403).json({
+      error: 'Insufficient permissions for token inspection'
+    });
+  }
+  
+  next();
+}
+```
+
+### Audit Logging
+
+```javascript
+// Log token inspection requests
+async function logTokenInspection(userId, tokenSubject, result) {
+  await supabase
+    .from('audit_logs')
+    .insert({
+      action: 'token_inspection',
+      actor_id: userId,
+      target_id: tokenSubject,
+      metadata: {
+        valid: result.valid,
+        expired: result.expired,
+        errors: result.errors
+      },
+      timestamp: new Date().toISOString()
+    });
+}
+```
+
+## Error Responses
+
+<ResponseExample>
+```json 400 Bad Request
+{
+  "error": "Token is required"
+}
+```
+
+```json 401 Unauthorized
+{
+  "error": "Service role key required"
+}
+```
+
+```json 403 Forbidden
+{
+  "error": "Insufficient permissions for token inspection"
+}
+```
+
+```json 429 Too Many Requests
+{
+  "error": "Rate limit exceeded"
+}
+```
+
+```json 500 Internal Server Error
+{
+  "error": "Internal server error during token inspection"
+}
+```
+</ResponseExample>
+
+## Testing
+
+### Jest Test Example
+
+```javascript
+describe('Token Inspection', () => {
+  test('should inspect valid token', async () => {
+    const validToken = jwt.sign(
+      { 
+        sub: 'user_123', 
+        email: 'test@example.com',
+        role: 'authenticated'
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    const response = await request(app)
+      .post('/debug/token')
+      .set('Authorization', `Bearer ${process.env.SERVICE_ROLE_KEY}`)
+      .send({ token: validToken });
+
+    expect(response.status).toBe(200);
+    expect(response.body.valid).toBe(true);
+    expect(response.body.expired).toBe(false);
+    expect(response.body.signature_valid).toBe(true);
+    expect(response.body.payload.sub).toBe('user_123');
+  });
+
+  test('should detect expired token', async () => {
+    const expiredToken = jwt.sign(
+      { 
+        sub: 'user_123', 
+        email: 'test@example.com',
+        role: 'authenticated'
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '-1h' } // Expired 1 hour ago
+    );
+
+    const response = await request(app)
+      .post('/debug/token')
+      .set('Authorization', `Bearer ${process.env.SERVICE_ROLE_KEY}`)
+      .send({ token: expiredToken });
+
+    expect(response.status).toBe(200);
+    expect(response.body.valid).toBe(false);
+    expect(response.body.expired).toBe(true);
+    expect(response.body.errors).toContain('Token has expired');
+  });
+
+  test('should handle malformed token', async () => {
+    const response = await request(app)
+      .post('/debug/token')
+      .set('Authorization', `Bearer ${process.env.SERVICE_ROLE_KEY}`)
+      .send({ token: 'invalid.token.format' });
+
+    expect(response.status).toBe(200);
+    expect(response.body.valid).toBe(false);
+    expect(response.body.errors.length).toBeGreaterThan(0);
+  });
+});
+```
+
+## Use Cases
+
+1. **Debugging Authentication Issues**: Quickly identify why a user's token is not working
+2. **Token Validation**: Verify token structure and claims during development
+3. **Security Audits**: Inspect tokens for security compliance
+4. **Support Operations**: Help users troubleshoot authentication problems
+5. **Development Testing**: Validate token generation and signing processes
+</rewritten_file> 

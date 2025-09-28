@@ -20,13 +20,15 @@ interface RunsResponse {
   count: number;
 }
 
-const fetchRuns = async (locationId: string, limit?: number, includeAnalytics: boolean = true): Promise<RunsResponse> => {
+const fetchRuns = async (locationId?: string, limit?: number, includeAnalytics: boolean = true): Promise<RunsResponse> => {
   // Use environment variable or fallback to localhost for development
   const baseUrl = typeof window !== 'undefined' 
     ? (window.location.origin.includes('localhost') ? 'http://localhost:8000' : window.location.origin)
     : 'http://localhost:8000';
   
-  const url = new URL(`/locations/${locationId}/runs`, baseUrl);
+  const url = locationId 
+    ? new URL(`/locations/${locationId}/runs`, baseUrl)
+    : new URL(`/runs`, baseUrl);
   
   if (limit) {
     url.searchParams.append('limit', limit.toString());
@@ -45,11 +47,11 @@ const fetchRuns = async (locationId: string, limit?: number, includeAnalytics: b
   return response.json();
 };
 
-export function useGetRuns(locationId: string, options?: { limit?: number }) {
+export function useGetRuns(locationId?: string, options?: { limit?: number }) {
   return useQuery({
-    queryKey: ['runs', locationId, options?.limit],
+    queryKey: ['runs', locationId ?? 'all', options?.limit],
     queryFn: () => fetchRuns(locationId, options?.limit),
-    enabled: !!locationId,
+    // Enabled by default (fetch all runs) and refetch when a location is selected
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
   });

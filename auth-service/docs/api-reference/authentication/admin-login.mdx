@@ -1,0 +1,356 @@
+---
+title: "Admin Login"
+api: "POST /login-admin"
+description: "Administrator login with enhanced user verification and admin status validation"
+---
+
+Enhanced authentication endpoint specifically for administrators. This endpoint performs standard user authentication followed by admin privilege verification via REST API lookup.
+
+## Overview
+
+The admin login endpoint performs a two-step authentication process:
+
+1. **Standard Authentication**: Validates user credentials using the OAuth2 password grant
+2. **Admin Verification**: Queries the user database to verify admin privileges
+3. **Combined Response**: Returns authentication tokens plus admin-specific user details
+
+<Info>
+  This endpoint requires the user to have `is_admin: true` in the user database.
+  Non-admin users will receive a 403 Forbidden response even with valid
+  credentials.
+</Info>
+
+## Request
+
+<RequestExample>
+
+```bash cURL
+curl -X POST "http://localhost:8080/login-admin" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@example.com",
+    "password": "securepassword123"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch("http://localhost:8080/login-admin", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    email: "admin@example.com",
+    password: "securepassword123",
+  }),
+});
+
+const adminData = await response.json();
+```
+
+```python Python
+import requests
+
+data = {
+    "email": "admin@example.com",
+    "password": "securepassword123"
+}
+
+response = requests.post(
+    'http://localhost:8080/login-admin',
+    json=data
+)
+admin_data = response.json()
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "net/http"
+)
+
+func main() {
+    data := map[string]string{
+        "email":    "admin@example.com",
+        "password": "securepassword123",
+    }
+
+    jsonData, _ := json.Marshal(data)
+
+    resp, err := http.Post(
+        "http://localhost:8080/login-admin",
+        "application/json",
+        bytes.NewBuffer(jsonData),
+    )
+    // Handle response...
+}
+```
+
+</RequestExample>
+
+## Request Body
+
+<ParamField body="email" type="string" required>
+  Administrator's email address
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  Administrator's password
+</ParamField>
+
+## Response
+
+<ResponseField name="access_token" type="string">
+  JWT access token for authenticating API requests
+</ResponseField>
+
+<ResponseField name="token_type" type="string">
+  Token type, always "bearer"
+</ResponseField>
+
+<ResponseField name="expires_in" type="integer">
+  Token expiration time in seconds (typically 3600 for 1 hour)
+</ResponseField>
+
+<ResponseField name="expires_at" type="integer">
+  Token expiration timestamp (Unix timestamp)
+</ResponseField>
+
+<ResponseField name="refresh_token" type="string">
+  Refresh token for obtaining new access tokens
+</ResponseField>
+
+<ResponseField name="user" type="object">
+  Standard user information object from authentication
+</ResponseField>
+
+<ResponseField name="admin_details" type="object">
+  Additional admin-specific user details from database lookup
+  <Expandable title="admin_details properties">
+    <ResponseField name="id" type="string">
+      User UUID
+    </ResponseField>
+    <ResponseField name="email" type="string">
+      Administrator's email address
+    </ResponseField>
+    <ResponseField name="is_admin" type="boolean">
+      Admin status flag (always true for successful responses)
+    </ResponseField>
+    <ResponseField name="created_at" type="string">
+      User creation timestamp (ISO 8601 format)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseExample>
+
+```json Success Response
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNjQwOTk1MjAwLCJpYXQiOjE2NDA5MDg4MDAsImlzcyI6Imh0dHBzOi8veW91ci1wcm9qZWN0LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIyNmEyMGFmMC0xMDlkLTQzZTAtYWUzOC0yZTM1MTQ4ZmZmNjQiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImF1dGhlbnRpY2F0ZWQifQ...",
+  "token_type": "bearer",
+  "expires_in": 3600,
+  "expires_at": 1640995200,
+  "refresh_token": "refresh_token_string_here",
+  "user": {
+    "id": "26a20af0-109d-43e0-ae38-2e35148fff64",
+    "aud": "authenticated",
+    "role": "authenticated",
+    "email": "admin@example.com",
+    "phone": null,
+    "email_confirmed_at": "2023-01-01T00:00:00Z",
+    "phone_confirmed_at": null,
+    "last_sign_in_at": "2023-01-01T12:00:00Z",
+    "app_metadata": {
+      "provider": "email",
+      "providers": ["email"]
+    },
+    "user_metadata": {
+      "first_name": "Admin",
+      "last_name": "User"
+    },
+    "created_at": "2023-01-01T00:00:00Z",
+    "updated_at": "2023-01-01T12:00:00Z"
+  },
+  "admin_details": {
+    "id": "26a20af0-109d-43e0-ae38-2e35148fff64",
+    "email": "admin@example.com",
+    "is_admin": true,
+    "created_at": "2023-01-01T00:00:00Z"
+  }
+}
+```
+
+</ResponseExample>
+
+## Error Responses
+
+<ResponseExample>
+
+```json Invalid Credentials (400)
+{
+  "code": 400,
+  "error_code": "invalid_credentials",
+  "msg": "Invalid login credentials"
+}
+```
+
+```json Missing Fields (400)
+{
+  "code": 400,
+  "message": "Invalid request body",
+  "details": "EOF"
+}
+```
+
+```json User Not Admin (403)
+{
+  "code": 403,
+  "message": "User is not an admin"
+}
+```
+
+```json User Not Found in Database (404)
+{
+  "code": 404,
+  "message": "User not found in database"
+}
+```
+
+```json Server Error (500)
+{
+  "code": 500,
+  "message": "Failed to fetch user details",
+  "details": "User details API returned non-200 status"
+}
+```
+
+</ResponseExample>
+
+## Authentication Flow
+
+The admin login process involves multiple steps with comprehensive error handling:
+
+<Steps>
+  <Step title="Initial Authentication">
+    User credentials are validated using the standard OAuth2 password grant flow
+  </Step>
+  <Step title="User ID Extraction">
+    The user UUID is extracted from the successful authentication response
+  </Step>
+  <Step title="Database Lookup">
+    A REST API call is made to `/rest/v1/users?id=eq.<UUID>` to fetch user details
+  </Step>
+  <Step title="Admin Verification">
+    The `is_admin` field is checked in the database response
+  </Step>
+  <Step title="Response Assembly">
+    Authentication tokens and admin details are combined into the final response
+  </Step>
+</Steps>
+
+## Use Cases
+
+### Admin Dashboard Access
+
+Use this endpoint for admin-only applications like admin dashboards:
+
+```javascript JavaScript
+const adminLogin = async (email, password) => {
+  try {
+    const response = await fetch("/login-admin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 403) {
+        throw new Error("Access denied: Admin privileges required");
+      }
+      throw new Error("Login failed");
+    }
+
+    const data = await response.json();
+
+    // Store tokens for subsequent API calls
+    localStorage.setItem("access_token", data.access_token);
+    localStorage.setItem("refresh_token", data.refresh_token);
+
+    // Access admin-specific data
+    console.log("Admin since:", data.admin_details.created_at);
+
+    return data;
+  } catch (error) {
+    console.error("Admin login failed:", error.message);
+    throw error;
+  }
+};
+```
+
+### API Integration
+
+For backend services that need to verify admin status:
+
+```python Python
+import requests
+from datetime import datetime
+
+def authenticate_admin(email, password):
+    """Authenticate an admin user and return enriched user data"""
+
+    response = requests.post('http://localhost:8080/login-admin', json={
+        'email': email,
+        'password': password
+    })
+
+    if response.status_code == 400:
+        raise ValueError('Invalid credentials')
+    elif response.status_code == 403:
+        raise PermissionError('User is not an admin')
+    elif response.status_code != 200:
+        raise RuntimeError(f'Authentication failed: {response.status_code}')
+
+    data = response.json()
+
+    # Process admin details
+    admin_since = datetime.fromisoformat(
+        data['admin_details']['created_at'].replace('Z', '+00:00')
+    )
+
+    return {
+        'access_token': data['access_token'],
+        'user_id': data['user']['id'],
+        'email': data['user']['email'],
+        'admin_since': admin_since,
+        'is_verified_admin': data['admin_details']['is_admin']
+    }
+```
+
+## Security Considerations
+
+<Warning>
+  This endpoint performs two separate API calls internally. Ensure your Supabase
+  RLS (Row Level Security) policies properly protect the `/rest/v1/users`
+  endpoint to prevent unauthorized access to user data.
+</Warning>
+
+### Best Practices
+
+- **Rate Limiting**: Implement aggressive rate limiting for admin login attempts
+- **Audit Logging**: Log all admin login attempts for security monitoring
+- **Token Management**: Use the same token security practices as regular authentication
+- **Database Security**: Ensure the `users` table has proper RLS policies
+
+### Error Handling
+
+The endpoint provides detailed error responses to help with debugging:
+
+- **400**: Invalid request body or credentials
+- **403**: Valid user but not an admin
+- **404**: User not found in database
+- **500**: Internal server errors (database connectivity, parsing errors)
+
+Each error includes relevant details for troubleshooting while maintaining security best practices.

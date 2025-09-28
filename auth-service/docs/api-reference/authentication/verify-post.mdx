@@ -1,0 +1,538 @@
+---
+title: "Verify User (JSON)"
+api: "POST /verify"
+description: "Verify email/phone confirmation via POST with JSON response"
+---
+
+Verify email or phone confirmation via POST request with JSON response. This endpoint is useful when you want to handle verification programmatically without redirects.
+
+<Note>
+This endpoint does not require authentication and returns JSON data instead of redirects.
+</Note>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST "http://localhost:8080/verify" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "signup",
+    "token": "verification_token_here"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('http://localhost:8080/verify', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    type: 'signup',
+    token: 'verification_token_here'
+  }),
+});
+
+const authData = await response.json();
+```
+
+```python Python
+import requests
+
+data = {
+    "type": "signup",
+    "token": "verification_token_here"
+}
+
+response = requests.post('http://localhost:8080/verify', json=data)
+auth_data = response.json()
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "net/http"
+)
+
+func main() {
+    data := map[string]string{
+        "type":  "signup",
+        "token": "verification_token_here",
+    }
+    
+    jsonData, _ := json.Marshal(data)
+    
+    resp, err := http.Post(
+        "http://localhost:8080/verify",
+        "application/json",
+        bytes.NewBuffer(jsonData),
+    )
+    // Handle response...
+}
+```
+
+</RequestExample>
+
+## Request Body
+
+<ParamField body="type" type="string" required>
+  The type of verification being performed.
+  
+  **Options:**
+  - `signup` - Email/phone confirmation after registration
+  - `recovery` - Password recovery verification
+  - `magiclink` - Magic link authentication
+  - `invite` - User invitation acceptance
+  - `email_change` - Email change confirmation
+  - `sms` - SMS OTP verification
+</ParamField>
+
+<ParamField body="token" type="string" required>
+  The verification token sent via email or SMS.
+</ParamField>
+
+<ParamField body="email" type="string">
+  Email address (required for certain verification types).
+</ParamField>
+
+<ParamField body="phone" type="string">
+  Phone number (required for SMS verification).
+</ParamField>
+
+<ParamField body="password" type="string">
+  Password (required for some verification flows like password recovery).
+</ParamField>
+
+## Response
+
+<ResponseField name="access_token" type="string">
+  JWT access token for authenticating API requests
+</ResponseField>
+
+<ResponseField name="token_type" type="string">
+  Token type, always "bearer"
+</ResponseField>
+
+<ResponseField name="expires_in" type="integer">
+  Token expiration time in seconds (typically 3600 for 1 hour)
+</ResponseField>
+
+<ResponseField name="expires_at" type="integer">
+  Token expiration timestamp (Unix timestamp)
+</ResponseField>
+
+<ResponseField name="refresh_token" type="string">
+  Refresh token for obtaining new access tokens
+</ResponseField>
+
+<ResponseField name="user" type="object">
+  User information object
+</ResponseField>
+
+<ResponseExample>
+
+```json 200 - Verification Successful
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNjQwOTk1MjAwLCJpYXQiOjE2NDA5MDg4MDAsImlzcyI6Imh0dHBzOi8veW91ci1wcm9qZWN0LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiIxMjNlNDU2Ny1lODliLTEyZDMtYTQ1Ni00MjY2MTQxNzQwMDAiLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJyb2xlIjoiYXV0aGVudGljYXRlZCJ9...",
+  "token_type": "bearer",
+  "expires_in": 3600,
+  "expires_at": 1640995200,
+  "refresh_token": "refresh_token_string_here",
+  "user": {
+    "id": "123e4567-e89b-12d3-a456-426614174000",
+    "aud": "authenticated",
+    "role": "authenticated",
+    "email": "user@example.com",
+    "phone": null,
+    "email_confirmed_at": "2023-01-01T00:00:00Z",
+    "phone_confirmed_at": null,
+    "last_sign_in_at": "2023-01-01T00:00:00Z",
+    "app_metadata": {
+      "provider": "email",
+      "providers": ["email"]
+    },
+    "user_metadata": {
+      "first_name": "John",
+      "last_name": "Doe"
+    },
+    "created_at": "2023-01-01T00:00:00Z",
+    "updated_at": "2023-01-01T00:00:00Z"
+  }
+}
+```
+
+</ResponseExample>
+
+## Error Responses
+
+<ResponseExample>
+
+```json 400 - Invalid Token
+{
+  "code": 400,
+  "msg": "Invalid or expired token",
+  "details": "The verification token is invalid or has expired"
+}
+```
+
+```json 400 - Missing Required Field
+{
+  "code": 400,
+  "msg": "Missing required field",
+  "details": "Email is required for email verification"
+}
+```
+
+```json 422 - Already Verified
+{
+  "code": 422,
+  "msg": "Already verified",
+  "details": "This email address has already been verified"
+}
+```
+
+</ResponseExample>
+
+## Verification Types
+
+### Email Signup Verification
+
+Verify email after user registration:
+
+```json
+{
+  "type": "signup",
+  "token": "email_verification_token"
+}
+```
+
+### SMS OTP Verification
+
+Verify SMS one-time password:
+
+```json
+{
+  "type": "sms",
+  "token": "123456",
+  "phone": "+1234567890"
+}
+```
+
+### Password Recovery
+
+Verify password reset token and set new password:
+
+```json
+{
+  "type": "recovery",
+  "token": "recovery_token",
+  "password": "new_secure_password"
+}
+```
+
+### Magic Link Verification
+
+Verify magic link authentication:
+
+```json
+{
+  "type": "magiclink",
+  "token": "magic_link_token",
+  "email": "user@example.com"
+}
+```
+
+### Email Change Verification
+
+Confirm email address change:
+
+```json
+{
+  "type": "email_change",
+  "token": "email_change_token"
+}
+```
+
+### Invitation Acceptance
+
+Accept user invitation:
+
+```json
+{
+  "type": "invite",
+  "token": "invitation_token",
+  "password": "user_chosen_password"
+}
+```
+
+## Implementation Examples
+
+### React Verification Component
+
+```jsx
+import { useState } from 'react';
+
+function VerificationForm({ type, token, onSuccess, onError }) {
+  const [loading, setLoading] = useState(false);
+  const [additionalData, setAdditionalData] = useState({});
+
+  const handleVerify = async () => {
+    setLoading(true);
+    
+    try {
+      const response = await fetch('/api/auth/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type,
+          token,
+          ...additionalData
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.msg || 'Verification failed');
+      }
+
+      const authData = await response.json();
+      
+      // Store tokens
+      localStorage.setItem('access_token', authData.access_token);
+      localStorage.setItem('refresh_token', authData.refresh_token);
+      
+      onSuccess(authData);
+      
+    } catch (error) {
+      onError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Render different forms based on verification type
+  if (type === 'recovery') {
+    return (
+      <div>
+        <h2>Set New Password</h2>
+        <input
+          type="password"
+          placeholder="New password"
+          value={additionalData.password || ''}
+          onChange={(e) => setAdditionalData({
+            ...additionalData,
+            password: e.target.value
+          })}
+        />
+        <button onClick={handleVerify} disabled={loading}>
+          {loading ? 'Setting Password...' : 'Set Password'}
+        </button>
+      </div>
+    );
+  }
+
+  if (type === 'sms') {
+    return (
+      <div>
+        <h2>Enter Verification Code</h2>
+        <input
+          type="text"
+          placeholder="6-digit code"
+          maxLength={6}
+          value={token}
+          onChange={(e) => setToken(e.target.value)}
+        />
+        <input
+          type="tel"
+          placeholder="Phone number"
+          value={additionalData.phone || ''}
+          onChange={(e) => setAdditionalData({
+            ...additionalData,
+            phone: e.target.value
+          })}
+        />
+        <button onClick={handleVerify} disabled={loading}>
+          {loading ? 'Verifying...' : 'Verify'}
+        </button>
+      </div>
+    );
+  }
+
+  // Default verification (email, magic link, etc.)
+  return (
+    <div>
+      <h2>Verifying...</h2>
+      <button onClick={handleVerify} disabled={loading}>
+        {loading ? 'Verifying...' : 'Complete Verification'}
+      </button>
+    </div>
+  );
+}
+```
+
+### Node.js Backend Handler
+
+```javascript
+const express = require('express');
+const router = express.Router();
+
+router.post('/verify', async (req, res) => {
+  try {
+    const { type, token, email, phone, password } = req.body;
+
+    // Validate required fields based on type
+    if (!type || !token) {
+      return res.status(400).json({
+        code: 400,
+        msg: 'Missing required fields',
+        details: 'Type and token are required'
+      });
+    }
+
+    // Additional validation for specific types
+    if (type === 'sms' && !phone) {
+      return res.status(400).json({
+        code: 400,
+        msg: 'Phone number required',
+        details: 'Phone number is required for SMS verification'
+      });
+    }
+
+    if (type === 'recovery' && !password) {
+      return res.status(400).json({
+        code: 400,
+        msg: 'Password required',
+        details: 'New password is required for recovery verification'
+      });
+    }
+
+    // Call Strike Auth Service
+    const response = await fetch(`${process.env.AUTH_SERVICE_URL}/verify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(req.body),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return res.status(response.status).json(data);
+    }
+
+    // Log successful verification
+    console.log(`User verified: ${data.user.email}, type: ${type}`);
+
+    // Return authentication data
+    res.json(data);
+
+  } catch (error) {
+    console.error('Verification error:', error);
+    res.status(500).json({
+      code: 500,
+      msg: 'Internal server error',
+      details: 'Please try again later'
+    });
+  }
+});
+
+module.exports = router;
+```
+
+## Rate Limiting
+
+This endpoint is rate limited to prevent abuse:
+
+- **General verification**: 10 attempts per minute per IP
+- **SMS verification**: 5 attempts per minute per phone number
+- **Password recovery**: 3 attempts per minute per email
+
+## Security Features
+
+- **Token Expiration**: Verification tokens expire after a set time
+- **Single Use**: Tokens can only be used once
+- **Type Validation**: Strict validation of verification types
+- **Rate Limiting**: Protection against brute force attacks
+
+## Testing
+
+### Unit Tests
+
+```javascript
+describe('POST /verify', () => {
+  test('should verify email signup token', async () => {
+    const response = await request(app)
+      .post('/verify')
+      .send({
+        type: 'signup',
+        token: 'valid_email_token'
+      })
+      .expect(200);
+
+    expect(response.body.access_token).toBeDefined();
+    expect(response.body.user.email_confirmed_at).toBeTruthy();
+  });
+
+  test('should verify SMS OTP', async () => {
+    const response = await request(app)
+      .post('/verify')
+      .send({
+        type: 'sms',
+        token: '123456',
+        phone: '+1234567890'
+      })
+      .expect(200);
+
+    expect(response.body.access_token).toBeDefined();
+  });
+
+  test('should reject invalid token', async () => {
+    await request(app)
+      .post('/verify')
+      .send({
+        type: 'signup',
+        token: 'invalid_token'
+      })
+      .expect(400);
+  });
+});
+```
+
+## Related Endpoints
+
+<CardGroup cols={2}>
+  <Card
+    title="Verify (Redirect)"
+    icon="external-link"
+    href="/api-reference/authentication/verify-get"
+  >
+    GET endpoint for redirect-based verification
+  </Card>
+  <Card
+    title="Resend Confirmation"
+    icon="paper-plane"
+    href="/api-reference/authentication/resend"
+  >
+    Resend verification emails or SMS
+  </Card>
+  <Card
+    title="Send OTP"
+    icon="mobile"
+    href="/api-reference/authentication/otp"
+  >
+    Send SMS one-time passwords
+  </Card>
+  <Card
+    title="Password Recovery"
+    icon="key"
+    href="/api-reference/authentication/recover"
+  >
+    Initiate password recovery flow
+  </Card>
+</CardGroup> 

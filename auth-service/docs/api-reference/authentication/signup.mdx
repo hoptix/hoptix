@@ -1,0 +1,269 @@
+---
+title: "User Registration"
+api: "POST /signup"
+description: "Register a new user with email/phone and password"
+---
+
+Register a new user account with email or phone number and password. This endpoint creates a new user in the system and optionally sends a confirmation email/SMS.
+
+<RequestExample>
+
+```bash cURL
+curl -X POST "http://localhost:8080/signup" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "securepassword123",
+    "data": {
+      "first_name": "John",
+      "last_name": "Doe"
+    }
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('http://localhost:8080/signup', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'securepassword123',
+    data: {
+      first_name: 'John',
+      last_name: 'Doe'
+    }
+  }),
+});
+
+const user = await response.json();
+```
+
+```python Python
+import requests
+
+data = {
+    "email": "user@example.com",
+    "password": "securepassword123",
+    "data": {
+        "first_name": "John",
+        "last_name": "Doe"
+    }
+}
+
+response = requests.post('http://localhost:8080/signup', json=data)
+user = response.json()
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "net/http"
+)
+
+func main() {
+    data := map[string]interface{}{
+        "email":    "user@example.com",
+        "password": "securepassword123",
+        "data": map[string]string{
+            "first_name": "John",
+            "last_name":  "Doe",
+        },
+    }
+    
+    jsonData, _ := json.Marshal(data)
+    
+    resp, err := http.Post(
+        "http://localhost:8080/signup",
+        "application/json",
+        bytes.NewBuffer(jsonData),
+    )
+    // Handle response...
+}
+```
+
+</RequestExample>
+
+## Request Body
+
+<ParamField body="email" type="string" required>
+  User's email address. Must be a valid email format.
+</ParamField>
+
+<ParamField body="phone" type="string">
+  User's phone number in international format (e.g., +1234567890). Either email or phone is required.
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  User's password. Must meet minimum security requirements.
+</ParamField>
+
+<ParamField body="data" type="object">
+  Additional user metadata to store with the user profile.
+</ParamField>
+
+<ParamField body="captcha_token" type="string">
+  Captcha token for verification if captcha is enabled.
+</ParamField>
+
+## Response
+
+<ResponseField name="id" type="string">
+  Unique user identifier (UUID format)
+</ResponseField>
+
+<ResponseField name="aud" type="string">
+  Audience claim, typically "authenticated"
+</ResponseField>
+
+<ResponseField name="role" type="string">
+  User role, typically "authenticated"
+</ResponseField>
+
+<ResponseField name="email" type="string">
+  User's email address
+</ResponseField>
+
+<ResponseField name="phone" type="string">
+  User's phone number
+</ResponseField>
+
+<ResponseField name="email_confirmed_at" type="string">
+  Timestamp when email was confirmed (null if not confirmed)
+</ResponseField>
+
+<ResponseField name="phone_confirmed_at" type="string">
+  Timestamp when phone was confirmed (null if not confirmed)
+</ResponseField>
+
+<ResponseField name="last_sign_in_at" type="string">
+  Timestamp of last sign in (null for new users)
+</ResponseField>
+
+<ResponseField name="app_metadata" type="object">
+  Application metadata managed by the system
+</ResponseField>
+
+<ResponseField name="user_metadata" type="object">
+  User metadata provided during registration
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  User creation timestamp
+</ResponseField>
+
+<ResponseField name="updated_at" type="string">
+  User last update timestamp
+</ResponseField>
+
+<ResponseExample>
+
+```json Response
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "aud": "authenticated",
+  "role": "authenticated",
+  "email": "user@example.com",
+  "phone": null,
+  "email_confirmed_at": null,
+  "phone_confirmed_at": null,
+  "last_sign_in_at": null,
+  "app_metadata": {
+    "provider": "email",
+    "providers": ["email"]
+  },
+  "user_metadata": {
+    "first_name": "John",
+    "last_name": "Doe"
+  },
+  "created_at": "2023-01-01T00:00:00Z",
+  "updated_at": "2023-01-01T00:00:00Z"
+}
+```
+
+</ResponseExample>
+
+## Error Responses
+
+<ResponseExample>
+
+```json 400 - Bad Request
+{
+  "code": 400,
+  "msg": "Invalid request data",
+  "details": "Email is required"
+}
+```
+
+```json 422 - Validation Error
+{
+  "code": 422,
+  "msg": "User already registered",
+  "details": "A user with this email already exists"
+}
+```
+
+```json 429 - Rate Limited
+{
+  "code": 429,
+  "msg": "Too many requests",
+  "details": "Rate limit exceeded. Try again later."
+}
+```
+
+</ResponseExample>
+
+## Password Requirements
+
+Passwords must meet the following requirements:
+
+- Minimum 8 characters
+- At least one uppercase letter
+- At least one lowercase letter  
+- At least one number
+- At least one special character
+
+## Email Confirmation
+
+After successful registration:
+
+1. If email confirmation is enabled, a confirmation email will be sent
+2. The user's `email_confirmed_at` field will be `null` until confirmed
+3. Users may need to confirm their email before accessing certain features
+
+## Phone Registration
+
+To register with a phone number instead of email:
+
+```json
+{
+  "phone": "+1234567890",
+  "password": "securepassword123"
+}
+```
+
+## Rate Limiting
+
+This endpoint is rate limited to prevent abuse:
+
+- **Limit**: 5 requests per minute per IP address
+- **Headers**: Rate limit information is included in response headers
+
+## Security Considerations
+
+- Passwords are securely hashed using bcrypt
+- Email addresses are validated and normalized
+- Phone numbers are validated for proper format
+- Captcha verification may be required based on configuration
+
+## Next Steps
+
+After successful registration, users typically need to:
+
+1. **Confirm their email/phone** - Use the [verify endpoint](/api-reference/authentication/verify-post)
+2. **Sign in** - Use the [login endpoint](/api-reference/authentication/login)
+3. **Complete profile** - Use the [update profile endpoint](/api-reference/user/update-profile) 
