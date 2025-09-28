@@ -8,12 +8,12 @@ from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.http import MediaIoBaseDownload
+from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
 
 logger = logging.getLogger(__name__)
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
+SCOPES = ['https://www.googleapis.com/auth/drive.readonly', 'https://www.googleapis.com/auth/drive.file']
 
 class GoogleDriveClient:
     """Client for accessing Google Drive shared drives"""
@@ -317,3 +317,99 @@ def parse_timestamp_from_filename(filename: str) -> Optional[datetime]:
     except (ValueError, IndexError) as e:
         logger.warning(f"Could not parse timestamp from filename '{filename}': {e}")
         return None
+
+    def upload_file(self, local_path: str, folder_name: str, filename: str = None) -> Optional[str]:
+        """
+        Upload a file to Google Drive in the specified folder.
+        Returns the file ID if successful, None otherwise.
+        """
+        try:
+            if not os.path.exists(local_path):
+                logger.error(f"File not found: {local_path}")
+                return None
+            
+            # Use provided filename or extract from local path
+            if not filename:
+                filename = os.path.basename(local_path)
+            
+            # Find the folder by name
+            folder_id = self._find_folder_by_name(folder_name)
+            if not folder_id:
+                logger.error(f"Folder '{folder_name}' not found")
+                return None
+            
+            # Check if file already exists
+            existing_file_id = self._find_file_in_folder(filename, folder_id)
+            if existing_file_id:
+                logger.info(f"File '{filename}' already exists in folder '{folder_name}', updating...")
+                # Update existing file
+                file_metadata = {'name': filename}
+                media = MediaFileUpload(local_path, resumable=True)
+                file = self.service.files().update(
+                    fileId=existing_file_id,
+                    body=file_metadata,
+                    media_body=media
+                ).execute()
+                logger.info(f"✅ Updated file '{filename}' in Google Drive (ID: {file.get('id')})")
+                return file.get('id')
+            else:
+                # Create new file
+                file_metadata = {
+                    'name': filename,
+                    'parents': [folder_id]
+                }
+                media = MediaFileUpload(local_path, resumable=True)
+                file = self.service.files().create(
+                    body=file_metadata,
+                    media_body=media,
+                    fields='id'
+                ).execute()
+                logger.info(f"✅ Uploaded file '{filename}' to Google Drive (ID: {file.get('id')})")
+                return file.get('id')
+                
+        except Exception as e:
+            logger.error(f"Failed to upload file '{local_path}': {e}")
+            return None
+
+    def _find_folder_by_name(self, folder_name: str) -> Optional[str]:
+        """Find a folder by name in the shared drive"""
+        try:
+            # Search for folders with the exact name
+            query = f"name='{folder_name}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
+            results = self.service.files().list(
+                q=query,
+                fields="files(id, name)",
+                includeItemsFromAllDrives=True,
+                supportsAllDrives=True
+            ).execute()
+            
+            folders = results.get('files', [])
+            if folders:
+                return folders[0]['id']
+            else:
+                logger.warning(f"Folder '{folder_name}' not found")
+                return None
+                
+        except Exception as e:
+            logger.error(f"Error finding folder '{folder_name}': {e}")
+            return None
+
+    def _find_file_in_folder(self, filename: str, folder_id: str) -> Optional[str]:
+        """Find a file by name in a specific folder"""
+        try:
+            query = f"name='{filename}' and parents in '{folder_id}' and trashed=false"
+            results = self.service.files().list(
+                q=query,
+                fields="files(id, name)",
+                includeItemsFromAllDrives=True,
+                supportsAllDrives=True
+            ).execute()
+            
+            files = results.get('files', [])
+            if files:
+                return files[0]['id']
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error finding file '{filename}' in folder: {e}")
+            return None
