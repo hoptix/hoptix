@@ -4,6 +4,7 @@ from dateutil import parser as dateparse
 from integrations.db_supabase import Supa
 from integrations.s3_client import get_s3, download_to_file, put_jsonl
 from worker.adapter import transcribe_video, transcribe_audio, split_into_transactions, grade_transactions
+from worker.clipper import cut_clip_for_transaction, cut_audio_clip_for_transaction, update_tx_meta_with_clip
 
 # Configure logging for pipeline
 logger = logging.getLogger(__name__)
@@ -225,12 +226,33 @@ def process_one_video(db: Supa, s3, video_row: Dict):
         logger.info(f"📊 Upserting {len(tx_ids)} grades to database...")
         upsert_grades(db, tx_ids, grades)
         logger.info(f"✅ Grades successfully stored in database")
+
+        # 6) Create and upload transaction clips
+        logger.info(f"🎬 [7/7] Creating transaction clips...")
+        clip_count = 0
+        for i, tx_row in enumerate(txs):
+            try:
+                tx_id = tx_ids[i]
+                clip_url, gdrive_file_id = cut_clip_for_transaction(
+                    db, s3, settings.DERIV_BUCKET, settings.AWS_REGION,
+                    local_path, video_row["started_at"], video_row["ended_at"],
+                    tx_row, video_row["run_id"], video_id
+                )
+                update_tx_meta_with_clip(db, tx_id, clip_url, gdrive_file_id)
+                clip_count += 1
+                logger.info(f"✅ Created clip {i+1}/{len(txs)}: {clip_url}")
+                if gdrive_file_id:
+                    logger.info(f"   📁 Google Drive ID: {gdrive_file_id}")
+            except Exception as e:
+                logger.error(f"❌ Failed to create clip for transaction {tx_row.get('id', 'unknown')}: {e}")
+        
+        logger.info(f"✅ [7/7] Created {clip_count}/{len(txs)} transaction clips")
         
         # Final success message
         duration = datetime.now() - start_time
         logger.info(f"🎉 Processing completed successfully!")
         logger.info(f"   ⏱️ Total time: {duration.total_seconds():.1f} seconds")
-        logger.info(f"   📈 Results: {len(segments)} segments → {len(txs)} transactions → {len(grades)} grades")
+        logger.info(f"   📈 Results: {len(segments)} segments → {len(txs)} transactions → {len(grades)} grades → {clip_count} clips")
         
     except Exception as e:
         duration = datetime.now() - start_time
@@ -310,12 +332,33 @@ def process_one_audio(db: Supa, s3, audio_row: Dict):
         logger.info(f"📊 Upserting {len(tx_ids)} grades to database...")
         upsert_grades(db, tx_ids, grades)
         logger.info(f"✅ Grades successfully stored in database")
+
+        # 6) Create and upload transaction clips
+        logger.info(f"🎵 [7/7] Creating audio transaction clips...")
+        clip_count = 0
+        for i, tx_row in enumerate(txs):
+            try:
+                tx_id = tx_ids[i]
+                clip_url, gdrive_file_id = cut_audio_clip_for_transaction(
+                    db, s3, settings.DERIV_BUCKET, settings.AWS_REGION,
+                    local_path, audio_row["started_at"], audio_row["ended_at"],
+                    tx_row, audio_row["run_id"], audio_id
+                )
+                update_tx_meta_with_clip(db, tx_id, clip_url, gdrive_file_id)
+                clip_count += 1
+                logger.info(f"✅ Created audio clip {i+1}/{len(txs)}: {clip_url}")
+                if gdrive_file_id:
+                    logger.info(f"   📁 Google Drive ID: {gdrive_file_id}")
+            except Exception as e:
+                logger.error(f"❌ Failed to create audio clip for transaction {tx_row.get('id', 'unknown')}: {e}")
+        
+        logger.info(f"✅ [7/7] Created {clip_count}/{len(txs)} audio transaction clips")
         
         # Final success message
         duration = datetime.now() - start_time
         logger.info(f"🎉 Audio processing completed successfully!")
         logger.info(f"   ⏱️ Total time: {duration.total_seconds():.1f} seconds")
-        logger.info(f"   📈 Results: {len(segments)} segments → {len(txs)} transactions → {len(grades)} grades")
+        logger.info(f"   📈 Results: {len(segments)} segments → {len(txs)} transactions → {len(grades)} grades → {clip_count} clips")
         
     except Exception as e:
         duration = datetime.now() - start_time

@@ -7,6 +7,7 @@ import datetime as dt
 from typing import Dict
 
 from integrations.s3_client import put_file
+from integrations.gdrive_client import GoogleDriveClient
 from dateutil import parser as dateparse
 
 FFMPEG_BIN = os.getenv("FFMPEG_BIN", "ffmpeg")
@@ -184,6 +185,9 @@ def cut_clip_for_transaction(
     # Upload to S3
     put_file(s3, deriv_bucket, s3_key, out_local, content_type="video/mp4")
 
+    # Upload to Google Drive
+    gdrive_file_id = upload_clip_to_gdrive(out_local, run_name, f"{video_name}_tx={tx_row['id']}.mp4", is_audio=False)
+
     # Cleanup local clip and temp dir aggressively
     try:
         if os.path.exists(out_local):
@@ -195,10 +199,120 @@ def cut_clip_for_transaction(
 
     # Generate and return full URL
     full_url = generate_full_clip_url(deriv_bucket, region, s3_key)
-    return full_url
+    return full_url, gdrive_file_id
 
-def update_tx_meta_with_clip(db, tx_id: str, clip_url: str):
-    """Update transaction with full clip S3 URL in dedicated column"""
-    db.client.table("transactions").update({
-        "clip_s3_url": clip_url
-    }).eq("id", tx_id).execute()
+def cut_audio_clip_for_transaction(
+    db, s3, deriv_bucket: str, region: str, input_audio_local: str,
+    audio_started_at_iso: str, audio_ended_at_iso: str, tx_row: Dict, run_id: str, audio_id: str
+) -> str:
+    """
+    Cut an audio clip for a transaction and upload to S3.
+    Returns the full S3 URL of the uploaded clip.
+    tx_row fields expected: id, started_at, ended_at
+    """
+    import librosa
+    import soundfile as sf
+    
+    # Calculate timing offsets from the audio file start
+    t0 = dateparse.isoparse(tx_row["started_at"])
+    t1 = dateparse.isoparse(tx_row["ended_at"])
+    audio_start = dateparse.isoparse(audio_started_at_iso)
+    
+    # Calculate seconds from start of audio file
+    start_offset = (t0 - audio_start).total_seconds()
+    end_offset = (t1 - audio_start).total_seconds()
+    
+    # Ensure positive offsets
+    start_offset = max(0, start_offset)
+    end_offset = max(start_offset + 1.0, end_offset)  # Minimum 1 second duration
+    
+    # Debug logging for clip timing
+    duration = end_offset - start_offset
+    print(f"Audio clip timing debug:")
+    print(f"  Audio start: {audio_started_at_iso}")
+    print(f"  Transaction start: {tx_row['started_at']}")
+    print(f"  Transaction end: {tx_row['ended_at']}")
+    print(f"  Start offset: {start_offset:.3f}s")
+    print(f"  End offset: {end_offset:.3f}s")
+    print(f"  Clip duration: {duration:.3f}s")
+    
+    # Load audio file
+    y, sr = librosa.load(input_audio_local, sr=None)
+    total_duration = len(y) / sr
+    
+    # Ensure we don't exceed audio file duration
+    if end_offset > total_duration:
+        end_offset = total_duration
+        start_offset = max(0, end_offset - 1.0)  # Ensure minimum duration
+    
+    # Extract audio segment
+    start_sample = int(start_offset * sr)
+    end_sample = int(end_offset * sr)
+    audio_segment = y[start_sample:end_sample]
+    
+    # Create temporary file for the clip
+    tmpdir = tempfile.mkdtemp(prefix="audio_clip_")
+    out_local = os.path.join(tmpdir, f"{tx_row['id']}.mp3")
+    
+    # Save audio segment
+    sf.write(out_local, audio_segment, sr)
+    
+    # Generate descriptive names
+    run_name = generate_run_name(db, run_id)
+    audio_name = generate_video_name(tx_row["started_at"], tx_row["ended_at"])  # Reuse the naming function
+    
+    # Create new S3 key with descriptive naming
+    s3_key = f"audio_clips/{run_name}/{audio_name}/tx={tx_row['id']}.mp3"
+    
+    # Upload to S3
+    put_file(s3, deriv_bucket, s3_key, out_local, content_type="audio/mpeg")
+    
+    # Upload to Google Drive
+    gdrive_file_id = upload_clip_to_gdrive(out_local, run_name, f"{audio_name}_tx={tx_row['id']}.mp3", is_audio=True)
+    
+    # Cleanup local clip and temp dir
+    try:
+        if os.path.exists(out_local):
+            os.remove(out_local)
+        if os.path.exists(tmpdir):
+            shutil.rmtree(tmpdir, ignore_errors=True)
+    except Exception:
+        pass
+    
+    # Generate and return full URL
+    full_url = generate_full_clip_url(deriv_bucket, region, s3_key)
+    return full_url, gdrive_file_id
+
+def upload_clip_to_gdrive(local_clip_path: str, run_name: str, clip_name: str, is_audio: bool = False) -> str:
+    """
+    Upload a clip to Google Drive and return the file ID.
+    """
+    try:
+        gdrive = GoogleDriveClient()
+        
+        # Create folder name based on run and clip type
+        folder_name = f"{run_name}_clips"
+        if is_audio:
+            folder_name = f"{run_name}_audio_clips"
+        
+        # Upload to Google Drive
+        file_id = gdrive.upload_file(local_clip_path, folder_name, clip_name)
+        
+        if file_id:
+            print(f"✅ Uploaded clip to Google Drive: {file_id}")
+            return file_id
+        else:
+            print(f"❌ Failed to upload clip to Google Drive")
+            return None
+            
+    except Exception as e:
+        print(f"❌ Error uploading clip to Google Drive: {e}")
+        return None
+
+def update_tx_meta_with_clip(db, tx_id: str, clip_url: str, gdrive_file_id: str = None):
+    """Update transaction with full clip S3 URL and optional Google Drive file ID"""
+    update_data = {"clip_s3_url": clip_url}
+    if gdrive_file_id:
+        update_data["clip_gdrive_id"] = gdrive_file_id
+    
+    db.client.table("transactions").update(update_data).eq("id", tx_id).execute()
