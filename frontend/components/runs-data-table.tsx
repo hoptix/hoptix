@@ -285,7 +285,7 @@ function SimpleRow({
 }
 
 interface RunsDataTableProps {
-  locationId: string
+  locationId?: string
   limit?: number
 }
 

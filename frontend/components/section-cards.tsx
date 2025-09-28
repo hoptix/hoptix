@@ -43,8 +43,8 @@ export function SectionCards({ data }: { data: DataItem[] }) {
     items: 15.2
   }
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
-      <Card className="@container/card">
+    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card flex gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 w-full">
+      <Card className="@container/card flex-1 basis-0">
         <CardHeader>
           <CardDescription>Operator Revenue</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
@@ -66,7 +66,7 @@ export function SectionCards({ data }: { data: DataItem[] }) {
           </div>
         </CardFooter>
       </Card>
-      <Card className="@container/card">
+      <Card className="@container/card flex-1 basis-0">
         <CardHeader>
           <CardDescription>Offer Rate</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
@@ -88,7 +88,7 @@ export function SectionCards({ data }: { data: DataItem[] }) {
           </div>
         </CardFooter>
       </Card>
-      <Card className="@container/card">
+      <Card className="@container/card flex-1 basis-0">
         <CardHeader>
           <CardDescription>Conversion Rate</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
@@ -108,7 +108,7 @@ export function SectionCards({ data }: { data: DataItem[] }) {
           <div className="text-muted-foreground">Successful offers ÷ offers made</div>
         </CardFooter>
       </Card>
-      <Card className="@container/card">
+      <Card className="@container/card flex-1 basis-0">
         <CardHeader>
           <CardDescription>Items Converted</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">

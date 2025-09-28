@@ -1,0 +1,727 @@
+---
+title: "Get User Profile"
+api: "GET /user"
+description: "Get authenticated user profile information"
+---
+
+Retrieve the profile information for the currently authenticated user. This endpoint returns user details, metadata, and account status.
+
+<Note>
+This endpoint requires authentication. Include the Bearer token in the Authorization header.
+</Note>
+
+<RequestExample>
+
+```bash cURL
+curl -X GET "http://localhost:8080/user" \
+  -H "Authorization: Bearer your_access_token_here"
+```
+
+```javascript JavaScript
+const response = await fetch('http://localhost:8080/user', {
+  method: 'GET',
+  headers: {
+    'Authorization': `Bearer ${accessToken}`,
+    'Content-Type': 'application/json',
+  },
+});
+
+const user = await response.json();
+```
+
+```python Python
+import requests
+
+headers = {
+    'Authorization': f'Bearer {access_token}',
+    'Content-Type': 'application/json'
+}
+
+response = requests.get('http://localhost:8080/user', headers=headers)
+user = response.json()
+```
+
+```go Go
+package main
+
+import (
+    "fmt"
+    "net/http"
+)
+
+func main() {
+    req, _ := http.NewRequest("GET", "http://localhost:8080/user", nil)
+    req.Header.Set("Authorization", "Bearer "+accessToken)
+    req.Header.Set("Content-Type", "application/json")
+    
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // Handle response...
+}
+```
+
+</RequestExample>
+
+## Response
+
+<ResponseField name="id" type="string">
+  Unique user identifier (UUID)
+</ResponseField>
+
+<ResponseField name="aud" type="string">
+  Audience claim (typically your application identifier)
+</ResponseField>
+
+<ResponseField name="role" type="string">
+  User role (e.g., "authenticated", "admin")
+</ResponseField>
+
+<ResponseField name="email" type="string">
+  User's email address
+</ResponseField>
+
+<ResponseField name="email_confirmed_at" type="string">
+  ISO timestamp when email was confirmed (null if not confirmed)
+</ResponseField>
+
+<ResponseField name="phone" type="string">
+  User's phone number in E.164 format
+</ResponseField>
+
+<ResponseField name="phone_confirmed_at" type="string">
+  ISO timestamp when phone was confirmed (null if not confirmed)
+</ResponseField>
+
+<ResponseField name="confirmed_at" type="string">
+  ISO timestamp when user account was confirmed
+</ResponseField>
+
+<ResponseField name="last_sign_in_at" type="string">
+  ISO timestamp of last successful sign-in
+</ResponseField>
+
+<ResponseField name="app_metadata" type="object">
+  Application-specific metadata (managed by your application)
+</ResponseField>
+
+<ResponseField name="user_metadata" type="object">
+  User-specific metadata (can be updated by user)
+</ResponseField>
+
+<ResponseField name="identities" type="array">
+  Array of identity providers linked to this user
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  ISO timestamp when user account was created
+</ResponseField>
+
+<ResponseField name="updated_at" type="string">
+  ISO timestamp when user account was last updated
+</ResponseField>
+
+<ResponseExample>
+
+```json 200 - User Profile
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "aud": "authenticated",
+  "role": "authenticated",
+  "email": "user@example.com",
+  "email_confirmed_at": "2024-01-15T10:30:00Z",
+  "phone": "+1234567890",
+  "phone_confirmed_at": "2024-01-15T10:35:00Z",
+  "confirmed_at": "2024-01-15T10:30:00Z",
+  "last_sign_in_at": "2024-01-20T14:22:00Z",
+  "app_metadata": {
+    "provider": "email",
+    "providers": ["email", "phone"]
+  },
+  "user_metadata": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "avatar_url": "https://example.com/avatars/user123.jpg",
+    "preferences": {
+      "theme": "dark",
+      "notifications": true
+    }
+  },
+  "identities": [
+    {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "user_id": "123e4567-e89b-12d3-a456-426614174000",
+      "identity_data": {
+        "email": "user@example.com",
+        "sub": "123e4567-e89b-12d3-a456-426614174000"
+      },
+      "provider": "email",
+      "last_sign_in_at": "2024-01-20T14:22:00Z",
+      "created_at": "2024-01-15T10:30:00Z",
+      "updated_at": "2024-01-20T14:22:00Z"
+    }
+  ],
+  "created_at": "2024-01-15T10:30:00Z",
+  "updated_at": "2024-01-20T14:22:00Z"
+}
+```
+
+</ResponseExample>
+
+## Error Responses
+
+<ResponseExample>
+
+```json 401 - Unauthorized
+{
+  "code": 401,
+  "msg": "Invalid token",
+  "details": "The access token is invalid or expired"
+}
+```
+
+```json 403 - Forbidden
+{
+  "code": 403,
+  "msg": "Insufficient permissions",
+  "details": "User does not have permission to access this resource"
+}
+```
+
+</ResponseExample>
+
+## Implementation Examples
+
+### React User Profile Component
+
+```jsx
+import { useState, useEffect } from 'react';
+
+function UserProfile() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
+
+  const fetchUserProfile = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      
+      if (!token) {
+        throw new Error('No access token found');
+      }
+
+      const response = await fetch('/api/auth/user', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Token expired, redirect to login
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          window.location.href = '/login';
+          return;
+        }
+        throw new Error('Failed to fetch user profile');
+      }
+
+      const userData = await response.json();
+      setUser(userData);
+      
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="profile-loading">
+        <div className="spinner"></div>
+        <p>Loading profile...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="profile-error">
+        <p>Error: {error}</p>
+        <button onClick={fetchUserProfile}>Retry</button>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <div>No user data available</div>;
+  }
+
+  return (
+    <div className="user-profile">
+      <div className="profile-header">
+        <div className="avatar">
+          {user.user_metadata?.avatar_url ? (
+            <img 
+              src={user.user_metadata.avatar_url} 
+              alt="Profile"
+              className="avatar-image"
+            />
+          ) : (
+            <div className="avatar-placeholder">
+              {user.user_metadata?.first_name?.[0] || user.email[0].toUpperCase()}
+            </div>
+          )}
+        </div>
+        
+        <div className="profile-info">
+          <h1>
+            {user.user_metadata?.first_name && user.user_metadata?.last_name
+              ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}`
+              : user.email
+            }
+          </h1>
+          <p className="email">{user.email}</p>
+          {user.phone && (
+            <p className="phone">{user.phone}</p>
+          )}
+        </div>
+      </div>
+
+      <div className="profile-details">
+        <div className="detail-section">
+          <h3>Account Information</h3>
+          <div className="detail-grid">
+            <div className="detail-item">
+              <label>User ID</label>
+              <span className="user-id">{user.id}</span>
+            </div>
+            
+            <div className="detail-item">
+              <label>Member Since</label>
+              <span>{new Date(user.created_at).toLocaleDateString()}</span>
+            </div>
+            
+            <div className="detail-item">
+              <label>Last Sign In</label>
+              <span>
+                {user.last_sign_in_at 
+                  ? new Date(user.last_sign_in_at).toLocaleString()
+                  : 'Never'
+                }
+              </span>
+            </div>
+            
+            <div className="detail-item">
+              <label>Account Status</label>
+              <span className={`status ${user.confirmed_at ? 'confirmed' : 'pending'}`}>
+                {user.confirmed_at ? 'Verified' : 'Pending Verification'}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="detail-section">
+          <h3>Verification Status</h3>
+          <div className="verification-status">
+            <div className="verification-item">
+              <span className="verification-label">Email</span>
+              <span className={`verification-badge ${user.email_confirmed_at ? 'verified' : 'unverified'}`}>
+                {user.email_confirmed_at ? '✓ Verified' : '⚠ Unverified'}
+              </span>
+            </div>
+            
+            {user.phone && (
+              <div className="verification-item">
+                <span className="verification-label">Phone</span>
+                <span className={`verification-badge ${user.phone_confirmed_at ? 'verified' : 'unverified'}`}>
+                  {user.phone_confirmed_at ? '✓ Verified' : '⚠ Unverified'}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {user.identities && user.identities.length > 0 && (
+          <div className="detail-section">
+            <h3>Connected Accounts</h3>
+            <div className="identities-list">
+              {user.identities.map((identity, index) => (
+                <div key={index} className="identity-item">
+                  <span className="identity-provider">{identity.provider}</span>
+                  <span className="identity-date">
+                    Connected {new Date(identity.created_at).toLocaleDateString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {user.user_metadata && Object.keys(user.user_metadata).length > 0 && (
+          <div className="detail-section">
+            <h3>Profile Data</h3>
+            <div className="metadata-display">
+              {Object.entries(user.user_metadata).map(([key, value]) => (
+                <div key={key} className="metadata-item">
+                  <label>{key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</label>
+                  <span>{typeof value === 'object' ? JSON.stringify(value) : String(value)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="profile-actions">
+        <button 
+          onClick={() => window.location.href = '/profile/edit'}
+          className="edit-profile-btn"
+        >
+          Edit Profile
+        </button>
+        
+        <button 
+          onClick={() => window.location.href = '/settings'}
+          className="settings-btn"
+        >
+          Account Settings
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default UserProfile;
+```
+
+### React Hook for User Data
+
+```jsx
+import { useState, useEffect, useCallback } from 'react';
+
+function useUser() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchUser = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const token = localStorage.getItem('access_token');
+      
+      if (!token) {
+        throw new Error('No access token');
+      }
+
+      const response = await fetch('/api/auth/user', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Clear tokens and redirect to login
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          window.location.href = '/login';
+          return;
+        }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const userData = await response.json();
+      setUser(userData);
+      
+    } catch (err) {
+      setError(err.message);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
+
+  const refreshUser = useCallback(() => {
+    fetchUser();
+  }, [fetchUser]);
+
+  return {
+    user,
+    loading,
+    error,
+    refreshUser,
+    isAuthenticated: !!user,
+    isEmailVerified: !!user?.email_confirmed_at,
+    isPhoneVerified: !!user?.phone_confirmed_at,
+  };
+}
+
+export default useUser;
+```
+
+### Node.js Backend Handler
+
+```javascript
+const express = require('express');
+const { authenticateToken } = require('../middleware/auth');
+
+const router = express.Router();
+
+router.get('/user', authenticateToken, async (req, res) => {
+  try {
+    // The user ID is available from the JWT token via middleware
+    const userId = req.user.sub;
+
+    // Call Strike Auth Service to get user details
+    const response = await fetch(`${process.env.AUTH_SERVICE_URL}/user`, {
+      method: 'GET',
+      headers: {
+        'Authorization': req.headers.authorization,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return res.status(response.status).json(errorData);
+    }
+
+    const userData = await response.json();
+
+    // Log user profile access
+    console.log(`User profile accessed: ${userData.id} (${userData.email})`);
+
+    res.json(userData);
+
+  } catch (error) {
+    console.error('Get user profile error:', error);
+    res.status(500).json({
+      code: 500,
+      msg: 'Internal server error',
+      details: 'Failed to retrieve user profile'
+    });
+  }
+});
+
+module.exports = router;
+```
+
+### Authentication Middleware
+
+```javascript
+const jwt = require('jsonwebtoken');
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+  if (!token) {
+    return res.status(401).json({
+      code: 401,
+      msg: 'Access token required',
+      details: 'Please provide a valid access token'
+    });
+  }
+
+  try {
+    // Verify the JWT token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({
+        code: 401,
+        msg: 'Token expired',
+        details: 'Please refresh your access token'
+      });
+    }
+    
+    return res.status(403).json({
+      code: 403,
+      msg: 'Invalid token',
+      details: 'The provided token is invalid'
+    });
+  }
+}
+
+module.exports = { authenticateToken };
+```
+
+## User Metadata Structure
+
+### App Metadata (Read-only)
+
+App metadata is managed by your application and cannot be modified by users:
+
+```json
+{
+  "app_metadata": {
+    "provider": "email",
+    "providers": ["email", "phone", "google"],
+    "roles": ["user"],
+    "plan": "premium",
+    "subscription_id": "sub_1234567890",
+    "created_by": "admin",
+    "internal_id": "INT_123456"
+  }
+}
+```
+
+### User Metadata (User-modifiable)
+
+User metadata can be updated by users through the update profile endpoint:
+
+```json
+{
+  "user_metadata": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "avatar_url": "https://example.com/avatars/user123.jpg",
+    "bio": "Software developer passionate about building great products",
+    "website": "https://johndoe.dev",
+    "location": "San Francisco, CA",
+    "timezone": "America/Los_Angeles",
+    "preferences": {
+      "theme": "dark",
+      "language": "en",
+      "notifications": {
+        "email": true,
+        "push": false,
+        "sms": true
+      }
+    },
+    "social_links": {
+      "twitter": "@johndoe",
+      "linkedin": "johndoe",
+      "github": "johndoe"
+    }
+  }
+}
+```
+
+## Security Considerations
+
+- **Token Validation**: Always validate JWT tokens server-side
+- **Scope Limitations**: Users can only access their own profile data
+- **Sensitive Data**: Never expose sensitive information in user metadata
+- **Rate Limiting**: Implement rate limiting for profile access
+- **Audit Logging**: Log profile access for security monitoring
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Frontend Implementation">
+    - Cache user data appropriately to reduce API calls
+    - Handle token expiration gracefully with automatic refresh
+    - Provide loading states for better user experience
+    - Implement error boundaries for robust error handling
+    - Use TypeScript for better type safety
+  </Accordion>
+
+  <Accordion title="Backend Implementation">
+    - Validate JWT tokens on every request
+    - Implement proper error handling and logging
+    - Use middleware for authentication logic
+    - Cache user data when appropriate
+    - Monitor API usage and performance
+  </Accordion>
+
+  <Accordion title="Data Management">
+    - Keep user metadata lean and relevant
+    - Use app metadata for application-specific data
+    - Implement data validation for user inputs
+    - Consider GDPR compliance for user data
+    - Regular cleanup of unused metadata fields
+  </Accordion>
+</AccordionGroup>
+
+## Testing
+
+### Unit Tests
+
+```javascript
+describe('GET /user', () => {
+  test('should return user profile for authenticated user', async () => {
+    const token = await getValidAccessToken();
+    
+    const response = await request(app)
+      .get('/user')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+
+    expect(response.body.id).toBeDefined();
+    expect(response.body.email).toBeDefined();
+    expect(response.body.created_at).toBeDefined();
+  });
+
+  test('should return 401 for missing token', async () => {
+    await request(app)
+      .get('/user')
+      .expect(401);
+  });
+
+  test('should return 401 for invalid token', async () => {
+    await request(app)
+      .get('/user')
+      .set('Authorization', 'Bearer invalid_token')
+      .expect(401);
+  });
+
+  test('should return 401 for expired token', async () => {
+    const expiredToken = generateExpiredToken();
+    
+    await request(app)
+      .get('/user')
+      .set('Authorization', `Bearer ${expiredToken}`)
+      .expect(401);
+  });
+});
+```
+
+## Related Endpoints
+
+<CardGroup cols={2}>
+  <Card
+    title="Update Profile"
+    icon="user-edit"
+    href="/api-reference/user/update-profile"
+  >
+    Update user profile information
+  </Card>
+  <Card
+    title="User Logout"
+    icon="sign-out"
+    href="/api-reference/authentication/logout"
+  >
+    Sign out and invalidate tokens
+  </Card>
+  <Card
+    title="Refresh Token"
+    icon="refresh"
+    href="/api-reference/authentication/refresh"
+  >
+    Refresh expired access tokens
+  </Card>
+  <Card
+    title="Delete Account"
+    icon="trash"
+    href="/api-reference/user/delete-account"
+  >
+    Delete user account permanently
+  </Card>
+</CardGroup> 

@@ -1,0 +1,781 @@
+---
+title: "Send OTP"
+api: "POST /otp"
+description: "Send SMS one-time password"
+---
+
+Send a one-time password (OTP) via SMS for phone number verification or passwordless authentication. This endpoint supports both user registration and login flows.
+
+<Note>
+This endpoint does not require authentication and can create new users if `create_user` is set to true.
+</Note>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST "http://localhost:8080/otp" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "phone": "+1234567890",
+    "create_user": true
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('http://localhost:8080/otp', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    phone: '+1234567890',
+    create_user: true
+  }),
+});
+
+const result = await response.json();
+```
+
+```python Python
+import requests
+
+data = {
+    "phone": "+1234567890",
+    "create_user": True
+}
+
+response = requests.post('http://localhost:8080/otp', json=data)
+result = response.json()
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "net/http"
+)
+
+func main() {
+    data := map[string]interface{}{
+        "phone":       "+1234567890",
+        "create_user": true,
+    }
+    
+    jsonData, _ := json.Marshal(data)
+    
+    resp, err := http.Post(
+        "http://localhost:8080/otp",
+        "application/json",
+        bytes.NewBuffer(jsonData),
+    )
+    // Handle response...
+}
+```
+
+</RequestExample>
+
+## Request Body
+
+<ParamField body="phone" type="string" required>
+  Phone number in E.164 format (e.g., +1234567890) to send the OTP to.
+</ParamField>
+
+<ParamField body="create_user" type="boolean">
+  Whether to create a new user if the phone number doesn't exist. Defaults to false.
+</ParamField>
+
+<ParamField body="data" type="object">
+  Additional user metadata to store if creating a new user.
+</ParamField>
+
+<ParamField body="captcha_token" type="string">
+  Captcha token for verification if captcha is enabled.
+</ParamField>
+
+<ParamField body="channel" type="string">
+  Delivery channel for the OTP. Defaults to "sms".
+  
+  **Options:**
+  - `sms` - Send via SMS text message
+  - `whatsapp` - Send via WhatsApp (if configured)
+</ParamField>
+
+## Response
+
+<ResponseField name="message_id" type="string">
+  Unique identifier for the sent OTP message
+</ResponseField>
+
+<ResponseField name="phone" type="string">
+  Masked phone number that the OTP was sent to (e.g., "+1***-***-7890")
+</ResponseField>
+
+<ResponseExample>
+
+```json 200 - OTP Sent
+{
+  "message_id": "msg_1234567890abcdef",
+  "phone": "+1***-***-7890"
+}
+```
+
+</ResponseExample>
+
+## Error Responses
+
+<ResponseExample>
+
+```json 400 - Invalid Phone Number
+{
+  "code": 400,
+  "msg": "Invalid phone number format",
+  "details": "Phone number must be in E.164 format (e.g., +1234567890)"
+}
+```
+
+```json 404 - User Not Found
+{
+  "code": 404,
+  "msg": "User not found",
+  "details": "No user found with this phone number. Set create_user to true to create a new account."
+}
+```
+
+```json 429 - Rate Limited
+{
+  "code": 429,
+  "msg": "Too many requests",
+  "details": "Please wait before requesting another OTP"
+}
+```
+
+</ResponseExample>
+
+## OTP Authentication Flow
+
+<Steps>
+  <Step title="Request OTP">
+    User enters their phone number and requests an OTP
+  </Step>
+  <Step title="SMS Sent">
+    A 6-digit OTP is sent to the user's phone via SMS
+  </Step>
+  <Step title="User Enters Code">
+    User enters the OTP code in your application
+  </Step>
+  <Step title="Verification">
+    Verify the OTP using the verify endpoint to complete authentication
+  </Step>
+</Steps>
+
+## Implementation Examples
+
+### React OTP Request Form
+
+```jsx
+import { useState } from 'react';
+
+function OTPRequestForm({ onOTPSent }) {
+  const [phone, setPhone] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [createUser, setCreateUser] = useState(true);
+
+  const formatPhoneNumber = (value) => {
+    // Remove all non-digits
+    const digits = value.replace(/\D/g, '');
+    
+    // Format as +1 (XXX) XXX-XXXX for US numbers
+    if (digits.length >= 10) {
+      const formatted = `+1 (${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7, 11)}`;
+      return formatted;
+    }
+    
+    return value;
+  };
+
+  const handlePhoneChange = (e) => {
+    const formatted = formatPhoneNumber(e.target.value);
+    setPhone(formatted);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    // Convert formatted phone to E.164
+    const e164Phone = '+1' + phone.replace(/\D/g, '').slice(1);
+
+    try {
+      const response = await fetch('/api/auth/otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phone: e164Phone,
+          create_user: createUser
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.msg || 'Failed to send OTP');
+      }
+
+      const result = await response.json();
+      onOTPSent?.(e164Phone, result.message_id);
+      
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="otp-request-form">
+      <h2>Sign in with Phone</h2>
+      <p>
+        Enter your phone number and we'll send you a verification code.
+      </p>
+      
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
+
+      <div className="form-group">
+        <label htmlFor="phone">Phone Number</label>
+        <input
+          type="tel"
+          id="phone"
+          value={phone}
+          onChange={handlePhoneChange}
+          placeholder="+1 (555) 123-4567"
+          required
+        />
+        <small>We'll send a 6-digit verification code</small>
+      </div>
+
+      <div className="form-group">
+        <label className="checkbox-label">
+          <input
+            type="checkbox"
+            checked={createUser}
+            onChange={(e) => setCreateUser(e.target.checked)}
+          />
+          Create account if it doesn't exist
+        </label>
+      </div>
+
+      <button type="submit" disabled={loading || phone.length < 14}>
+        {loading ? 'Sending...' : 'Send Verification Code'}
+      </button>
+
+      <p>
+        Prefer email? <a href="/login">Sign in with email</a>
+      </p>
+    </form>
+  );
+}
+
+export default OTPRequestForm;
+```
+
+### React OTP Verification Form
+
+```jsx
+import { useState, useEffect, useRef } from 'react';
+
+function OTPVerificationForm({ phone, messageId, onVerified, onResend }) {
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
+  const inputRefs = useRef([]);
+
+  useEffect(() => {
+    // Countdown timer
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleOtpChange = (index, value) => {
+    if (value.length > 1) return; // Prevent multiple characters
+    
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    // Auto-focus next input
+    if (value && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+
+    // Auto-submit when all fields are filled
+    if (newOtp.every(digit => digit) && newOtp.join('').length === 6) {
+      handleVerify(newOtp.join(''));
+    }
+  };
+
+  const handleKeyDown = (index, e) => {
+    // Handle backspace
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleVerify = async (otpCode = otp.join('')) => {
+    if (otpCode.length !== 6) {
+      setError('Please enter all 6 digits');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/auth/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'sms',
+          phone: phone,
+          token: otpCode
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.msg || 'Invalid verification code');
+      }
+
+      const authData = await response.json();
+      onVerified?.(authData);
+      
+    } catch (err) {
+      setError(err.message);
+      // Clear OTP on error
+      setOtp(['', '', '', '', '', '']);
+      inputRefs.current[0]?.focus();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    try {
+      await onResend?.();
+      setTimeLeft(300); // Reset timer
+      setOtp(['', '', '', '', '', '']);
+      setError('');
+      inputRefs.current[0]?.focus();
+    } catch (err) {
+      setError('Failed to resend code');
+    }
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const maskedPhone = phone.replace(/(\+1)(\d{3})(\d{3})(\d{4})/, '$1 (***) ***-$4');
+
+  return (
+    <div className="otp-verification-form">
+      <h2>Enter Verification Code</h2>
+      <p>
+        We sent a 6-digit code to <strong>{maskedPhone}</strong>
+      </p>
+      
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
+
+      <div className="otp-inputs">
+        {otp.map((digit, index) => (
+          <input
+            key={index}
+            ref={el => inputRefs.current[index] = el}
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]"
+            maxLength={1}
+            value={digit}
+            onChange={(e) => handleOtpChange(index, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(index, e)}
+            className="otp-input"
+            disabled={loading}
+            autoFocus={index === 0}
+          />
+        ))}
+      </div>
+
+      <button 
+        onClick={() => handleVerify()} 
+        disabled={loading || otp.some(digit => !digit)}
+        className="verify-button"
+      >
+        {loading ? 'Verifying...' : 'Verify Code'}
+      </button>
+
+      <div className="resend-section">
+        {timeLeft > 0 ? (
+          <p>
+            Resend code in <strong>{formatTime(timeLeft)}</strong>
+          </p>
+        ) : (
+          <button onClick={handleResend} className="resend-button">
+            Resend Code
+          </button>
+        )}
+      </div>
+
+      <p>
+        <small>
+          Didn't receive the code? Check your messages or try again.
+        </small>
+      </p>
+    </div>
+  );
+}
+
+export default OTPVerificationForm;
+```
+
+### Complete Phone Authentication Component
+
+```jsx
+import { useState } from 'react';
+import OTPRequestForm from './OTPRequestForm';
+import OTPVerificationForm from './OTPVerificationForm';
+
+function PhoneAuth() {
+  const [step, setStep] = useState('request'); // 'request' | 'verify'
+  const [phone, setPhone] = useState('');
+  const [messageId, setMessageId] = useState('');
+
+  const handleOTPSent = (phoneNumber, msgId) => {
+    setPhone(phoneNumber);
+    setMessageId(msgId);
+    setStep('verify');
+  };
+
+  const handleVerified = (authData) => {
+    // Store tokens
+    localStorage.setItem('access_token', authData.access_token);
+    localStorage.setItem('refresh_token', authData.refresh_token);
+    
+    // Redirect to dashboard
+    window.location.href = '/dashboard';
+  };
+
+  const handleResend = async () => {
+    const response = await fetch('/api/auth/resend', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        type: 'sms',
+        phone: phone
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to resend code');
+    }
+
+    const result = await response.json();
+    setMessageId(result.message_id);
+  };
+
+  const handleBack = () => {
+    setStep('request');
+    setPhone('');
+    setMessageId('');
+  };
+
+  return (
+    <div className="phone-auth">
+      {step === 'request' ? (
+        <OTPRequestForm onOTPSent={handleOTPSent} />
+      ) : (
+        <div>
+          <button onClick={handleBack} className="back-button">
+            ← Change Phone Number
+          </button>
+          <OTPVerificationForm
+            phone={phone}
+            messageId={messageId}
+            onVerified={handleVerified}
+            onResend={handleResend}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default PhoneAuth;
+```
+
+### Node.js Backend Handler
+
+```javascript
+const express = require('express');
+const { body, validationResult } = require('express-validator');
+
+const router = express.Router();
+
+// Phone number validation regex (E.164 format)
+const phoneRegex = /^\+[1-9]\d{1,14}$/;
+
+router.post('/otp', [
+  body('phone').matches(phoneRegex).withMessage('Invalid phone number format'),
+  body('create_user').optional().isBoolean(),
+  body('data').optional().isObject()
+], async (req, res) => {
+  try {
+    // Check validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        code: 400,
+        msg: 'Invalid phone number format',
+        details: 'Phone number must be in E.164 format (e.g., +1234567890)'
+      });
+    }
+
+    const { phone, create_user, data, captcha_token, channel } = req.body;
+
+    // Call Strike Auth Service
+    const response = await fetch(`${process.env.AUTH_SERVICE_URL}/otp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        phone,
+        create_user: create_user || false,
+        data,
+        captcha_token,
+        channel: channel || 'sms'
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      return res.status(response.status).json(result);
+    }
+
+    // Log OTP request
+    console.log(`OTP sent to: ${phone}, create_user: ${create_user}`);
+
+    res.json(result);
+
+  } catch (error) {
+    console.error('OTP error:', error);
+    res.status(500).json({
+      code: 500,
+      msg: 'Internal server error',
+      details: 'Please try again later'
+    });
+  }
+});
+
+module.exports = router;
+```
+
+## Phone Number Formats
+
+### Supported Formats
+
+The API accepts phone numbers in E.164 format:
+
+| Country | Format | Example |
+|---------|--------|---------|
+| United States | +1XXXXXXXXXX | +12345678901 |
+| United Kingdom | +44XXXXXXXXX | +447123456789 |
+| Canada | +1XXXXXXXXXX | +12345678901 |
+| Australia | +61XXXXXXXXX | +61412345678 |
+| Germany | +49XXXXXXXXX | +4915123456789 |
+
+### Format Validation
+
+```javascript
+function validatePhoneNumber(phone) {
+  // E.164 format: + followed by country code and number
+  const e164Regex = /^\+[1-9]\d{1,14}$/;
+  return e164Regex.test(phone);
+}
+
+function formatPhoneForDisplay(phone) {
+  // Mask middle digits for privacy
+  if (phone.startsWith('+1') && phone.length === 12) {
+    return phone.replace(/(\+1)(\d{3})(\d{3})(\d{4})/, '$1 (***) ***-$4');
+  }
+  
+  // Generic masking for other countries
+  const visibleStart = phone.slice(0, 3);
+  const visibleEnd = phone.slice(-4);
+  const masked = '*'.repeat(phone.length - 7);
+  return visibleStart + masked + visibleEnd;
+}
+```
+
+## Security Features
+
+- **Rate Limiting**: Prevents SMS spam and abuse
+- **OTP Expiration**: Codes expire after 5 minutes
+- **Single Use**: Each OTP can only be used once
+- **Phone Verification**: Inherent phone number verification
+- **Secure Generation**: Cryptographically secure random codes
+
+## Rate Limiting
+
+This endpoint is rate limited to prevent abuse:
+
+| Limit Type | Limit | Window |
+|------------|-------|--------|
+| Per Phone | 3 requests | 5 minutes |
+| Per IP | 10 requests | 10 minutes |
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="User Experience">
+    - Provide clear phone number formatting guidance
+    - Show masked phone number during verification
+    - Implement auto-advancing OTP input fields
+    - Include countdown timer for resend functionality
+    - Offer alternative authentication methods
+  </Accordion>
+
+  <Accordion title="Security">
+    - Use 6-digit codes with sufficient entropy
+    - Implement proper rate limiting
+    - Set reasonable OTP expiration (5 minutes)
+    - Log OTP requests for security monitoring
+    - Validate phone number formats server-side
+  </Accordion>
+
+  <Accordion title="SMS Delivery">
+    - Use reliable SMS providers with good delivery rates
+    - Include clear sender identification
+    - Monitor delivery rates and costs
+    - Respect opt-out requests and regulations
+    - Consider international SMS costs and restrictions
+  </Accordion>
+</AccordionGroup>
+
+## Testing
+
+### Unit Tests
+
+```javascript
+describe('POST /otp', () => {
+  test('should send OTP for valid phone number', async () => {
+    const response = await request(app)
+      .post('/otp')
+      .send({
+        phone: '+12345678901',
+        create_user: false
+      })
+      .expect(200);
+
+    expect(response.body.message_id).toBeDefined();
+    expect(response.body.phone).toContain('***');
+  });
+
+  test('should create user and send OTP', async () => {
+    const response = await request(app)
+      .post('/otp')
+      .send({
+        phone: '+19876543210',
+        create_user: true,
+        data: {
+          first_name: 'Test',
+          last_name: 'User'
+        }
+      })
+      .expect(200);
+
+    expect(response.body.message_id).toBeDefined();
+  });
+
+  test('should reject invalid phone format', async () => {
+    await request(app)
+      .post('/otp')
+      .send({
+        phone: '1234567890', // Missing +
+        create_user: true
+      })
+      .expect(400);
+  });
+
+  test('should return 404 for non-existent user when create_user is false', async () => {
+    await request(app)
+      .post('/otp')
+      .send({
+        phone: '+15555555555',
+        create_user: false
+      })
+      .expect(404);
+  });
+});
+```
+
+## Related Endpoints
+
+<CardGroup cols={2}>
+  <Card
+    title="Verify OTP"
+    icon="check"
+    href="/api-reference/authentication/verify-post"
+  >
+    Verify SMS one-time password
+  </Card>
+  <Card
+    title="Resend OTP"
+    icon="paper-plane"
+    href="/api-reference/authentication/resend"
+  >
+    Resend SMS verification code
+  </Card>
+  <Card
+    title="User Signup"
+    icon="user-plus"
+    href="/api-reference/authentication/signup"
+  >
+    Traditional email/password registration
+  </Card>
+  <Card
+    title="Magic Link"
+    icon="link"
+    href="/api-reference/authentication/magic-link"
+  >
+    Passwordless email authentication
+  </Card>
+</CardGroup> 

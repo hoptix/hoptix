@@ -1,0 +1,809 @@
+---
+title: "Update User"
+api: "PUT /admin/users/{id}"
+description: "Update user information and metadata (admin only)"
+---
+
+Update user information, metadata, and settings. This endpoint requires service role authentication and allows administrators to modify user accounts programmatically.
+
+<Warning>
+This endpoint requires service role authentication. Only use the service role key on your backend servers, never in client-side code.
+</Warning>
+
+<RequestExample>
+
+```bash cURL
+curl -X PUT "http://localhost:8080/admin/users/123e4567-e89b-12d3-a456-426614174000" \
+  -H "Authorization: Bearer service_role_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "updated@example.com",
+    "phone": "+1234567890",
+    "user_metadata": {
+      "first_name": "John",
+      "last_name": "Doe Updated",
+      "company": "Strike Corp"
+    },
+    "app_metadata": {
+      "role": "premium_user",
+      "subscription_tier": "pro"
+    }
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('http://localhost:8080/admin/users/123e4567-e89b-12d3-a456-426614174000', {
+  method: 'PUT',
+  headers: {
+    'Authorization': 'Bearer service_role_key_here',
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    email: 'updated@example.com',
+    phone: '+1234567890',
+    user_metadata: {
+      first_name: 'John',
+      last_name: 'Doe Updated',
+      company: 'Strike Corp'
+    },
+    app_metadata: {
+      role: 'premium_user',
+      subscription_tier: 'pro'
+    }
+  }),
+});
+
+const updatedUser = await response.json();
+```
+
+```python Python
+import requests
+
+headers = {
+    'Authorization': 'Bearer service_role_key_here',
+    'Content-Type': 'application/json'
+}
+
+data = {
+    "email": "updated@example.com",
+    "phone": "+1234567890",
+    "user_metadata": {
+        "first_name": "John",
+        "last_name": "Doe Updated",
+        "company": "Strike Corp"
+    },
+    "app_metadata": {
+        "role": "premium_user",
+        "subscription_tier": "pro"
+    }
+}
+
+response = requests.put(
+    'http://localhost:8080/admin/users/123e4567-e89b-12d3-a456-426614174000',
+    headers=headers,
+    json=data
+)
+updated_user = response.json()
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "net/http"
+)
+
+func main() {
+    data := map[string]interface{}{
+        "email": "updated@example.com",
+        "phone": "+1234567890",
+        "user_metadata": map[string]interface{}{
+            "first_name": "John",
+            "last_name":  "Doe Updated",
+            "company":    "Strike Corp",
+        },
+        "app_metadata": map[string]interface{}{
+            "role":              "premium_user",
+            "subscription_tier": "pro",
+        },
+    }
+    
+    jsonData, _ := json.Marshal(data)
+    
+    req, _ := http.NewRequest("PUT", 
+        "http://localhost:8080/admin/users/123e4567-e89b-12d3-a456-426614174000", 
+        bytes.NewBuffer(jsonData))
+    req.Header.Set("Authorization", "Bearer service_role_key_here")
+    req.Header.Set("Content-Type", "application/json")
+    
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    // Handle response...
+}
+```
+
+</RequestExample>
+
+## Path Parameters
+
+<ParamField path="id" type="string" required>
+  The unique identifier (UUID) of the user to update.
+</ParamField>
+
+## Request Body
+
+<ParamField body="email" type="string">
+  New email address for the user. Must be unique and valid.
+</ParamField>
+
+<ParamField body="phone" type="string">
+  New phone number in E.164 format (e.g., +1234567890).
+</ParamField>
+
+<ParamField body="password" type="string">
+  New password for the user. Must meet security requirements.
+</ParamField>
+
+<ParamField body="email_confirmed_at" type="string">
+  ISO 8601 timestamp when email was confirmed. Set to null to mark as unconfirmed.
+</ParamField>
+
+<ParamField body="phone_confirmed_at" type="string">
+  ISO 8601 timestamp when phone was confirmed. Set to null to mark as unconfirmed.
+</ParamField>
+
+<ParamField body="user_metadata" type="object">
+  User-controlled metadata (profile information, preferences, etc.).
+</ParamField>
+
+<ParamField body="app_metadata" type="object">
+  Application-controlled metadata (roles, permissions, subscription info, etc.).
+</ParamField>
+
+<ParamField body="ban_duration" type="string">
+  Duration to ban the user (e.g., "24h", "7d", "permanent"). Set to null to unban.
+</ParamField>
+
+## Response
+
+<ResponseField name="id" type="string">
+  Unique identifier for the user
+</ResponseField>
+
+<ResponseField name="aud" type="string">
+  Audience claim, typically "authenticated"
+</ResponseField>
+
+<ResponseField name="role" type="string">
+  User's role in the system
+</ResponseField>
+
+<ResponseField name="email" type="string">
+  User's email address
+</ResponseField>
+
+<ResponseField name="phone" type="string">
+  User's phone number
+</ResponseField>
+
+<ResponseField name="email_confirmed_at" type="string">
+  ISO 8601 timestamp when email was confirmed
+</ResponseField>
+
+<ResponseField name="phone_confirmed_at" type="string">
+  ISO 8601 timestamp when phone was confirmed
+</ResponseField>
+
+<ResponseField name="last_sign_in_at" type="string">
+  ISO 8601 timestamp of last sign in
+</ResponseField>
+
+<ResponseField name="app_metadata" type="object">
+  Application-controlled metadata
+</ResponseField>
+
+<ResponseField name="user_metadata" type="object">
+  User-controlled metadata
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  ISO 8601 timestamp when user was created
+</ResponseField>
+
+<ResponseField name="updated_at" type="string">
+  ISO 8601 timestamp when user was last updated
+</ResponseField>
+
+<ResponseField name="banned_until" type="string">
+  ISO 8601 timestamp until when user is banned (if applicable)
+</ResponseField>
+
+<ResponseExample>
+
+```json 200 - User Updated Successfully
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "aud": "authenticated",
+  "role": "authenticated",
+  "email": "updated@example.com",
+  "phone": "+1234567890",
+  "email_confirmed_at": "2023-01-01T00:00:00Z",
+  "phone_confirmed_at": "2023-01-01T00:00:00Z",
+  "last_sign_in_at": "2023-01-01T00:00:00Z",
+  "app_metadata": {
+    "provider": "email",
+    "providers": ["email"],
+    "role": "premium_user",
+    "subscription_tier": "pro"
+  },
+  "user_metadata": {
+    "first_name": "John",
+    "last_name": "Doe Updated",
+    "company": "Strike Corp"
+  },
+  "created_at": "2023-01-01T00:00:00Z",
+  "updated_at": "2023-01-02T00:00:00Z",
+  "banned_until": null
+}
+```
+
+</ResponseExample>
+
+## Error Responses
+
+<ResponseExample>
+
+```json 400 - Invalid Request
+{
+  "code": 400,
+  "msg": "Invalid email format",
+  "details": "Please provide a valid email address"
+}
+```
+
+```json 401 - Unauthorized
+{
+  "code": 401,
+  "msg": "Invalid service role key",
+  "details": "Please provide a valid service role key"
+}
+```
+
+```json 404 - User Not Found
+{
+  "code": 404,
+  "msg": "User not found",
+  "details": "No user found with the provided ID"
+}
+```
+
+```json 409 - Email Already Exists
+{
+  "code": 409,
+  "msg": "Email already exists",
+  "details": "A user with this email address already exists"
+}
+```
+
+</ResponseExample>
+
+## Update Operations
+
+### Update Profile Information
+
+```json
+{
+  "user_metadata": {
+    "first_name": "Jane",
+    "last_name": "Smith",
+    "avatar_url": "https://example.com/avatar.jpg",
+    "bio": "Software engineer at Strike",
+    "location": "San Francisco, CA"
+  }
+}
+```
+
+### Update Contact Information
+
+```json
+{
+  "email": "newemail@example.com",
+  "phone": "+1987654321",
+  "email_confirmed_at": null,
+  "phone_confirmed_at": null
+}
+```
+
+### Update App Metadata (Roles & Permissions)
+
+```json
+{
+  "app_metadata": {
+    "role": "admin",
+    "permissions": ["read", "write", "delete"],
+    "subscription_tier": "enterprise",
+    "team_id": "team_123",
+    "last_payment_date": "2023-01-01T00:00:00Z"
+  }
+}
+```
+
+### Ban/Unban User
+
+```json
+{
+  "ban_duration": "7d"
+}
+```
+
+```json
+{
+  "ban_duration": null
+}
+```
+
+### Reset Password
+
+```json
+{
+  "password": "new_secure_password_123!",
+  "email_confirmed_at": "2023-01-01T00:00:00Z"
+}
+```
+
+## Implementation Examples
+
+### React Admin User Update Form
+
+```jsx
+import { useState, useEffect } from 'react';
+
+function AdminUserUpdateForm({ userId, onUserUpdated }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    phone: '',
+    user_metadata: {},
+    app_metadata: {}
+  });
+
+  useEffect(() => {
+    fetchUser();
+  }, [userId]);
+
+  const fetchUser = async () => {
+    try {
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${process.env.REACT_APP_SERVICE_ROLE_KEY}`,
+        },
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch user');
+
+      const userData = await response.json();
+      setUser(userData);
+      setFormData({
+        email: userData.email || '',
+        phone: userData.phone || '',
+        user_metadata: userData.user_metadata || {},
+        app_metadata: userData.app_metadata || {}
+      });
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${process.env.REACT_APP_SERVICE_ROLE_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.msg || 'Failed to update user');
+      }
+
+      const updatedUser = await response.json();
+      setUser(updatedUser);
+      onUserUpdated?.(updatedUser);
+      
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateUserMetadata = (key, value) => {
+    setFormData(prev => ({
+      ...prev,
+      user_metadata: {
+        ...prev.user_metadata,
+        [key]: value
+      }
+    }));
+  };
+
+  const updateAppMetadata = (key, value) => {
+    setFormData(prev => ({
+      ...prev,
+      app_metadata: {
+        ...prev.app_metadata,
+        [key]: value
+      }
+    }));
+  };
+
+  if (!user) return <div>Loading user...</div>;
+
+  return (
+    <form onSubmit={handleSubmit} className="admin-user-form">
+      <h2>Update User: {user.email}</h2>
+      
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
+
+      <div className="form-section">
+        <h3>Contact Information</h3>
+        
+        <div className="form-group">
+          <label htmlFor="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            value={formData.email}
+            onChange={(e) => setFormData(prev => ({
+              ...prev,
+              email: e.target.value
+            }))}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="phone">Phone</label>
+          <input
+            type="tel"
+            id="phone"
+            value={formData.phone}
+            onChange={(e) => setFormData(prev => ({
+              ...prev,
+              phone: e.target.value
+            }))}
+            placeholder="+1234567890"
+          />
+        </div>
+      </div>
+
+      <div className="form-section">
+        <h3>Profile Information</h3>
+        
+        <div className="form-group">
+          <label htmlFor="firstName">First Name</label>
+          <input
+            type="text"
+            id="firstName"
+            value={formData.user_metadata.first_name || ''}
+            onChange={(e) => updateUserMetadata('first_name', e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="lastName">Last Name</label>
+          <input
+            type="text"
+            id="lastName"
+            value={formData.user_metadata.last_name || ''}
+            onChange={(e) => updateUserMetadata('last_name', e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="company">Company</label>
+          <input
+            type="text"
+            id="company"
+            value={formData.user_metadata.company || ''}
+            onChange={(e) => updateUserMetadata('company', e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="form-section">
+        <h3>App Settings</h3>
+        
+        <div className="form-group">
+          <label htmlFor="role">Role</label>
+          <select
+            id="role"
+            value={formData.app_metadata.role || 'user'}
+            onChange={(e) => updateAppMetadata('role', e.target.value)}
+          >
+            <option value="user">User</option>
+            <option value="premium_user">Premium User</option>
+            <option value="admin">Admin</option>
+            <option value="super_admin">Super Admin</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="subscriptionTier">Subscription Tier</label>
+          <select
+            id="subscriptionTier"
+            value={formData.app_metadata.subscription_tier || 'free'}
+            onChange={(e) => updateAppMetadata('subscription_tier', e.target.value)}
+          >
+            <option value="free">Free</option>
+            <option value="pro">Pro</option>
+            <option value="enterprise">Enterprise</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="form-actions">
+        <button type="submit" disabled={loading}>
+          {loading ? 'Updating...' : 'Update User'}
+        </button>
+        
+        <button type="button" onClick={fetchUser}>
+          Reset Changes
+        </button>
+      </div>
+    </form>
+  );
+}
+
+export default AdminUserUpdateForm;
+```
+
+### Node.js Backend Handler
+
+```javascript
+const express = require('express');
+const { body, param, validationResult } = require('express-validator');
+
+const router = express.Router();
+
+// Middleware to verify service role
+const verifyServiceRole = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(' ')[1];
+
+  if (!token || token !== process.env.SERVICE_ROLE_KEY) {
+    return res.status(401).json({
+      code: 401,
+      msg: 'Invalid service role key',
+      details: 'Please provide a valid service role key'
+    });
+  }
+
+  next();
+};
+
+router.put('/admin/users/:id', [
+  verifyServiceRole,
+  param('id').isUUID().withMessage('Invalid user ID format'),
+  body('email').optional().isEmail().normalizeEmail(),
+  body('phone').optional().matches(/^\+[1-9]\d{1,14}$/),
+  body('password').optional().isLength({ min: 8 }),
+  body('user_metadata').optional().isObject(),
+  body('app_metadata').optional().isObject()
+], async (req, res) => {
+  try {
+    // Check validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        code: 400,
+        msg: 'Invalid request data',
+        details: errors.array()
+      });
+    }
+
+    const { id } = req.params;
+    const updateData = req.body;
+
+    // Call Strike Auth Service
+    const response = await fetch(`${process.env.AUTH_SERVICE_URL}/admin/users/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${process.env.SERVICE_ROLE_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updateData),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      return res.status(response.status).json(result);
+    }
+
+    // Log user update
+    console.log(`User updated: ${id}, fields: ${Object.keys(updateData).join(', ')}`);
+
+    res.json(result);
+
+  } catch (error) {
+    console.error('User update error:', error);
+    res.status(500).json({
+      code: 500,
+      msg: 'Internal server error',
+      details: 'Please try again later'
+    });
+  }
+});
+
+module.exports = router;
+```
+
+### Bulk User Update
+
+```javascript
+async function bulkUpdateUsers(updates) {
+  const results = [];
+  
+  for (const update of updates) {
+    try {
+      const response = await fetch(`/api/admin/users/${update.id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${process.env.SERVICE_ROLE_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(update.data),
+      });
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        results.push({ id: update.id, success: true, data: result });
+      } else {
+        results.push({ id: update.id, success: false, error: result.msg });
+      }
+    } catch (error) {
+      results.push({ id: update.id, success: false, error: error.message });
+    }
+  }
+
+  return results;
+}
+
+// Usage
+const updates = [
+  {
+    id: 'user1-id',
+    data: { app_metadata: { subscription_tier: 'pro' } }
+  },
+  {
+    id: 'user2-id',
+    data: { app_metadata: { subscription_tier: 'enterprise' } }
+  }
+];
+
+const results = await bulkUpdateUsers(updates);
+console.log('Bulk update results:', results);
+```
+
+## Security Considerations
+
+- **Service Role Protection**: Never expose service role keys in client-side code
+- **Input Validation**: Validate all input data before processing
+- **Audit Logging**: Log all user modifications for compliance
+- **Rate Limiting**: Implement rate limits for admin operations
+- **Permission Checks**: Verify admin permissions before allowing updates
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Data Validation">
+    - Validate email uniqueness before updating
+    - Ensure phone numbers are in E.164 format
+    - Validate password strength requirements
+    - Sanitize metadata to prevent injection attacks
+  </Accordion>
+
+  <Accordion title="Metadata Management">
+    - Use user_metadata for user-controlled data
+    - Use app_metadata for application-controlled data
+    - Implement schema validation for metadata
+    - Consider metadata size limits
+  </Accordion>
+
+  <Accordion title="User Experience">
+    - Provide clear feedback on update success/failure
+    - Show validation errors clearly
+    - Implement optimistic updates where appropriate
+    - Allow partial updates without requiring all fields
+  </Accordion>
+</AccordionGroup>
+
+## Testing
+
+### Unit Tests
+
+```javascript
+describe('PUT /admin/users/:id', () => {
+  test('should update user with valid data', async () => {
+    const updateData = {
+      email: 'updated@example.com',
+      user_metadata: { first_name: 'Updated' }
+    };
+
+    const response = await request(app)
+      .put('/admin/users/valid-user-id')
+      .set('Authorization', 'Bearer valid_service_role_key')
+      .send(updateData)
+      .expect(200);
+
+    expect(response.body.email).toBe('updated@example.com');
+    expect(response.body.user_metadata.first_name).toBe('Updated');
+  });
+
+  test('should reject invalid service role', async () => {
+    await request(app)
+      .put('/admin/users/valid-user-id')
+      .set('Authorization', 'Bearer invalid_key')
+      .send({ email: 'test@example.com' })
+      .expect(401);
+  });
+
+  test('should return 404 for non-existent user', async () => {
+    await request(app)
+      .put('/admin/users/non-existent-id')
+      .set('Authorization', 'Bearer valid_service_role_key')
+      .send({ email: 'test@example.com' })
+      .expect(404);
+  });
+});
+```
+
+## Related Endpoints
+
+<CardGroup cols={2}>
+  <Card
+    title="Create User"
+    icon="user-plus"
+    href="/api-reference/admin/create-user"
+  >
+    Create new user accounts
+  </Card>
+  <Card
+    title="Generate Link"
+    icon="link"
+    href="/api-reference/admin/generate-link"
+  >
+    Generate authentication links
+  </Card>
+  <Card
+    title="Invite User"
+    icon="paper-plane"
+    href="/api-reference/admin/invite-user"
+  >
+    Send user invitations
+  </Card>
+  <Card
+    title="Get Profile"
+    icon="user"
+    href="/api-reference/user/get-profile"
+  >
+    Get user profile information
+  </Card>
+</CardGroup> 

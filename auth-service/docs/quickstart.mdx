@@ -1,0 +1,443 @@
+---
+title: "Quickstart"
+description: "Get up and running with Strike Auth Service in under 5 minutes"
+---
+
+## Setup your environment
+
+Before you begin, make sure you have the following:
+
+<AccordionGroup>
+  <Accordion title="Prerequisites">
+    - A Strike account with API access - Your service role key - A development
+    environment (Node.js, Python, Go, etc.)
+  </Accordion>
+</AccordionGroup>
+
+## Make your first request
+
+Let's start by testing the service with a simple health check:
+
+<CodeGroup>
+
+```bash cURL
+curl -X GET "http://localhost:8080/health" \
+  -H "Content-Type: application/json"
+```
+
+```javascript JavaScript
+const response = await fetch("http://localhost:8080/health", {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+const data = await response.json();
+console.log(data);
+```
+
+```python Python
+import requests
+
+response = requests.get('http://localhost:8080/health')
+data = response.json()
+print(data)
+```
+
+```go Go
+package main
+
+import (
+    "fmt"
+    "io"
+    "net/http"
+)
+
+func main() {
+    resp, err := http.Get("http://localhost:8080/health")
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    body, err := io.ReadAll(resp.Body)
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Println(string(body))
+}
+```
+
+</CodeGroup>
+
+<ResponseExample>
+
+```json Response
+{
+  "status": "healthy",
+  "service": "supabase-auth-service",
+  "version": "1.0.0",
+  "timestamp": "2025-05-30T00:00:00Z"
+}
+```
+
+</ResponseExample>
+
+## Create your first user
+
+Now let's create a user account using the signup endpoint:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "http://localhost:8080/signup" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "securepassword123"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch("http://localhost:8080/signup", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    email: "user@example.com",
+    password: "securepassword123",
+  }),
+});
+
+const user = await response.json();
+console.log(user);
+```
+
+```python Python
+import requests
+
+data = {
+    "email": "user@example.com",
+    "password": "securepassword123"
+}
+
+response = requests.post('http://localhost:8080/signup', json=data)
+user = response.json()
+print(user)
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "net/http"
+)
+
+func main() {
+    data := map[string]string{
+        "email":    "user@example.com",
+        "password": "securepassword123",
+    }
+
+    jsonData, _ := json.Marshal(data)
+
+    resp, err := http.Post(
+        "http://localhost:8080/signup",
+        "application/json",
+        bytes.NewBuffer(jsonData),
+    )
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    var user map[string]interface{}
+    json.NewDecoder(resp.Body).Decode(&user)
+    fmt.Printf("%+v\n", user)
+}
+```
+
+</CodeGroup>
+
+<ResponseExample>
+
+```json Response
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "aud": "authenticated",
+  "role": "authenticated",
+  "email": "user@example.com",
+  "email_confirmed_at": null,
+  "phone": null,
+  "phone_confirmed_at": null,
+  "last_sign_in_at": null,
+  "app_metadata": {},
+  "user_metadata": {},
+  "created_at": "2023-01-01T00:00:00Z",
+  "updated_at": "2023-01-01T00:00:00Z"
+}
+```
+
+</ResponseExample>
+
+## Authenticate a user
+
+Once you have a user, you can authenticate them to get access tokens:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "http://localhost:8080/token?grant_type=password" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "securepassword123"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch(
+  "http://localhost:8080/token?grant_type=password",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: "user@example.com",
+      password: "securepassword123",
+    }),
+  }
+);
+
+const authData = await response.json();
+console.log(authData);
+```
+
+```python Python
+import requests
+
+data = {
+    "email": "user@example.com",
+    "password": "securepassword123"
+}
+
+response = requests.post(
+    'http://localhost:8080/token?grant_type=password',
+    json=data
+)
+auth_data = response.json()
+print(auth_data)
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "net/http"
+)
+
+func main() {
+    data := map[string]string{
+        "email":    "user@example.com",
+        "password": "securepassword123",
+    }
+
+    jsonData, _ := json.Marshal(data)
+
+    resp, err := http.Post(
+        "http://localhost:8080/token?grant_type=password",
+        "application/json",
+        bytes.NewBuffer(jsonData),
+    )
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    var authData map[string]interface{}
+    json.NewDecoder(resp.Body).Decode(&authData)
+    fmt.Printf("%+v\n", authData)
+}
+```
+
+</CodeGroup>
+
+<ResponseExample>
+
+```json Response
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer",
+  "expires_in": 3600,
+  "expires_at": 1640995200,
+  "refresh_token": "refresh_token_string",
+  "user": {
+    "id": "123e4567-e89b-12d3-a456-426614174000",
+    "email": "user@example.com",
+    "role": "authenticated"
+  }
+}
+```
+
+</ResponseExample>
+
+## Make authenticated requests
+
+Use the access token to make authenticated requests:
+
+<CodeGroup>
+
+```bash cURL
+curl -X GET "http://localhost:8080/user" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "Content-Type: application/json"
+```
+
+```javascript JavaScript
+const response = await fetch("http://localhost:8080/user", {
+  method: "GET",
+  headers: {
+    Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "Content-Type": "application/json",
+  },
+});
+
+const user = await response.json();
+console.log(user);
+```
+
+```python Python
+import requests
+
+headers = {
+    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    'Content-Type': 'application/json'
+}
+
+response = requests.get('http://localhost:8080/user', headers=headers)
+user = response.json()
+print(user)
+```
+
+```go Go
+package main
+
+import (
+    "fmt"
+    "io"
+    "net/http"
+)
+
+func main() {
+    req, _ := http.NewRequest("GET", "http://localhost:8080/user", nil)
+    req.Header.Set("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+    req.Header.Set("Content-Type", "application/json")
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    body, _ := io.ReadAll(resp.Body)
+    fmt.Println(string(body))
+}
+```
+
+</CodeGroup>
+
+## Admin Authentication
+
+For admin users, use the enhanced admin login endpoint that includes privilege verification:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "http://localhost:8080/login-admin" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@example.com",
+    "password": "admin_password123"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch("http://localhost:8080/login-admin", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    email: "admin@example.com",
+    password: "admin_password123",
+  }),
+});
+
+const adminData = await response.json();
+console.log("Admin details:", adminData.admin_details);
+```
+
+</CodeGroup>
+
+<Note>
+  The admin login endpoint automatically verifies that the user has admin
+  privileges in the database. Non-admin users will receive a 403 Forbidden
+  response even with valid credentials.
+</Note>
+
+<ResponseExample>
+
+```json Admin Response
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer",
+  "expires_in": 3600,
+  "expires_at": 1640995200,
+  "refresh_token": "refresh_token_string",
+  "user": {
+    "id": "26a20af0-109d-43e0-ae38-2e35148fff64",
+    "email": "admin@example.com",
+    "role": "authenticated"
+  },
+  "admin_details": {
+    "id": "26a20af0-109d-43e0-ae38-2e35148fff64",
+    "email": "admin@example.com",
+    "is_admin": true,
+    "created_at": "2023-01-01T00:00:00Z"
+  }
+}
+```
+
+</ResponseExample>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication Guide" icon="key" href="/authentication">
+    Learn about different authentication methods and security best practices
+  </Card>
+  <Card title="User Management" icon="users" href="/concepts/user-management">
+    Understand user lifecycle and profile management
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/introduction">
+    Explore all available endpoints and their parameters
+  </Card>
+  <Card
+    title="Integration Guides"
+    icon="puzzle-piece"
+    href="/guides/signup-flow"
+  >
+    Step-by-step guides for common integration patterns
+  </Card>
+</CardGroup>{" "}

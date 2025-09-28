@@ -1,0 +1,606 @@
+---
+title: "Password Recovery"
+api: "POST /recover"
+description: "Send password recovery email"
+---
+
+Send a password recovery email to users who have forgotten their password. This endpoint initiates the password reset flow by sending a secure recovery link via email.
+
+<Note>
+This endpoint always returns success (200) to prevent email enumeration attacks, even if the email doesn't exist.
+</Note>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST "http://localhost:8080/recover" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('http://localhost:8080/recover', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    email: 'user@example.com'
+  }),
+});
+
+const result = await response.json();
+```
+
+```python Python
+import requests
+
+data = {
+    "email": "user@example.com"
+}
+
+response = requests.post('http://localhost:8080/recover', json=data)
+result = response.json()
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "net/http"
+)
+
+func main() {
+    data := map[string]string{
+        "email": "user@example.com",
+    }
+    
+    jsonData, _ := json.Marshal(data)
+    
+    resp, err := http.Post(
+        "http://localhost:8080/recover",
+        "application/json",
+        bytes.NewBuffer(jsonData),
+    )
+    // Handle response...
+}
+```
+
+</RequestExample>
+
+## Request Body
+
+<ParamField body="email" type="string" required>
+  Email address of the user requesting password recovery.
+</ParamField>
+
+<ParamField body="redirect_to" type="string">
+  URL to redirect to after password recovery verification. If not provided, uses the default redirect URL.
+</ParamField>
+
+<ParamField body="captcha_token" type="string">
+  Captcha token for verification if captcha is enabled.
+</ParamField>
+
+## Response
+
+<ResponseField name="message" type="string">
+  Success message (always returned regardless of email existence)
+</ResponseField>
+
+<ResponseExample>
+
+```json 200 - Recovery Email Sent
+{
+  "message": "If an account with that email exists, we've sent a password recovery link."
+}
+```
+
+</ResponseExample>
+
+## Error Responses
+
+<ResponseExample>
+
+```json 400 - Invalid Email
+{
+  "code": 400,
+  "msg": "Invalid email format",
+  "details": "Please provide a valid email address"
+}
+```
+
+```json 429 - Rate Limited
+{
+  "code": 429,
+  "msg": "Too many requests",
+  "details": "Please wait before requesting another password recovery"
+}
+```
+
+</ResponseExample>
+
+## Password Recovery Flow
+
+<Steps>
+  <Step title="Request Recovery">
+    User submits their email address to the recovery endpoint
+  </Step>
+  <Step title="Email Sent">
+    If the email exists, a recovery email is sent with a secure token
+  </Step>
+  <Step title="User Clicks Link">
+    User clicks the recovery link in their email
+  </Step>
+  <Step title="Verification">
+    The recovery token is verified and user is redirected to reset form
+  </Step>
+  <Step title="Password Reset">
+    User sets a new password using the verify endpoint
+  </Step>
+</Steps>
+
+## Recovery Email Template
+
+The recovery email should include:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reset Your Password - Strike</title>
+</head>
+<body>
+  <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+    <h1>Reset Your Password</h1>
+    
+    <p>Hi there,</p>
+    
+    <p>We received a request to reset your password for your Strike account.</p>
+    
+    <a href="{{.RecoveryURL}}" 
+       style="background-color: #0D9373; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
+      Reset Password
+    </a>
+    
+    <p>Or copy and paste this link into your browser:</p>
+    <p>{{.RecoveryURL}}</p>
+    
+    <p>This link will expire in 1 hour for security reasons.</p>
+    
+    <p>If you didn't request this password reset, you can safely ignore this email.</p>
+    
+    <p>Best regards,<br>The Strike Team</p>
+  </div>
+</body>
+</html>
+```
+
+## Implementation Examples
+
+### React Password Recovery Form
+
+```jsx
+import { useState } from 'react';
+
+function PasswordRecoveryForm() {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/auth/recover', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.msg || 'Recovery failed');
+      }
+
+      setSent(true);
+      
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (sent) {
+    return (
+      <div className="recovery-success">
+        <h2>Check your email</h2>
+        <p>
+          If an account with <strong>{email}</strong> exists, 
+          we've sent a password recovery link.
+        </p>
+        <p>
+          Please check your email and click the link to reset your password.
+        </p>
+        <p>
+          <small>
+            Didn't receive the email? Check your spam folder or{' '}
+            <button 
+              onClick={() => setSent(false)}
+              className="link-button"
+            >
+              try again
+            </button>
+          </small>
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="recovery-form">
+      <h2>Reset Password</h2>
+      <p>
+        Enter your email address and we'll send you a link to reset your password.
+      </p>
+      
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
+
+      <div className="form-group">
+        <label htmlFor="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter your email"
+          required
+        />
+      </div>
+
+      <button type="submit" disabled={loading || !email}>
+        {loading ? 'Sending...' : 'Send Recovery Email'}
+      </button>
+
+      <p>
+        Remember your password? <a href="/login">Sign in</a>
+      </p>
+    </form>
+  );
+}
+
+export default PasswordRecoveryForm;
+```
+
+### Password Reset Form (After Email Click)
+
+```jsx
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+
+function PasswordResetForm() {
+  const [searchParams] = useSearchParams();
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+
+  const token = searchParams.get('token');
+  const type = searchParams.get('type');
+
+  useEffect(() => {
+    if (!token || type !== 'recovery') {
+      setError('Invalid or missing recovery token');
+    }
+  }, [token, type]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/auth/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'recovery',
+          token: token,
+          password: password
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.msg || 'Password reset failed');
+      }
+
+      const authData = await response.json();
+      
+      // Store tokens and redirect
+      localStorage.setItem('access_token', authData.access_token);
+      localStorage.setItem('refresh_token', authData.refresh_token);
+      
+      setSuccess(true);
+      
+      // Redirect to dashboard after a short delay
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 2000);
+      
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (success) {
+    return (
+      <div className="reset-success">
+        <h2>Password Reset Successful!</h2>
+        <p>Your password has been updated. Redirecting to dashboard...</p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="reset-form">
+      <h2>Set New Password</h2>
+      
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
+
+      <div className="form-group">
+        <label htmlFor="password">New Password</label>
+        <input
+          type="password"
+          id="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Enter new password"
+          minLength={8}
+          required
+        />
+        <small>
+          Password must be at least 8 characters with uppercase, lowercase, number, and special character.
+        </small>
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="confirmPassword">Confirm Password</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="Confirm new password"
+          required
+        />
+      </div>
+
+      <button type="submit" disabled={loading || !password || !confirmPassword}>
+        {loading ? 'Updating...' : 'Update Password'}
+      </button>
+    </form>
+  );
+}
+
+export default PasswordResetForm;
+```
+
+### Node.js Backend Handler
+
+```javascript
+const express = require('express');
+const { body, validationResult } = require('express-validator');
+
+const router = express.Router();
+
+// Password recovery request
+router.post('/recover', [
+  body('email').isEmail().normalizeEmail()
+], async (req, res) => {
+  try {
+    // Check validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        code: 400,
+        msg: 'Invalid email format',
+        details: 'Please provide a valid email address'
+      });
+    }
+
+    // Call Strike Auth Service
+    const response = await fetch(`${process.env.AUTH_SERVICE_URL}/recover`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(req.body),
+    });
+
+    // Always return success to prevent email enumeration
+    res.json({
+      message: "If an account with that email exists, we've sent a password recovery link."
+    });
+
+    // Log recovery attempt (but don't reveal if email exists)
+    console.log(`Password recovery requested for: ${req.body.email}`);
+
+  } catch (error) {
+    console.error('Recovery error:', error);
+    
+    // Still return success to prevent information disclosure
+    res.json({
+      message: "If an account with that email exists, we've sent a password recovery link."
+    });
+  }
+});
+
+module.exports = router;
+```
+
+## Security Features
+
+- **Email Enumeration Protection**: Always returns success regardless of email existence
+- **Token Expiration**: Recovery tokens expire after 1 hour
+- **Single Use**: Recovery tokens can only be used once
+- **Rate Limiting**: Prevents abuse and spam
+- **Secure Tokens**: Cryptographically secure random tokens
+
+## Rate Limiting
+
+This endpoint is rate limited to prevent abuse:
+
+| Limit Type | Limit | Window |
+|------------|-------|--------|
+| Per Email | 3 requests | 15 minutes |
+| Per IP | 10 requests | 15 minutes |
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Security">
+    - Always return success to prevent email enumeration
+    - Use secure, random tokens with sufficient entropy
+    - Implement proper token expiration (1 hour recommended)
+    - Log recovery attempts for security monitoring
+    - Require strong passwords for reset
+  </Accordion>
+
+  <Accordion title="User Experience">
+    - Provide clear instructions in recovery emails
+    - Include troubleshooting tips for common issues
+    - Offer alternative recovery methods if available
+    - Show helpful error messages without revealing sensitive info
+  </Accordion>
+
+  <Accordion title="Email Delivery">
+    - Use reputable email service providers
+    - Implement proper email authentication (SPF, DKIM, DMARC)
+    - Monitor delivery rates and bounce rates
+    - Provide clear sender identification
+  </Accordion>
+</AccordionGroup>
+
+## Testing
+
+### Unit Tests
+
+```javascript
+describe('POST /recover', () => {
+  test('should always return success for valid email format', async () => {
+    const response = await request(app)
+      .post('/recover')
+      .send({
+        email: 'test@example.com'
+      })
+      .expect(200);
+
+    expect(response.body.message).toContain('sent a password recovery link');
+  });
+
+  test('should return success even for non-existent email', async () => {
+    const response = await request(app)
+      .post('/recover')
+      .send({
+        email: 'nonexistent@example.com'
+      })
+      .expect(200);
+
+    expect(response.body.message).toContain('sent a password recovery link');
+  });
+
+  test('should reject invalid email format', async () => {
+    await request(app)
+      .post('/recover')
+      .send({
+        email: 'invalid-email'
+      })
+      .expect(400);
+  });
+
+  test('should respect rate limits', async () => {
+    const email = 'test@example.com';
+    
+    // Send multiple requests
+    for (let i = 0; i < 5; i++) {
+      await request(app)
+        .post('/recover')
+        .send({ email });
+    }
+
+    // Should be rate limited
+    await request(app)
+      .post('/recover')
+      .send({ email })
+      .expect(429);
+  });
+});
+```
+
+## Related Endpoints
+
+<CardGroup cols={2}>
+  <Card
+    title="Verify Recovery"
+    icon="check"
+    href="/api-reference/authentication/verify-post"
+  >
+    Complete password reset with new password
+  </Card>
+  <Card
+    title="Resend Recovery"
+    icon="paper-plane"
+    href="/api-reference/authentication/resend"
+  >
+    Resend password recovery email
+  </Card>
+  <Card
+    title="User Login"
+    icon="sign-in"
+    href="/api-reference/authentication/login"
+  >
+    Sign in with new password
+  </Card>
+  <Card
+    title="Update Profile"
+    icon="user"
+    href="/api-reference/user/update-profile"
+  >
+    Change password when authenticated
+  </Card>
+</CardGroup> 

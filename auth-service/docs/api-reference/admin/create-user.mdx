@@ -1,0 +1,853 @@
+---
+title: "Create User (Admin)"
+api: "POST /admin/users"
+description: "Create a new user with admin privileges"
+---
+
+## Overview
+
+The `/admin/users` endpoint allows administrators to create new users programmatically. This endpoint requires admin privileges and can be used to create users with specific metadata, roles, and confirmation status.
+
+<Warning>
+This endpoint requires either a service role key or admin user JWT token for authentication.
+</Warning>
+
+## Authentication
+
+This endpoint supports two authentication methods:
+
+- **Service Role Key**: `Authorization: Bearer <service-role-key>`
+- **Admin JWT**: `Authorization: Bearer <admin-jwt-token>`
+
+## Request
+
+<RequestExample>
+
+```bash cURL
+curl -X POST "https://auth-api.yourdomain.com/admin/users" \
+  -H "Authorization: Bearer YOUR_SERVICE_ROLE_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "newuser@example.com",
+    "password": "SecurePassword123!",
+    "email_confirm": true,
+    "user_metadata": {
+      "first_name": "John",
+      "last_name": "Doe"
+    },
+    "app_metadata": {
+      "role": "user",
+      "department": "engineering"
+    }
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('/admin/users', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${serviceRoleKey}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    email: 'newuser@example.com',
+    password: 'SecurePassword123!',
+    email_confirm: true,
+    user_metadata: {
+      first_name: 'John',
+      last_name: 'Doe'
+    },
+    app_metadata: {
+      role: 'user',
+      department: 'engineering'
+    }
+  })
+});
+
+const user = await response.json();
+console.log('User created:', user);
+```
+
+```python Python
+import requests
+
+headers = {
+    'Authorization': f'Bearer {service_role_key}',
+    'Content-Type': 'application/json'
+}
+
+data = {
+    'email': 'newuser@example.com',
+    'password': 'SecurePassword123!',
+    'email_confirm': True,
+    'user_metadata': {
+        'first_name': 'John',
+        'last_name': 'Doe'
+    },
+    'app_metadata': {
+        'role': 'user',
+        'department': 'engineering'
+    }
+}
+
+response = requests.post(
+    'https://auth-api.yourdomain.com/admin/users',
+    headers=headers,
+    json=data
+)
+
+user = response.json()
+print(f"User created: {user}")
+```
+
+```go Go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "net/http"
+)
+
+type CreateUserRequest struct {
+    Email        string                 `json:"email"`
+    Password     string                 `json:"password"`
+    Phone        string                 `json:"phone,omitempty"`
+    EmailConfirm bool                   `json:"email_confirm,omitempty"`
+    PhoneConfirm bool                   `json:"phone_confirm,omitempty"`
+    UserMetadata map[string]interface{} `json:"user_metadata,omitempty"`
+    AppMetadata  map[string]interface{} `json:"app_metadata,omitempty"`
+}
+
+func createUser(serviceRoleKey string, req CreateUserRequest) error {
+    jsonData, err := json.Marshal(req)
+    if err != nil {
+        return err
+    }
+
+    httpReq, err := http.NewRequest("POST", "https://auth-api.yourdomain.com/admin/users", bytes.NewBuffer(jsonData))
+    if err != nil {
+        return err
+    }
+
+    httpReq.Header.Set("Authorization", "Bearer "+serviceRoleKey)
+    httpReq.Header.Set("Content-Type", "application/json")
+
+    client := &http.Client{}
+    resp, err := client.Do(httpReq)
+    if err != nil {
+        return err
+    }
+    defer resp.Body.Close()
+
+    if resp.StatusCode == 200 {
+        fmt.Println("User created successfully")
+        return nil
+    }
+
+    return fmt.Errorf("failed to create user: %d", resp.StatusCode)
+}
+```
+
+</RequestExample>
+
+## Request Body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `email` | string | Yes | User's email address |
+| `password` | string | No | User's password (if not provided, user must set via recovery) |
+| `phone` | string | No | User's phone number in E.164 format |
+| `email_confirm` | boolean | No | Whether to mark email as confirmed (default: false) |
+| `phone_confirm` | boolean | No | Whether to mark phone as confirmed (default: false) |
+| `user_metadata` | object | No | User-editable metadata |
+| `app_metadata` | object | No | Application metadata (admin-only) |
+
+## Response
+
+<ResponseExample>
+
+```json 200 - Success
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "aud": "authenticated",
+  "role": "authenticated",
+  "email": "newuser@example.com",
+  "phone": null,
+  "email_confirmed_at": "2023-12-01T10:30:00Z",
+  "phone_confirmed_at": null,
+  "last_sign_in_at": null,
+  "app_metadata": {
+    "role": "user",
+    "department": "engineering"
+  },
+  "user_metadata": {
+    "first_name": "John",
+    "last_name": "Doe"
+  },
+  "created_at": "2023-12-01T10:30:00Z",
+  "updated_at": "2023-12-01T10:30:00Z"
+}
+```
+
+```json 400 - Bad Request
+{
+  "code": 400,
+  "msg": "Invalid request data",
+  "details": "Email is required"
+}
+```
+
+```json 401 - Unauthorized
+{
+  "code": 401,
+  "msg": "Invalid or missing authentication",
+  "details": "Service role key or admin token required"
+}
+```
+
+```json 403 - Forbidden
+{
+  "code": 403,
+  "msg": "Insufficient privileges",
+  "details": "Admin privileges required"
+}
+```
+
+```json 409 - Conflict
+{
+  "code": 409,
+  "msg": "User already exists",
+  "details": "A user with this email already exists"
+}
+```
+
+</ResponseExample>
+
+## Implementation Examples
+
+### Admin User Management Component
+
+```jsx
+import { useState } from 'react';
+
+function AdminUserCreation() {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    phone: '',
+    email_confirm: false,
+    phone_confirm: false,
+    user_metadata: {
+      first_name: '',
+      last_name: ''
+    },
+    app_metadata: {
+      role: 'user',
+      department: ''
+    }
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const response = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.msg || 'Failed to create user');
+      }
+
+      const user = await response.json();
+      setSuccess(`User created successfully: ${user.email}`);
+      
+      // Reset form
+      setFormData({
+        email: '',
+        password: '',
+        phone: '',
+        email_confirm: false,
+        phone_confirm: false,
+        user_metadata: { first_name: '', last_name: '' },
+        app_metadata: { role: 'user', department: '' }
+      });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      setFormData(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: type === 'checkbox' ? checked : value
+        }
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value
+      }));
+    }
+  };
+
+  return (
+    <div className="admin-user-creation">
+      <h2>Create New User</h2>
+      
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
+      
+      {success && (
+        <div className="success-message">
+          {success}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="email">Email *</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleInputChange}
+            placeholder="Leave empty to require password reset"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="phone">Phone</label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleInputChange}
+            placeholder="+1234567890"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>
+            <input
+              type="checkbox"
+              name="email_confirm"
+              checked={formData.email_confirm}
+              onChange={handleInputChange}
+            />
+            Mark email as confirmed
+          </label>
+        </div>
+
+        <div className="form-group">
+          <label>
+            <input
+              type="checkbox"
+              name="phone_confirm"
+              checked={formData.phone_confirm}
+              onChange={handleInputChange}
+            />
+            Mark phone as confirmed
+          </label>
+        </div>
+
+        <fieldset>
+          <legend>User Metadata</legend>
+          
+          <div className="form-group">
+            <label htmlFor="first_name">First Name</label>
+            <input
+              type="text"
+              id="first_name"
+              name="user_metadata.first_name"
+              value={formData.user_metadata.first_name}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="last_name">Last Name</label>
+            <input
+              type="text"
+              id="last_name"
+              name="user_metadata.last_name"
+              value={formData.user_metadata.last_name}
+              onChange={handleInputChange}
+            />
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>App Metadata</legend>
+          
+          <div className="form-group">
+            <label htmlFor="role">Role</label>
+            <select
+              id="role"
+              name="app_metadata.role"
+              value={formData.app_metadata.role}
+              onChange={handleInputChange}
+            >
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+              <option value="moderator">Moderator</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="department">Department</label>
+            <input
+              type="text"
+              id="department"
+              name="app_metadata.department"
+              value={formData.app_metadata.department}
+              onChange={handleInputChange}
+            />
+          </div>
+        </fieldset>
+
+        <button type="submit" disabled={loading}>
+          {loading ? 'Creating User...' : 'Create User'}
+        </button>
+      </form>
+    </div>
+  );
+}
+```
+
+### Bulk User Creation
+
+```jsx
+import { useState } from 'react';
+
+function BulkUserCreation() {
+  const [csvData, setCsvData] = useState('');
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleBulkCreate = async () => {
+    setLoading(true);
+    setResults([]);
+
+    const lines = csvData.trim().split('\n');
+    const headers = lines[0].split(',').map(h => h.trim());
+    const users = lines.slice(1).map(line => {
+      const values = line.split(',').map(v => v.trim());
+      const user = {};
+      headers.forEach((header, index) => {
+        if (values[index]) {
+          user[header] = values[index];
+        }
+      });
+      return user;
+    });
+
+    const creationResults = [];
+
+    for (const user of users) {
+      try {
+        const response = await fetch('/api/admin/users', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${serviceRoleKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            ...user,
+            email_confirm: user.email_confirm === 'true',
+            user_metadata: {
+              first_name: user.first_name,
+              last_name: user.last_name
+            },
+            app_metadata: {
+              role: user.role || 'user',
+              department: user.department
+            }
+          })
+        });
+
+        if (response.ok) {
+          const createdUser = await response.json();
+          creationResults.push({
+            email: user.email,
+            status: 'success',
+            user: createdUser
+          });
+        } else {
+          const error = await response.json();
+          creationResults.push({
+            email: user.email,
+            status: 'error',
+            error: error.msg
+          });
+        }
+      } catch (error) {
+        creationResults.push({
+          email: user.email,
+          status: 'error',
+          error: error.message
+        });
+      }
+    }
+
+    setResults(creationResults);
+    setLoading(false);
+  };
+
+  return (
+    <div className="bulk-user-creation">
+      <h2>Bulk User Creation</h2>
+      
+      <div className="csv-input">
+        <label htmlFor="csv-data">CSV Data</label>
+        <textarea
+          id="csv-data"
+          value={csvData}
+          onChange={(e) => setCsvData(e.target.value)}
+          placeholder="email,password,first_name,last_name,role,department,email_confirm
+user1@example.com,password123,John,Doe,user,engineering,true
+user2@example.com,password456,Jane,Smith,admin,marketing,true"
+          rows={10}
+          cols={80}
+        />
+      </div>
+
+      <button onClick={handleBulkCreate} disabled={loading || !csvData.trim()}>
+        {loading ? 'Creating Users...' : 'Create Users'}
+      </button>
+
+      {results.length > 0 && (
+        <div className="results">
+          <h3>Results</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              {results.map((result, index) => (
+                <tr key={index} className={result.status}>
+                  <td>{result.email}</td>
+                  <td>{result.status}</td>
+                  <td>
+                    {result.status === 'success' 
+                      ? `User ID: ${result.user.id}`
+                      : result.error
+                    }
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+### Node.js Admin Service
+
+```javascript
+const express = require('express');
+const { body, validationResult } = require('express-validator');
+
+// Middleware to check admin privileges
+function requireAdmin(req, res, next) {
+  const user = req.user;
+  
+  // Check if using service role key
+  if (req.headers.authorization?.includes('service-role-key')) {
+    return next();
+  }
+  
+  // Check if user has admin role
+  if (!user || user.app_metadata?.role !== 'admin') {
+    return res.status(403).json({
+      code: 403,
+      msg: 'Insufficient privileges',
+      details: 'Admin privileges required'
+    });
+  }
+  
+  next();
+}
+
+// Validation rules for user creation
+const createUserValidation = [
+  body('email').isEmail().normalizeEmail(),
+  body('password').optional().isLength({ min: 8 }),
+  body('phone').optional().isMobilePhone(),
+  body('email_confirm').optional().isBoolean(),
+  body('phone_confirm').optional().isBoolean(),
+  body('user_metadata').optional().isObject(),
+  body('app_metadata').optional().isObject()
+];
+
+// Create user endpoint
+app.post('/admin/users', 
+  authenticateToken,
+  requireAdmin,
+  createUserValidation,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          code: 400,
+          msg: 'Invalid request data',
+          details: errors.array()[0].msg
+        });
+      }
+
+      const {
+        email,
+        password,
+        phone,
+        email_confirm = false,
+        phone_confirm = false,
+        user_metadata = {},
+        app_metadata = {}
+      } = req.body;
+
+      // Check if user already exists
+      const existingUser = await supabase.auth.admin.getUserByEmail(email);
+      if (existingUser.data.user) {
+        return res.status(409).json({
+          code: 409,
+          msg: 'User already exists',
+          details: 'A user with this email already exists'
+        });
+      }
+
+      // Create user
+      const { data, error } = await supabase.auth.admin.createUser({
+        email,
+        password,
+        phone,
+        email_confirm,
+        phone_confirm,
+        user_metadata,
+        app_metadata
+      });
+
+      if (error) {
+        return res.status(400).json({
+          code: 400,
+          msg: 'Failed to create user',
+          details: error.message
+        });
+      }
+
+      // Log admin action
+      console.log(`Admin ${req.user.sub} created user ${data.user.id}`);
+
+      res.json(data.user);
+    } catch (error) {
+      console.error('Create user error:', error);
+      res.status(500).json({
+        code: 500,
+        msg: 'Internal server error'
+      });
+    }
+  }
+);
+
+// Bulk user creation endpoint
+app.post('/admin/users/bulk',
+  authenticateToken,
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const { users } = req.body;
+      
+      if (!Array.isArray(users) || users.length === 0) {
+        return res.status(400).json({
+          code: 400,
+          msg: 'Invalid request data',
+          details: 'Users array is required'
+        });
+      }
+
+      const results = [];
+      
+      for (const userData of users) {
+        try {
+          const { data, error } = await supabase.auth.admin.createUser(userData);
+          
+          if (error) {
+            results.push({
+              email: userData.email,
+              status: 'error',
+              error: error.message
+            });
+          } else {
+            results.push({
+              email: userData.email,
+              status: 'success',
+              user: data.user
+            });
+          }
+        } catch (error) {
+          results.push({
+            email: userData.email,
+            status: 'error',
+            error: error.message
+          });
+        }
+      }
+
+      res.json({ results });
+    } catch (error) {
+      res.status(500).json({
+        code: 500,
+        msg: 'Internal server error'
+      });
+    }
+  }
+);
+```
+
+## Use Cases
+
+### User Onboarding
+
+- Create users for new employees
+- Set up accounts with specific roles and departments
+- Pre-confirm email addresses for trusted domains
+
+### Bulk Operations
+
+- Import users from existing systems
+- Create test accounts for development
+- Set up demo accounts with sample data
+
+### Administrative Tasks
+
+- Create admin accounts with elevated privileges
+- Set up service accounts for integrations
+- Create users with specific metadata requirements
+
+## Security Considerations
+
+- **Authentication**: Requires service role key or admin JWT
+- **Authorization**: Verify admin privileges before allowing user creation
+- **Input Validation**: Validate all input data thoroughly
+- **Audit Logging**: Log all admin user creation activities
+- **Rate Limiting**: Implement rate limiting to prevent abuse
+
+## Best Practices
+
+- **Password Policy**: Enforce strong password requirements
+- **Metadata Structure**: Use consistent metadata schemas
+- **Error Handling**: Provide clear error messages
+- **Bulk Operations**: Implement proper error handling for bulk creation
+- **Monitoring**: Monitor admin activities for security
+
+## Rate Limiting
+
+- **Endpoint**: 100 requests per hour per admin
+- **Bulk Endpoint**: 10 requests per hour per admin
+- **Purpose**: Prevent abuse while allowing legitimate admin operations
+
+## Related Endpoints
+
+- [Update User (Admin)](/api-reference/admin/update-user) - Update existing users
+- [Generate Link (Admin)](/api-reference/admin/generate-link) - Generate action links for users
+- [Invite User (Admin)](/api-reference/admin/invite-user) - Send user invitations
+
+## Testing
+
+```javascript
+// Jest test example
+describe('Admin User Creation', () => {
+  test('should create user with service role key', async () => {
+    const userData = {
+      email: 'test@example.com',
+      password: 'SecurePassword123!',
+      email_confirm: true,
+      user_metadata: { first_name: 'Test' },
+      app_metadata: { role: 'user' }
+    };
+
+    const response = await request(app)
+      .post('/admin/users')
+      .set('Authorization', `Bearer ${serviceRoleKey}`)
+      .send(userData);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('id');
+    expect(response.body.email).toBe(userData.email);
+  });
+
+  test('should fail without admin privileges', async () => {
+    const response = await request(app)
+      .post('/admin/users')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({ email: 'test@example.com' });
+
+    expect(response.status).toBe(403);
+  });
+
+  test('should handle duplicate email', async () => {
+    const userData = { email: 'existing@example.com' };
+
+    // Create user first
+    await request(app)
+      .post('/admin/users')
+      .set('Authorization', `Bearer ${serviceRoleKey}`)
+      .send(userData);
+
+    // Try to create again
+    const response = await request(app)
+      .post('/admin/users')
+      .set('Authorization', `Bearer ${serviceRoleKey}`)
+      .send(userData);
+
+    expect(response.status).toBe(409);
+    expect(response.body.msg).toContain('already exists');
+  });
+});
+``` 

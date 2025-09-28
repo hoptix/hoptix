@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick POST Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .status {
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 3px;
+        }
+        .status-200 { background: #d4edda; color: #155724; }
+        .status-400 { background: #fff3cd; color: #856404; }
+        .status-422 { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Quick POST Test</h1>
+        <p>Click the button below to test if POST requests are working with CORS:</p>
+        
+        <div style="text-align: center;">
+            <button onclick="testSignup()">Test POST /signup</button>
+            <button onclick="testHealth()">Test GET /health</button>
+        </div>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const SERVICE_URL = 'http://localhost:8080';
+
+        function showResult(message, type = 'info') {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type}`;
+            resultDiv.textContent = message;
+        }
+
+        async function testSignup() {
+            showResult('Testing POST /signup...', 'info');
+            
+            try {
+                const response = await fetch(`${SERVICE_URL}/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin
+                    },
+                    body: JSON.stringify({
+                        email: `test-${Date.now()}@example.com`,
+                        password: 'TestPassword123!'
+                    })
+                });
+
+                const data = await response.text();
+                const corsHeader = response.headers.get('Access-Control-Allow-Origin');
+
+                let statusClass = '';
+                if (response.status >= 200 && response.status < 300) statusClass = 'status-200';
+                else if (response.status >= 400 && response.status < 500) statusClass = 'status-400';
+
+                const result = `✅ POST Request Successful!
+
+Status: ${response.status} ${response.statusText}
+CORS Header: ${corsHeader}
+
+Response:
+${data}
+
+🎉 This means POST requests are working properly with CORS!`;
+
+                showResult(result, response.status < 500 ? 'success' : 'error');
+                
+            } catch (error) {
+                showResult(`❌ POST Request Failed:
+
+Error: ${error.message}
+
+This usually means:
+1. Auth service is not running on localhost:8080
+2. CORS is not configured properly
+3. Network connectivity issue`, 'error');
+            }
+        }
+
+        async function testHealth() {
+            showResult('Testing GET /health...', 'info');
+            
+            try {
+                const response = await fetch(`${SERVICE_URL}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Origin': window.location.origin
+                    }
+                });
+
+                const data = await response.text();
+                const corsHeader = response.headers.get('Access-Control-Allow-Origin');
+
+                const result = `✅ GET Request Successful!
+
+Status: ${response.status} ${response.statusText}
+CORS Header: ${corsHeader}
+
+Response:
+${data}`;
+
+                showResult(result, 'success');
+                
+            } catch (error) {
+                showResult(`❌ GET Request Failed:
+
+Error: ${error.message}
+
+Make sure the auth service is running on localhost:8080`, 'error');
+            }
+        }
+
+        // Auto-test on page load
+        window.onload = function() {
+            showResult(`Ready to test! 
+
+Service URL: ${SERVICE_URL}
+Origin: ${window.location.origin}
+
+Click "Test POST /signup" to verify POST requests work.`, 'info');
+        };
+    </script>
+</body>
+</html> 

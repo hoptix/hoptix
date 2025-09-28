@@ -1,0 +1,505 @@
+# Supabase Auth Service
+
+A production-ready Go microservice that wraps Supabase Auth API with additional security, middleware, and comprehensive testing. Built for high-performance authentication with JWT validation, role-based access control, and comprehensive API coverage.
+
+## 🚀 Features
+
+### Core Authentication
+- ✅ **User Registration** - Email/phone signup with metadata support
+- ✅ **Login & Token Management** - JWT access/refresh token flow
+- ✅ **Password Recovery** - Secure password reset via email
+- ✅ **Email Verification** - Confirm user accounts via email links
+- ✅ **Magic Links** - Passwordless authentication
+- ✅ **OTP Support** - SMS and email one-time passwords
+- ✅ **OAuth Integration** - Social login (Google, GitHub, etc.)
+
+### Security & Middleware
+- 🔒 **JWT Validation** - Secure token parsing and validation
+- 👑 **Role-Based Access Control** - Admin vs user permissions
+- 🛡️ **CORS Protection** - Configurable cross-origin policies
+- 📝 **Request Logging** - Comprehensive access logging
+- ⚡ **Rate Limiting** - Built-in request throttling
+- 🔐 **Security Headers** - XSS, CSRF, and content-type protection
+
+### Admin Features
+- 👥 **User Management** - Create, update, ban users
+- 🔗 **Action Link Generation** - Programmatic link creation
+- 📧 **User Invitations** - Admin-initiated user onboarding
+- 🎛️ **Service Role Support** - Direct Supabase admin access
+
+### Development & Testing
+- 🧪 **Comprehensive Test Suite** - 60+ pytest tests covering all endpoints
+- 🐛 **Debug Endpoints** - Development token inspection
+- 📊 **Health Checks** - Service monitoring endpoints
+- 🔄 **Hot Reload** - Development environment support
+
+## 📁 Project Structure
+
+```
+supabase-auth-service/
+├── main.go                 # Application entry point
+├── config/
+│   └── config.go           # Configuration management
+├── middleware/
+│   ├── auth.go             # Authentication middleware
+│   └── common.go           # CORS, logging, security middleware
+├── handlers/
+│   ├── auth.go             # Public auth endpoints
+│   ├── user.go             # User management endpoints
+│   ├── admin.go            # Admin endpoints
+│   └── oauth.go            # OAuth endpoints
+├── service/
+│   └── supabase.go         # Supabase client service
+├── types/
+│   └── types.go            # Request/response type definitions
+├── tests/                  # Comprehensive test suite
+│   ├── conftest.py         # Test configuration and fixtures
+│   ├── test_*.py           # Individual test files
+│   └── requirements.txt    # Python test dependencies
+├── go.mod                  # Go module dependencies
+├── go.sum                  # Go module checksums
+├── .env.example            # Environment variables template
+├── Makefile                # Build and test automation
+├── Dockerfile              # Container configuration
+├── porter.yaml             # Porter deployment configuration
+├── openapi.yaml            # API specification
+└── README.md               # This file
+```
+
+## 🏗️ Architecture
+
+```mermaid
+graph TB
+    Client[Client Application]
+    
+    subgraph "Auth Service"
+        Router[Gorilla Mux Router]
+        
+        subgraph "Middleware"
+            CORS[CORS]
+            Auth[JWT Auth]
+            Admin[Admin Auth]
+            Log[Logging]
+            Rate[Rate Limit]
+        end
+        
+        subgraph "Handlers"
+            AuthH[Auth Handler]
+            UserH[User Handler]
+            AdminH[Admin Handler]
+            OAuthH[OAuth Handler]
+        end
+        
+        Service[Supabase Service]
+    end
+    
+    Supabase[(Supabase Auth)]
+    
+    Client --> Router
+    Router --> CORS
+    CORS --> Auth
+    Auth --> AuthH
+    Auth --> UserH
+    Admin --> AdminH
+    Router --> OAuthH
+    
+    AuthH --> Service
+    UserH --> Service
+    AdminH --> Service
+    OAuthH --> Service
+    
+    Service --> Supabase
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Go 1.21 or higher
+- Supabase account and project
+- Python 3.8+ (for tests)
+
+### 1. Clone and Setup
+```bash
+git clone <repository-url>
+cd supabase-auth-service
+```
+
+### 2. Environment Configuration
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with your Supabase credentials:
+```bash
+# Supabase Configuration
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+SUPABASE_JWT_SECRET=your-jwt-secret
+
+# Server Configuration
+PORT=8080
+ENVIRONMENT=development
+```
+
+### 3. Get Supabase Credentials
+
+1. **Project URL & Keys**: Go to [Supabase Dashboard](https://supabase.com/dashboard) → Your Project → Settings → API
+2. **JWT Secret**: Settings → API → JWT Settings → JWT Secret
+
+### 4. Install Dependencies
+```bash
+# Go dependencies
+go mod tidy
+
+# Test dependencies
+pip install -r tests/requirements.txt
+```
+
+### 5. Run the Service
+```bash
+# Development
+go run main.go
+
+# Or using Make
+make run
+
+# Build and run
+make build
+./bin/auth-service
+```
+
+### 6. Verify Installation
+```bash
+# Health check
+curl http://localhost:8080/health
+
+# Get settings
+curl http://localhost:8080/settings
+```
+
+## 📚 API Documentation
+
+### Base URL
+```
+http://localhost:8080
+```
+
+### Authentication
+Most endpoints require authentication via the `Authorization` header:
+```
+Authorization: Bearer <jwt-token>
+```
+
+Admin endpoints require either:
+- Service role key: `Authorization: Bearer <service-role-key>`
+- Admin user JWT: `Authorization: Bearer <admin-jwt-token>`
+
+### Endpoint Categories
+
+#### 🌐 Public Endpoints (No Auth Required)
+```
+GET  /health           - Health check
+GET  /settings         - Public auth settings
+POST /signup           - User registration
+POST /token            - Login and token refresh
+GET  /verify           - Email/phone verification (redirect)
+POST /verify           - Email/phone verification (JSON)
+POST /resend           - Resend confirmation emails
+POST /recover          - Password recovery
+POST /magiclink        - Send magic links
+POST /otp              - Send OTP codes
+GET  /authorize        - OAuth authorization
+GET  /callback         - OAuth callback
+```
+
+#### 🔐 Protected Endpoints (JWT Required)
+```
+GET  /user             - Get user profile
+PUT  /user             - Update user profile
+POST /reauthenticate   - Reauthentication
+POST /logout           - User logout
+```
+
+#### 👑 Admin Endpoints (Service Role/Admin Required)
+```
+POST /admin/users              - Create users
+PUT  /admin/users/{user_id}    - Update users
+POST /admin/generate_link      - Generate action links
+POST /invite                   - Invite users
+```
+
+#### 🐛 Debug Endpoints (Development Only)
+```
+GET  /debug/token      - Token inspection
+GET  /debug/config     - Configuration info
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `SUPABASE_URL` | ✅ | Your Supabase project URL |
+| `SUPABASE_ANON_KEY` | ✅ | Supabase anonymous key |
+| `SUPABASE_SERVICE_ROLE_KEY` | ✅ | Supabase service role key |
+| `SUPABASE_JWT_SECRET` | ✅ | JWT secret for token validation |
+| `PORT` | ❌ | Server port (default: 8080) |
+| `ENVIRONMENT` | ❌ | Environment (development/staging/production) |
+
+### JWT Configuration
+The service validates JWTs issued by Supabase using the project's JWT secret. Tokens must include:
+- `sub` (user ID)
+- `email` or `phone`
+- `role` (for role-based access)
+- Standard JWT claims (`exp`, `iat`, etc.)
+
+## 🧪 Testing
+
+### Test Suite Overview
+- **60+ comprehensive tests** covering all endpoints
+- **Multiple authentication strategies** (password, magic link, OTP)
+- **Smart email generation** (real domains, disposable emails, + addressing)
+- **Admin functionality testing** with service role validation
+- **Error handling and edge cases**
+- **Integration tests** for complete auth flows
+
+### Running Tests
+
+#### Quick Test (Pre-deploy)
+```bash
+make test-predeploy
+```
+
+#### Full Test Suite
+```bash
+# All tests
+make test
+
+# Specific categories
+make test-auth        # Authentication tests
+make test-admin       # Admin functionality
+make test-connectivity # Connection tests
+
+# With coverage
+make test-coverage
+```
+
+#### Test Configuration
+```bash
+# Copy test environment
+cp .env.test .env.test.local
+
+# Edit with your credentials
+TEST_BASE_URL=http://localhost:8080
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+EMAIL_STRATEGY=disposable  # or "plus" or "real"
+```
+
+### Email Testing Strategies
+
+The test suite supports multiple email strategies:
+
+1. **Disposable Emails** (recommended for CI/CD):
+   ```bash
+   EMAIL_STRATEGY=disposable
+   ```
+   Uses services like `maildrop.cc`, `guerrillamail.com`
+
+2. **Gmail + Addressing** (recommended for development):
+   ```bash
+   TEST_EMAIL=your-email+supabase@gmail.com
+   EMAIL_STRATEGY=plus
+   ```
+
+3. **Real Domains**:
+   ```bash
+   EMAIL_STRATEGY=real
+   ```
+
+## 🚀 Deployment
+
+### Using Porter
+```yaml
+# porter.yaml
+version: v2
+build:
+  method: pack
+  
+predeploy:
+  - name: "Run Pre-Deploy Tests"
+    command: make test-predeploy
+    
+run:
+  env:
+    SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+    SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+    SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    SUPABASE_JWT_SECRET: ${{ secrets.SUPABASE_JWT_SECRET }}
+  healthcheck:
+    enabled: true
+    path: /health
+```
+
+Deploy with:
+```bash
+porter deploy
+```
+
+### Using Docker
+```bash
+# Build
+docker build -t supabase-auth-service .
+
+# Run
+docker run -p 8080:8080 --env-file .env supabase-auth-service
+```
+
+### Environment Setup
+Ensure these secrets are configured in your deployment platform:
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `SUPABASE_JWT_SECRET`
+
+## 📊 Monitoring
+
+### Health Checks
+```bash
+# Basic health
+curl http://localhost:8080/health
+
+# Supabase connectivity
+curl http://localhost:8080/settings
+```
+
+### Logging
+The service logs all requests in the format:
+```
+2025/05/30 10:30:00 POST /signup 192.168.1.1:54321
+```
+
+### Metrics
+Rate limiting headers are included in responses:
+```
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 99
+X-RateLimit-Reset: 3600
+```
+
+## 🔒 Security Considerations
+
+### JWT Security
+- Tokens are validated against Supabase's JWT secret
+- Service role keys have full admin access
+- Regular user tokens are checked for role-based permissions
+
+### CORS Configuration
+Default CORS settings allow all origins. For production:
+```go
+// Update middleware/common.go
+w.Header().Set("Access-Control-Allow-Origin", "https://yourdomain.com")
+```
+
+### Rate Limiting
+Basic rate limiting is implemented. For production, consider:
+- Redis-backed rate limiting
+- IP-based throttling
+- User-specific limits
+
+### Security Headers
+The service includes standard security headers:
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: DENY`
+- `X-XSS-Protection: 1; mode=block`
+- `Content-Security-Policy: default-src 'self'`
+
+## 🛠️ Development
+
+### Adding New Endpoints
+
+1. **Define types** in `types/types.go`
+2. **Add handler** in appropriate handler file
+3. **Add route** in `main.go`
+4. **Add middleware** if needed
+5. **Write tests** in `tests/`
+
+### Debugging
+
+Development mode includes debug endpoints:
+```bash
+# Token inspection
+curl -H "Authorization: Bearer <token>" \
+     http://localhost:8080/debug/token
+
+# Configuration check
+curl -H "Authorization: Bearer <token>" \
+     http://localhost:8080/debug/config
+```
+
+### Code Structure Guidelines
+
+- **Handlers**: Only handle HTTP concerns, delegate to services
+- **Middleware**: Keep focused on single responsibilities
+- **Services**: Contain business logic and external API calls
+- **Types**: Shared across the application
+- **Tests**: Comprehensive coverage with realistic scenarios
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Write tests for your changes
+4. Ensure all tests pass: `make test`
+5. Commit your changes: `git commit -m 'Add amazing feature'`
+6. Push to the branch: `git push origin feature/amazing-feature`
+7. Open a Pull Request
+
+### Development Workflow
+```bash
+# Setup development environment
+make dev-setup
+
+# Run tests during development
+make test-connectivity  # Quick feedback
+
+# Before committing
+make test              # Full test suite
+make build            # Ensure it builds
+```
+
+## 📄 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+### Common Issues
+
+**"JWT secret not found"**
+- Ensure `SUPABASE_JWT_SECRET` is set
+- Get it from Supabase Dashboard → Settings → API → JWT Settings
+
+**"Email confirmation required"**
+- Disable email confirmation in Supabase Dashboard for testing
+- Or use admin endpoints to manually confirm users
+
+**"Service not reachable"**
+- Check if service is running: `curl http://localhost:8080/health`
+- Verify environment variables are loaded
+
+### Getting Help
+
+1. Check the [Issues](https://github.com/your-org/supabase-auth-service/issues) page
+2. Review the test suite for usage examples
+3. Check Supabase documentation for auth configuration
+4. Open a new issue with:
+   - Environment details
+   - Error messages
+   - Steps to reproduce
+
+---
+
+**Built with ❤️ using Go, Supabase, and comprehensive testing practices.**

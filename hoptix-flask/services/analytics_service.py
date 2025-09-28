@@ -15,546 +15,695 @@ from .item_lookup_service import get_item_lookup_service
 
 logger = logging.getLogger(__name__)
 
+from collections import defaultdict, Counter
+from typing import Dict, Any, List
+
 class UpsellAnalytics:
-    """Handles upselling analytics calculations"""
-    
+    @staticmethod
+    def _parse_items_field(value):
+        """
+        Accepts:
+          - "0" or 0  -> []
+          - JSON string -> parsed list
+          - python list -> as-is
+          - any other string (comma/space separated) -> split on commas
+        Returns a list[str] of [ItemID_SizeID].
+        """
+        if value is None or value == 0 or value == "0":
+            return []
+        if isinstance(value, list):
+            return [str(x).strip() for x in value if str(x).strip()]
+        if isinstance(value, dict):
+            # If someone passed a dict by mistake, flatten values that look like items
+            out = []
+            for v in value.values():
+                if isinstance(v, list):
+                    out.extend(v)
+                elif isinstance(v, str):
+                    out.append(v)
+            return [str(x).strip() for x in out if str(x).strip()]
+        s = str(value).strip()
+        if s.startswith('[') or s.startswith('{'):
+            import json
+            try:
+                parsed = json.loads(s)
+                if isinstance(parsed, list):
+                    return [str(x).strip() for x in parsed if str(x).strip()]
+                return []
+            except Exception:
+                pass
+        # fallback: comma separated
+        return [tok.strip() for tok in s.split(',') if tok.strip()]
+
     @staticmethod
     def calculate_upsell_metrics(transactions: List[Dict], item_lookup=None) -> Dict[str, Any]:
-        """Calculate comprehensive upsell metrics with revenue tracking"""
+        """
+        Updated to use:
+          - num_upsell_opportunities, num_upsell_offers, num_upsell_success (declared counts)
+          - upsell_candidate_items (candidates)
+          - upsell_offered_items (offered)
+          - upsell_success_items (converted)
+        """
         total_opportunities = 0
         total_offers = 0
         total_successes = 0
         total_revenue = 0.0
-        
-        # Item-specific tracking
-        item_opportunities = defaultdict(int)
-        item_offers = defaultdict(int)
-        item_successes = defaultdict(int)
-        item_revenue = defaultdict(float)
-        
-        # Upsell type tracking
-        upsell_items_counter = Counter()
-        
-        for transaction in transactions:
-            # Parse items initially requested
-            initial_items = UpsellAnalytics._parse_items_field(transaction.get("Items Initially Requested", "0"))
-            
-            # Get upsell metrics
-            opportunities = transaction.get("# of Chances to Upsell", 0)
-            offers = transaction.get("# of Upselling Offers Made", 0)
-            successes = transaction.get("# of Sucessfull Upselling chances", 0)
-            
+
+        # Item-level tracking across funnel stages
+        item_candidate_count = defaultdict(int)
+        item_offered_count   = defaultdict(int)
+        item_converted_count = defaultdict(int)
+        item_revenue         = defaultdict(float)
+
+        # Diagnostics
+        violations = {
+            "offers_gt_opportunities": 0,
+            "successes_gt_offers": 0,
+            "declared_vs_list_mismatch": 0
+        }
+
+        # Popularity (converted items)
+        converted_counter = Counter()
+
+        for tx in transactions:
+            # Declared counts
+            opportunities = int(tx.get("num_upsell_opportunities", 0) or 0)
+            offers = int(tx.get("num_upsell_offers", 0) or 0)
+            successes = int(tx.get("num_upsell_success", 0) or 0)
+
+            # Lists
+            candidates = UpsellAnalytics._parse_items_field(tx.get("upsell_candidate_items", "0"))
+            offered    = UpsellAnalytics._parse_items_field(tx.get("upsell_offered_items", "0"))
+            converted  = UpsellAnalytics._parse_items_field(tx.get("upsell_success_items", "0"))
+
+            # Aggregate totals
             total_opportunities += opportunities
             total_offers += offers
             total_successes += successes
-            
-            # Count successfully upsold items and calculate revenue
-            upsold_items = UpsellAnalytics._parse_items_field(transaction.get("Items Succesfully Upsold", "0"))
-            transaction_revenue = 0
-            
-            for item in upsold_items:
-                upsell_items_counter[item] += 1
-                
-                # Calculate revenue if item_lookup is provided
+
+            # Sanity checks (diagnostics only; do not mutate inputs)
+            if offers > opportunities:
+                violations["offers_gt_opportunities"] += 1
+            if successes > offers:
+                violations["successes_gt_offers"] += 1
+
+            # Check declared vs observed (lengths)
+            # We allow that offers can be phrased to multiple items in one utterance,
+            # but generally len(offered) should not exceed offers; same for converted/successes.
+            observed_mismatch = (
+                len(candidates) < opportunities or
+                len(offered)    < offers or
+                len(converted)  < successes or
+                len(converted)  > offers  # cannot convert more than offered
+            )
+            if observed_mismatch:
+                violations["declared_vs_list_mismatch"] += 1
+
+            # Item-level tallies
+            for it in candidates:
+                item_candidate_count[it] += 1
+            for it in offered:
+                item_offered_count[it] += 1
+            tx_revenue = 0.0
+            for it in converted:
+                item_converted_count[it] += 1
+                converted_counter[it] += 1
                 if item_lookup:
-                    price = item_lookup.get_item_price(item)
+                    price = float(item_lookup.get_item_price(it))
                     total_revenue += price
-                    transaction_revenue += price
-            
-            # Track by initial items and distribute revenue proportionally
-            for item in initial_items:
-                item_opportunities[item] += opportunities
-                item_offers[item] += offers
-                item_successes[item] += successes
-                # Distribute transaction revenue among initial items
-                if len(initial_items) > 0:
-                    item_revenue[item] += transaction_revenue / len(initial_items)
-        
+                    tx_revenue += price
+                    item_revenue[it] += price
+            # (tx_revenue available if you later want per-tx outputs)
+
+        # Unique items across any stage
+        all_items = set(item_candidate_count) | set(item_offered_count) | set(item_converted_count)
+
+        # Aggregate rates
+        offer_rate = (total_offers / total_opportunities * 100) if total_opportunities > 0 else 0.0
+        success_rate = (total_successes / total_offers * 100) if total_offers > 0 else 0.0
+        conversion_rate = (total_successes / total_opportunities * 100) if total_opportunities > 0 else 0.0
+        avg_rev_per_success = (total_revenue / total_successes) if total_successes > 0 else 0.0
+
+        # By-item metrics
+        by_item = {}
+        for it in sorted(all_items):
+            cand = item_candidate_count[it]
+            off  = item_offered_count[it]
+            conv = item_converted_count[it]
+            by_item[it] = {
+                "candidate_count": cand,
+                "offered_count": off,
+                "converted_count": conv,
+                "offer_rate": (off / cand * 100) if cand > 0 else 0.0,
+                "conversion_rate": (conv / cand * 100) if cand > 0 else 0.0,
+                "success_rate": (conv / off * 100) if off > 0 else 0.0,
+                "candidate_coverage": (off / cand * 100) if cand > 0 else 0.0,  # synonym of offer_rate
+                "revenue": item_revenue[it],
+            }
+
         return {
             "total_opportunities": total_opportunities,
             "total_offers": total_offers,
             "total_successes": total_successes,
+            "offer_rate": offer_rate,
+            "success_rate": success_rate,
+            "conversion_rate": conversion_rate,
             "total_revenue": total_revenue,
-            "avg_revenue_per_success": total_revenue / total_successes if total_successes > 0 else 0,
-            "success_rate": (total_successes / total_offers * 100) if total_offers > 0 else 0,
-            "offer_rate": (total_offers / total_opportunities * 100) if total_opportunities > 0 else 0,
-            "conversion_rate": (total_successes / total_opportunities * 100) if total_opportunities > 0 else 0,
-            "by_item": {
-                item: {
-                    "opportunities": item_opportunities[item],
-                    "offers": item_offers[item],
-                    "successes": item_successes[item],
-                    "revenue": item_revenue[item],
-                    "success_rate": (item_successes[item] / item_offers[item] * 100) if item_offers[item] > 0 else 0,
-                    "offer_rate": (item_offers[item] / item_opportunities[item] * 100) if item_opportunities[item] > 0 else 0
-                }
-                for item in set(list(item_opportunities.keys()) + list(item_offers.keys()) + list(item_successes.keys()))
-                if item_opportunities[item] > 0 or item_offers[item] > 0 or item_successes[item] > 0
-            },
-            "most_upsold_items": dict(upsell_items_counter.most_common(10))
+            "avg_revenue_per_success": avg_rev_per_success,
+            "violations": violations,
+            "by_item": by_item,
+            "most_converted_items": dict(converted_counter.most_common(10)),
         }
-    
+
     @staticmethod
     def calculate_upsell_metrics_by_operator(transactions: List[Dict], item_lookup=None) -> Dict[str, Any]:
-        """Calculate upsell metrics broken down by operator"""
-        operator_metrics = defaultdict(lambda: {
+        """
+        Operator breakdown using the new fields.
+        """
+        operator_data = defaultdict(lambda: {
             "total_opportunities": 0,
             "total_offers": 0,
             "total_successes": 0,
             "total_revenue": 0.0,
-            "item_opportunities": defaultdict(int),
-            "item_offers": defaultdict(int),
-            "item_successes": defaultdict(int),
+            "item_candidate_count": defaultdict(int),
+            "item_offered_count": defaultdict(int),
+            "item_converted_count": defaultdict(int),
             "item_revenue": defaultdict(float),
-            "upsell_items_counter": Counter()
-        })
-        
-        for transaction in transactions:
-            operator = transaction.get("Operator", "Unknown")
-            
-            # Parse items initially requested
-            initial_items = UpsellAnalytics._parse_items_field(transaction.get("Items Initially Requested", "0"))
-            
-            # Get upsell metrics
-            opportunities = transaction.get("# of Chances to Upsell", 0)
-            offers = transaction.get("# of Upselling Offers Made", 0)
-            successes = transaction.get("# of Sucessfull Upselling chances", 0)
-            
-            operator_data = operator_metrics[operator]
-            operator_data["total_opportunities"] += opportunities
-            operator_data["total_offers"] += offers
-            operator_data["total_successes"] += successes
-            
-            # Count successfully upsold items and calculate revenue
-            upsold_items = UpsellAnalytics._parse_items_field(transaction.get("Items Succesfully Upsold", "0"))
-            transaction_revenue = 0
-            
-            for item in upsold_items:
-                operator_data["upsell_items_counter"][item] += 1
-                
-                # Calculate revenue if item_lookup is provided
-                if item_lookup:
-                    price = item_lookup.get_item_price(item)
-                    operator_data["total_revenue"] += price
-                    transaction_revenue += price
-            
-            # Track by initial items and distribute revenue proportionally
-            for item in initial_items:
-                operator_data["item_opportunities"][item] += opportunities
-                operator_data["item_offers"][item] += offers
-                operator_data["item_successes"][item] += successes
-                # Distribute transaction revenue among initial items
-                if len(initial_items) > 0:
-                    operator_data["item_revenue"][item] += transaction_revenue / len(initial_items)
-        
-        # Convert to final format
-        result = {}
-        for operator, data in operator_metrics.items():
-            result[operator] = {
-                "total_opportunities": data["total_opportunities"],
-                "total_offers": data["total_offers"],
-                "total_successes": data["total_successes"],
-                "total_revenue": data["total_revenue"],
-                "avg_revenue_per_success": data["total_revenue"] / data["total_successes"] if data["total_successes"] > 0 else 0,
-                "success_rate": (data["total_successes"] / data["total_offers"] * 100) if data["total_offers"] > 0 else 0,
-                "offer_rate": (data["total_offers"] / data["total_opportunities"] * 100) if data["total_opportunities"] > 0 else 0,
-                "conversion_rate": (data["total_successes"] / data["total_opportunities"] * 100) if data["total_opportunities"] > 0 else 0,
-                "by_item": {
-                    item: {
-                        "opportunities": data["item_opportunities"][item],
-                        "offers": data["item_offers"][item],
-                        "successes": data["item_successes"][item],
-                        "revenue": data["item_revenue"][item],
-                        "success_rate": (data["item_successes"][item] / data["item_offers"][item] * 100) if data["item_offers"][item] > 0 else 0,
-                        "offer_rate": (data["item_offers"][item] / data["item_opportunities"][item] * 100) if data["item_opportunities"][item] > 0 else 0
-                    }
-                    for item in set(list(data["item_opportunities"].keys()) + list(data["item_offers"].keys()) + list(data["item_successes"].keys()))
-                    if data["item_opportunities"][item] > 0 or data["item_offers"][item] > 0 or data["item_successes"][item] > 0
-                },
-                "most_upsold_items": dict(data["upsell_items_counter"].most_common(10))
+            "converted_counter": Counter(),
+            "violations": {
+                "offers_gt_opportunities": 0,
+                "successes_gt_offers": 0,
+                "declared_vs_list_mismatch": 0
             }
-        
-        return result
-    
-    @staticmethod
-    def _parse_items_field(items_field: Any) -> List[str]:
-        """Parse items field which can be string, list, or dict"""
-        if not items_field or items_field == "0":
-            return []
-        
-        if isinstance(items_field, str):
-            try:
-                # Try to parse as JSON
-                parsed = json.loads(items_field)
-                if isinstance(parsed, list):
-                    return [str(item) for item in parsed]
-                elif isinstance(parsed, dict):
-                    return list(parsed.keys())
-                else:
-                    return [str(parsed)]
-            except json.JSONDecodeError:
-                # Not JSON, treat as single item
-                return [items_field] if items_field != "0" else []
-        
-        elif isinstance(items_field, list):
-            return [str(item) for item in items_field]
-        
-        elif isinstance(items_field, dict):
-            return list(items_field.keys())
-        
-        else:
-            return [str(items_field)]
+        })
 
+        for tx in transactions:
+            operator = tx.get("employee_name") or tx.get("employee_id") or "Unknown"
+
+            opp = int(tx.get("num_upsell_opportunities", 0) or 0)
+            off = int(tx.get("num_upsell_offers", 0) or 0)
+            suc = int(tx.get("num_upsell_success", 0) or 0)
+
+            candidates = UpsellAnalytics._parse_items_field(tx.get("upsell_candidate_items", "0"))
+            offered    = UpsellAnalytics._parse_items_field(tx.get("upsell_offered_items", "0"))
+            converted  = UpsellAnalytics._parse_items_field(tx.get("upsell_success_items", "0"))
+
+            d = operator_data[operator]
+            d["total_opportunities"] += opp
+            d["total_offers"] += off
+            d["total_successes"] += suc
+
+            if off > opp:
+                d["violations"]["offers_gt_opportunities"] += 1
+            if suc > off:
+                d["violations"]["successes_gt_offers"] += 1
+            observed_mismatch = (
+                len(candidates) < opp or
+                len(offered)    < off or
+                len(converted)  < suc or
+                len(converted)  > off
+            )
+            if observed_mismatch:
+                d["violations"]["declared_vs_list_mismatch"] += 1
+
+            for it in candidates:
+                d["item_candidate_count"][it] += 1
+            for it in offered:
+                d["item_offered_count"][it] += 1
+            for it in converted:
+                d["item_converted_count"][it] += 1
+                d["converted_counter"][it] += 1
+                if item_lookup:
+                    price = float(item_lookup.get_item_price(it))
+                    d["total_revenue"] += price
+                    d["item_revenue"][it] += price
+
+        # finalize
+        result = {}
+        for op, d in operator_data.items():
+            to = d["total_opportunities"]
+            tf = d["total_offers"]
+            ts = d["total_successes"]
+            all_items = set(d["item_candidate_count"]) | set(d["item_offered_count"]) | set(d["item_converted_count"])
+
+            by_item = {}
+            for it in sorted(all_items):
+                cand = d["item_candidate_count"][it]
+                off  = d["item_offered_count"][it]
+                conv = d["item_converted_count"][it]
+                by_item[it] = {
+                    "candidate_count": cand,
+                    "offered_count": off,
+                    "converted_count": conv,
+                    "offer_rate": (off / cand * 100) if cand > 0 else 0.0,
+                    "conversion_rate": (conv / cand * 100) if cand > 0 else 0.0,
+                    "success_rate": (conv / off * 100) if off > 0 else 0.0,
+                    "candidate_coverage": (off / cand * 100) if cand > 0 else 0.0,
+                    "revenue": d["item_revenue"][it],
+                }
+
+            result[op] = {
+                "total_opportunities": to,
+                "total_offers": tf,
+                "total_successes": ts,
+                "offer_rate": (tf / to * 100) if to > 0 else 0.0,
+                "success_rate": (ts / tf * 100) if tf > 0 else 0.0,
+                "conversion_rate": (ts / to * 100) if to > 0 else 0.0,
+                "total_revenue": d["total_revenue"],
+                "avg_revenue_per_success": (d["total_revenue"] / ts) if ts > 0 else 0.0,
+                "violations": d["violations"],
+                "by_item": by_item,
+                "most_converted_items": dict(d["converted_counter"].most_common(10))
+            }
+
+        return result
+
+class _CommonParse:
+    @staticmethod
+    def parse_items(value):
+        """
+        Normalizes an items field to a list[str] of [ItemID_SizeID].
+        Accepts "0"/0/None -> [], JSON strings, lists, dicts (flattens lists), or comma-separated strings.
+        """
+        if value is None or value == 0 or value == "0":
+            return []
+        if isinstance(value, list):
+            return [str(x).strip() for x in value if str(x).strip()]
+        if isinstance(value, dict):
+            out = []
+            for v in value.values():
+                if isinstance(v, list):
+                    out.extend(v)
+                elif isinstance(v, str):
+                    out.append(v)
+            return [str(x).strip() for x in out if str(x).strip()]
+        s = str(value).strip()
+        if not s:
+            return []
+        if s[0] in "[{":
+            import json
+            try:
+                parsed = json.loads(s)
+                if isinstance(parsed, list):
+                    return [str(x).strip() for x in parsed if str(x).strip()]
+            except Exception:
+                pass
+        return [tok.strip() for tok in s.split(",") if tok.strip()]
 
 class UpsizeAnalytics:
-    """Handles upsizing analytics calculations"""
-    
+    """
+    Metrics for UPSIZE funnel:
+      - Candidates: upsize_candidate_items
+      - Offered:    upsize_offered_items
+      - Converted:  upsize_success_items
+
+    Counts used:
+      - num_upsize_opportunities
+      - num_upsize_offers
+      - num_upsize_success
+
+    Revenue:
+      - If item_lookup has get_item_price_delta(item), uses that delta (preferred).
+      - Else falls back to get_item_price(item) for converted items.
+    """
+
+    # In UpsizeAnalytics.calculate_upsize_metrics(...):
     @staticmethod
     def calculate_upsize_metrics(transactions: List[Dict], item_lookup=None) -> Dict[str, Any]:
-        """Calculate comprehensive upsize metrics with revenue tracking"""
-        total_opportunities = 0
-        total_offers = 0
-        total_successes = 0
-        largest_offers = 0
+        total_opportunities = total_offers = total_successes = 0
         total_revenue = 0.0
-        
-        # Item-specific tracking
-        item_opportunities = defaultdict(int)
-        item_offers = defaultdict(int)
-        item_successes = defaultdict(int)
-        item_revenue = defaultdict(float)
-        
-        # Upsize type tracking
-        upsize_items_counter = Counter()
-        
-        for transaction in transactions:
-            # Parse items initially requested
-            initial_items = UpsizeAnalytics._parse_items_field(transaction.get("Items Initially Requested", "0"))
-            
-            # Get upsize metrics
-            opportunities = transaction.get("# of Chances to Upsize", 0)
-            offers = transaction.get("# of Upsizing Offers Made", 0)
-            successes = transaction.get("# of Sucessfull Upsizing chances", 0)
-            largest = transaction.get("# of Times largest Option Offered", 0)
-            
-            total_opportunities += opportunities
-            total_offers += offers
-            total_successes += successes
-            largest_offers += largest
-            
-            # Count successfully upsized items and calculate revenue
-            upsized_items = UpsizeAnalytics._parse_items_field(transaction.get("Items Successfully Upsized", "0"))
-            transaction_revenue = 0
-            
-            for item in upsized_items:
-                upsize_items_counter[item] += 1
-                
-                # Calculate revenue if item_lookup is provided
+        # NEW: track "largest" offers (asking explicitly for the largest size)
+        total_largest_offers = 0
+
+        item_candidate_count = defaultdict(int)
+        item_offered_count   = defaultdict(int)
+        item_converted_count = defaultdict(int)
+        item_revenue         = defaultdict(float)
+
+        violations = {"offers_gt_opportunities": 0, "successes_gt_offers": 0, "declared_vs_list_mismatch": 0}
+        converted_counter = Counter()
+
+        for tx in transactions:
+            opp = int(tx.get("num_upsize_opportunities", 0) or 0)
+            off = int(tx.get("num_upsize_offers", 0) or 0)
+            suc = int(tx.get("num_upsize_success", 0) or 0)
+
+            # If your grading writes "num_largest_offers" at the transaction level (per prompt #10),
+            # roll it into the upsize analytics here:
+            total_largest_offers += int(tx.get("num_largest_offers", 0) or 0)
+
+            candidates = _CommonParse.parse_items(tx.get("upsize_candidate_items", "0"))
+            offered    = _CommonParse.parse_items(tx.get("upsize_offered_items", "0"))
+            converted  = _CommonParse.parse_items(tx.get("upsize_success_items", "0"))
+
+            total_opportunities += opp
+            total_offers += off
+            total_successes += suc
+
+            if off > opp: violations["offers_gt_opportunities"] += 1
+            if suc > off: violations["successes_gt_offers"] += 1
+            if (len(candidates) < opp or len(offered) < off or len(converted) < suc or len(converted) > off):
+                violations["declared_vs_list_mismatch"] += 1
+
+            for it in candidates: item_candidate_count[it] += 1
+            for it in offered:    item_offered_count[it] += 1
+            for it in converted:
+                item_converted_count[it] += 1
+                converted_counter[it] += 1
                 if item_lookup:
-                    price = item_lookup.get_item_price(item)
+                    get_delta = getattr(item_lookup, "get_item_price_delta", None)
+                    price = float(get_delta(it) if callable(get_delta) else item_lookup.get_item_price(it))
                     total_revenue += price
-                    transaction_revenue += price
-            
-            # Track by initial items and distribute revenue proportionally
-            for item in initial_items:
-                item_opportunities[item] += opportunities
-                item_offers[item] += offers
-                item_successes[item] += successes
-                # Distribute transaction revenue among initial items
-                if len(initial_items) > 0:
-                    item_revenue[item] += transaction_revenue / len(initial_items)
-        
+                    item_revenue[it] += price
+
+        all_items = set(item_candidate_count) | set(item_offered_count) | set(item_converted_count)
+
+        offer_rate = (total_offers / total_opportunities * 100) if total_opportunities > 0 else 0.0
+        success_rate = (total_successes / total_offers * 100) if total_offers > 0 else 0.0
+        conversion_rate = (total_successes / total_opportunities * 100) if total_opportunities > 0 else 0.0
+        avg_rev_per_success = (total_revenue / total_successes) if total_successes > 0 else 0.0
+        # NEW:
+        largest_offer_rate = (total_largest_offers / total_offers * 100) if total_offers > 0 else 0.0
+
+        by_item = {}
+        for it in sorted(all_items):
+            cand = item_candidate_count[it]; off = item_offered_count[it]; conv = item_converted_count[it]
+            by_item[it] = {
+                "candidate_count": cand,
+                "offered_count": off,
+                "converted_count": conv,
+                "offer_rate": (off / cand * 100) if cand > 0 else 0.0,
+                "conversion_rate": (conv / cand * 100) if cand > 0 else 0.0,
+                "success_rate": (conv / off * 100) if off > 0 else 0.0,
+                "candidate_coverage": (off / cand * 100) if cand > 0 else 0.0,
+                "revenue": item_revenue[it],
+            }
+
         return {
             "total_opportunities": total_opportunities,
             "total_offers": total_offers,
             "total_successes": total_successes,
+            "offer_rate": offer_rate,
+            "success_rate": success_rate,
+            "conversion_rate": conversion_rate,
             "total_revenue": total_revenue,
-            "avg_revenue_per_success": total_revenue / total_successes if total_successes > 0 else 0,
-            "largest_offers": largest_offers,
-            "success_rate": (total_successes / total_offers * 100) if total_offers > 0 else 0,
-            "offer_rate": (total_offers / total_opportunities * 100) if total_opportunities > 0 else 0,
-            "conversion_rate": (total_successes / total_opportunities * 100) if total_opportunities > 0 else 0,
-            "largest_offer_rate": (largest_offers / total_offers * 100) if total_offers > 0 else 0,
-            "by_item": {
-                item: {
-                    "opportunities": item_opportunities[item],
-                    "offers": item_offers[item],
-                    "successes": item_successes[item],
-                    "revenue": item_revenue[item],
-                    "success_rate": (item_successes[item] / item_offers[item] * 100) if item_offers[item] > 0 else 0,
-                    "offer_rate": (item_offers[item] / item_opportunities[item] * 100) if item_opportunities[item] > 0 else 0
-                }
-                for item in set(list(item_opportunities.keys()) + list(item_offers.keys()) + list(item_successes.keys()))
-                if item_opportunities[item] > 0 or item_offers[item] > 0 or item_successes[item] > 0
-            },
-            "most_upsized_items": dict(upsize_items_counter.most_common(10))
+            "avg_revenue_per_success": avg_rev_per_success,
+            "largest_offers": total_largest_offers,                 # NEW
+            "largest_offer_rate": largest_offer_rate,               # NEW
+            "violations": violations,
+            "by_item": by_item,
+            "most_converted_items": dict(converted_counter.most_common(10)),
         }
-    
+
     @staticmethod
     def calculate_upsize_metrics_by_operator(transactions: List[Dict], item_lookup=None) -> Dict[str, Any]:
-        """Calculate upsize metrics broken down by operator"""
-        operator_metrics = defaultdict(lambda: {
+        ops = defaultdict(lambda: {
             "total_opportunities": 0,
             "total_offers": 0,
             "total_successes": 0,
-            "largest_offers": 0,
             "total_revenue": 0.0,
-            "item_opportunities": defaultdict(int),
-            "item_offers": defaultdict(int),
-            "item_successes": defaultdict(int),
+            "item_candidate_count": defaultdict(int),
+            "item_offered_count": defaultdict(int),
+            "item_converted_count": defaultdict(int),
             "item_revenue": defaultdict(float),
-            "upsize_items_counter": Counter()
-        })
-        
-        for transaction in transactions:
-            operator = transaction.get("Operator", "Unknown")
-            
-            # Parse items initially requested
-            initial_items = UpsizeAnalytics._parse_items_field(transaction.get("Items Initially Requested", "0"))
-            
-            # Get upsize metrics
-            opportunities = transaction.get("# of Chances to Upsize", 0)
-            offers = transaction.get("# of Upsizing Offers Made", 0)
-            successes = transaction.get("# of Sucessfull Upsizing chances", 0)
-            largest = transaction.get("# of Times largest Option Offered", 0)
-            
-            operator_data = operator_metrics[operator]
-            operator_data["total_opportunities"] += opportunities
-            operator_data["total_offers"] += offers
-            operator_data["total_successes"] += successes
-            operator_data["largest_offers"] += largest
-            
-            # Count successfully upsized items and calculate revenue
-            upsized_items = UpsizeAnalytics._parse_items_field(transaction.get("Items Successfully Upsized", "0"))
-            transaction_revenue = 0
-            
-            for item in upsized_items:
-                operator_data["upsize_items_counter"][item] += 1
-                
-                # Calculate revenue if item_lookup is provided
-                if item_lookup:
-                    price = item_lookup.get_item_price(item)
-                    operator_data["total_revenue"] += price
-                    transaction_revenue += price
-            
-            # Track by initial items and distribute revenue proportionally
-            for item in initial_items:
-                operator_data["item_opportunities"][item] += opportunities
-                operator_data["item_offers"][item] += offers
-                operator_data["item_successes"][item] += successes
-                # Distribute transaction revenue among initial items
-                if len(initial_items) > 0:
-                    operator_data["item_revenue"][item] += transaction_revenue / len(initial_items)
-        
-        # Convert to final format
-        result = {}
-        for operator, data in operator_metrics.items():
-            result[operator] = {
-                "total_opportunities": data["total_opportunities"],
-                "total_offers": data["total_offers"],
-                "total_successes": data["total_successes"],
-                "total_revenue": data["total_revenue"],
-                "avg_revenue_per_success": data["total_revenue"] / data["total_successes"] if data["total_successes"] > 0 else 0,
-                "largest_offers": data["largest_offers"],
-                "success_rate": (data["total_successes"] / data["total_offers"] * 100) if data["total_offers"] > 0 else 0,
-                "offer_rate": (data["total_offers"] / data["total_opportunities"] * 100) if data["total_opportunities"] > 0 else 0,
-                "conversion_rate": (data["total_successes"] / data["total_opportunities"] * 100) if data["total_opportunities"] > 0 else 0,
-                "largest_offer_rate": (data["largest_offers"] / data["total_offers"] * 100) if data["total_offers"] > 0 else 0,
-                "by_item": {
-                    item: {
-                        "opportunities": data["item_opportunities"][item],
-                        "offers": data["item_offers"][item],
-                        "successes": data["item_successes"][item],
-                        "revenue": data["item_revenue"][item],
-                        "success_rate": (data["item_successes"][item] / data["item_offers"][item] * 100) if data["item_offers"][item] > 0 else 0,
-                        "offer_rate": (data["item_offers"][item] / data["item_opportunities"][item] * 100) if data["item_opportunities"][item] > 0 else 0
-                    }
-                    for item in set(list(data["item_opportunities"].keys()) + list(data["item_offers"].keys()) + list(data["item_successes"].keys()))
-                    if data["item_opportunities"][item] > 0 or data["item_offers"][item] > 0 or data["item_successes"][item] > 0
-                },
-                "most_upsized_items": dict(data["upsize_items_counter"].most_common(10))
+            "converted_counter": Counter(),
+            "violations": {
+                "offers_gt_opportunities": 0,
+                "successes_gt_offers": 0,
+                "declared_vs_list_mismatch": 0
             }
-        
+        })
+
+        for tx in transactions:
+            operator = tx.get("employee_name") or tx.get("employee_id") or "Unknown"
+            opp = int(tx.get("num_upsize_opportunities", 0) or 0)
+            off = int(tx.get("num_upsize_offers", 0) or 0)
+            suc = int(tx.get("num_upsize_success", 0) or 0)
+            largest = int(tx.get("num_largest_offers", 0) or 0)  # NEW
+
+            d = ops[operator]
+            d["total_opportunities"] += opp
+            d["total_offers"] += off
+            d["total_successes"] += suc
+            d.setdefault("total_largest_offers", 0)             # NEW
+            d["total_largest_offers"] += largest                # NEW
+
+            if off > opp:
+                d["violations"]["offers_gt_opportunities"] += 1
+            if suc > off:
+                d["violations"]["successes_gt_offers"] += 1
+            if (len(candidates) < opp or len(offered) < off or len(converted) < suc or len(converted) > off):
+                d["violations"]["declared_vs_list_mismatch"] += 1
+
+            for it in candidates:
+                d["item_candidate_count"][it] += 1
+            for it in offered:
+                d["item_offered_count"][it] += 1
+            for it in converted:
+                d["item_converted_count"][it] += 1
+                d["converted_counter"][it] += 1
+                if item_lookup:
+                    get_delta = getattr(item_lookup, "get_item_price_delta", None)
+                    price = float(get_delta(it) if callable(get_delta) else item_lookup.get_item_price(it))
+                    d["total_revenue"] += price
+                    d["item_revenue"][it] += price
+
+        result = {}
+        for op, d in ops.items():
+            to, tf, ts = d["total_opportunities"], d["total_offers"], d["total_successes"]
+            all_items = set(d["item_candidate_count"]) | set(d["item_offered_count"]) | set(d["item_converted_count"])
+
+            by_item = {}
+            for it in sorted(all_items):
+                cand = d["item_candidate_count"][it]
+                off  = d["item_offered_count"][it]
+                conv = d["item_converted_count"][it]
+                by_item[it] = {
+                    "candidate_count": cand,
+                    "offered_count": off,
+                    "converted_count": conv,
+                    "offer_rate": (off / cand * 100) if cand > 0 else 0.0,
+                    "conversion_rate": (conv / cand * 100) if cand > 0 else 0.0,
+                    "success_rate": (conv / off * 100) if off > 0 else 0.0,
+                    "candidate_coverage": (off / cand * 100) if cand > 0 else 0.0,
+                    "revenue": d["item_revenue"][it],
+                }
+
+            result[op] = {
+                "total_opportunities": to,
+                "total_offers": tf,
+                "total_successes": ts,
+                "offer_rate": (tf / to * 100) if to > 0 else 0.0,
+                "success_rate": (ts / tf * 100) if tf > 0 else 0.0,
+                "conversion_rate": (ts / to * 100) if to > 0 else 0.0,
+                "total_revenue": d["total_revenue"],
+                "avg_revenue_per_success": (d["total_revenue"] / ts) if ts > 0 else 0.0,
+                "largest_offers": d.get("total_largest_offers", 0),                              # NEW
+                "largest_offer_rate": (d.get("total_largest_offers", 0) / tf * 100) if tf > 0 else 0.0,  # NEW
+                "violations": d["violations"],
+                "by_item": by_item,
+                "most_converted_items": dict(d["converted_counter"].most_common(10))
+            }
         return result
-    
-    @staticmethod
-    def _parse_items_field(items_field: Any) -> List[str]:
-        """Parse items field which can be string, list, or dict"""
-        return UpsellAnalytics._parse_items_field(items_field)
 
 
 class AddonAnalytics:
-    """Handles add-on analytics calculations"""
-    
+    """
+    Metrics for ADD-ON funnel:
+      - Candidates: addon_candidate_items
+      - Offered:    addon_offered_items
+      - Converted:  addon_success_items
+
+    Counts used:
+      - num_addon_opportunities
+      - num_addon_offers
+      - num_addon_success
+
+    Revenue:
+      - Uses item_lookup.get_item_price(item) for converted add-ons.
+    """
+
     @staticmethod
     def calculate_addon_metrics(transactions: List[Dict], item_lookup=None) -> Dict[str, Any]:
-        """Calculate comprehensive add-on metrics with revenue tracking"""
-        total_opportunities = 0
-        total_offers = 0
-        total_successes = 0
+        total_opportunities = total_offers = total_successes = 0
         total_revenue = 0.0
-        
-        # Item-specific tracking
-        item_opportunities = defaultdict(int)
-        item_offers = defaultdict(int)
-        item_successes = defaultdict(int)
-        item_revenue = defaultdict(float)
-        
-        # Add-on type tracking
-        addon_items_counter = Counter()
-        addon_types_counter = Counter()
-        
-        for transaction in transactions:
-            # Parse items that could have add-ons (this is what we should track by)
-            addon_capable_items = AddonAnalytics._parse_items_field(transaction.get("Items in Order that could have Add-Ons", "0"))
-            
-            # Get add-on metrics
-            opportunities = transaction.get("# of Chances to Add-on", 0)
-            offers = transaction.get("# of Add-on Offers", 0)
-            successes = transaction.get("# of Succesful Add-on Offers", 0)
-            
-            total_opportunities += opportunities
-            total_offers += offers
-            total_successes += successes
-            
-            # Count successfully added items and calculate revenue
-            addon_items = AddonAnalytics._parse_items_field(transaction.get("Items with Successful Add-Ons", "0"))
-            transaction_revenue = 0
-            
-            for item in addon_items:
-                addon_items_counter[item] += 1
-                
-                # Calculate revenue if item_lookup is provided
+
+        item_candidate_count = defaultdict(int)
+        item_offered_count   = defaultdict(int)
+        item_converted_count = defaultdict(int)
+        item_revenue         = defaultdict(float)
+
+        violations = {
+            "offers_gt_opportunities": 0,
+            "successes_gt_offers": 0,
+            "declared_vs_list_mismatch": 0
+        }
+
+        converted_counter = Counter()
+
+        for tx in transactions:
+            opp = int(tx.get("num_addon_opportunities", 0) or 0)
+            off = int(tx.get("num_addon_offers", 0) or 0)
+            suc = int(tx.get("num_addon_success", 0) or 0)
+
+            candidates = _CommonParse.parse_items(tx.get("addon_candidate_items", "0"))
+            offered    = _CommonParse.parse_items(tx.get("addon_offered_items", "0"))
+            converted  = _CommonParse.parse_items(tx.get("addon_success_items", "0"))
+
+            total_opportunities += opp
+            total_offers += off
+            total_successes += suc
+
+            if off > opp:
+                violations["offers_gt_opportunities"] += 1
+            if suc > off:
+                violations["successes_gt_offers"] += 1
+            observed_mismatch = (
+                len(candidates) < opp or
+                len(offered)    < off or
+                len(converted)  < suc or
+                len(converted)  > off
+            )
+            if observed_mismatch:
+                violations["declared_vs_list_mismatch"] += 1
+
+            for it in candidates:
+                item_candidate_count[it] += 1
+            for it in offered:
+                item_offered_count[it] += 1
+            for it in converted:
+                item_converted_count[it] += 1
+                converted_counter[it] += 1
                 if item_lookup:
-                    price = item_lookup.get_item_price(item)
+                    price = float(item_lookup.get_item_price(it))
                     total_revenue += price
-                    transaction_revenue += price
-            
-            # Track by items that could have add-ons and distribute revenue proportionally
-            for item in addon_capable_items:
-                item_opportunities[item] += opportunities
-                item_offers[item] += offers
-                item_successes[item] += successes
-                addon_types_counter[item] += 1
-                # Distribute transaction revenue among addon-capable items
-                if len(addon_capable_items) > 0:
-                    item_revenue[item] += transaction_revenue / len(addon_capable_items)
-        
+                    item_revenue[it] += price
+
+        all_items = set(item_candidate_count) | set(item_offered_count) | set(item_converted_count)
+
+        offer_rate = (total_offers / total_opportunities * 100) if total_opportunities > 0 else 0.0
+        success_rate = (total_successes / total_offers * 100) if total_offers > 0 else 0.0
+        conversion_rate = (total_successes / total_opportunities * 100) if total_opportunities > 0 else 0.0
+        avg_rev_per_success = (total_revenue / total_successes) if total_successes > 0 else 0.0
+
+        by_item = {}
+        for it in sorted(all_items):
+            cand = item_candidate_count[it]
+            off  = item_offered_count[it]
+            conv = item_converted_count[it]
+            by_item[it] = {
+                "candidate_count": cand,
+                "offered_count": off,
+                "converted_count": conv,
+                "offer_rate": (off / cand * 100) if cand > 0 else 0.0,
+                "conversion_rate": (conv / cand * 100) if cand > 0 else 0.0,
+                "success_rate": (conv / off * 100) if off > 0 else 0.0,
+                "candidate_coverage": (off / cand * 100) if cand > 0 else 0.0,
+                "revenue": item_revenue[it],
+            }
+
         return {
             "total_opportunities": total_opportunities,
             "total_offers": total_offers,
             "total_successes": total_successes,
+            "offer_rate": offer_rate,
+            "success_rate": success_rate,
+            "conversion_rate": conversion_rate,
             "total_revenue": total_revenue,
-            "avg_revenue_per_success": total_revenue / total_successes if total_successes > 0 else 0,
-            "success_rate": (total_successes / total_offers * 100) if total_offers > 0 else 0,
-            "offer_rate": (total_offers / total_opportunities * 100) if total_opportunities > 0 else 0,
-            "conversion_rate": (total_successes / total_opportunities * 100) if total_opportunities > 0 else 0,
-            "by_item": {
-                item: {
-                    "opportunities": item_opportunities[item],
-                    "offers": item_offers[item],
-                    "successes": item_successes[item],
-                    "revenue": item_revenue[item],
-                    "success_rate": (item_successes[item] / item_offers[item] * 100) if item_offers[item] > 0 else 0,
-                    "offer_rate": (item_offers[item] / item_opportunities[item] * 100) if item_opportunities[item] > 0 else 0
-                }
-                for item in set(list(item_opportunities.keys()) + list(item_offers.keys()) + list(item_successes.keys()))
-                if item_opportunities[item] > 0 or item_offers[item] > 0 or item_successes[item] > 0
-            },
-            "most_successful_addons": dict(addon_items_counter.most_common(10)),
-            "most_offered_addon_types": dict(addon_types_counter.most_common(10))
+            "avg_revenue_per_success": avg_rev_per_success,
+            "violations": violations,
+            "by_item": by_item,
+            "most_converted_items": dict(converted_counter.most_common(10)),
         }
-    
+
     @staticmethod
     def calculate_addon_metrics_by_operator(transactions: List[Dict], item_lookup=None) -> Dict[str, Any]:
-        """Calculate add-on metrics broken down by operator"""
-        operator_metrics = defaultdict(lambda: {
+        ops = defaultdict(lambda: {
             "total_opportunities": 0,
             "total_offers": 0,
             "total_successes": 0,
             "total_revenue": 0.0,
-            "item_opportunities": defaultdict(int),
-            "item_offers": defaultdict(int),
-            "item_successes": defaultdict(int),
+            "item_candidate_count": defaultdict(int),
+            "item_offered_count": defaultdict(int),
+            "item_converted_count": defaultdict(int),
             "item_revenue": defaultdict(float),
-            "addon_items_counter": Counter(),
-            "addon_types_counter": Counter()
-        })
-        
-        for transaction in transactions:
-            operator = transaction.get("Operator", "Unknown")
-            
-            # Parse items that could have add-ons (this is what we should track by)
-            addon_capable_items = AddonAnalytics._parse_items_field(transaction.get("Items in Order that could have Add-Ons", "0"))
-            
-            # Get add-on metrics
-            opportunities = transaction.get("# of Chances to Add-on", 0)
-            offers = transaction.get("# of Add-on Offers", 0)
-            successes = transaction.get("# of Succesful Add-on Offers", 0)
-            
-            operator_data = operator_metrics[operator]
-            operator_data["total_opportunities"] += opportunities
-            operator_data["total_offers"] += offers
-            operator_data["total_successes"] += successes
-            
-            # Count successfully added items and calculate revenue
-            addon_items = AddonAnalytics._parse_items_field(transaction.get("Items with Successful Add-Ons", "0"))
-            transaction_revenue = 0
-            
-            for item in addon_items:
-                operator_data["addon_items_counter"][item] += 1
-                
-                # Calculate revenue if item_lookup is provided
-                if item_lookup:
-                    price = item_lookup.get_item_price(item)
-                    operator_data["total_revenue"] += price
-                    transaction_revenue += price
-            
-            # Track by items that could have add-ons and distribute revenue proportionally
-            for item in addon_capable_items:
-                operator_data["item_opportunities"][item] += opportunities
-                operator_data["item_offers"][item] += offers
-                operator_data["item_successes"][item] += successes
-                operator_data["addon_types_counter"][item] += 1
-                # Distribute transaction revenue among addon-capable items
-                if len(addon_capable_items) > 0:
-                    operator_data["item_revenue"][item] += transaction_revenue / len(addon_capable_items)
-        
-        # Convert to final format
-        result = {}
-        for operator, data in operator_metrics.items():
-            result[operator] = {
-                "total_opportunities": data["total_opportunities"],
-                "total_offers": data["total_offers"],
-                "total_successes": data["total_successes"],
-                "total_revenue": data["total_revenue"],
-                "avg_revenue_per_success": data["total_revenue"] / data["total_successes"] if data["total_successes"] > 0 else 0,
-                "success_rate": (data["total_successes"] / data["total_offers"] * 100) if data["total_offers"] > 0 else 0,
-                "offer_rate": (data["total_offers"] / data["total_opportunities"] * 100) if data["total_opportunities"] > 0 else 0,
-                "conversion_rate": (data["total_successes"] / data["total_opportunities"] * 100) if data["total_opportunities"] > 0 else 0,
-                "by_item": {
-                    item: {
-                        "opportunities": data["item_opportunities"][item],
-                        "offers": data["item_offers"][item],
-                        "successes": data["item_successes"][item],
-                        "revenue": data["item_revenue"][item],
-                        "success_rate": (data["item_successes"][item] / data["item_offers"][item] * 100) if data["item_offers"][item] > 0 else 0,
-                        "offer_rate": (data["item_offers"][item] / data["item_opportunities"][item] * 100) if data["item_opportunities"][item] > 0 else 0
-                    }
-                    for item in set(list(data["item_opportunities"].keys()) + list(data["item_offers"].keys()) + list(data["item_successes"].keys()))
-                    if data["item_opportunities"][item] > 0 or data["item_offers"][item] > 0 or data["item_successes"][item] > 0
-                },
-                "most_successful_addons": dict(data["addon_items_counter"].most_common(10)),
-                "most_offered_addon_types": dict(data["addon_types_counter"].most_common(10))
+            "converted_counter": Counter(),
+            "violations": {
+                "offers_gt_opportunities": 0,
+                "successes_gt_offers": 0,
+                "declared_vs_list_mismatch": 0
             }
-        
-        return result
-    
-    @staticmethod
-    def _parse_items_field(items_field: Any) -> List[str]:
-        """Parse items field which can be string, list, or dict"""
-        return UpsellAnalytics._parse_items_field(items_field)
+        })
 
+        for tx in transactions:
+            operator = tx.get("employee_name") or tx.get("employee_id") or "Unknown"
+            opp = int(tx.get("num_addon_opportunities", 0) or 0)
+            off = int(tx.get("num_addon_offers", 0) or 0)
+            suc = int(tx.get("num_addon_success", 0) or 0)
+
+            candidates = _CommonParse.parse_items(tx.get("addon_candidate_items", "0"))
+            offered    = _CommonParse.parse_items(tx.get("addon_offered_items", "0"))
+            converted  = _CommonParse.parse_items(tx.get("addon_success_items", "0"))
+
+            d = ops[operator]
+            d["total_opportunities"] += opp
+            d["total_offers"] += off
+            d["total_successes"] += suc
+
+            if off > opp:
+                d["violations"]["offers_gt_opportunities"] += 1
+            if suc > off:
+                d["violations"]["successes_gt_offers"] += 1
+            if (len(candidates) < opp or len(offered) < off or len(converted) < suc or len(converted) > off):
+                d["violations"]["declared_vs_list_mismatch"] += 1
+
+            for it in candidates:
+                d["item_candidate_count"][it] += 1
+            for it in offered:
+                d["item_offered_count"][it] += 1
+            for it in converted:
+                d["item_converted_count"][it] += 1
+                d["converted_counter"][it] += 1
+                if item_lookup:
+                    price = float(item_lookup.get_item_price(it))
+                    d["total_revenue"] += price
+                    d["item_revenue"][it] += price
+
+        result = {}
+        for op, d in ops.items():
+            to, tf, ts = d["total_opportunities"], d["total_offers"], d["total_successes"]
+            all_items = set(d["item_candidate_count"]) | set(d["item_offered_count"]) | set(d["item_converted_count"])
+
+            by_item = {}
+            for it in sorted(all_items):
+                cand = d["item_candidate_count"][it]
+                off  = d["item_offered_count"][it]
+                conv = d["item_converted_count"][it]
+                by_item[it] = {
+                    "candidate_count": cand,
+                    "offered_count": off,
+                    "converted_count": conv,
+                    "offer_rate": (off / cand * 100) if cand > 0 else 0.0,
+                    "conversion_rate": (conv / cand * 100) if cand > 0 else 0.0,
+                    "success_rate": (conv / off * 100) if off > 0 else 0.0,
+                    "candidate_coverage": (off / cand * 100) if cand > 0 else 0.0,
+                    "revenue": d["item_revenue"][it],
+                }
+
+            result[op] = {
+                "total_opportunities": to,
+                "total_offers": tf,
+                "total_successes": ts,
+                "offer_rate": (tf / to * 100) if to > 0 else 0.0,
+                "success_rate": (ts / tf * 100) if tf > 0 else 0.0,
+                "conversion_rate": (ts / to * 100) if to > 0 else 0.0,
+                "total_revenue": d["total_revenue"],
+                "avg_revenue_per_success": (d["total_revenue"] / ts) if ts > 0 else 0.0,
+                "violations": d["violations"],
+                "by_item": by_item,
+                "most_converted_items": dict(d["converted_counter"].most_common(10))
+            }
+        return result
 
 class HoptixAnalyticsService:
     """Main analytics service for Hoptix grading data"""
@@ -776,23 +925,23 @@ class HoptixAnalyticsService:
                 stats = item_performance[item]
                 stats["frequency"] += 1
                 stats["total_opportunities"] += (
-                    transaction.get("# of Chances to Upsell", 0) +
-                    transaction.get("# of Chances to Upsize", 0) +
-                    transaction.get("# of Chances to Add-on", 0)
+                    transaction.get("num_upsell_opportunities", 0) +
+                    transaction.get("num_upsize_opportunities", 0) +
+                    transaction.get("num_addon_opportunities", 0)
                 )
                 stats["total_offers"] += (
-                    transaction.get("# of Upselling Offers Made", 0) +
-                    transaction.get("# of Upsizing Offers Made", 0) +
-                    transaction.get("# of Add-on Offers", 0)
+                    transaction.get("num_upsell_offers", 0) +
+                    transaction.get("num_upsize_offers", 0) +
+                    transaction.get("num_addon_offers", 0)
                 )
                 stats["total_successes"] += (
-                    transaction.get("# of Sucessfull Upselling chances", 0) +
-                    transaction.get("# of Sucessfull Upsizing chances", 0) +
-                    transaction.get("# of Succesful Add-on Offers", 0)
+                    transaction.get("num_upsell_success", 0) +
+                    transaction.get("num_upsize_success", 0) +
+                    transaction.get("num_addon_success", 0)
                 )
-                stats["upsell_successes"] += transaction.get("# of Sucessfull Upselling chances", 0)
-                stats["upsize_successes"] += transaction.get("# of Sucessfull Upsizing chances", 0)
-                stats["addon_successes"] += transaction.get("# of Succesful Add-on Offers", 0)
+                stats["upsell_successes"] += transaction.get("num_upsell_success", 0)
+                stats["upsize_successes"] += transaction.get("num_upsize_success", 0)
+                stats["addon_successes"] += transaction.get("num_addon_success", 0)
         
         # Calculate performance rates and sort
         for item, stats in item_performance.items():
@@ -831,13 +980,13 @@ class HoptixAnalyticsService:
                     
                     bucket = time_buckets[time_key]
                     bucket["transactions"] += 1
-                    bucket["upsell_successes"] += transaction.get("# of Sucessfull Upselling chances", 0)
-                    bucket["upsize_successes"] += transaction.get("# of Sucessfull Upsizing chances", 0)
-                    bucket["addon_successes"] += transaction.get("# of Succesful Add-on Offers", 0)
+                    bucket["upsell_successes"] += transaction.get("num_upsell_success", 0)
+                    bucket["upsize_successes"] += transaction.get("num_upsize_success", 0)
+                    bucket["addon_successes"] += transaction.get("num_addon_success", 0)
                     bucket["total_opportunities"] += (
-                        transaction.get("# of Chances to Upsell", 0) +
-                        transaction.get("# of Chances to Upsize", 0) +
-                        transaction.get("# of Chances to Add-on", 0)
+                        transaction.get("num_upsell_opportunities", 0) +
+                        transaction.get("num_upsize_opportunities", 0) +
+                        transaction.get("num_addon_opportunities", 0)
                     )
                 except ValueError:
                     # Skip if date parsing fails
@@ -873,10 +1022,11 @@ class HoptixAnalyticsService:
             recommendations.append(f"🍟 Add-on offer rate is {addon_metrics['offer_rate']:.1f}%. Focus on suggesting extras like toppings, sides, and premium options.")
         
         # Top item recommendations
-        if upsell_metrics.get("most_upsold_items"):
-            top_upsold = list(upsell_metrics["most_upsold_items"].keys())[0]
+        top_map = upsell_metrics.get("most_converted_items")  # <- was most_upsold_items
+        if top_map:
+            top_upsold = list(top_map.keys())[0]
             recommendations.append(f"⭐ '{top_upsold}' is your top upsold item. Create targeted promotions around this success.")
-        
+
         if not recommendations:
             recommendations.append("🎉 Great performance across all metrics! Continue current training and focus on consistency.")
         

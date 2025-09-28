@@ -1,0 +1,231 @@
+---
+title: "API Reference"
+description: "Complete API reference for Strike Auth Service"
+---
+
+## Base URL
+
+The Strike Auth Service API is available at the following base URLs:
+
+```
+Production: https://auth-api.strike.com
+Development: http://localhost:8080
+```
+
+## Authentication
+
+Most endpoints require authentication via the `Authorization` header:
+
+```http
+Authorization: Bearer <jwt-token>
+```
+
+Admin endpoints require either:
+- Service role key: `Authorization: Bearer <service-role-key>`
+- Admin user JWT: `Authorization: Bearer <admin-jwt-token>`
+
+## Request Format
+
+All requests should include the `Content-Type` header:
+
+```http
+Content-Type: application/json
+```
+
+Request bodies should be valid JSON:
+
+```json
+{
+  "email": "user@example.com",
+  "password": "securepassword123"
+}
+```
+
+## Response Format
+
+All responses are returned in JSON format with consistent structure:
+
+### Success Response
+```json
+{
+  "id": "123e4567-e89b-12d3-a456-426614174000",
+  "email": "user@example.com",
+  "created_at": "2023-01-01T00:00:00Z"
+}
+```
+
+### Error Response
+```json
+{
+  "code": 400,
+  "msg": "Error description",
+  "details": "Additional context (optional)"
+}
+```
+
+## Rate Limiting
+
+All endpoints include rate limiting headers:
+
+| Header | Description |
+|--------|-------------|
+| `X-RateLimit-Limit` | Maximum requests per window |
+| `X-RateLimit-Remaining` | Remaining requests in current window |
+| `X-RateLimit-Reset` | Time until window resets (seconds) |
+
+When rate limits are exceeded, the API returns a `429 Too Many Requests` status code.
+
+## HTTP Status Codes
+
+The API uses standard HTTP status codes:
+
+| Code | Description |
+|------|-------------|
+| `200` | OK - Request successful |
+| `201` | Created - Resource created successfully |
+| `400` | Bad Request - Invalid request data |
+| `401` | Unauthorized - Invalid or missing authentication |
+| `403` | Forbidden - Insufficient permissions |
+| `404` | Not Found - Resource not found |
+| `429` | Too Many Requests - Rate limit exceeded |
+| `500` | Internal Server Error - Server error |
+
+## Pagination
+
+List endpoints support pagination using query parameters:
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `page` | Page number (1-based) | 1 |
+| `per_page` | Items per page (max 100) | 20 |
+
+Paginated responses include metadata:
+
+```json
+{
+  "data": [...],
+  "pagination": {
+    "page": 1,
+    "per_page": 20,
+    "total": 100,
+    "total_pages": 5
+  }
+}
+```
+
+## Filtering and Sorting
+
+Some endpoints support filtering and sorting:
+
+### Filtering
+```
+GET /admin/users?email=user@example.com&role=authenticated
+```
+
+### Sorting
+```
+GET /admin/users?sort=created_at&order=desc
+```
+
+## Webhooks
+
+The service supports webhooks for real-time event notifications:
+
+### Supported Events
+- `user.created` - New user registration
+- `user.updated` - User profile updated
+- `user.deleted` - User account deleted
+- `auth.login` - User login
+- `auth.logout` - User logout
+
+### Webhook Payload
+```json
+{
+  "event": "user.created",
+  "timestamp": "2023-01-01T00:00:00Z",
+  "data": {
+    "user": {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "email": "user@example.com"
+    }
+  }
+}
+```
+
+## SDKs and Libraries
+
+Official SDKs are available for popular programming languages:
+
+<CardGroup cols={2}>
+  <Card title="JavaScript/TypeScript" icon="js">
+    ```bash
+    npm install @strike/auth-client
+    ```
+  </Card>
+  <Card title="Python" icon="python">
+    ```bash
+    pip install strike-auth-client
+    ```
+  </Card>
+  <Card title="Go" icon="golang">
+    ```bash
+    go get github.com/strike/auth-client-go
+    ```
+  </Card>
+  <Card title="PHP" icon="php">
+    ```bash
+    composer require strike/auth-client
+    ```
+  </Card>
+</CardGroup>
+
+## OpenAPI Specification
+
+The complete OpenAPI 3.0 specification is available at:
+
+```
+GET /openapi.yaml
+```
+
+You can use this specification with tools like:
+- Postman
+- Insomnia
+- Swagger UI
+- OpenAPI Generator
+
+## Testing
+
+### Test Environment
+A test environment is available for development and testing:
+
+```
+Test Base URL: https://auth-api-test.strike.com
+```
+
+### Test Data
+The test environment includes sample data for testing:
+- Test users with various roles
+- Sample OAuth providers
+- Rate limiting disabled for testing
+
+### API Keys
+Test API keys are available in your Strike dashboard under the "Test" environment.
+
+## Support
+
+Need help with the API?
+
+<CardGroup cols={2}>
+  <Card title="Documentation" icon="book">
+    Browse our comprehensive guides and tutorials
+  </Card>
+  <Card title="Support" icon="life-ring">
+    Contact our support team at support@strike.com
+  </Card>
+  <Card title="Community" icon="users">
+    Join our developer community on Slack
+  </Card>
+  <Card title="Status" icon="activity">
+    Check API status at status.strike.com
+  </Card>
+</CardGroup> 

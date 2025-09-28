@@ -1,0 +1,317 @@
+---
+title: "Authentication"
+description: "Learn how authentication works in Strike Auth Service"
+---
+
+## Overview
+
+Strike Auth Service uses JWT (JSON Web Tokens) for authentication, providing a secure and stateless way to authenticate users. The service supports multiple authentication methods and follows OAuth 2.0 standards where applicable.
+
+## Authentication Flow
+
+<Steps>
+  <Step title="User Registration/Login">
+    Users can register or login using various methods (email/password, magic
+    links, OAuth, etc.)
+  </Step>
+  <Step title="Token Issuance">
+    Upon successful authentication, the service issues an access token and
+    refresh token
+  </Step>
+  <Step title="API Requests">
+    Include the access token in the Authorization header for authenticated
+    requests
+  </Step>
+  <Step title="Token Refresh">
+    Use the refresh token to obtain new access tokens when they expire
+  </Step>
+</Steps>
+
+## Token Types
+
+### Access Token
+
+- **Purpose**: Authenticate API requests
+- **Lifetime**: 1 hour (3600 seconds)
+- **Format**: JWT with user claims
+- **Usage**: Include in `Authorization: Bearer <token>` header
+
+### Refresh Token
+
+- **Purpose**: Obtain new access tokens
+- **Lifetime**: 30 days (configurable)
+- **Format**: Opaque string
+- **Usage**: Send to `/token` endpoint with `grant_type=refresh_token`
+
+### Service Role Key
+
+- **Purpose**: Admin operations and server-to-server communication
+- **Lifetime**: No expiration (until rotated)
+- **Format**: Opaque string
+- **Usage**: Include in `Authorization: Bearer <service-role-key>` header
+
+## Authentication Methods
+
+<Tabs>
+  <Tab title="Email & Password">
+    Traditional authentication with email and password.
+
+    ```bash
+    curl -X POST "http://localhost:8080/token?grant_type=password" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "email": "user@example.com",
+        "password": "securepassword123"
+      }'
+    ```
+
+  </Tab>
+
+  <Tab title="Magic Links">
+    Passwordless authentication via email links.
+
+    ```bash
+    # Send magic link
+    curl -X POST "http://localhost:8080/magiclink" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "email": "user@example.com",
+        "create_user": true
+      }'
+    ```
+
+  </Tab>
+
+  <Tab title="OTP (SMS)">
+    One-time password authentication via SMS.
+
+    ```bash
+    # Send OTP
+    curl -X POST "http://localhost:8080/otp" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "phone": "+1234567890",
+        "create_user": true
+      }'
+    ```
+
+  </Tab>
+
+  <Tab title="OAuth">
+    Third-party provider authentication.
+
+    ```bash
+    # Initiate OAuth flow
+    curl -X GET "http://localhost:8080/authorize?provider=google&redirect_to=https://yourapp.com/callback"
+    ```
+
+  </Tab>
+
+  <Tab title="Admin Login">
+    Enhanced authentication for administrators with privilege verification.
+
+    ```bash
+    # Admin login with automatic privilege check
+    curl -X POST "http://localhost:8080/login-admin" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "email": "admin@example.com",
+        "password": "securepassword123"
+      }'
+    ```
+
+    <Note>
+    The admin login endpoint performs two-step verification: standard authentication followed by admin privilege validation via database lookup.
+    </Note>
+
+  </Tab>
+</Tabs>
+
+## Security Headers
+
+All authenticated requests should include the access token in the Authorization header:
+
+```http
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+## Rate Limiting
+
+Authentication endpoints include rate limiting to prevent abuse:
+
+| Header                  | Description                          |
+| ----------------------- | ------------------------------------ |
+| `X-RateLimit-Limit`     | Maximum requests per window          |
+| `X-RateLimit-Remaining` | Remaining requests in current window |
+| `X-RateLimit-Reset`     | Time until window resets (seconds)   |
+
+## Error Handling
+
+Authentication errors follow a consistent format:
+
+```json
+{
+  "code": 401,
+  "msg": "Invalid credentials",
+  "details": "Email or password is incorrect"
+}
+```
+
+Common authentication error codes:
+
+| Code  | Description                                   |
+| ----- | --------------------------------------------- |
+| `400` | Bad Request - Invalid request format          |
+| `401` | Unauthorized - Invalid or missing credentials |
+| `403` | Forbidden - Insufficient permissions          |
+| `429` | Too Many Requests - Rate limit exceeded       |
+
+## JWT Token Structure
+
+Access tokens are JWTs containing user information:
+
+```json
+{
+  "aud": "authenticated",
+  "exp": 1640995200,
+  "iat": 1640908800,
+  "iss": "https://your-project.supabase.co/auth/v1",
+  "sub": "123e4567-e89b-12d3-a456-426614174000",
+  "email": "user@example.com",
+  "phone": "+1234567890",
+  "app_metadata": {
+    "provider": "email",
+    "providers": ["email"]
+  },
+  "user_metadata": {},
+  "role": "authenticated"
+}
+```
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Token Storage">
+    - Store access tokens in memory or secure storage
+    - Store refresh tokens in secure, httpOnly cookies when possible
+    - Never store tokens in localStorage in production
+  </Accordion>
+
+{" "}
+<Accordion title="Token Refresh">
+  - Implement automatic token refresh before expiration - Handle refresh token
+  rotation properly - Implement proper error handling for expired refresh tokens
+</Accordion>
+
+{" "}
+<Accordion title="Security">
+  - Always use HTTPS in production - Implement proper CORS policies - Validate
+  tokens on every request - Log authentication events for security monitoring
+</Accordion>
+
+  <Accordion title="Error Handling">
+    - Handle authentication errors gracefully
+    - Implement proper logout on token expiration
+    - Provide clear error messages to users
+  </Accordion>
+</AccordionGroup>
+
+## Example Implementation
+
+Here's a complete example of implementing authentication in JavaScript:
+
+```javascript
+class AuthService {
+  constructor(baseUrl) {
+    this.baseUrl = baseUrl;
+    this.accessToken = null;
+    this.refreshToken = null;
+  }
+
+  async login(email, password) {
+    const response = await fetch(`${this.baseUrl}/token?grant_type=password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Login failed");
+    }
+
+    const data = await response.json();
+    this.accessToken = data.access_token;
+    this.refreshToken = data.refresh_token;
+
+    return data.user;
+  }
+
+  async refreshAccessToken() {
+    if (!this.refreshToken) {
+      throw new Error("No refresh token available");
+    }
+
+    const response = await fetch(
+      `${this.baseUrl}/token?grant_type=refresh_token`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh_token: this.refreshToken }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Token refresh failed");
+    }
+
+    const data = await response.json();
+    this.accessToken = data.access_token;
+    this.refreshToken = data.refresh_token;
+  }
+
+  async makeAuthenticatedRequest(url, options = {}) {
+    const headers = {
+      Authorization: `Bearer ${this.accessToken}`,
+      "Content-Type": "application/json",
+      ...options.headers,
+    };
+
+    let response = await fetch(url, { ...options, headers });
+
+    // If token expired, try to refresh
+    if (response.status === 401) {
+      await this.refreshAccessToken();
+      headers["Authorization"] = `Bearer ${this.accessToken}`;
+      response = await fetch(url, { ...options, headers });
+    }
+
+    return response;
+  }
+
+  logout() {
+    this.accessToken = null;
+    this.refreshToken = null;
+  }
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="User Management" icon="users" href="/concepts/user-management">
+    Learn about user lifecycle and profile management
+  </Card>
+  <Card title="Security Concepts" icon="shield-check" href="/concepts/security">
+    Understand security features and best practices
+  </Card>
+  <Card title="Integration Guides" icon="code" href="/guides/signup-flow">
+    Step-by-step implementation guides
+  </Card>
+  <Card
+    title="API Reference"
+    icon="book"
+    href="/api-reference/authentication/login"
+  >
+    Detailed API documentation
+  </Card>
+</CardGroup>{" "}

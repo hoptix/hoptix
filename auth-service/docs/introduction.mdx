@@ -1,0 +1,129 @@
+---
+title: Introduction
+description: 'Welcome to the Strike Auth Service API documentation'
+---
+
+<img
+  className="block dark:hidden"
+  src="/images/hero-light.svg"
+  alt="Hero Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/hero-dark.svg"
+  alt="Hero Dark"
+/>
+
+## What is Strike Auth Service?
+
+Strike Auth Service is a production-ready Go microservice that wraps Supabase Auth API with additional security, middleware, and comprehensive testing. It provides a robust authentication solution for the Strike betting platform with enterprise-grade features.
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card
+    title="Secure Authentication"
+    icon="shield-check"
+    href="/concepts/security"
+  >
+    JWT-based authentication with refresh tokens and secure session management
+  </Card>
+  <Card
+    title="Multiple Auth Methods"
+    icon="key"
+    href="/guides/signup-flow"
+  >
+    Email/password, magic links, OTP, and OAuth provider integration
+  </Card>
+  <Card
+    title="Admin Operations"
+    icon="user-gear"
+    href="/guides/admin-operations"
+  >
+    Comprehensive admin APIs for user management and system administration
+  </Card>
+  <Card
+    title="Rate Limiting"
+    icon="gauge-high"
+    href="/concepts/rate-limiting"
+  >
+    Built-in rate limiting to protect against abuse and ensure service stability
+  </Card>
+</CardGroup>
+
+## Quick Start
+
+Get started with the Strike Auth Service in just a few steps:
+
+<Steps>
+  <Step title="Get Your API Keys">
+    Obtain your service role key and project configuration from your Strike dashboard.
+  </Step>
+  <Step title="Make Your First Request">
+    Test the service with a simple health check request.
+  </Step>
+  <Step title="Implement Authentication">
+    Choose your preferred authentication method and integrate it into your application.
+  </Step>
+</Steps>
+
+## Authentication Methods
+
+The Strike Auth Service supports multiple authentication methods to fit your application's needs:
+
+### Email & Password
+Traditional email and password authentication with email verification.
+
+### Magic Links
+Passwordless authentication via email links for improved user experience.
+
+### One-Time Passwords (OTP)
+SMS-based authentication using one-time passwords.
+
+### OAuth Providers
+Integration with popular OAuth providers:
+- Google
+- GitHub
+- Facebook
+- Apple
+- Discord
+- Twitter
+- LinkedIn
+
+## API Overview
+
+The API is organized into several main categories:
+
+- **System**: Health checks and service status
+- **Public**: Publicly accessible endpoints like settings
+- **Authentication**: User registration, login, and verification
+- **User Management**: Profile management and user operations
+- **Admin**: Administrative operations requiring elevated privileges
+- **OAuth**: External provider authentication flows
+- **Debug**: Development and debugging utilities
+
+## Base URL
+
+```
+Production: https://auth-api.strike.com
+Development: http://localhost:8080
+```
+
+## Need Help?
+
+<CardGroup cols={2}>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api-reference/introduction"
+  >
+    Detailed API documentation with examples
+  </Card>
+  <Card
+    title="Guides"
+    icon="book-open"
+    href="/guides/signup-flow"
+  >
+    Step-by-step implementation guides
+  </Card>
+</CardGroup> 
