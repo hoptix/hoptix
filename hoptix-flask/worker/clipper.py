@@ -122,7 +122,8 @@ def cut_clip_for_transaction(
     video_started_at_iso: str, video_ended_at_iso: str, tx_row: Dict, run_id: str, video_id: str
 ) -> str:
     """
-    Returns the Google Drive file ID of the uploaded clip.
+    Extracts audio from video clip and saves it locally.
+    Returns the local audio file path instead of Google Drive file ID.
     tx_row fields expected: id, started_at, ended_at
     """
     # Videos are hour-long segments, extract minutes:seconds from transaction times
@@ -160,38 +161,54 @@ def cut_clip_for_transaction(
         print(f"Warning: Very short clip duration ({duration:.3f}s), extending to 1.0s")
         end_off = start_off + 1.0
 
-    # local temp path
-    tmpdir = tempfile.mkdtemp(prefix="clip_")
-    out_local = os.path.join(tmpdir, f"{tx_row['id']}.mp4")
-
-    # choose mode
-    if os.getenv("REENCODE_CLIPS", "no").lower() in ("1","true","yes","y"):
-        _ffmpeg_trim_reencode(input_video_local, start_off, end_off, out_local)
-    else:
-        try:
-            _ffmpeg_trim_copy(input_video_local, start_off, end_off, out_local)
-        except subprocess.CalledProcessError:
-            # fallback to re-encode if copy fails (rare)
-            _ffmpeg_trim_reencode(input_video_local, start_off, end_off, out_local)
-
+    # Create audio clips directory
+    audio_clips_dir = "transaction_audio_clips"
+    os.makedirs(audio_clips_dir, exist_ok=True)
+    
     # Generate descriptive names
     run_name = generate_run_name(db, run_id)
     video_name = generate_video_name(tx_row["started_at"], tx_row["ended_at"])
     
-    # Upload directly to Google Drive
-    gdrive_file_id = upload_clip_to_gdrive(out_local, run_name, f"{video_name}_tx={tx_row['id']}.mp4")
-
-    # Cleanup local clip and temp dir aggressively
+    # Create audio file path
+    audio_filename = f"{video_name}_tx={tx_row['id']}.mp3"
+    audio_path = os.path.join(audio_clips_dir, audio_filename)
+    
+    print(f"🎵 Extracting audio clip: {audio_path}")
+    print(f"   📍 From video: {input_video_local}")
+    print(f"   ⏱️ Time range: {start_off:.3f}s - {end_off:.3f}s ({duration:.3f}s)")
+    
+    # Extract audio directly from video using FFmpeg
     try:
-        if os.path.exists(out_local):
-            os.remove(out_local)
-        if os.path.exists(tmpdir):
-            shutil.rmtree(tmpdir, ignore_errors=True)
-    except Exception:
-        pass
-
-    # Return Google Drive file ID
-    return gdrive_file_id
+        cmd = [
+            FFMPEG_BIN, "-y",
+            "-ss", f"{start_off:.3f}",
+            "-i", input_video_local,
+            "-t", f"{duration:.3f}",
+            "-vn",  # No video
+            "-acodec", "mp3",
+            "-ab", "128k",  # Audio bitrate
+            "-ar", "44100",  # Sample rate
+            audio_path
+        ]
+        
+        print(f"🔧 Running FFmpeg command: {' '.join(cmd)}")
+        subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        
+        # Verify the audio file was created
+        if os.path.exists(audio_path):
+            file_size = os.path.getsize(audio_path)
+            print(f"✅ Audio clip saved: {audio_path} ({file_size:,} bytes)")
+            return audio_path
+        else:
+            print(f"❌ Audio file was not created: {audio_path}")
+            return None
+            
+    except subprocess.CalledProcessError as e:
+        print(f"❌ FFmpeg failed to extract audio: {e}")
+        return None
+    except Exception as e:
+        print(f"❌ Error extracting audio: {e}")
+        return None
 
 
 def upload_clip_to_gdrive(local_clip_path: str, run_name: str, clip_name: str) -> str:
@@ -218,12 +235,14 @@ def upload_clip_to_gdrive(local_clip_path: str, run_name: str, clip_name: str) -
         print(f"❌ Error uploading clip to Google Drive: {e}")
         return None
 
-def update_tx_meta_with_clip(db, tx_id: str, gdrive_file_id: str, speaker_info: dict = None):
-    """Update transaction with Google Drive file ID and speaker information"""
-    # Store the Google Drive file ID in the clip_s3_url field (since we're using Google Drive, not S3)
-    update_data = {"clip_s3_url": gdrive_file_id}
-    print("update_data", update_data)
+def update_tx_meta_with_clip(db, tx_id: str, audio_file_path: str, speaker_info: dict = None):
+    """Update transaction with audio file path and speaker information"""
+    # Store the audio file path in the clip_s3_url field (reusing the field for audio path)
+    update_data = {"clip_s3_url": audio_file_path}
+    print(f"💾 Updating transaction {tx_id} with audio file: {audio_file_path}")
     if speaker_info:
         update_data["speaker_info"] = speaker_info
+        print(f"🎤 Adding speaker info: {speaker_info}")
     
     db.client.table("transactions").update(update_data).eq("id", tx_id).execute()
+    print(f"✅ Transaction {tx_id} updated successfully")

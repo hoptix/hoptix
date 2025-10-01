@@ -509,7 +509,6 @@ def parse_timestamp_from_filename(filename: str) -> Optional[datetime]:
                 millisecond = int(timestamp_str[14:17])
                 
                 # Create datetime object
-                from datetime import datetime, timezone
                 dt = datetime(year, month, day, hour, minute, second, 
                              millisecond * 1000, timezone.utc)
                 return dt

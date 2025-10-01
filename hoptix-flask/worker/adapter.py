@@ -293,20 +293,30 @@ You will be fed a single transcript with potentially multiple transactions occur
 # ---------- Utilities ----------
 @contextlib.contextmanager
 def _tmp_audio_from_video(video_path: str):
-    tmpdir = tempfile.mkdtemp(prefix="hoptix_asr_")
-    out = os.path.join(tmpdir, "audio.mp3")
+    # Create a permanent audio directory instead of temporary
+    audio_dir = "extracted_audio"
+    os.makedirs(audio_dir, exist_ok=True)
+    
+    # Generate audio filename based on video filename
+    video_basename = os.path.splitext(os.path.basename(video_path))[0]
+    out = os.path.join(audio_dir, f"{video_basename}_full_audio.mp3")
+    
     clip = VideoFileClip(video_path)
     if clip.audio is None:
         clip.close()
         raise RuntimeError("No audio track in video")
+    
+    print(f"🎵 Extracting full audio to: {out}")
     clip.audio.write_audiofile(out, verbose=False, logger=None)
     duration = float(clip.duration or 0.0)
     clip.close()
+    
+    print(f"✅ Full audio saved: {out} (duration: {duration:.1f}s)")
     try:
         yield out, duration
     finally:
-        with contextlib.suppress(Exception): os.remove(out)
-        with contextlib.suppress(Exception): os.rmdir(tmpdir)
+        # Don't delete the audio file - keep it saved
+        print(f"💾 Audio file preserved: {out}")
 
 def _segment_active_spans(y: np.ndarray, sr: int, window_s: float = 15.0) -> List[tuple[float,float]]:
     # Mirrors your simple "average==0 → silence" logic to carve spans.
@@ -379,20 +389,31 @@ def _json_or_none(txt: str) -> Dict[str, Any] | None:
 # ---------- 1) TRANSCRIBE (extract spans, per‑span ASR) ----------
 def transcribe_video(local_path: str) -> List[Dict]:
     segs: List[Dict] = []
+    
+    # Create audio directory for segments
+    audio_dir = "extracted_audio"
+    os.makedirs(audio_dir, exist_ok=True)
+    video_basename = os.path.splitext(os.path.basename(local_path))[0]
+    
     with _tmp_audio_from_video(local_path) as (audio_path, duration):
         y, sr = librosa.load(audio_path, sr=None)
         spans = _segment_active_spans(y, sr, 15.0) or [(0.0, duration)]
+        
+        print(f"🎬 Processing {len(spans)} audio segments for {video_basename}")
+        
         for i, (b, e) in enumerate(spans):
-            # safer subclip render
-            with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tf:
-                tmp_audio = tf.name
+            # Create permanent segment audio file instead of temporary
+            segment_audio = os.path.join(audio_dir, f"{video_basename}_segment_{i+1:03d}_{int(b)}s-{int(e)}s.mp3")
+            
             # Ensure end time doesn't exceed video duration
             end_time = min(int(e+1), duration)
             clip = VideoFileClip(local_path).subclip(int(b), end_time)
-            clip.audio.write_audiofile(tmp_audio, verbose=False, logger=None)
+            
+            print(f"🎵 Saving segment {i+1}/{len(spans)}: {segment_audio}")
+            clip.audio.write_audiofile(segment_audio, verbose=False, logger=None)
             clip.close()
 
-            with open(tmp_audio, "rb") as af:
+            with open(segment_audio, "rb") as af:
                 try:
                     txt = client.audio.transcriptions.create(
                         model=_settings.ASR_MODEL,
@@ -402,12 +423,17 @@ def transcribe_video(local_path: str) -> List[Dict]:
                         prompt="Label each line as Operator: or Customer: where possible."
                     )
                     text = str(txt)
+                    print(f"✅ Segment {i+1} transcribed: {len(text)} characters")
                 except Exception as ex:
-                    print("ASR error:", ex)
+                    print(f"❌ ASR error for segment {i+1}: {ex}")
                     text = ""
-            with contextlib.suppress(Exception): os.remove(tmp_audio)
+            
+            # Don't delete the segment audio file - keep it saved
+            print(f"💾 Segment audio preserved: {segment_audio}")
 
             segs.append({"start": float(b), "end": float(e), "text": text})
+    
+    print(f"🎉 Completed transcription: {len(segs)} segments saved")
     return segs
 
 

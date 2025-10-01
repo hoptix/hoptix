@@ -5,7 +5,7 @@ from integrations.db_supabase import Supa
 from integrations.s3_client import get_s3, download_to_file, put_jsonl
 from worker.adapter import transcribe_video, split_into_transactions, grade_transactions
 from worker.clipper import cut_clip_for_transaction, update_tx_meta_with_clip
-from services.voice_diarization import create_voice_diarization_service
+# from services.voice_diarization import create_voice_diarization_service
 
 # Configure logging for pipeline
 logger = logging.getLogger(__name__)
