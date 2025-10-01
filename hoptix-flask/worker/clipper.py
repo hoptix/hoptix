@@ -235,11 +235,41 @@ def upload_clip_to_gdrive(local_clip_path: str, run_name: str, clip_name: str) -
         print(f"❌ Error uploading clip to Google Drive: {e}")
         return None
 
-def update_tx_meta_with_clip(db, tx_id: str, audio_file_path: str, speaker_info: dict = None):
-    """Update transaction with audio file path and speaker information"""
-    # Store the audio file path in the clip_s3_url field (reusing the field for audio path)
-    update_data = {"clip_s3_url": audio_file_path}
-    print(f"💾 Updating transaction {tx_id} with audio file: {audio_file_path}")
+def update_tx_meta_with_clip(db, tx_id: str, audio_file_path: str, speaker_info: dict = None, run_id: str = None, tx_started_at: str = None, tx_ended_at: str = None):
+    """Upload clip to Google Drive, store share link in transactions.s3_key, and update ancillary fields."""
+    print(f"💾 Preparing to upload transaction {tx_id} clip: {audio_file_path}")
+    gdrive_link = None
+    try:
+        # Build run-scoped folder and clip name if we have context
+        if run_id:
+            run_name = generate_run_name(db, run_id)
+        else:
+            run_name = "run"
+        # Create a human-friendly clip name
+        clip_name = os.path.basename(audio_file_path)
+        if tx_started_at and tx_ended_at:
+            video_name = generate_video_name(tx_started_at, tx_ended_at)
+            clip_name = f"{video_name}_tx={tx_id}.mp3"
+        
+        # Upload to Google Drive and get file id
+        file_id = upload_clip_to_gdrive(audio_file_path, run_name, clip_name)
+        if file_id:
+            # Construct a shareable view URL
+            gdrive_link = f"https://drive.google.com/file/d/{file_id}/view?usp=sharing"
+            print(f"🔗 Google Drive link for tx {tx_id}: {gdrive_link}")
+        else:
+            print(f"⚠️ Upload failed for tx {tx_id}, will store local path only")
+    except Exception as e:
+        print(f"❌ Error during Google Drive upload for tx {tx_id}: {e}")
+    
+    # Prepare update payload
+    update_data = {
+        # Keep local path for debugging/reference
+        "clip_s3_url": audio_file_path
+    }
+    if gdrive_link:
+        # Store the shareable URL in s3_key as requested
+        update_data["s3_key"] = gdrive_link
     if speaker_info:
         update_data["speaker_info"] = speaker_info
         print(f"🎤 Adding speaker info: {speaker_info}")
