@@ -13,9 +13,7 @@ gotrue==2.12.4
 realtime==2.20.0
 supafunc==0.5.1
 
-# AI/ML - CPU only versions (much smaller)
-torch==2.8.0+cpu --index-url https://download.pytorch.org/whl/cpu
-torchaudio==2.8.0+cpu --index-url https://download.pytorch.org/whl/cpu
+# AI/ML - PyTorch installed separately in Dockerfile (CPU-only)
 torchmetrics==1.8.2
 pytorch-lightning==2.0.7
 
