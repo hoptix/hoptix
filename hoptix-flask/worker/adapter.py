@@ -532,6 +532,9 @@ def _map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -
                 return value
         return value
 
+    print(f"Step2 object: {step2_obj}")
+    print(f"Tx meta: {tx_meta}")
+
     out = {
         # Meta flags from tx, unchanged
         "complete_order":   _ii(tx_meta.get("complete_order", 0)),
@@ -583,7 +586,8 @@ def _map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -
         # Optional extras
         "reasoning_summary":        step2_obj.get("reasoning_summary", "")
     }
-
+    print(f"Out: {out}")
+    return out
 
 def grade_transactions(transactions: List[Dict], db=None, location_id: str = None, testing=True) -> List[Dict]:
     graded: List[Dict] = []
