@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt ./requirements.txt
 
 # Install PyTorch CPU-only version first (smaller size)
-RUN pip install --no-cache-dir torch==2.0.1+cpu torchaudio==2.0.1+cpu --index-url https://download.pytorch.org/whl/cpu
+RUN pip install --no-cache-dir torch==2.0.0+cpu torchaudio==2.0.0+cpu --index-url https://download.pytorch.org/whl/cpu
 
 # Install remaining requirements
 RUN pip install --no-cache-dir -r requirements.txt
