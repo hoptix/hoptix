@@ -486,60 +486,86 @@ class GoogleDriveClient:
 
 def parse_timestamp_from_filename(filename: str) -> Optional[datetime]:
     """
-    Parse timestamp from DQ video filename format: DQ Cary_YYYYMMDD-YYYYMMDD_1000.mkv
-    Format: DQ Cary_YYYYMMDD-YYYYMMDD_1000.mkv
+    Parse timestamp from video filename formats:
+    1. DT_File format: DT_File{YYYYMMDDHHMMSSFFF}.avi
+    2. Legacy DQ Cary format: DQ Cary_YYYYMMDD-YYYYMMDD_1000.mkv
     """
     try:
-        if not filename.startswith('DQ Cary_'):
-            return None
+        # Try DT_File format first (new format)
+        if filename.startswith('DT_File'):
+            import re
+            # Match DT_File format: DT_File + 17 digits (YYYYMMDDHHMMSSFFF)
+            match = re.match(r'DT_File(\d{17})', filename)
+            if match:
+                timestamp_str = match.group(1)
+                
+                # Parse: YYYYMMDDHHMMSSFFF
+                year = int(timestamp_str[0:4])
+                month = int(timestamp_str[4:6])
+                day = int(timestamp_str[6:8])
+                hour = int(timestamp_str[8:10])
+                minute = int(timestamp_str[10:12])
+                second = int(timestamp_str[12:14])
+                millisecond = int(timestamp_str[14:17])
+                
+                # Create datetime object
+                from datetime import datetime, timezone
+                dt = datetime(year, month, day, hour, minute, second, 
+                             millisecond * 1000, timezone.utc)
+                return dt
+        
+        # Try legacy DQ Cary format
+        if filename.startswith('DQ Cary_'):
+            # Extract the date part: DQ Cary_20250925-20250925_1000.mkv -> 20250925-20250925
+            # Remove the prefix and suffix to get the date range
+            date_part = filename[8:]  # Skip 'DQ Cary_' prefix
+            if not date_part.endswith('.mkv'):
+                return None
+                
+            # Remove .mkv extension
+            date_part = date_part[:-4]
             
-        # Extract the date part: DQ Cary_20250925-20250925_1000.mkv -> 20250925-20250925
-        # Remove the prefix and suffix to get the date range
-        date_part = filename[8:]  # Skip 'DQ Cary_' prefix
-        if not date_part.endswith('.mkv'):
-            return None
+            # Split by underscore to get date and time parts
+            parts = date_part.split('_')
+            if len(parts) != 2:
+                return None
             
-        # Remove .mkv extension
-        date_part = date_part[:-4]
-        
-        # Split by underscore to get date and time parts
-        parts = date_part.split('_')
-        if len(parts) != 2:
-            return None
+            date_range = parts[0]  # 20250925-20250925
+            time_part = parts[1]   # 1000
             
-        date_range = parts[0]  # 20250925-20250925
-        time_part = parts[1]   # 1000
-        
-        # Parse the date range (use the first date)
-        if '-' not in date_range:
-            return None
+            # Parse the date range (use the first date)
+            if '-' not in date_range:
+                return None
+                
+            date_str = date_range.split('-')[0]  # 20250925
             
-        date_str = date_range.split('-')[0]  # 20250925
+            if len(date_str) != 8:
+                return None
+            
+            # Parse: YYYYMMDD
+            year = int(date_str[:4])
+            month = int(date_str[4:6])
+            day = int(date_str[6:8])
+            
+            # Parse time part (assume HHMM format, convert to HH:MM:SS)
+            if len(time_part) == 4:
+                hour = int(time_part[:2])
+                minute = int(time_part[2:4])
+                second = 0
+            else:
+                # Default to start of day if time format is unexpected
+                hour = 0
+                minute = 0
+                second = 0
+            
+            # Create datetime
+            dt = datetime(year, month, day, hour, minute, second, tzinfo=timezone.utc)
+            
+            logger.debug(f"Parsed timestamp from '{filename}': {dt.isoformat()}")
+            return dt
         
-        if len(date_str) != 8:
-            return None
-        
-        # Parse: YYYYMMDD
-        year = int(date_str[:4])
-        month = int(date_str[4:6])
-        day = int(date_str[6:8])
-        
-        # Parse time part (assume HHMM format, convert to HH:MM:SS)
-        if len(time_part) == 4:
-            hour = int(time_part[:2])
-            minute = int(time_part[2:4])
-            second = 0
-        else:
-            # Default to start of day if time format is unexpected
-            hour = 0
-            minute = 0
-            second = 0
-        
-        # Create datetime
-        dt = datetime(year, month, day, hour, minute, second, tzinfo=timezone.utc)
-        
-        logger.debug(f"Parsed timestamp from '{filename}': {dt.isoformat()}")
-        return dt
+        # If neither format matches, return None
+        return None
         
     except (ValueError, IndexError) as e:
         logger.warning(f"Could not parse timestamp from filename '{filename}': {e}")

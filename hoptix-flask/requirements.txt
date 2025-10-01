@@ -1,112 +1,48 @@
-# Optimized requirements for deployment (CPU-only, smaller size)
-# Core Flask dependencies
-Flask==3.0.0
-Flask-Cors==4.0.0
+# Core Flask and Web Framework
+flask==3.0.0
+flask-cors==4.0.0
 gunicorn==21.2.0
+
+# Environment and Configuration
 python-dotenv==1.0.0
 
-# Database
-supabase==2.7.4
-postgrest==0.16.11
-storage3==0.7.7
-gotrue==2.12.4
-realtime==2.20.0
-supafunc==0.5.1
-
-# AI/ML - PyTorch and nemo-toolkit installed separately in Dockerfile (CPU-only)
-torchmetrics==1.8.2
-pytorch-lightning==2.0.7
-transformers==4.33.3
-huggingface-hub==0.20.3
-sentencepiece==0.2.1
-
-# Audio processing
-librosa==0.9.2
-soundfile==0.13.1
-audioread==3.0.1
-resampy==0.4.3
-pydub==0.25.1
-pyannote-audio==3.1.1
-editdistance==0.8.1
-jiwer==4.0.0
-inflect==7.5.0
-
-# Video processing
-moviepy==1.0.3
-imageio==2.37.0
-imageio-ffmpeg==0.6.0
-
-# Google Drive API
-google-auth-oauthlib==1.2.2
-google-api-python-client==2.183.0
-google-auth==2.41.1
-google-auth-httplib2==0.2.0
-google-api-core==2.25.1
-googleapis-common-protos==1.70.0
-
-# AWS
+# AWS SDK and Cloud Services
 boto3==1.34.34
-botocore==1.34.162
-s3transfer==0.10.4
+botocore>=1.34.0
 
-# OpenAI
-openai==2.0.0
+# Database and ORM
+supabase==2.7.4
 
-# AssemblyAI
-assemblyai==0.44.3
+# OpenAI API
+openai>=1.26.0
 
-# Pinecone
-pinecone==7.3.0
-pinecone-plugin-assistant==1.8.0
-pinecone-plugin-interface==0.0.7
+# Audio and Video Processing
+librosa==0.11.0
+moviepy==1.0.3
+numpy>=1.22,<2.0
 
-# Core Python libraries
-numpy==1.23.5
-pandas==2.2.3
-scipy==1.15.3
-scikit-learn==1.6.1
-matplotlib==3.10.6
-pillow==11.3.0
+# Data Processing and Analysis
+pandas>=2.0,<2.3
+scikit-learn>=1.3,<1.7
 
-# HTTP and networking
-requests==2.32.5
-httpx==0.27.2
-aiohttp==3.12.15
-urllib3==2.5.0
-
-# Data processing
-pydantic==2.11.9
-pydantic_core==2.33.2
-PyYAML==6.0.3
+# Date and Time Utilities
 python-dateutil==2.9.0.post0
 
-# Utilities
-click==8.3.0
-tqdm==4.67.1
-rich==14.1.0
-loguru==0.7.3
-hydra-core==1.3.2
-webdataset==0.1.62
-datasets==2.14.5
-lhotse==1.19.0
+# HTTP Requests
+requests>=2.32.0
 
-# Testing (optional for deployment)
+# Development and Testing
 pytest==7.4.3
 pytest-cov==4.1.0
 
-# Build dependencies
-Cython==3.1.4
+# Production Dependencies
+psutil>=7.0.0
 
-# Other dependencies
-certifi==2025.8.3
-charset-normalizer==3.4.3
-idna==3.10
-packaging==24.2
-typing_extensions==4.15.0
-six==1.17.0
-attrs==25.3.0
-itsdangerous==2.2.0
-Jinja2==3.1.6
-MarkupSafe==3.0.3
-Werkzeug==3.1.3
-blinker==1.9.0
+# Google Drive API
+google-api-python-client>=2.181.0
+google-auth-httplib2>=0.2.0
+google-auth-oauthlib>=1.2.0
+
+# Audio processing additional dependencies for Docker
+soundfile>=0.13.0
+audioread>=3.0.0

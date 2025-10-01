@@ -224,12 +224,12 @@ class ProcessingService:
             
             logger.info(f"✅ [7/8] Created {clip_count}/{len(txs)} transaction clips")
             
-            # 8) Speaker identification summary
-            logger.info(f"🎤 [8/8] Speaker identification completed for {clip_count} clips")
-            if not self.settings.ASSEMBLYAI_API_KEY:
-                logger.info("   ℹ️ AssemblyAI API key not configured - speaker identification was skipped")
-            else:
-                logger.info("   ✅ Speaker identification was performed on all clips")
+            # # 8) Speaker identification summary
+            # logger.info(f"🎤 [8/8] Speaker identification completed for {clip_count} clips")
+            # if not self.settings.ASSEMBLYAI_API_KEY:
+            #     logger.info("   ℹ️ AssemblyAI API key not configured - speaker identification was skipped")
+            # else:
+            #     logger.info("   ✅ Speaker identification was performed on all clips")
             
             # Final success message
             duration = datetime.now() - start_time
