@@ -33,9 +33,9 @@ class Settings:
     UPSIZING_JSON: str = os.getenv("UPSIZING_JSON", "upsizing.json")
     ADDONS_JSON: str = os.getenv("ADDONS_JSON", "addons.json")
     
-    # Voice Diarization Configuration
-    ASSEMBLYAI_API_KEY: str = os.getenv("AAI_API_KEY", "")
-    PINECONE_API_KEY: str = os.getenv("PINECONE_API_KEY", "")
-    SPEAKER_SAMPLES_DIR: str = os.getenv("SPEAKER_SAMPLES_DIR", "./Cary Voice Samples")
-    DIARIZATION_THRESHOLD: float = float(os.getenv("DIARIZATION_THRESHOLD", "0.55"))
-    MIN_UTTERANCE_MS: int = int(os.getenv("MIN_UTTERANCE_MS", "5000"))
+    # Voice Diarization Configuration (COMMENTED OUT)
+    # ASSEMBLYAI_API_KEY: str = os.getenv("AAI_API_KEY", "")
+    # PINECONE_API_KEY: str = os.getenv("PINECONE_API_KEY", "")
+    # SPEAKER_SAMPLES_DIR: str = os.getenv("SPEAKER_SAMPLES_DIR", "./Cary Voice Samples")
+    # DIARIZATION_THRESHOLD: float = float(os.getenv("DIARIZATION_THRESHOLD", "0.55"))
+    # MIN_UTTERANCE_MS: int = int(os.getenv("MIN_UTTERANCE_MS", "5000"))

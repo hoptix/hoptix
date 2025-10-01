@@ -32,13 +32,13 @@ class ImportService:
         # Initialize Google Drive client
         gdrive = GoogleDriveClient()
         
-        # Find folder in personal drive
-        folder_id = gdrive.find_folder_in_personal_drive(self.FOLDER_NAME)
+        # Find folder in 'Shared with Me' section
+        folder_id = gdrive.find_folder_in_shared_with_me(self.FOLDER_NAME)
         if not folder_id:
-            raise Exception(f"Folder '{self.FOLDER_NAME}' not found in personal Google Drive")
+            raise Exception(f"Folder '{self.FOLDER_NAME}' not found in 'Shared with Me' section")
         
         # List and filter video files
-        video_files = gdrive.list_video_files_personal_drive(folder_id)
+        video_files = gdrive.list_video_files_shared_with_me(folder_id)
         video_files = self.video_service.filter_videos_by_date(video_files, run_date)
         
         if not video_files:

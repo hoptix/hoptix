@@ -20,40 +20,40 @@ def fetch_one_uploaded_video(db: Supa):
     return r.data[0] if r.data else None
 
 
-def process_clip_for_speakers(clip_path: str, settings: Settings) -> dict:
-    """
-    Process a clip for speaker identification using voice diarization.
-    
-    Args:
-        clip_path: Path to the audio/video clip
-        settings: Configuration settings
-        
-    Returns:
-        Dictionary with speaker information or empty dict if diarization fails
-    """
-    try:
-        # Only process if AssemblyAI API key is configured
-        if not settings.ASSEMBLYAI_API_KEY:
-            logger.info("AssemblyAI API key not configured - skipping speaker identification")
-            return {}
-        
-        # Create diarization service
-        diarization_service = create_voice_diarization_service(
-            assemblyai_api_key=settings.ASSEMBLYAI_API_KEY,
-            samples_dir=settings.SPEAKER_SAMPLES_DIR,
-            threshold=settings.DIARIZATION_THRESHOLD,
-            min_utterance_ms=settings.MIN_UTTERANCE_MS
-        )
-        
-        # Process clip for speakers
-        speaker_info = diarization_service.process_clip_for_speakers(clip_path)
-        
-        logger.info(f"Speaker identification completed: {speaker_info.get('speakers_detected', [])}")
-        return speaker_info
-        
-    except Exception as e:
-        logger.error(f"Failed to process clip for speakers: {e}")
-        return {}
+# def process_clip_for_speakers(clip_path: str, settings: Settings) -> dict:
+#     """
+#     Process a clip for speaker identification using voice diarization.
+#     
+#     Args:
+#         clip_path: Path to the audio/video clip
+#         settings: Configuration settings
+#         
+#     Returns:
+#         Dictionary with speaker information or empty dict if diarization fails
+#     """
+#     try:
+#         # Only process if AssemblyAI API key is configured
+#         if not settings.ASSEMBLYAI_API_KEY:
+#             logger.info("AssemblyAI API key not configured - skipping speaker identification")
+#             return {}
+#         
+#         # Create diarization service
+#         diarization_service = create_voice_diarization_service(
+#             assemblyai_api_key=settings.ASSEMBLYAI_API_KEY,
+#             samples_dir=settings.SPEAKER_SAMPLES_DIR,
+#             threshold=settings.DIARIZATION_THRESHOLD,
+#             min_utterance_ms=settings.MIN_UTTERANCE_MS
+#         )
+#         
+#         # Process clip for speakers
+#         speaker_info = diarization_service.process_clip_for_speakers(clip_path)
+#         
+#         logger.info(f"Speaker identification completed: {speaker_info.get('speakers_detected', [])}")
+#         return speaker_info
+#         
+#     except Exception as e:
+#         logger.error(f"Failed to process clip for speakers: {e}")
+#         return {}
 
 def process_one_media(db: Supa, s3, media_row: Dict):
     """Process video file (including MKV files)"""
