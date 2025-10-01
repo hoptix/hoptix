@@ -137,7 +137,7 @@ class ProcessingService:
             upsert_grades(self.db, tx_ids, grades)
             logger.info(f"✅ [6/8] Grades successfully stored in database")
 
-            # 7) Create and save transaction audio clips with speaker identification
+            # 7) Create and save transaction audio clips (speaker identification disabled)
             logger.info(f"🎵 [7/8] Creating transaction audio clips...")
             clip_count = 0
             for i, tx_row in enumerate(txs):
@@ -152,8 +152,8 @@ class ProcessingService:
                         tx_row_with_id, video_row["run_id"], video_id
                     )
                     
-                    # Process clip for speaker identification
-                    # speaker_info = {}
+                    # Process clip for speaker identification (DISABLED)
+                    speaker_info = {}  # Empty speaker info since diarization is disabled
                     # if audio_file_path:
                     #     # For speaker analysis, we'll use the original video segment
                     #     try:
@@ -206,9 +206,9 @@ class ProcessingService:
                     #         if os.path.exists(tmp_clip_path):
                     #             os.remove(tmp_clip_path)
                     
-                    # update_tx_meta_with_clip(self.db, tx_id, audio_file_path, speaker_info)
-                    # clip_count += 1
-                    # logger.info(f"✅ Created audio clip {i+1}/{len(txs)}: {audio_file_path}")
+                    update_tx_meta_with_clip(self.db, tx_id, audio_file_path, speaker_info)
+                    clip_count += 1
+                    logger.info(f"✅ Created audio clip {i+1}/{len(txs)}: {audio_file_path}")
                     
                     # # Print detailed speaker information
                     # if speaker_info and speaker_info.get('speakers_detected'):

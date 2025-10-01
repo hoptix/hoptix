@@ -438,6 +438,142 @@ class GoogleDriveClient:
             logger.error(f"Error finding folder '{folder_name}' in personal drive: {e}")
             return None
 
+    def find_folder_in_shared_with_me(self, folder_name: str) -> Optional[str]:
+        """Find a folder by name in 'Shared with Me' section"""
+        try:
+            # Search for folders with the exact name that are shared with the user
+            # Use 'user' corpora to search only in items shared with the current user
+            query = f"name='{folder_name}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
+            results = self.service.files().list(
+                q=query,
+                fields="files(id, name, owners, sharedWithMeTime)",
+                corpora='user'  # This searches only in items shared with the current user
+            ).execute()
+            
+            folders = results.get('files', [])
+            logger.info(f"Found {len(folders)} folders with name '{folder_name}' in user's accessible files")
+            
+            # Filter to only include folders that are actually shared with the user
+            # (not owned by the user)
+            shared_folders = []
+            for folder in folders:
+                # Check if the folder is shared with the user (not owned by them)
+                owners = folder.get('owners', [])
+                shared_with_me_time = folder.get('sharedWithMeTime')
+                
+                logger.info(f"Checking folder {folder['id']}: owners={len(owners)}, sharedWithMeTime={shared_with_me_time}")
+                
+                # If it has a sharedWithMeTime, it's definitely shared with the user
+                if shared_with_me_time:
+                    shared_folders.append(folder)
+                    logger.info(f"✅ Found shared folder '{folder_name}' with ID: {folder['id']} (shared on: {shared_with_me_time})")
+                # If no sharedWithMeTime but has owners, check if user is not the owner
+                elif owners:
+                    # Get current user's email to compare with owners
+                    try:
+                        about = self.service.about().get(fields='user').execute()
+                        current_user_email = about.get('user', {}).get('emailAddress', '')
+                        
+                        # Check if current user is not in the owners list
+                        owner_emails = [owner.get('emailAddress', '') for owner in owners]
+                        if current_user_email not in owner_emails:
+                            shared_folders.append(folder)
+                            logger.info(f"✅ Found shared folder '{folder_name}' with ID: {folder['id']} (not owned by current user: {current_user_email})")
+                        else:
+                            logger.info(f"❌ Folder {folder['id']} is owned by current user, skipping")
+                    except Exception as e:
+                        logger.warning(f"Could not verify ownership for folder {folder['id']}: {e}")
+                        # If we can't verify, include it as a potential shared folder
+                        shared_folders.append(folder)
+                        logger.info(f"⚠️ Including folder {folder['id']} due to ownership verification failure")
+            
+            if shared_folders:
+                folder_id = shared_folders[0]['id']
+                logger.info(f"✅ Selected folder '{folder_name}' in 'Shared with Me' with ID: {folder_id}")
+                return folder_id
+            else:
+                logger.warning(f"❌ Folder '{folder_name}' not found in 'Shared with Me'")
+                # Let's also try to list all shared folders for debugging
+                self._debug_list_shared_folders()
+                return None
+                
+        except Exception as e:
+            logger.error(f"Error finding folder '{folder_name}' in 'Shared with Me': {e}")
+            return None
+
+    def _debug_list_shared_folders(self):
+        """Debug method to list all shared folders for troubleshooting"""
+        try:
+            logger.info("🔍 Debug: Listing all shared folders...")
+            query = "mimeType='application/vnd.google-apps.folder' and trashed=false"
+            results = self.service.files().list(
+                q=query,
+                fields="files(id, name, owners, sharedWithMeTime)",
+                corpora='user',
+                pageSize=20
+            ).execute()
+            
+            folders = results.get('files', [])
+            logger.info(f"Found {len(folders)} total folders accessible to user:")
+            
+            for folder in folders:
+                owners = folder.get('owners', [])
+                shared_with_me_time = folder.get('sharedWithMeTime')
+                owner_emails = [owner.get('emailAddress', '') for owner in owners] if owners else []
+                
+                logger.info(f"  📁 {folder['name']} (ID: {folder['id']})")
+                logger.info(f"     Owners: {owner_emails}")
+                logger.info(f"     Shared with me: {shared_with_me_time}")
+                
+        except Exception as e:
+            logger.error(f"Error in debug listing: {e}")
+
+    def list_video_files_shared_with_me(self, folder_id: str) -> List[Dict]:
+        """List video files in a specific folder in 'Shared with Me'"""
+        try:
+            # Query for video files (common video MIME types)
+            video_mimes = [
+                'video/mp4',
+                'video/avi', 
+                'video/mov',
+                'video/quicktime',
+                'video/x-msvideo',
+                'video/webm',
+                'video/mkv',
+                'video/x-matroska'
+            ]
+            
+            mime_query = ' or '.join([f"mimeType='{mime}'" for mime in video_mimes])
+            query = f"('{folder_id}' in parents) and ({mime_query}) and trashed=false"
+            
+            # Handle pagination to get ALL files
+            files = []
+            page_token = None
+            
+            while True:
+                results = self.service.files().list(
+                    q=query,
+                    fields='nextPageToken,files(id,name,size,mimeType,createdTime,modifiedTime)',
+                    pageSize=1000,  # Maximum allowed
+                    pageToken=page_token,
+                    corpora='user'  # Use 'user' corpora for shared files
+                ).execute()
+                
+                page_files = results.get('files', [])
+                files.extend(page_files)
+                logger.info(f"Retrieved {len(page_files)} files in this page (total so far: {len(files)})")
+                
+                page_token = results.get('nextPageToken')
+                if not page_token:
+                    break
+            
+            logger.info(f"Found {len(files)} total video files in folder")
+            return files
+            
+        except Exception as e:
+            logger.error(f"Error listing video files in 'Shared with Me': {e}")
+            return []
+
     def list_video_files_personal_drive(self, folder_id: str) -> List[Dict]:
         """List video files in a specific folder in personal Google Drive"""
         try:

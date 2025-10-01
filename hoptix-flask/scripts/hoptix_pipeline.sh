@@ -189,7 +189,7 @@ logging.basicConfig(
 from integrations.db_supabase import Supa
 from integrations.s3_client import get_s3
 from config import Settings
-from worker.pipeline import claim_video, mark_status, process_one_media
+from worker.pipeline import claim_video, mark_status
 from services.processing_service import ProcessingService
 from integrations.gdrive_client import GoogleDriveClient
 import tempfile
