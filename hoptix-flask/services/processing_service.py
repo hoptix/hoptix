@@ -88,7 +88,7 @@ class ProcessingService:
         from datetime import datetime
         from dateutil import parser as dateparse
         from worker.clipper import cut_clip_for_transaction, update_tx_meta_with_clip
-        from services.voice_diarization import create_voice_diarization_service
+        # from services.voice_diarization import create_voice_diarization_service
         
         video_id = video_row["id"]
         file_name = video_row.get("meta", {}).get("gdrive_file_name", "Unknown")
@@ -137,8 +137,8 @@ class ProcessingService:
             upsert_grades(self.db, tx_ids, grades)
             logger.info(f"✅ [6/8] Grades successfully stored in database")
 
-            # 7) Create and upload transaction clips with speaker identification
-            logger.info(f"🎬 [7/8] Creating transaction clips...")
+            # 7) Create and save transaction audio clips with speaker identification
+            logger.info(f"🎵 [7/8] Creating transaction audio clips...")
             clip_count = 0
             for i, tx_row in enumerate(txs):
                 try:
@@ -147,82 +147,82 @@ class ProcessingService:
                     tx_row_with_id = tx_row.copy()
                     tx_row_with_id['id'] = tx_id
                     
-                    gdrive_file_id = cut_clip_for_transaction(
+                    audio_file_path = cut_clip_for_transaction(
                         self.db, local_video_path, video_row["started_at"], video_row["ended_at"],
                         tx_row_with_id, video_row["run_id"], video_id
                     )
                     
                     # Process clip for speaker identification
-                    speaker_info = {}
-                    if gdrive_file_id:
-                        # For speaker analysis, we'll use the original video segment
-                        try:
-                            # Create a temporary clip for speaker analysis
-                            with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as tmp_clip:
-                                tmp_clip_path = tmp_clip.name
+                    # speaker_info = {}
+                    # if audio_file_path:
+                    #     # For speaker analysis, we'll use the original video segment
+                    #     try:
+                    #         # Create a temporary clip for speaker analysis
+                    #         with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as tmp_clip:
+                    #             tmp_clip_path = tmp_clip.name
                             
-                            # Calculate timing offsets for this transaction
-                            t0 = dateparse.isoparse(tx_row["started_at"])
-                            t1 = dateparse.isoparse(tx_row["ended_at"])
-                            video_start = dateparse.isoparse(video_row["started_at"])
+                    #         # Calculate timing offsets for this transaction
+                    #         t0 = dateparse.isoparse(tx_row["started_at"])
+                    #         t1 = dateparse.isoparse(tx_row["ended_at"])
+                    #         video_start = dateparse.isoparse(video_row["started_at"])
                             
-                            # Calculate seconds from start of video file
-                            start_offset = (t0 - video_start).total_seconds()
-                            end_offset = (t1 - video_start).total_seconds()
+                    #         # Calculate seconds from start of video file
+                    #         start_offset = (t0 - video_start).total_seconds()
+                    #         end_offset = (t1 - video_start).total_seconds()
                             
-                            # Ensure positive offsets
-                            start_offset = max(0, start_offset)
-                            end_offset = max(start_offset + 1.0, end_offset)
+                    #         # Ensure positive offsets
+                    #         start_offset = max(0, start_offset)
+                    #         end_offset = max(start_offset + 1.0, end_offset)
                             
-                            # Use FFmpeg to extract the segment for speaker analysis
-                            duration = end_offset - start_offset
-                            cmd = [
-                                "ffmpeg", "-y",
-                                "-ss", f"{start_offset:.3f}",
-                                "-i", local_video_path,
-                                "-t", f"{duration:.3f}",
-                                "-c", "copy",
-                                tmp_clip_path
-                            ]
-                            subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                    #         # Use FFmpeg to extract the segment for speaker analysis
+                    #         duration = end_offset - start_offset
+                    #         cmd = [
+                    #             "ffmpeg", "-y",
+                    #             "-ss", f"{start_offset:.3f}",
+                    #             "-i", local_video_path,
+                    #             "-t", f"{duration:.3f}",
+                    #             "-c", "copy",
+                    #             tmp_clip_path
+                    #         ]
+                    #         subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                             
-                            # Process for speaker identification
-                            if self.settings.ASSEMBLYAI_API_KEY:
-                                logger.info(f"🎤 [8/8] Starting speaker identification for clip {i+1}/{len(txs)}...")
-                                diarization_service = create_voice_diarization_service(
-                                    assemblyai_api_key=self.settings.ASSEMBLYAI_API_KEY,
-                                    samples_dir=self.settings.SPEAKER_SAMPLES_DIR,
-                                    threshold=self.settings.DIARIZATION_THRESHOLD,
-                                    min_utterance_ms=self.settings.MIN_UTTERANCE_MS
-                                )
-                                speaker_info = diarization_service.process_clip_for_speakers(tmp_clip_path)
-                                logger.info(f"✅ Speaker identification completed: {speaker_info.get('speakers_detected', [])}")
-                            else:
-                                logger.info("ℹ️ AssemblyAI API key not configured - skipping speaker identification")
+                    #         # Process for speaker identification
+                    #         # if self.settings.ASSEMBLYAI_API_KEY:
+                    #         #     logger.info(f"🎤 [8/8] Starting speaker identification for clip {i+1}/{len(txs)}...")
+                    #         #     diarization_service = create_voice_diarization_service(
+                    #         #         assemblyai_api_key=self.settings.ASSEMBLYAI_API_KEY,
+                    #         #         samples_dir=self.settings.SPEAKER_SAMPLES_DIR,
+                    #         #         threshold=self.settings.DIARIZATION_THRESHOLD,
+                    #         #         min_utterance_ms=self.settings.MIN_UTTERANCE_MS
+                    #         #     )
+                    #         #     speaker_info = diarization_service.process_clip_for_speakers(tmp_clip_path)
+                    #         #     logger.info(f"✅ Speaker identification completed: {speaker_info.get('speakers_detected', [])}")
+                    #         # else:
+                    #         #     logger.info("ℹ️ AssemblyAI API key not configured - skipping speaker identification")
                             
-                        except Exception as e:
-                            logger.warning(f"Failed to analyze clip for speakers: {e}")
-                        finally:
-                            if os.path.exists(tmp_clip_path):
-                                os.remove(tmp_clip_path)
+                    #     except Exception as e:
+                    #         logger.warning(f"Failed to analyze clip for speakers: {e}")
+                    #     finally:
+                    #         if os.path.exists(tmp_clip_path):
+                    #             os.remove(tmp_clip_path)
                     
-                    update_tx_meta_with_clip(self.db, tx_id, gdrive_file_id, speaker_info)
-                    clip_count += 1
-                    logger.info(f"✅ Created clip {i+1}/{len(txs)}: Google Drive ID {gdrive_file_id}")
+                    # update_tx_meta_with_clip(self.db, tx_id, audio_file_path, speaker_info)
+                    # clip_count += 1
+                    # logger.info(f"✅ Created audio clip {i+1}/{len(txs)}: {audio_file_path}")
                     
-                    # Print detailed speaker information
-                    if speaker_info and speaker_info.get('speakers_detected'):
-                        speakers = speaker_info['speakers_detected']
-                        logger.info(f"   🎤 SPEAKERS IDENTIFIED: {speakers}")
-                        if isinstance(speakers, list) and len(speakers) > 0:
-                            for speaker in speakers:
-                                logger.info(f"      👤 Speaker: {speaker}")
-                    else:
-                        logger.info(f"   🎤 No speakers identified in this clip")
+                    # # Print detailed speaker information
+                    # if speaker_info and speaker_info.get('speakers_detected'):
+                    #     speakers = speaker_info['speakers_detected']
+                    #     logger.info(f"   🎤 SPEAKERS IDENTIFIED: {speakers}")
+                    #     if isinstance(speakers, list) and len(speakers) > 0:
+                    #         for speaker in speakers:
+                    #             logger.info(f"      👤 Speaker: {speaker}")
+                    # else:
+                    #     logger.info(f"   🎤 No speakers identified in this clip")
                 except Exception as e:
                     logger.error(f"❌ Failed to create clip for transaction {tx_row.get('id', 'unknown')}: {e}")
             
-            logger.info(f"✅ [7/8] Created {clip_count}/{len(txs)} transaction clips")
+            logger.info(f"✅ [7/8] Created {clip_count}/{len(txs)} transaction audio clips")
             
             # # 8) Speaker identification summary
             # logger.info(f"🎤 [8/8] Speaker identification completed for {clip_count} clips")
