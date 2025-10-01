@@ -207,5 +207,3 @@ wget==3.2
 widgetsnbextension==4.0.14
 wrapt==1.17.3
 yarl==1.20.1
-Cython==3.1.4
-youtokentome==1.0.6
