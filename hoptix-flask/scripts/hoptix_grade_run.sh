@@ -17,7 +17,7 @@ fi
 RUN_ID=$1
 
 echo "🔄 Run ID: $RUN_ID"
-echo "👥 Workers: 1"
+echo "👥 Workers: 11"
 
 cd "$(dirname "$0")/.."
 
@@ -30,6 +30,14 @@ from services.processing_service import ProcessingService
 from worker.adapter import grade_transactions
 from worker.pipeline import upsert_grades
 from dotenv import load_dotenv
+from concurrent.futures import ProcessPoolExecutor, as_completed
+
+def _grade_chunk(tx_chunk, location_id):
+    """Top-level function to grade a chunk in a separate process."""
+    # Create independent DB client in each process
+    s_local = Settings()
+    db_local = Supa(s_local.SUPABASE_URL, s_local.SUPABASE_SERVICE_KEY)
+    return grade_transactions(tx_chunk, db_local, location_id)
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO, format='[Grader] %(levelname)s: %(message)s', stream=sys.stdout, force=True)
@@ -56,7 +64,27 @@ except Exception:
     pass
 
 print(f"📊 Found {len(tx_rows)} transactions. Starting grading (location={location_id})...")
-grades = grade_transactions(tx_rows, db, location_id)
+workers = 11
+if len(tx_rows) < workers:
+    workers = len(tx_rows)
+
+# Split into contiguous chunks for parallel processing
+def _make_chunks(lst, n):
+    if n <= 0:
+        return [lst]
+    size = (len(lst) + n - 1) // n
+    return [lst[i*size:(i+1)*size] for i in range(n) if lst[i*size:(i+1)*size]]
+
+chunks = _make_chunks(tx_rows, workers)
+grades = []
+if chunks:
+    with ProcessPoolExecutor(max_workers=workers) as executor:
+        futures = [executor.submit(_grade_chunk, ch, location_id) for ch in chunks]
+        for fut in futures:
+            res = fut.result()
+            if res:
+                grades.extend(res)
+
 tx_ids = [r['id'] for r in tx_rows]
 graded_count = 0
 if tx_ids and grades:
