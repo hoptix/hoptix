@@ -76,20 +76,41 @@ def _make_chunks(lst, n):
     return [lst[i*size:(i+1)*size] for i in range(n) if lst[i*size:(i+1)*size]]
 
 chunks = _make_chunks(tx_rows, workers)
-grades = []
+tx_ids = [r['id'] for r in tx_rows]
+chunk_ids = _make_chunks(tx_ids, workers)
+
+# Incrementally upsert every 30 grades as they complete
+graded_count = 0
+buffer_grades = []
+buffer_ids = []
+
 if chunks:
     with ProcessPoolExecutor(max_workers=workers) as executor:
-        futures = [executor.submit(_grade_chunk, ch, location_id) for ch in chunks]
-        for fut in futures:
-            res = fut.result()
-            if res:
-                grades.extend(res)
+        future_to_ids = {}
+        for ch, ch_ids in zip(chunks, chunk_ids):
+            fut = executor.submit(_grade_chunk, ch, location_id)
+            future_to_ids[fut] = ch_ids
 
-tx_ids = [r['id'] for r in tx_rows]
-graded_count = 0
-if tx_ids and grades:
-    upsert_grades(db, tx_ids, grades)
-    graded_count = len(tx_ids)
+        for fut in as_completed(list(future_to_ids.keys())):
+            res = fut.result() or []
+            ch_ids = future_to_ids[fut]
+            for g, tx_id in zip(res, ch_ids):
+                buffer_grades.append(g)
+                buffer_ids.append(tx_id)
+                if len(buffer_grades) >= 30:
+                    upsert_grades(db, buffer_ids, buffer_grades)
+                    graded_count += len(buffer_grades)
+                    print(f"🚀 Upserted batch of {len(buffer_grades)} (total {graded_count})")
+                    buffer_grades.clear()
+                    buffer_ids.clear()
+
+# Flush any remaining grades
+if buffer_grades and buffer_ids:
+    upsert_grades(db, buffer_ids, buffer_grades)
+    graded_count += len(buffer_grades)
+    print(f"🚀 Upserted final batch of {len(buffer_grades)} (total {graded_count})")
+
+if graded_count > 0:
     print(f"✅ Graded and upserted {graded_count} transactions")
 else:
     print("ℹ️ No grades generated")
