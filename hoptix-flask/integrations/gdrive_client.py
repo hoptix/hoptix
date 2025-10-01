@@ -9,14 +9,17 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 logger = logging.getLogger(__name__)
 
-# If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/drive.readonly', 'https://www.googleapis.com/auth/drive.file']
 
 class GoogleDriveClient:
-    """Client for accessing Google Drive shared drives"""
+    """Client for accessing Google Drive (both shared drives and personal drive)"""
     
     def __init__(self, credentials_path: str = 'credentials.json', token_path: str = 'token.json'):
         self.credentials_path = credentials_path
@@ -27,6 +30,10 @@ class GoogleDriveClient:
     def _authenticate(self):
         """Authenticate with Google Drive API"""
         creds = None
+        
+        # Check if token file exists and warn about scope changes
+        if os.path.exists(self.token_path):
+            logger.warning(f"Token file {self.token_path} exists. If you're getting scope errors, delete this file to re-authenticate with new scopes.")
         
         # Try to get credentials from environment variables first (for production)
         google_creds_json = os.getenv('GOOGLE_DRIVE_CREDENTIALS')
@@ -41,8 +48,13 @@ class GoogleDriveClient:
         
         # Fallback to file-based authentication (for development)
         elif os.path.exists(self.token_path):
-            creds = Credentials.from_authorized_user_file(self.token_path, SCOPES)
-            logger.info("Using Google Drive credentials from token file")
+            try:
+                creds = Credentials.from_authorized_user_file(self.token_path, SCOPES)
+                logger.info("Using Google Drive credentials from token file")
+            except Exception as e:
+                logger.error(f"Error loading credentials from token file: {e}")
+                logger.info("This might be due to scope changes. Please delete the token file and re-authenticate.")
+                raise
         
         # Refresh credentials if needed
         if creds and creds.expired and creds.refresh_token:
@@ -130,7 +142,8 @@ class GoogleDriveClient:
                 'video/quicktime',
                 'video/x-msvideo',
                 'video/webm',
-                'video/mkv'
+                'video/mkv',
+                'video/x-matroska'
             ]
             
             mime_query = ' or '.join([f"mimeType='{mime}'" for mime in video_mimes])
@@ -283,41 +296,6 @@ class GoogleDriveClient:
             logger.error(f"Error getting file info: {e}")
             return None
 
-def parse_timestamp_from_filename(filename: str) -> Optional[datetime]:
-    """
-    Parse timestamp from DQ video filename format: DT_File20250817120001000.avi
-    Format: DT_FileYYYYMMDDHHMMSSsss where sss is milliseconds
-    """
-    try:
-        if not filename.startswith('DT_File'):
-            return None
-            
-        # Extract timestamp part: 20250817120001000
-        timestamp_part = filename[7:24]  # Skip 'DT_File' prefix
-        
-        if len(timestamp_part) != 17:
-            return None
-        
-        # Parse: YYYYMMDDHHMMSS + milliseconds
-        year = int(timestamp_part[:4])
-        month = int(timestamp_part[4:6])
-        day = int(timestamp_part[6:8])
-        hour = int(timestamp_part[8:10])
-        minute = int(timestamp_part[10:12])
-        second = int(timestamp_part[12:14])
-        millisecond = int(timestamp_part[14:17])
-        
-        # Create datetime with microseconds (millisecond * 1000)
-        dt = datetime(year, month, day, hour, minute, second, 
-                     millisecond * 1000, timezone.utc)
-        
-        logger.debug(f"Parsed timestamp from '{filename}': {dt.isoformat()}")
-        return dt
-        
-    except (ValueError, IndexError) as e:
-        logger.warning(f"Could not parse timestamp from filename '{filename}': {e}")
-        return None
-
     def upload_file(self, local_path: str, folder_name: str, filename: str = None) -> Optional[str]:
         """
         Upload a file to Google Drive in the specified folder.
@@ -332,11 +310,14 @@ def parse_timestamp_from_filename(filename: str) -> Optional[datetime]:
             if not filename:
                 filename = os.path.basename(local_path)
             
-            # Find the folder by name
+            # Find the folder by name, create if it doesn't exist
             folder_id = self._find_folder_by_name(folder_name)
             if not folder_id:
-                logger.error(f"Folder '{folder_name}' not found")
-                return None
+                logger.info(f"Folder '{folder_name}' not found, creating it...")
+                folder_id = self._create_folder(folder_name)
+                if not folder_id:
+                    logger.error(f"Failed to create folder '{folder_name}'")
+                    return None
             
             # Check if file already exists
             existing_file_id = self._find_file_in_folder(filename, folder_id)
@@ -394,6 +375,27 @@ def parse_timestamp_from_filename(filename: str) -> Optional[datetime]:
             logger.error(f"Error finding folder '{folder_name}': {e}")
             return None
 
+    def _create_folder(self, folder_name: str) -> Optional[str]:
+        """Create a folder in the shared drive"""
+        try:
+            folder_metadata = {
+                'name': folder_name,
+                'mimeType': 'application/vnd.google-apps.folder'
+            }
+            
+            folder = self.service.files().create(
+                body=folder_metadata,
+                fields='id',
+                supportsAllDrives=True
+            ).execute()
+            
+            logger.info(f"✅ Created folder '{folder_name}' with ID: {folder.get('id')}")
+            return folder.get('id')
+            
+        except Exception as e:
+            logger.error(f"Error creating folder '{folder_name}': {e}")
+            return None
+
     def _find_file_in_folder(self, filename: str, folder_id: str) -> Optional[str]:
         """Find a file by name in a specific folder"""
         try:
@@ -413,3 +415,132 @@ def parse_timestamp_from_filename(filename: str) -> Optional[datetime]:
         except Exception as e:
             logger.error(f"Error finding file '{filename}' in folder: {e}")
             return None
+
+    def find_folder_in_personal_drive(self, folder_name: str) -> Optional[str]:
+        """Find a folder by name in personal Google Drive (not shared drive)"""
+        try:
+            query = f"name='{folder_name}' and mimeType='application/vnd.google-apps.folder' and trashed=false"
+            results = self.service.files().list(
+                q=query,
+                fields="files(id, name)"
+            ).execute()
+            
+            folders = results.get('files', [])
+            if folders:
+                folder_id = folders[0]['id']
+                logger.info(f"Found folder '{folder_name}' in personal drive with ID: {folder_id}")
+                return folder_id
+            else:
+                logger.warning(f"Folder '{folder_name}' not found in personal drive")
+                return None
+                
+        except Exception as e:
+            logger.error(f"Error finding folder '{folder_name}' in personal drive: {e}")
+            return None
+
+    def list_video_files_personal_drive(self, folder_id: str) -> List[Dict]:
+        """List video files in a specific folder in personal Google Drive"""
+        try:
+            # Query for video files (common video MIME types)
+            video_mimes = [
+                'video/mp4',
+                'video/avi', 
+                'video/mov',
+                'video/quicktime',
+                'video/x-msvideo',
+                'video/webm',
+                'video/mkv',
+                'video/x-matroska'
+            ]
+            
+            mime_query = ' or '.join([f"mimeType='{mime}'" for mime in video_mimes])
+            query = f"('{folder_id}' in parents) and ({mime_query}) and trashed=false"
+            
+            # Handle pagination to get ALL files
+            files = []
+            page_token = None
+            
+            while True:
+                results = self.service.files().list(
+                    q=query,
+                    fields='nextPageToken,files(id,name,size,mimeType,createdTime,modifiedTime)',
+                    pageSize=1000,  # Maximum allowed
+                    pageToken=page_token
+                ).execute()
+                
+                page_files = results.get('files', [])
+                files.extend(page_files)
+                logger.info(f"Retrieved {len(page_files)} files in this page (total so far: {len(files)})")
+                
+                page_token = results.get('nextPageToken')
+                if not page_token:
+                    break
+            
+            logger.info(f"Found {len(files)} total video files in folder")
+            return files
+            
+        except Exception as e:
+            logger.error(f"Error listing video files in personal drive: {e}")
+            return []
+
+
+def parse_timestamp_from_filename(filename: str) -> Optional[datetime]:
+    """
+    Parse timestamp from DQ video filename format: DQ Cary_YYYYMMDD-YYYYMMDD_1000.mkv
+    Format: DQ Cary_YYYYMMDD-YYYYMMDD_1000.mkv
+    """
+    try:
+        if not filename.startswith('DQ Cary_'):
+            return None
+            
+        # Extract the date part: DQ Cary_20250925-20250925_1000.mkv -> 20250925-20250925
+        # Remove the prefix and suffix to get the date range
+        date_part = filename[8:]  # Skip 'DQ Cary_' prefix
+        if not date_part.endswith('.mkv'):
+            return None
+            
+        # Remove .mkv extension
+        date_part = date_part[:-4]
+        
+        # Split by underscore to get date and time parts
+        parts = date_part.split('_')
+        if len(parts) != 2:
+            return None
+            
+        date_range = parts[0]  # 20250925-20250925
+        time_part = parts[1]   # 1000
+        
+        # Parse the date range (use the first date)
+        if '-' not in date_range:
+            return None
+            
+        date_str = date_range.split('-')[0]  # 20250925
+        
+        if len(date_str) != 8:
+            return None
+        
+        # Parse: YYYYMMDD
+        year = int(date_str[:4])
+        month = int(date_str[4:6])
+        day = int(date_str[6:8])
+        
+        # Parse time part (assume HHMM format, convert to HH:MM:SS)
+        if len(time_part) == 4:
+            hour = int(time_part[:2])
+            minute = int(time_part[2:4])
+            second = 0
+        else:
+            # Default to start of day if time format is unexpected
+            hour = 0
+            minute = 0
+            second = 0
+        
+        # Create datetime
+        dt = datetime(year, month, day, hour, minute, second, tzinfo=timezone.utc)
+        
+        logger.debug(f"Parsed timestamp from '{filename}': {dt.isoformat()}")
+        return dt
+        
+    except (ValueError, IndexError) as e:
+        logger.warning(f"Could not parse timestamp from filename '{filename}': {e}")
+        return None

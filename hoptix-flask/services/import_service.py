@@ -21,8 +21,7 @@ class ImportService:
         self.video_service = VideoService()
         
         # Configuration for Google Drive
-        self.SHARED_DRIVE_NAME = "Hoptix Video Server"
-        self.FOLDER_NAME = folder_name
+        self.FOLDER_NAME = "DQ Cary"
         self.S3_PREFIX = os.getenv("S3_PREFIX", f"gdrive/{folder_name}")
         self.DEFAULT_DURATION_SEC = int(os.getenv("GDRIVE_VIDEO_DURATION_SEC", "3600"))  # 1 hour default
     
@@ -33,18 +32,13 @@ class ImportService:
         # Initialize Google Drive client
         gdrive = GoogleDriveClient()
         
-        # Find shared drive
-        drive_id = gdrive.find_shared_drive(self.SHARED_DRIVE_NAME)
-        if not drive_id:
-            raise Exception(f"Shared drive '{self.SHARED_DRIVE_NAME}' not found")
-        
-        # Find folder
-        folder_id = gdrive.find_folder_in_drive(drive_id, self.FOLDER_NAME)
+        # Find folder in personal drive
+        folder_id = gdrive.find_folder_in_personal_drive(self.FOLDER_NAME)
         if not folder_id:
-            raise Exception(f"Folder '{self.FOLDER_NAME}' not found")
+            raise Exception(f"Folder '{self.FOLDER_NAME}' not found in personal Google Drive")
         
         # List and filter video files
-        video_files = gdrive.list_video_files(folder_id, drive_id)
+        video_files = gdrive.list_video_files_personal_drive(folder_id)
         video_files = self.video_service.filter_videos_by_date(video_files, run_date)
         
         if not video_files:
@@ -73,10 +67,14 @@ class ImportService:
             ended_at = started_at + timedelta(seconds=self.DEFAULT_DURATION_SEC)
             
             # Generate a placeholder S3 key (not actually used for storage)
+            # Preserve the original file extension for proper processing
             file_basename = os.path.splitext(file_info['name'])[0]
-            s3_key = f"{self.S3_PREFIX}/{file_basename}.mp4"
+            original_ext = os.path.splitext(file_info['name'])[1] or '.mp4'
+            s3_key = f"{self.S3_PREFIX}/{file_basename}{original_ext}"
             
             logger.info(f"Processing video directly from Google Drive: {file_info['name']}")
+            logger.info(f"📎 Original file extension: {original_ext}")
+            logger.info(f"🗂️ Generated S3 key: {s3_key}")
             
             # Import to database
             video_data = {
@@ -106,9 +104,28 @@ class ImportService:
                 logger.info(f"Video already exists with ID {existing_video_id}: {file_info['name']}")
             else:
                 # Insert new video
-                self.db.client.table("videos").upsert(video_data, on_conflict="id").execute()
-                imported_video_ids.append(video_id)
-                logger.info(f"Imported new video {video_id}: {file_info['name']}")
+                try:
+                    self.db.client.table("videos").upsert(video_data, on_conflict="id").execute()
+                    imported_video_ids.append(video_id)
+                    logger.info(f"✅ Successfully imported new video {video_id}: {file_info['name']}")
+                    
+                    # Verify the video was inserted with correct status
+                    verify_result = self.db.client.table("videos").select("id, status").eq("id", video_id).execute()
+                    if verify_result.data:
+                        actual_status = verify_result.data[0]["status"]
+                        logger.info(f"🔍 Verified video {video_id} status: {actual_status}")
+                    else:
+                        logger.error(f"❌ Could not verify video {video_id} was inserted")
+                        
+                except Exception as e:
+                    logger.error(f"❌ Failed to import video {video_id}: {e}")
+                    # Try to insert with failed status
+                    video_data["status"] = "failed"
+                    try:
+                        self.db.client.table("videos").upsert(video_data, on_conflict="id").execute()
+                        logger.info(f"📝 Marked video {video_id} as failed due to import error")
+                    except Exception as e2:
+                        logger.error(f"❌ Could not even mark video as failed: {e2}")
         
         logger.info(f"Successfully imported {len(imported_video_ids)} videos from Google Drive")
         return imported_video_ids
