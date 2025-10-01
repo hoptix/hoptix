@@ -1,10 +1,11 @@
-import os, time, tempfile, json, datetime as dt, logging, shutil
+import os, time, tempfile, json, datetime as dt, logging, shutil, subprocess
 from typing import List, Dict, Tuple
 from dateutil import parser as dateparse
 from integrations.db_supabase import Supa
 from integrations.s3_client import get_s3, download_to_file, put_jsonl
-from worker.adapter import transcribe_video, transcribe_audio, split_into_transactions, grade_transactions
-from worker.clipper import cut_clip_for_transaction, cut_audio_clip_for_transaction, update_tx_meta_with_clip
+from worker.adapter import transcribe_video, split_into_transactions, grade_transactions
+from worker.clipper import cut_clip_for_transaction, update_tx_meta_with_clip
+from services.voice_diarization import create_voice_diarization_service
 
 # Configure logging for pipeline
 logger = logging.getLogger(__name__)
@@ -18,22 +19,47 @@ def fetch_one_uploaded_video(db: Supa):
     ).eq("status","uploaded").limit(1).execute()
     return r.data[0] if r.data else None
 
-def is_audio_file(s3_key: str) -> bool:
-    """Determine if a file is audio based on its extension"""
-    audio_extensions = {'.mp3', '.wav', '.m4a', '.aac', '.flac', '.ogg', '.wma', '.mkv'}
-    file_ext = os.path.splitext(s3_key.lower())[1]
-    return file_ext in audio_extensions
+
+def process_clip_for_speakers(clip_path: str, settings: Settings) -> dict:
+    """
+    Process a clip for speaker identification using voice diarization.
+    
+    Args:
+        clip_path: Path to the audio/video clip
+        settings: Configuration settings
+        
+    Returns:
+        Dictionary with speaker information or empty dict if diarization fails
+    """
+    try:
+        # Only process if AssemblyAI API key is configured
+        if not settings.ASSEMBLYAI_API_KEY:
+            logger.info("AssemblyAI API key not configured - skipping speaker identification")
+            return {}
+        
+        # Create diarization service
+        diarization_service = create_voice_diarization_service(
+            assemblyai_api_key=settings.ASSEMBLYAI_API_KEY,
+            samples_dir=settings.SPEAKER_SAMPLES_DIR,
+            threshold=settings.DIARIZATION_THRESHOLD,
+            min_utterance_ms=settings.MIN_UTTERANCE_MS
+        )
+        
+        # Process clip for speakers
+        speaker_info = diarization_service.process_clip_for_speakers(clip_path)
+        
+        logger.info(f"Speaker identification completed: {speaker_info.get('speakers_detected', [])}")
+        return speaker_info
+        
+    except Exception as e:
+        logger.error(f"Failed to process clip for speakers: {e}")
+        return {}
 
 def process_one_media(db: Supa, s3, media_row: Dict):
-    """Process either video or audio file based on file type"""
+    """Process video file (including MKV files)"""
     s3_key = media_row["s3_key"]
-    
-    if is_audio_file(s3_key):
-        logger.info(f"🎵 Detected audio file: {s3_key}")
-        return process_one_audio(db, s3, media_row)
-    else:
-        logger.info(f"🎬 Detected video file: {s3_key}")
-        return process_one_video(db, s3, media_row)
+    logger.info(f"🎬 Processing video file: {s3_key}")
+    return process_one_video(db, s3, media_row)
 
 def claim_video(db: Supa, video_id: str) -> bool:
     r = db.client.table("videos").update({"status":"processing"}) \
@@ -103,59 +129,56 @@ def upsert_grades(db: Supa, tx_ids: List[str], grades: List[Dict]):
         d = g.get("details", {}) or {}
         grads.append({
             "transaction_id": tx_id,
-
-            # compatibility booleans + score
-            "upsell_possible": g.get("upsell_possible"),
-            "upsell_offered":  g.get("upsell_offered"),
-            "upsize_possible": g.get("upsize_possible"),
-            "upsize_offered":  g.get("upsize_offered"),
-            "score":           g.get("score"),
-
-            # FULL column set from your request
+            "transcript": g.get("transcript", ""),
+            "details": d,
+            
+            # Basic item counts
             "items_initial": d.get("items_initial"),
             "num_items_initial": d.get("num_items_initial"),
-            "num_upsell_opportunities": d.get("num_upsell_opportunities"),
-            "items_upsellable": d.get("items_upsellable"),
-            "items_upselling_creators": d.get("items_upselling_creators"),
-            "num_upsell_offers": d.get("num_upsell_offers"),
-            "items_upsold": d.get("items_upsold"),
-            "items_upsold_creators": d.get("items_upsold_creators"),
-            "num_upsell_success": d.get("num_upsell_success"),
-            "num_largest_offers": d.get("num_largest_offers"),
-            "num_upsize_opportunities": d.get("num_upsize_opportunities"),
-            "items_upsizeable": d.get("items_upsizeable"),
-            "items_upsizing_creators": d.get("items_upsizing_creators"),
-            "num_upsize_offers": d.get("num_upsize_offers"),
-            "num_upsize_success": d.get("num_upsize_success"),
-            "items_upsize_success": d.get("items_upsize_success"),
-            "items_upsize_creators": d.get("items_upsize_creators"),
-            "num_addon_opportunities": d.get("num_addon_opportunities"),
-            "items_addonable": d.get("items_addonable"),
-            "items_addon_creators": d.get("items_addon_creators"),
-            "num_addon_offers": d.get("num_addon_offers"),
-            "num_addon_success": d.get("num_addon_success"),
-            "items_addon_success": d.get("items_addon_success"),
-            "items_addon_final_creators": d.get("items_addon_final_creators"),
             "items_after": d.get("items_after"),
             "num_items_after": d.get("num_items_after"),
+            
+            # Upsell fields
+            "num_upsell_opportunities": d.get("num_upsell_opportunities"),
+            "num_upsell_offers": d.get("num_upsell_offers"),
+            "num_upsell_success": d.get("num_upsell_success"),
+            "num_largest_offers": d.get("num_largest_offers"),
+            "upsell_offered_items": d.get("upsell_offered_items"),
+            "upsell_candidate_items": d.get("upsell_candidate_items"),
+            "upsell_base_items": d.get("upsell_base_items"),
+            "upsell_success_items": d.get("upsell_success_items"),
+            
+            # Upsize fields
+            "num_upsize_opportunities": d.get("num_upsize_opportunities"),
+            "num_upsize_offers": d.get("num_upsize_offers"),
+            "num_upsize_success": d.get("num_upsize_success"),
+            "upsize_offered_items": d.get("upsize_offered_items"),
+            "upsize_candidate_items": d.get("upsize_candidate_items"),
+            "upsize_base_items": d.get("upsize_base_items"),
+            "upsize_success_items": d.get("upsize_success_items"),
+            
+            # Addon fields
+            "num_addon_opportunities": d.get("num_addon_opportunities"),
+            "num_addon_offers": d.get("num_addon_offers"),
+            "num_addon_success": d.get("num_addon_success"),
+            "addon_offered_items": d.get("addon_offered_items"),
+            "addon_candidate_items": d.get("addon_candidate_items"),
+            "addon_base_items": d.get("addon_base_items"),
+            "addon_success_items": d.get("addon_success_items"),
+            
+            # Meta fields
             "feedback": d.get("feedback"),
             "issues": d.get("issues"),
-
             "complete_order": d.get("complete_order"),
             "mobile_order": d.get("mobile_order"),
             "coupon_used": d.get("coupon_used"),
             "asked_more_time": d.get("asked_more_time"),
             "out_of_stock_items": d.get("out_of_stock_items"),
-            "gpt_price": g.get("gpt_price", 0),  # Get from grade object, not details
+            "gpt_price": g.get("gpt_price", 0),
             "reasoning_summary": d.get("reasoning_summary"),
             "video_file_path": d.get("video_file_path"),
             "video_link": d.get("video_link"),
-            
-            # New fields for updated table
-            "transcript": g.get("transcript", ""),  # Raw transcript
-
-            # always keep a full blob too
-            "details": d
+            "score": g.get("score")
         })
     
     if grads:
@@ -227,26 +250,73 @@ def process_one_video(db: Supa, s3, video_row: Dict):
         upsert_grades(db, tx_ids, grades)
         logger.info(f"✅ Grades successfully stored in database")
 
-        # 6) Create and upload transaction clips
-        logger.info(f"🎬 [7/7] Creating transaction clips...")
+        # 6) Create and upload transaction clips with speaker identification
+        logger.info(f"🎬 [7/8] Creating transaction clips...")
         clip_count = 0
         for i, tx_row in enumerate(txs):
             try:
                 tx_id = tx_ids[i]
-                clip_url, gdrive_file_id = cut_clip_for_transaction(
-                    db, s3, settings.DERIV_BUCKET, settings.AWS_REGION,
-                    local_path, video_row["started_at"], video_row["ended_at"],
-                    tx_row, video_row["run_id"], video_id
+                # Add the transaction ID to the row for the clipper function
+                tx_row_with_id = tx_row.copy()
+                tx_row_with_id['id'] = tx_id
+                
+                gdrive_file_id = cut_clip_for_transaction(
+                    db, local_path, video_row["started_at"], video_row["ended_at"],
+                    tx_row_with_id, video_row["run_id"], video_id
                 )
-                update_tx_meta_with_clip(db, tx_id, clip_url, gdrive_file_id)
-                clip_count += 1
-                logger.info(f"✅ Created clip {i+1}/{len(txs)}: {clip_url}")
+                
+                # Process clip for speaker identification
+                speaker_info = {}
                 if gdrive_file_id:
-                    logger.info(f"   📁 Google Drive ID: {gdrive_file_id}")
+                    # For speaker analysis, we'll use the original video segment
+                    # since we don't want to download from Google Drive just for analysis
+                    try:
+                        # Create a temporary clip for speaker analysis
+                        with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as tmp_clip:
+                            tmp_clip_path = tmp_clip.name
+                        
+                        # Calculate timing offsets for this transaction
+                        t0 = dateparse.isoparse(tx_row["started_at"])
+                        t1 = dateparse.isoparse(tx_row["ended_at"])
+                        video_start = dateparse.isoparse(video_row["started_at"])
+                        
+                        # Calculate seconds from start of video file
+                        start_offset = (t0 - video_start).total_seconds()
+                        end_offset = (t1 - video_start).total_seconds()
+                        
+                        # Ensure positive offsets
+                        start_offset = max(0, start_offset)
+                        end_offset = max(start_offset + 1.0, end_offset)
+                        
+                        # Use FFmpeg to extract the segment for speaker analysis
+                        duration = end_offset - start_offset
+                        cmd = [
+                            "ffmpeg", "-y",
+                            "-ss", f"{start_offset:.3f}",
+                            "-i", local_path,
+                            "-t", f"{duration:.3f}",
+                            "-c", "copy",
+                            tmp_clip_path
+                        ]
+                        subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                        
+                        speaker_info = process_clip_for_speakers(tmp_clip_path, settings)
+                        
+                    except Exception as e:
+                        logger.warning(f"Failed to analyze clip for speakers: {e}")
+                    finally:
+                        if os.path.exists(tmp_clip_path):
+                            os.remove(tmp_clip_path)
+                
+                update_tx_meta_with_clip(db, tx_id, gdrive_file_id, speaker_info)
+                clip_count += 1
+                logger.info(f"✅ Created clip {i+1}/{len(txs)}: Google Drive ID {gdrive_file_id}")
+                if speaker_info.get('speakers_detected'):
+                    logger.info(f"   🎤 Speakers detected: {speaker_info['speakers_detected']}")
             except Exception as e:
                 logger.error(f"❌ Failed to create clip for transaction {tx_row.get('id', 'unknown')}: {e}")
         
-        logger.info(f"✅ [7/7] Created {clip_count}/{len(txs)} transaction clips")
+        logger.info(f"✅ [7/8] Created {clip_count}/{len(txs)} transaction clips")
         
         # Final success message
         duration = datetime.now() - start_time
@@ -268,112 +338,6 @@ def process_one_video(db: Supa, s3, video_row: Dict):
                 if os.path.exists(tmpdir):
                     shutil.rmtree(tmpdir, ignore_errors=True)
             logger.info(f"Cleaned up temporary files for video {video_id}")
-        except Exception as cleanup_error:
-            logger.warning(f"Failed to cleanup temporary files: {cleanup_error}")
-
-def process_one_audio(db: Supa, s3, audio_row: Dict):
-    """Process a single audio file with enhanced logging and progress tracking"""
-    from datetime import datetime
-    
-    audio_id = audio_row["id"]
-    s3_key = audio_row["s3_key"]
-    
-    logger.info(f"🎵 Starting audio processing pipeline")
-    logger.info(f"   🆔 Audio ID: {audio_id}")
-    logger.info(f"   🗂️ S3 Key: {s3_key}")
-    
-    settings = Settings()
-    tmpdir = tempfile.mkdtemp(prefix="hoptix_audio_")
-    
-    # Determine file extension from S3 key
-    file_ext = os.path.splitext(s3_key)[1] or ".mp3"
-    local_path = os.path.join(tmpdir, f"input{file_ext}")
-    start_time = datetime.now()
-    
-    try:
-        # Download audio
-        logger.info(f"📥 [1/6] Downloading audio from S3...")
-        download_to_file(s3, settings.RAW_BUCKET, s3_key, local_path)
-        
-        # Get file size for logging
-        file_size = os.path.getsize(local_path)
-        logger.info(f"✅ [1/6] Audio downloaded ({file_size:,} bytes) to: {local_path}")
-
-        # 1) ASR segments
-        logger.info(f"🎤 [2/6] Starting audio transcription...")
-        segments = transcribe_audio(local_path)
-        logger.info(f"✅ [2/6] Transcription completed: {len(segments)} segments generated")
-
-        # 2) Step‑1 split
-        logger.info(f"✂️ [3/6] Starting transaction splitting...")
-        txs = split_into_transactions(segments, audio_row["started_at"], s3_key)
-        logger.info(f"✅ [3/6] Transaction splitting completed: {len(txs)} transactions identified")
-
-        # artifacts
-        logger.info(f"☁️ [4/6] Uploading processing artifacts to S3...")
-        prefix = f'deriv/session={audio_id}/'
-        put_jsonl(s3, settings.DERIV_BUCKET, prefix + "segments.jsonl", segments)
-        put_jsonl(s3, settings.DERIV_BUCKET, prefix + "transactions.jsonl", txs)
-        logger.info(f"✅ [4/6] Artifacts uploaded to s3://{settings.DERIV_BUCKET}/{prefix}")
-
-        # 3) persist transactions
-        logger.info(f"💾 [5/6] Inserting {len(txs)} transactions into database...")
-        tx_ids = insert_transactions(db, audio_row, txs)
-        logger.info(f"✅ [5/6] Transactions inserted: {len(tx_ids)} records")
-
-        # 4) step‑2 grading with location-specific menu data
-        location_id = audio_row.get("location_id")
-        logger.info(f"🎯 [6/6] Starting AI grading for {len(txs)} transactions (location: {location_id})...")
-        grades = grade_transactions(txs, db, location_id)
-        put_jsonl(s3, settings.DERIV_BUCKET, prefix + "grades.jsonl", grades)
-        logger.info(f"✅ [6/6] Grading completed and uploaded to S3")
-
-        # 5) upsert grades
-        logger.info(f"📊 Upserting {len(tx_ids)} grades to database...")
-        upsert_grades(db, tx_ids, grades)
-        logger.info(f"✅ Grades successfully stored in database")
-
-        # 6) Create and upload transaction clips
-        logger.info(f"🎵 [7/7] Creating audio transaction clips...")
-        clip_count = 0
-        for i, tx_row in enumerate(txs):
-            try:
-                tx_id = tx_ids[i]
-                clip_url, gdrive_file_id = cut_audio_clip_for_transaction(
-                    db, s3, settings.DERIV_BUCKET, settings.AWS_REGION,
-                    local_path, audio_row["started_at"], audio_row["ended_at"],
-                    tx_row, audio_row["run_id"], audio_id
-                )
-                update_tx_meta_with_clip(db, tx_id, clip_url, gdrive_file_id)
-                clip_count += 1
-                logger.info(f"✅ Created audio clip {i+1}/{len(txs)}: {clip_url}")
-                if gdrive_file_id:
-                    logger.info(f"   📁 Google Drive ID: {gdrive_file_id}")
-            except Exception as e:
-                logger.error(f"❌ Failed to create audio clip for transaction {tx_row.get('id', 'unknown')}: {e}")
-        
-        logger.info(f"✅ [7/7] Created {clip_count}/{len(txs)} audio transaction clips")
-        
-        # Final success message
-        duration = datetime.now() - start_time
-        logger.info(f"🎉 Audio processing completed successfully!")
-        logger.info(f"   ⏱️ Total time: {duration.total_seconds():.1f} seconds")
-        logger.info(f"   📈 Results: {len(segments)} segments → {len(txs)} transactions → {len(grades)} grades → {clip_count} clips")
-        
-    except Exception as e:
-        duration = datetime.now() - start_time
-        logger.error(f"💥 Audio processing failed after {duration.total_seconds():.1f} seconds")
-        logger.error(f"   🚨 Error: {str(e)}")
-        raise
-        
-    finally:
-        # Cleanup temporary files
-        try:
-            if os.path.exists(local_path):
-                os.remove(local_path)
-                if os.path.exists(tmpdir):
-                    shutil.rmtree(tmpdir, ignore_errors=True)
-            logger.info(f"Cleaned up temporary files for audio {audio_id}")
         except Exception as cleanup_error:
             logger.warning(f"Failed to cleanup temporary files: {cleanup_error}")
 

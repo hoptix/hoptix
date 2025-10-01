@@ -23,29 +23,45 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import Settings
 from integrations.db_supabase import Supa
 from worker.adapter import grade_transactions
-from worker.pipeline import upsert_grades
+
+# Import upsert_grades directly to avoid voice diarization dependencies
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+def upsert_grades(db, tx_ids: List[str], grades: List[Dict]):
+    """Upsert grades to database"""
+    # Import the correct upsert function from pipeline
+    from worker.pipeline import upsert_grades as pipeline_upsert_grades
+    pipeline_upsert_grades(db, tx_ids, grades)
 
 def parse_csv_row(row: Dict[str, str]) -> Dict[str, Any]:
     """Convert a CSV row into the transaction format expected by grade_transactions"""
     
-    # Parse the meta field - handling the CSV column structure
+    # Parse the meta field - it's JSON in this CSV format
     meta = {}
-    if row.get('meta.text'):
-        meta['text'] = row['meta.text']
-    if row.get('meta.complete_order'):
-        meta['complete_order'] = int(row['meta.complete_order']) if row['meta.complete_order'] else 0
-    if row.get('meta.mobile_order'):
-        meta['mobile_order'] = int(row['meta.mobile_order']) if row['meta.mobile_order'] else 0
-    if row.get('meta.coupon_used'):
-        meta['coupon_used'] = int(row['meta.coupon_used']) if row['meta.coupon_used'] else 0
-    if row.get('meta.asked_more_time'):
-        meta['asked_more_time'] = int(row['meta.asked_more_time']) if row['meta.asked_more_time'] else 0
-    if row.get('meta.out_of_stock_items'):
-        meta['out_of_stock_items'] = row['meta.out_of_stock_items']
+    try:
+        import json
+        meta_json = json.loads(row.get('meta', '{}'))
+        meta = meta_json
+    except (json.JSONDecodeError, TypeError):
+        # Fallback to individual columns if meta is not JSON
+        if row.get('meta.text'):
+            meta['text'] = row['meta.text']
+        if row.get('meta.complete_order'):
+            meta['complete_order'] = int(row['meta.complete_order']) if row['meta.complete_order'] else 0
+        if row.get('meta.mobile_order'):
+            meta['mobile_order'] = int(row['meta.mobile_order']) if row['meta.mobile_order'] else 0
+        if row.get('meta.coupon_used'):
+            meta['coupon_used'] = int(row['meta.coupon_used']) if row['meta.coupon_used'] else 0
+        if row.get('meta.asked_more_time'):
+            meta['asked_more_time'] = int(row['meta.asked_more_time']) if row['meta.asked_more_time'] else 0
+        if row.get('meta.out_of_stock_items'):
+            meta['out_of_stock_items'] = row['meta.out_of_stock_items']
     
     # Create transaction object in expected format
     transaction = {
-        'id': row.get('video_id', ''),
+        'id': row.get('id', ''),  # Use the transaction ID directly
         'started_at': row.get('started_at', ''),
         'ended_at': row.get('ended_at', ''),
         'tx_range': row.get('tx_range', ''),
@@ -70,22 +86,21 @@ def grade_from_csv(csv_path: str, run_id_filter: str = None) -> None:
     with open(csv_path, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
+            # Parse row into transaction format first
+            transaction = parse_csv_row(row)
+            
             # Skip empty transcript rows
-            if not row.get('meta.text', '').strip():
+            if not transaction.get('meta', {}).get('text', '').strip():
                 continue
                 
             # Filter by run_id if specified
             if run_id_filter and row.get('run_id') != run_id_filter:
                 continue
             
-            # Parse row into transaction format
-            transaction = parse_csv_row(row)
             transactions.append(transaction)
             
-            # Extract transaction ID - we'll need to look this up in the database
-            # For now, we'll use video_id + tx_range as a unique identifier
-            tx_id = f"{row.get('video_id', '')}_{row.get('tx_range', '')}"
-            tx_ids.append(tx_id)
+            # Use the transaction ID directly from the CSV
+            tx_ids.append(transaction['id'])
     
     print(f"📊 Found {len(transactions)} transactions with transcripts to grade")
     
@@ -109,46 +124,15 @@ def grade_from_csv(csv_path: str, run_id_filter: str = None) -> None:
         grades = grade_transactions(transactions, db, location_id)
         print(f"✅ Grading completed: {len(grades)} grades generated")
         
-        # For CSV-based grading, we need to find the actual transaction IDs from the database
-        print(f"🔍 Looking up transaction IDs in database...")
-        
-        actual_tx_ids = []
-        for i, transaction in enumerate(transactions):
-            video_id = transaction['id']
-            started_at = transaction['started_at']
-            ended_at = transaction['ended_at']
-            
-            try:
-                # Query database for matching transaction
-                result = db.client.table("transactions").select("id").eq("video_id", video_id).eq("started_at", started_at).eq("ended_at", ended_at).execute()
-                
-                if result.data:
-                    actual_tx_ids.append(result.data[0]['id'])
-                    print(f"✅ Found transaction ID for {video_id[:8]}... at {started_at[:19]}")
-                else:
-                    print(f"⚠️ Could not find transaction ID for video {video_id[:8]}... at {started_at[:19]}")
-                    actual_tx_ids.append(None)
-            except Exception as e:
-                print(f"⚠️ Error looking up transaction ID: {e}")
-                actual_tx_ids.append(None)
-        
-        # Filter out None values and pair with grades
-        valid_pairs = [(tx_id, grade) for tx_id, grade in zip(actual_tx_ids, grades) if tx_id is not None]
-        
-        if valid_pairs:
-            valid_tx_ids = [pair[0] for pair in valid_pairs]
-            valid_grades = [pair[1] for pair in valid_pairs]
-            
-            print(f"💾 Upserting {len(valid_grades)} grades to database...")
-            upsert_grades(db, valid_tx_ids, valid_grades)
-            print(f"✅ Grades successfully stored in database")
-        else:
-            print("❌ No valid transaction IDs found - cannot store grades")
+        # We already have the transaction IDs from the CSV, so we can use them directly
+        print(f"💾 Upserting {len(grades)} grades to database...")
+        upsert_grades(db, tx_ids, grades)
+        print(f"✅ Grades successfully stored in database")
         
         duration = datetime.now() - start_time
         print(f"🎉 Processing completed!")
         print(f"   ⏱️ Total time: {duration.total_seconds():.1f} seconds")
-        print(f"   📈 Results: {len(transactions)} transcripts → {len(valid_grades)} grades stored")
+        print(f"   📈 Results: {len(transactions)} transcripts → {len(grades)} grades stored")
         
     except Exception as e:
         duration = datetime.now() - start_time

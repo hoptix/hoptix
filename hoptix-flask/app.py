@@ -390,8 +390,8 @@ def get_item_analytics():
         item_analytics = {}
         for item in all_items:
             item_analytics[item] = {
-                "upselling": upsell_metrics["by_item"].get(item, {"upsellable_count": 0, "upsold_count": 0, "upsell_rate": 0, "revenue": 0}),
-                "upsizing": upsize_metrics["by_item"].get(item, {"upsizeable_count": 0, "upsized_count": 0, "upsize_rate": 0, "revenue": 0}),
+                "upselling": upsell_metrics["by_item"].get(item, {"opportunities": 0, "offers": 0, "successes": 0, "success_rate": 0, "offer_rate": 0}),
+                "upsizing": upsize_metrics["by_item"].get(item, {"opportunities": 0, "offers": 0, "successes": 0, "success_rate": 0, "offer_rate": 0}),
                 "addons": addon_metrics["by_item"].get(item, {"opportunities": 0, "offers": 0, "successes": 0, "success_rate": 0, "offer_rate": 0})
             }
         
@@ -399,8 +399,8 @@ def get_item_analytics():
         sorted_items = sorted(
             item_analytics.items(),
             key=lambda x: (
-                x[1]["upselling"]["upsellable_count"] +
-                x[1]["upsizing"]["upsizeable_count"] +
+                x[1]["upselling"]["opportunities"] +
+                x[1]["upsizing"]["opportunities"] +
                 x[1]["addons"]["opportunities"]
             ),
             reverse=True

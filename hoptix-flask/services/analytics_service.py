@@ -431,7 +431,8 @@ class UpsizeAnalytics:
                 "offers_gt_opportunities": 0,
                 "successes_gt_offers": 0,
                 "declared_vs_list_mismatch": 0
-            }
+            },
+            "total_largest_offers": 0,  # track largest-size offers per operator
         })
 
         for tx in transactions:
@@ -439,14 +440,18 @@ class UpsizeAnalytics:
             opp = int(tx.get("num_upsize_opportunities", 0) or 0)
             off = int(tx.get("num_upsize_offers", 0) or 0)
             suc = int(tx.get("num_upsize_success", 0) or 0)
-            largest = int(tx.get("num_largest_offers", 0) or 0)  # NEW
+            largest = int(tx.get("num_largest_offers", 0) or 0)
+
+            # ✅ define these before use
+            candidates = _CommonParse.parse_items(tx.get("upsize_candidate_items", "0"))
+            offered    = _CommonParse.parse_items(tx.get("upsize_offered_items", "0"))
+            converted  = _CommonParse.parse_items(tx.get("upsize_success_items", "0"))
 
             d = ops[operator]
             d["total_opportunities"] += opp
             d["total_offers"] += off
             d["total_successes"] += suc
-            d.setdefault("total_largest_offers", 0)             # NEW
-            d["total_largest_offers"] += largest                # NEW
+            d["total_largest_offers"] += largest
 
             if off > opp:
                 d["violations"]["offers_gt_opportunities"] += 1
@@ -498,14 +503,13 @@ class UpsizeAnalytics:
                 "conversion_rate": (ts / to * 100) if to > 0 else 0.0,
                 "total_revenue": d["total_revenue"],
                 "avg_revenue_per_success": (d["total_revenue"] / ts) if ts > 0 else 0.0,
-                "largest_offers": d.get("total_largest_offers", 0),                              # NEW
-                "largest_offer_rate": (d.get("total_largest_offers", 0) / tf * 100) if tf > 0 else 0.0,  # NEW
+                "largest_offers": d.get("total_largest_offers", 0),
+                "largest_offer_rate": (d.get("total_largest_offers", 0) / tf * 100) if tf > 0 else 0.0,
                 "violations": d["violations"],
                 "by_item": by_item,
                 "most_converted_items": dict(d["converted_counter"].most_common(10))
             }
         return result
-
 
 class AddonAnalytics:
     """

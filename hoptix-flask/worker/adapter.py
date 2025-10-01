@@ -295,13 +295,39 @@ You will be fed a single transcript with potentially multiple transactions occur
 def _tmp_audio_from_video(video_path: str):
     tmpdir = tempfile.mkdtemp(prefix="hoptix_asr_")
     out = os.path.join(tmpdir, "audio.mp3")
-    clip = VideoFileClip(video_path)
-    if clip.audio is None:
+    
+    try:
+        clip = VideoFileClip(video_path)
+        if clip.audio is None:
+            clip.close()
+            raise RuntimeError("No audio track in video")
+        
+        # Try to get duration first, with fallback
+        try:
+            duration = float(clip.duration or 0.0)
+        except Exception as duration_error:
+            print(f"Warning: Could not get video duration: {duration_error}")
+            duration = 3600.0  # Default to 1 hour if we can't determine duration
+        
+        clip.audio.write_audiofile(out, verbose=False, logger=None)
         clip.close()
-        raise RuntimeError("No audio track in video")
-    clip.audio.write_audiofile(out, verbose=False, logger=None)
-    duration = float(clip.duration or 0.0)
-    clip.close()
+        
+    except Exception as video_error:
+        print(f"Error processing video with moviepy: {video_error}")
+        # Fallback: try using ffmpeg directly
+        try:
+            import subprocess
+            cmd = [
+                'ffmpeg', '-i', video_path, '-vn', '-acodec', 'mp3', 
+                '-ar', '16000', '-ac', '1', '-y', out
+            ]
+            subprocess.run(cmd, check=True, capture_output=True)
+            duration = 3600.0  # Default duration for fallback
+            print("Successfully extracted audio using ffmpeg fallback")
+        except Exception as ffmpeg_error:
+            print(f"FFmpeg fallback also failed: {ffmpeg_error}")
+            raise RuntimeError(f"Could not extract audio from video: {video_error}")
+    
     try:
         yield out, duration
     finally:
@@ -378,6 +404,7 @@ def _json_or_none(txt: str) -> Dict[str, Any] | None:
 
 # ---------- 1) TRANSCRIBE (extract spans, per‑span ASR) ----------
 def transcribe_video(local_path: str) -> List[Dict]:
+    import librosa  # Import at the top of the function
     segs: List[Dict] = []
     with _tmp_audio_from_video(local_path) as (audio_path, duration):
         y, sr = librosa.load(audio_path, sr=None)
@@ -388,11 +415,33 @@ def transcribe_video(local_path: str) -> List[Dict]:
                 tmp_audio = tf.name
             # Ensure end time doesn't exceed video duration
             end_time = min(int(e+1), duration)
-            clip = VideoFileClip(local_path).subclip(int(b), end_time)
-            clip.audio.write_audiofile(tmp_audio, verbose=False, logger=None)
-            clip.close()
+            
+            # Handle MKV files more carefully - moviepy can have issues with them
+            try:
+                clip = VideoFileClip(local_path).subclip(int(b), end_time)
+                if clip.audio is None:
+                    print(f"Warning: No audio track in video segment {b}-{e}")
+                    clip.close()
+                    continue
+                clip.audio.write_audiofile(tmp_audio, verbose=False, logger=None)
+                clip.close()
+            except Exception as clip_error:
+                print(f"Error processing video segment {b}-{e}: {clip_error}")
+                # Try to use the full audio file instead of subclipping
+                try:
+                    with _tmp_audio_from_video(local_path) as (full_audio_path, _):
+                        # Use librosa to extract the segment
+                        y, sr = librosa.load(full_audio_path, sr=None)
+                        start_sample = int(b * sr)
+                        end_sample = int(min(e, duration) * sr)
+                        segment_audio = y[start_sample:end_sample]
+                        import soundfile as sf
+                        sf.write(tmp_audio, segment_audio, sr)
+                except Exception as fallback_error:
+                    print(f"Fallback audio extraction also failed: {fallback_error}")
+                    continue
 
-            with open(tmp_audio, "rb") as af:
+            with open(tmp_audio, "rb") as af: 
                 try:
                     txt = client.audio.transcriptions.create(
                         model=_settings.ASR_MODEL,
@@ -410,54 +459,6 @@ def transcribe_video(local_path: str) -> List[Dict]:
             segs.append({"start": float(b), "end": float(e), "text": text})
     return segs
 
-def transcribe_audio(local_path: str) -> List[Dict]:
-    """Transcribe audio file directly without video processing"""
-    segs: List[Dict] = []
-    
-    # Load audio file and get duration
-    y, sr = librosa.load(local_path, sr=None)
-    duration = len(y) / sr
-    
-    # Segment active spans (same logic as video)
-    spans = _segment_active_spans(y, sr, 15.0) or [(0.0, duration)]
-    
-    for i, (b, e) in enumerate(spans):
-        # Create temporary audio file for this segment
-        with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tf:
-            tmp_audio = tf.name
-        
-        try:
-            # Extract audio segment using librosa
-            start_sample = int(b * sr)
-            end_sample = int(min(e, duration) * sr)
-            segment_audio = y[start_sample:end_sample]
-            
-            # Save segment to temporary file
-            import soundfile as sf
-            sf.write(tmp_audio, segment_audio, sr)
-            
-            # Transcribe using OpenAI
-            with open(tmp_audio, "rb") as af:
-                try:
-                    txt = client.audio.transcriptions.create(
-                        model=_settings.ASR_MODEL,
-                        file=af,
-                        response_format="text",
-                        temperature=0.001,
-                        prompt="Label each line as Operator: or Customer: where possible."
-                    )
-                    text = str(txt)
-                except Exception as ex:
-                    print("ASR error:", ex)
-                    text = ""
-            
-            segs.append({"start": float(b), "end": float(e), "text": text})
-            
-        finally:
-            with contextlib.suppress(Exception): 
-                os.remove(tmp_audio)
-    
-    return segs
 
 # ---------- 2) SPLIT (Step‑1 prompt per segment, preserve your @#& format) ----------
 def split_into_transactions(transcript_segments: List[Dict], video_started_at_iso: str, s3_key: str = None) -> List[Dict]:
@@ -568,46 +569,46 @@ def _map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -
 
         # ---- Upsell (candidates → offered → converted) ----
         "num_upsell_opportunities": _ii(step2_obj.get("3", 0)),
-        "upsell_base_items":        _parse_json_field(step2_obj.get("4_base", "0")),  # was items_upsellable
+        "upsell_base_items":        _parse_json_field(step2_obj.get("4_base", "0")),
         "upsell_candidate_items":   _parse_json_field(step2_obj.get("4", "0")),
         "num_upsell_offers":        _ii(step2_obj.get("5", 0)),
         "upsell_offered_items":     _parse_json_field(step2_obj.get("6", "0")),
-        "upsell_success_items":     _parse_json_field(step2_obj.get("7", "0")),       # was items_upsold
-        "num_upsell_success":       _ii(step2_obj.get("8", 0)),
-        "num_largest_offers":       _ii(step2_obj.get("9", 0)),
+        "upsell_success_items":     _parse_json_field(step2_obj.get("7", "0")),
+        "num_upsell_success":       _ii(step2_obj.get("9", 0)),
+        "num_largest_offers":       _ii(step2_obj.get("10", 0)),
 
         # ---- Upsize (candidates → offered → converted) ----
         "num_upsize_opportunities": _ii(step2_obj.get("11", 0)),
-        "upsize_base_items":        _parse_json_field(step2_obj.get("11_base", "0")), # was items_upsizeable
+        "upsize_base_items":        _parse_json_field(step2_obj.get("11_base", "0")),
         "upsize_candidate_items":   _parse_json_field(step2_obj.get("12", "0")),
-        "num_upsize_offers":        _ii(step2_obj.get("13", 0)),
-        "upsize_offered_items":     _parse_json_field(step2_obj.get("13_offered", "0")),
-        "upsize_success_items":     _parse_json_field(step2_obj.get("15", "0")),      # was items_upsize_success
-        "num_upsize_success":       _ii(step2_obj.get("14", 0)),
+        "num_upsize_offers":        _ii(step2_obj.get("14", 0)),
+        "upsize_offered_items":     _parse_json_field(step2_obj.get("14_offered", "0")),
+        "upsize_success_items":     _parse_json_field(step2_obj.get("16", "0")),
+        "num_upsize_success":       _ii(step2_obj.get("15", 0)),
 
         # ---- Add-on (candidates → offered → converted) ----
         "num_addon_opportunities":  _ii(step2_obj.get("18", 0)),
-        "addon_base_items":         _parse_json_field(step2_obj.get("17_base", "0")), # was items_addonable
+        "addon_base_items":         _parse_json_field(step2_obj.get("18_base", "0")),
         "addon_candidate_items":    _parse_json_field(step2_obj.get("19", "0")),
         "num_addon_offers":         _ii(step2_obj.get("21", 0)),
-        "addon_offered_items":      _parse_json_field(step2_obj.get("20", "0")),
-        "addon_success_items":      _parse_json_field(step2_obj.get("23", "0")),      # was items_addon_success
+        "addon_offered_items":      _parse_json_field(step2_obj.get("21_offered", "0")),
+        "addon_success_items":      _parse_json_field(step2_obj.get("23", "0")),
         "num_addon_success":        _ii(step2_obj.get("22", 0)),
 
         # AFTER items
-        "items_after":              step2_obj.get("22", "0"),
-        "num_items_after":          _ii(step2_obj.get("23", 0)),
+        "items_after":              step2_obj.get("25", "0"),
+        "num_items_after":          _ii(step2_obj.get("26", 0)),
 
         # Text feedback
-        "feedback":                 step2_obj.get("24", ""),
-        "issues":                   step2_obj.get("25", ""),
+        "feedback":                 step2_obj.get("27", ""),
+        "issues":                   step2_obj.get("28", ""),
 
         # Optional extras
-        "reasoning_summary":        step2_obj.get("26", "")
+        "reasoning_summary":        step2_obj.get("reasoning_summary", "")
     }
 
 
-def grade_transactions(transactions: List[Dict], db=None, location_id: str = None) -> List[Dict]:
+def grade_transactions(transactions: List[Dict], db=None, location_id: str = None, testing=True) -> List[Dict]:
     graded: List[Dict] = []
     for tx in transactions:
         transcript = (tx.get("meta") or {}).get("text","")
@@ -633,14 +634,25 @@ def grade_transactions(transactions: List[Dict], db=None, location_id: str = Non
         step2_prompt = _build_step2_prompt(db, location_id)
         prompt = step2_prompt + "\n\nProcess this transcript:\n" + transcript
         try:
-            resp = client.responses.create(
-                model=_settings.STEP2_MODEL,
-                include=["reasoning.encrypted_content"],
-                input=[{"role":"user","content":[{"type":"input_text","text": prompt}]}],
-                store=False,
-                text={"format":{"type":"text"}},
-                reasoning={"effort":"high","summary":"detailed"},
-            )
+            if testing: 
+                resp = client.responses.create(
+                    model=_settings.STEP2_MODEL,
+                    include=["reasoning.encrypted_content"],
+                    input=[{"role":"user","content":[{"type":"input_text","text": prompt}]}],
+                    store=False,
+                    text={"format":{"type":"text"}},
+                    reasoning={"effort":"high","summary":"detailed"},
+                )
+
+            else: 
+                resp = client.responses.create(
+                    model=_settings.STEP2_MODEL,
+                    input=[{"role":"user","content":[{"type":"input_text","text": prompt}]}],
+                    store=False,
+                    text={"format":{"type":"text"}},
+                    reasoning={"effort":"high","summary":"detailed"},
+                )
+
             raw = resp.output[1].content[0].text if hasattr(resp,"output") else "{}"
             print(f"\n=== STEP 2 (Grading) RAW OUTPUT ===")
             print(f"Input transcript: {transcript[:200]}...")
