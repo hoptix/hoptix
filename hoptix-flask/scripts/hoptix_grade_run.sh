@@ -40,7 +40,7 @@ processing = ProcessingService(db, s)
 
 run_id = "$RUN_ID"
 print(f"📥 Fetching transactions for run {run_id}...")
-tx_rows = db.client.table('transactions').select('*').eq('run_id', run_id).limit(1).execute().data or []
+tx_rows = db.client.table('transactions').select('*').eq('run_id', run_id).execute().data or []
 
 if not tx_rows:
     print("ℹ️ No transactions found for this run")
