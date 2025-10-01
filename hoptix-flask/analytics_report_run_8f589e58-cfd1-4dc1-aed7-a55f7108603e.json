@@ -9,7 +9,7 @@
       "avg_items_initial": 0.0,
       "avg_items_final": 0.0,
       "avg_item_increase": 0.0,
-      "generated_at": "2025-09-30T19:36:17.813445"
+      "generated_at": "2025-09-30T20:08:45.339578"
     },
     "upselling": {
       "summary": {
@@ -99,7 +99,7 @@
     "avg_items_initial": 0.0,
     "avg_items_final": 0.0,
     "avg_item_increase": 0.0,
-    "generated_at": "2025-09-30T19:36:17.813461"
+    "generated_at": "2025-09-30T20:08:45.339589"
   },
   "upselling": {
     "total_opportunities": 0,
