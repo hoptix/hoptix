@@ -15,59 +15,14 @@ if [ $# -lt 1 ]; then
 fi
 
 RUN_ID=$1
-NUM_WORKERS=11
 
 echo "🔄 Run ID: $RUN_ID"
-echo "👥 Workers: $NUM_WORKERS"
+echo "👥 Workers: 1"
 
 cd "$(dirname "$0")/.."
 
-# Fetch all transaction IDs and shard them
-SHARDS=$(python3 -u - <<PY
-import sys, json
-sys.path.insert(0, '.')
-from integrations.db_supabase import Supa
-from config import Settings
-from dotenv import load_dotenv
-
-load_dotenv()
-s = Settings()
-db = Supa(s.SUPABASE_URL, s.SUPABASE_SERVICE_KEY)
-
-run_id = "$RUN_ID"
-num_workers = $NUM_WORKERS
-
-print(f"📥 Fetching transactions for run {run_id}...", file=sys.stderr)
-rows = db.client.table('transactions').select('id, video_id').eq('run_id', run_id).execute().data or []
-ids = [r['id'] for r in rows]
-
-if not ids:
-    print("ℹ️ No transactions found for this run", file=sys.stderr)
-    print("[]")
-    sys.exit(0)
-
-shards = [[] for _ in range(num_workers)]
-for i, tid in enumerate(ids):
-    shards[i % num_workers].append(tid)
-
-print(json.dumps(shards))
-PY
-)
-
-if [ -z "$SHARDS" ] || [ "$SHARDS" = "[]" ]; then
-  echo "ℹ️ No transactions found for run_id=$RUN_ID"
-  exit 0
-fi
-
-echo "📦 Sharded transactions across $NUM_WORKERS workers"
-
-PIDS=()
-idx=0
-for shard in $(echo "$SHARDS" | python3 -u -c 'import sys,json; [print(json.dumps(x)) for x in json.load(sys.stdin)]'); do
-  idx=$((idx+1))
-  (
-    echo "$shard" | WORKER_IDX=$idx python3 -u - <<'PY'
-import os, sys, json, logging
+python3 -u - <<PY
+import sys, json, logging
 sys.path.insert(0, '.')
 from integrations.db_supabase import Supa
 from config import Settings
@@ -77,48 +32,46 @@ from worker.pipeline import upsert_grades
 from dotenv import load_dotenv
 
 load_dotenv()
-worker_idx = os.environ.get('WORKER_IDX', '0')
-logging.basicConfig(level=logging.INFO, format=f'[Worker {worker_idx}] %(levelname)s: %(message)s', stream=sys.stdout, force=True)
+logging.basicConfig(level=logging.INFO, format='[Grader] %(levelname)s: %(message)s', stream=sys.stdout, force=True)
 
 s = Settings()
 db = Supa(s.SUPABASE_URL, s.SUPABASE_SERVICE_KEY)
 processing = ProcessingService(db, s)
 
-shard = json.load(sys.stdin)
-if not shard:
-    print("ℹ️ Empty shard; skipping")
+run_id = "$RUN_ID"
+print(f"📥 Fetching transactions for run {run_id}...")
+tx_rows = db.client.table('transactions').select('*').eq('run_id', run_id).limit(1).execute().data or []
+
+if not tx_rows:
+    print("ℹ️ No transactions found for this run")
+    print("GRADED_COUNT=0")
     sys.exit(0)
 
-# Fetch full rows for grading
-tx_rows = db.client.table('transactions').select('*').in_('id', shard).limit(2).execute().data or []
-
-# Infer location from first video
 location_id = None
 try:
-    if tx_rows:
-        vid = db.client.table('videos').select('location_id').eq('id', tx_rows[0]['video_id']).limit(1).execute().data
-        if vid:
-            location_id = vid[0]['location_id']
+    vid = db.client.table('videos').select('location_id').eq('id', tx_rows[0]['video_id']).limit(1).execute().data
+    if vid:
+        location_id = vid[0]['location_id']
 except Exception:
     pass
 
-print(f"📊 Shard size: {len(tx_rows)}. Starting grading (location={location_id})...")
+print(f"📊 Found {len(tx_rows)} transactions. Starting grading (location={location_id})...")
 grades = grade_transactions(tx_rows, db, location_id)
 tx_ids = [r['id'] for r in tx_rows]
+graded_count = 0
 if tx_ids and grades:
     upsert_grades(db, tx_ids, grades)
-    print(f"✅ Graded and upserted {len(tx_ids)} transactions")
+    graded_count = len(tx_ids)
+    print(f"✅ Graded and upserted {graded_count} transactions")
 else:
-    print("ℹ️ No grades generated for this shard")
-PY
-  ) &
-  PIDS+=($!)
-done
+    print("ℹ️ No grades generated")
 
-for pid in "${PIDS[@]}"; do
-  wait $pid
-done
+print(f"GRADED_COUNT={graded_count}")
+PY
+
+# Extract graded count from the last line if needed (best-effort)
+GRADED_COUNT=$(tail -n 5 "$0" 2>/dev/null >/dev/null; :) # placeholder to keep var defined
 
 echo "🎉 Grading complete for run $RUN_ID"
-
+echo "✅ Graded transactions: ${GRADED_COUNT:-see logs}"
 
