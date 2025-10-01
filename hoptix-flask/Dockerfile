@@ -6,6 +6,8 @@ WORKDIR /app
 # Install system dependencies for building
 RUN apt-get update && apt-get install -y \
     gcc \
+    g++ \
+    ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first to leverage Docker cache
@@ -13,6 +15,9 @@ COPY requirements.txt ./requirements.txt
 
 # Install PyTorch CPU-only version first (smaller size)
 RUN pip install --no-cache-dir torch==2.0.0+cpu torchaudio==2.0.0+cpu --index-url https://download.pytorch.org/whl/cpu
+
+# Install nemo-toolkit separately to handle memory constraints
+RUN pip install --no-cache-dir nemo-toolkit==1.21.0
 
 # Install remaining requirements
 RUN pip install --no-cache-dir -r requirements.txt
