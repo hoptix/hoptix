@@ -574,6 +574,39 @@ class GoogleDriveClient:
             logger.error(f"Error listing video files in 'Shared with Me': {e}")
             return []
 
+    def list_media_files_shared_with_me(self, folder_id: str) -> List[Dict]:
+        """List video and audio files in a specific folder in 'Shared with Me'"""
+        try:
+            video_mimes = [
+                'video/mp4','video/avi','video/mov','video/quicktime','video/x-msvideo','video/webm','video/mkv','video/x-matroska'
+            ]
+            audio_mimes = [
+                'audio/wav','audio/x-wav','audio/mpeg','audio/mp3','audio/mp4','audio/aac','audio/x-m4a','audio/ogg','audio/flac'
+            ]
+            media_mimes = video_mimes + audio_mimes
+            mime_query = ' or '.join([f"mimeType='{mime}'" for mime in media_mimes])
+            query = f"('{folder_id}' in parents) and ({mime_query}) and trashed=false"
+            files = []
+            page_token = None
+            while True:
+                results = self.service.files().list(
+                    q=query,
+                    fields='nextPageToken,files(id,name,size,mimeType,createdTime,modifiedTime)',
+                    pageSize=1000,
+                    pageToken=page_token,
+                    corpora='user'
+                ).execute()
+                page_files = results.get('files', [])
+                files.extend(page_files)
+                page_token = results.get('nextPageToken')
+                if not page_token:
+                    break
+            logger.info(f"Found {len(files)} total media files in folder")
+            return files
+        except Exception as e:
+            logger.error(f"Error listing media files in 'Shared with Me': {e}")
+            return []
+
     def list_video_files_personal_drive(self, folder_id: str) -> List[Dict]:
         """List video files in a specific folder in personal Google Drive"""
         try:
@@ -617,6 +650,38 @@ class GoogleDriveClient:
             
         except Exception as e:
             logger.error(f"Error listing video files in personal drive: {e}")
+            return []
+
+    def list_media_files_personal_drive(self, folder_id: str) -> List[Dict]:
+        """List video and audio files in a specific folder in personal Google Drive"""
+        try:
+            video_mimes = [
+                'video/mp4','video/avi','video/mov','video/quicktime','video/x-msvideo','video/webm','video/mkv','video/x-matroska'
+            ]
+            audio_mimes = [
+                'audio/wav','audio/x-wav','audio/mpeg','audio/mp3','audio/mp4','audio/aac','audio/x-m4a','audio/ogg','audio/flac'
+            ]
+            media_mimes = video_mimes + audio_mimes
+            mime_query = ' or '.join([f"mimeType='{mime}'" for mime in media_mimes])
+            query = f"('{folder_id}' in parents) and ({mime_query}) and trashed=false"
+            files = []
+            page_token = None
+            while True:
+                results = self.service.files().list(
+                    q=query,
+                    fields='nextPageToken,files(id,name,size,mimeType,createdTime,modifiedTime)',
+                    pageSize=1000,
+                    pageToken=page_token
+                ).execute()
+                page_files = results.get('files', [])
+                files.extend(page_files)
+                page_token = results.get('nextPageToken')
+                if not page_token:
+                    break
+            logger.info(f"Found {len(files)} total media files in folder")
+            return files
+        except Exception as e:
+            logger.error(f"Error listing media files in personal drive: {e}")
             return []
 
 

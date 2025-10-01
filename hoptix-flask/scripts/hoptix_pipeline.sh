@@ -258,12 +258,15 @@ try:
             print(f'🔧 [Worker {worker_id}] Initializing processing service...')
             processing_service = ProcessingService(db, settings)
             
-            # Process as video file (including MKV files) - use the full pipeline with clips
-            print(f'🎬 [Worker {worker_id}] Starting video processing pipeline...')
             processing_start = datetime.now()
-            
-            # Use the new method that includes stages 7-8 (clips and speaker identification)
-            processing_service.process_video_from_local_file_with_clips(row, tmp_media_path)
+            if file_ext.lower() in ['.wav', '.mp3', '.m4a', '.aac', '.ogg', '.flac']:
+                print(f'🎵 [Worker {worker_id}] Starting WAV/audio processing pipeline...')
+                processing_service.process_wav_from_local_file(row, tmp_media_path)
+            else:
+                # Process as video file (including MKV files) - use the full pipeline with clips
+                print(f'🎬 [Worker {worker_id}] Starting video processing pipeline...')
+                # Use the method that includes stages 7-8 (clips)
+                processing_service.process_video_from_local_file_with_clips(row, tmp_media_path)
             
             processing_time = (datetime.now() - processing_start).total_seconds()
             

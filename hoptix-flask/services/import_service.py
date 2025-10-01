@@ -21,7 +21,7 @@ class ImportService:
         self.video_service = VideoService()
         
         # Configuration for Google Drive
-        self.FOLDER_NAME = folder_name  # Use the passed folder name instead of hardcoded
+        self.FOLDER_NAME = "My Videos"  # Use the passed folder name instead of hardcoded
         self.S3_PREFIX = os.getenv("S3_PREFIX", f"gdrive/{folder_name}")
         self.DEFAULT_DURATION_SEC = int(os.getenv("GDRIVE_VIDEO_DURATION_SEC", "3600"))  # 1 hour default
     
@@ -32,20 +32,35 @@ class ImportService:
         # Initialize Google Drive client
         gdrive = GoogleDriveClient()
         
-        # Find folder in 'Shared with Me' section
-        folder_id = gdrive.find_folder_in_shared_with_me(self.FOLDER_NAME)
-        if not folder_id:
-            raise Exception(f"Folder '{self.FOLDER_NAME}' not found in 'Shared with Me' section")
-        
-        # List and filter video files
-        video_files = gdrive.list_video_files_shared_with_me(folder_id)
-        video_files = self.video_service.filter_videos_by_date(video_files, run_date)
+        # Try 'Shared with Me' first, then fallback to Personal Drive
+        folder_id_shared = gdrive.find_folder_in_shared_with_me(self.FOLDER_NAME)
+        video_files = []
+        if folder_id_shared:
+            logger.info(f"Using folder from 'Shared with Me': {self.FOLDER_NAME} (id={folder_id_shared})")
+            video_files = gdrive.list_media_files_shared_with_me(folder_id_shared)
+        else:
+            logger.info(f"Folder not in 'Shared with Me'. Trying Personal Drive: {self.FOLDER_NAME}")
+            folder_id_personal = gdrive.find_folder_in_personal_drive(self.FOLDER_NAME)
+            if not folder_id_personal:
+                raise Exception(
+                    f"Folder '{self.FOLDER_NAME}' not found in 'Shared with Me' or Personal Drive"
+                )
+            logger.info(f"Using folder from Personal Drive: {self.FOLDER_NAME} (id={folder_id_personal})")
+            video_files = gdrive.list_media_files_personal_drive(folder_id_personal)
+        # Try to filter by date using filename; if nothing matches, fall back to all media
+        filtered_files = self.video_service.filter_videos_by_date(video_files, run_date)
+        if not filtered_files:
+            logger.info(
+                f"No media matched filename date for {run_date}. Falling back to all media files in folder."
+            )
+            filtered_files = video_files
+        video_files = filtered_files
         
         if not video_files:
-            logger.warning(f"No video files found for date: {run_date}")
+            logger.warning(f"No media files found for date: {run_date}")
             return []
         
-        logger.info(f"Found {len(video_files)} video files for date {run_date}")
+        logger.info(f"Found {len(video_files)} media files for date {run_date}")
         
         # Create run for the provided org and location
         run_id = self.database_service.create_run_for_date(org_id, location_id, run_date)
@@ -69,10 +84,14 @@ class ImportService:
             # Generate a placeholder S3 key (not actually used for storage)
             # Preserve the original file extension for proper processing
             file_basename = os.path.splitext(file_info['name'])[0]
-            original_ext = os.path.splitext(file_info['name'])[1] or '.mp4'
+            ext = os.path.splitext(file_info['name'])[1]
+            if not ext:
+                mt = file_info.get('mimeType', '')
+                ext = '.wav' if str(mt).startswith('audio/') else '.mp4'
+            original_ext = ext
             s3_key = f"{self.S3_PREFIX}/{file_basename}{original_ext}"
             
-            logger.info(f"Processing video directly from Google Drive: {file_info['name']}")
+            logger.info(f"Processing media directly from Google Drive: {file_info['name']}")
             logger.info(f"📎 Original file extension: {original_ext}")
             logger.info(f"🗂️ Generated S3 key: {s3_key}")
             

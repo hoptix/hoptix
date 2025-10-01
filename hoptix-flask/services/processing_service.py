@@ -243,3 +243,130 @@ class ProcessingService:
             logger.error(f"   🚨 Error: {str(e)}")
             raise
 
+
+    def process_wav_from_local_file(self, video_row: Dict, local_wav_path: str):
+        """Process a WAV audio file directly (no video extraction required).
+
+        The provided "video_row" should be a row shaped like entries in the
+        videos table (id/run_id/location_id/started_at/etc.). This method will:
+          1) Segment and transcribe the WAV using the ASR model
+          2) Split into transactions
+          3) Upload artifacts to S3
+          4) Insert transactions and grade them
+          5) Upsert grades
+        """
+        import os
+        from datetime import datetime
+        import librosa
+        import numpy as np
+        import soundfile as sf
+        from openai import OpenAI
+        from worker.adapter import _segment_active_spans
+
+        video_id = video_row["id"]
+        file_name = video_row.get("meta", {}).get("gdrive_file_name", os.path.basename(local_wav_path))
+        file_size = os.path.getsize(local_wav_path) if os.path.exists(local_wav_path) else 0
+
+        logger.info(f"🎵 Starting WAV processing pipeline")
+        logger.info(f"   📁 File: {file_name}")
+        logger.info(f"   🆔 Video ID: {video_id}")
+        logger.info(f"   📏 Size: {file_size:,} bytes")
+        logger.info(f"   📍 Local path: {local_wav_path}")
+
+        start_time = datetime.now()
+
+        try:
+            # 1) Load WAV and create speech-active segments (<= 20 minutes each)
+            logger.info(f"🎤 [1/6] Loading WAV and creating segments...")
+            y, sr = librosa.load(local_wav_path, sr=None)
+            duration_s = len(y) / float(sr)
+            spans = _segment_active_spans(y, sr, 15.0) or [(0.0, duration_s)]
+
+            # enforce API segment limit (~25m). Use 20 minutes to be safe
+            max_seg_s = 1200.0
+            final_spans = []
+            for b, e in spans:
+                seg_len = float(e - b)
+                if seg_len <= max_seg_s:
+                    final_spans.append((b, e))
+                else:
+                    num_chunks = int(np.ceil(seg_len / max_seg_s))
+                    chunk_len = seg_len / num_chunks
+                    for i in range(num_chunks):
+                        cb = b + i * chunk_len
+                        ce = min(b + (i + 1) * chunk_len, e)
+                        final_spans.append((cb, ce))
+
+            # 2) Transcribe each segment
+            logger.info(f"🧩 Created {len(final_spans)} audio segments for ASR")
+            client = OpenAI(api_key=self.settings.OPENAI_API_KEY)
+            audio_dir = "extracted_audio"
+            os.makedirs(audio_dir, exist_ok=True)
+            base = os.path.splitext(file_name)[0]
+
+            segments = []
+            for i, (b, e) in enumerate(final_spans, start=1):
+                start_idx = int(b * sr)
+                end_idx = int(e * sr)
+                seg_y = y[start_idx:end_idx]
+                seg_path = os.path.join(audio_dir, f"{base}_seg_{i:03d}_{int(b)}s-{int(e)}s.wav")
+                sf.write(seg_path, seg_y, sr)
+                try:
+                    with open(seg_path, "rb") as af:
+                        txt = client.audio.transcriptions.create(
+                            model=self.settings.ASR_MODEL,
+                            file=af,
+                            response_format="text",
+                            temperature=0.001,
+                            prompt="Label each line as Operator: or Customer: where possible."
+                        )
+                    text = str(txt)
+                    logger.info(f"✅ ASR {i}/{len(final_spans)}: {len(text)} chars")
+                except Exception as asr_err:
+                    logger.warning(f"❌ ASR failed for segment {i}: {asr_err}")
+                    text = ""
+                segments.append({"start": float(b), "end": float(e), "text": text})
+
+            logger.info(f"✅ [1/6] Transcription completed: {len(segments)} segments generated")
+
+            # 3) Split into transactions
+            logger.info(f"✂️ [2/6] Starting transaction splitting...")
+            txs = split_into_transactions(segments, video_row["started_at"], video_row.get("s3_key"))
+            logger.info(f"✅ [2/6] Transaction splitting completed: {len(txs)} transactions identified")
+
+            # 4) Upload artifacts to S3
+            logger.info(f"☁️ [3/6] Uploading processing artifacts to S3...")
+            prefix = f'deriv/session={video_id}/'
+            put_jsonl(self.s3, self.settings.DERIV_BUCKET, prefix + "segments.jsonl", segments)
+            put_jsonl(self.s3, self.settings.DERIV_BUCKET, prefix + "transactions.jsonl", txs)
+            logger.info(f"✅ [3/6] Artifacts uploaded to s3://{self.settings.DERIV_BUCKET}/{prefix}")
+
+            # 5) persist transactions
+            logger.info(f"💾 [4/6] Inserting {len(txs)} transactions into database...")
+            tx_ids = insert_transactions(self.db, video_row, txs)
+            logger.info(f"✅ [4/6] Transactions inserted with IDs: {len(tx_ids)} records")
+
+            # 6) grading
+            location_id = video_row.get("location_id")
+            logger.info(f"🎯 [5/6] Starting AI grading for {len(txs)} transactions (location: {location_id})...")
+            grades = grade_transactions(txs, self.db, location_id)
+            put_jsonl(self.s3, self.settings.DERIV_BUCKET, prefix + "grades.jsonl", grades)
+            logger.info(f"✅ [5/6] Grading completed and uploaded to S3")
+
+            # 7) upsert grades
+            logger.info(f"📊 [6/6] Upserting {len(tx_ids)} grades to database...")
+            upsert_grades(self.db, tx_ids, grades)
+            logger.info(f"✅ [6/6] Grades successfully stored in database")
+
+            # Final success
+            duration = datetime.now() - start_time
+            logger.info(f"🎉 WAV Processing completed successfully!")
+            logger.info(f"   ⏱️ Total time: {duration.total_seconds():.1f} seconds")
+            logger.info(f"   📈 Results: {len(segments)} segments → {len(txs)} transactions → {len(grades)} grades")
+
+        except Exception as e:
+            duration = datetime.now() - start_time
+            logger.error(f"💥 WAV Processing failed after {duration.total_seconds():.1f} seconds")
+            logger.error(f"   🚨 Error: {str(e)}")
+            raise
+
