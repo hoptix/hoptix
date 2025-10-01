@@ -439,13 +439,10 @@ def transcribe_video(local_path: str) -> List[Dict]:
 
 # ---------- 2) SPLIT (Step‑1 prompt per segment, preserve your @#& format) ----------
 def split_into_transactions(transcript_segments: List[Dict], video_started_at_iso: str, s3_key: str = None) -> List[Dict]:
-    # Use actual video timestamp from filename if available, otherwise use database timestamp
-    if s3_key:
-        actual_video_start = _parse_dt_file_timestamp(s3_key)
-        print(f"Using video timestamp from filename: {actual_video_start}")
-    else:
-        actual_video_start = video_started_at_iso
-        print(f"Using database timestamp: {actual_video_start}")
+    # Anchor all transaction times strictly to the video's database start time
+    # (ignore filename/S3 key to avoid cross-day drift)
+    actual_video_start = video_started_at_iso
+    print(f"Using database timestamp: {actual_video_start}")
     
     results: List[Dict] = []
     for seg in transcript_segments:

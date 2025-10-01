@@ -206,7 +206,15 @@ class ProcessingService:
                     #         if os.path.exists(tmp_clip_path):
                     #             os.remove(tmp_clip_path)
                     
-                    update_tx_meta_with_clip(self.db, tx_id, audio_file_path, speaker_info)
+                    update_tx_meta_with_clip(
+                        self.db,
+                        tx_id,
+                        audio_file_path,
+                        speaker_info,
+                        run_id=video_row.get("run_id"),
+                        tx_started_at=tx_row_with_id.get("started_at"),
+                        tx_ended_at=tx_row_with_id.get("ended_at")
+                    )
                     clip_count += 1
                     logger.info(f"✅ Created audio clip {i+1}/{len(txs)}: {audio_file_path}")
                     
