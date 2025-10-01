@@ -295,47 +295,21 @@ You will be fed a single transcript with potentially multiple transactions occur
 def _tmp_audio_from_video(video_path: str):
     tmpdir = tempfile.mkdtemp(prefix="hoptix_asr_")
     out = os.path.join(tmpdir, "audio.mp3")
-    
-    try:
-        clip = VideoFileClip(video_path)
-        if clip.audio is None:
-            clip.close()
-            raise RuntimeError("No audio track in video")
-        
-        # Try to get duration first, with fallback
-        try:
-            duration = float(clip.duration or 0.0)
-        except Exception as duration_error:
-            print(f"Warning: Could not get video duration: {duration_error}")
-            duration = 3600.0  # Default to 1 hour if we can't determine duration
-        
-        clip.audio.write_audiofile(out, verbose=False, logger=None)
+    clip = VideoFileClip(video_path)
+    if clip.audio is None:
         clip.close()
-        
-    except Exception as video_error:
-        print(f"Error processing video with moviepy: {video_error}")
-        # Fallback: try using ffmpeg directly
-        try:
-            import subprocess
-            cmd = [
-                'ffmpeg', '-i', video_path, '-vn', '-acodec', 'mp3', 
-                '-ar', '16000', '-ac', '1', '-y', out
-            ]
-            subprocess.run(cmd, check=True, capture_output=True)
-            duration = 3600.0  # Default duration for fallback
-            print("Successfully extracted audio using ffmpeg fallback")
-        except Exception as ffmpeg_error:
-            print(f"FFmpeg fallback also failed: {ffmpeg_error}")
-            raise RuntimeError(f"Could not extract audio from video: {video_error}")
-    
+        raise RuntimeError("No audio track in video")
+    clip.audio.write_audiofile(out, verbose=False, logger=None)
+    duration = float(clip.duration or 0.0)
+    clip.close()
     try:
         yield out, duration
     finally:
         with contextlib.suppress(Exception): os.remove(out)
-        with contextlib.suppress(Exception): shutil.rmtree(tmpdir, ignore_errors=True)
+        with contextlib.suppress(Exception): os.rmdir(tmpdir)
 
 def _segment_active_spans(y: np.ndarray, sr: int, window_s: float = 15.0) -> List[tuple[float,float]]:
-    # Mirrors your simple “average==0 → silence” logic to carve spans.
+    # Mirrors your simple "average==0 → silence" logic to carve spans.
     interval = int(sr * window_s)
     idx, removed, prev_active = 0, 0, 0
     begins, ends = [], []
@@ -404,7 +378,6 @@ def _json_or_none(txt: str) -> Dict[str, Any] | None:
 
 # ---------- 1) TRANSCRIBE (extract spans, per‑span ASR) ----------
 def transcribe_video(local_path: str) -> List[Dict]:
-    import librosa  # Import at the top of the function
     segs: List[Dict] = []
     with _tmp_audio_from_video(local_path) as (audio_path, duration):
         y, sr = librosa.load(audio_path, sr=None)
@@ -415,33 +388,11 @@ def transcribe_video(local_path: str) -> List[Dict]:
                 tmp_audio = tf.name
             # Ensure end time doesn't exceed video duration
             end_time = min(int(e+1), duration)
-            
-            # Handle MKV files more carefully - moviepy can have issues with them
-            try:
-                clip = VideoFileClip(local_path).subclip(int(b), end_time)
-                if clip.audio is None:
-                    print(f"Warning: No audio track in video segment {b}-{e}")
-                    clip.close()
-                    continue
-                clip.audio.write_audiofile(tmp_audio, verbose=False, logger=None)
-                clip.close()
-            except Exception as clip_error:
-                print(f"Error processing video segment {b}-{e}: {clip_error}")
-                # Try to use the full audio file instead of subclipping
-                try:
-                    with _tmp_audio_from_video(local_path) as (full_audio_path, _):
-                        # Use librosa to extract the segment
-                        y, sr = librosa.load(full_audio_path, sr=None)
-                        start_sample = int(b * sr)
-                        end_sample = int(min(e, duration) * sr)
-                        segment_audio = y[start_sample:end_sample]
-                        import soundfile as sf
-                        sf.write(tmp_audio, segment_audio, sr)
-                except Exception as fallback_error:
-                    print(f"Fallback audio extraction also failed: {fallback_error}")
-                    continue
+            clip = VideoFileClip(local_path).subclip(int(b), end_time)
+            clip.audio.write_audiofile(tmp_audio, verbose=False, logger=None)
+            clip.close()
 
-            with open(tmp_audio, "rb") as af: 
+            with open(tmp_audio, "rb") as af:
                 try:
                     txt = client.audio.transcriptions.create(
                         model=_settings.ASR_MODEL,
