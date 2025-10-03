@@ -26,22 +26,27 @@ db = Supa(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_KEY)
 storage_service = AnalyticsStorageService(db)
 # analytics_service will be created per request with location-specific data
 
-def convert_item_ids_to_names(item_string: str, item_lookup: ItemLookupService) -> str:
-    """Convert a JSON string of item IDs to human-readable names"""
-    if not item_string or item_string in ['0', '[]', 'None', 'null', None]:
+def convert_item_ids_to_names(item_data, item_lookup: ItemLookupService) -> str:
+    """Convert item IDs to human-readable names. Handles strings, lists, numbers, and None."""
+    if not item_data or item_data in ['0', '[]', 'None', 'null', None, 0]:
         return 'None'
     
     try:
-        # Handle both string and list formats
-        if isinstance(item_string, str):
-            if item_string.startswith('[') and item_string.endswith(']'):
+        # Handle different data types
+        if isinstance(item_data, list):
+            item_list = item_data
+        elif isinstance(item_data, (int, float)):
+            # Single numeric item ID
+            item_list = [str(item_data)]
+        elif isinstance(item_data, str):
+            if item_data.startswith('[') and item_data.endswith(']'):
                 # Parse as proper JSON array
-                item_list = json.loads(item_string)
+                item_list = json.loads(item_data)
             else:
                 # Single item or comma-separated
-                item_list = [item_string.strip()]
+                item_list = [item_data.strip()]
         else:
-            item_list = item_string if isinstance(item_string, list) else [str(item_string)]
+            item_list = [str(item_data)]
         
         # Convert each item ID to name
         item_names = []
@@ -52,8 +57,8 @@ def convert_item_ids_to_names(item_string: str, item_lookup: ItemLookupService) 
         
         return ', '.join(item_names) if item_names else 'None'
     except (json.JSONDecodeError, TypeError, ValueError) as e:
-        logger.warning(f"Failed to convert item string '{item_string}': {e}")
-        return str(item_string)  # Return original if parsing fails
+        logger.warning(f"Failed to convert item data '{item_data}': {e}")
+        return str(item_data)  # Return original if parsing fails
 
 @analytics_bp.route('/run/<run_id>', methods=['GET'])
 def get_run_analytics(run_id: str):
@@ -127,10 +132,10 @@ def get_run_transactions(run_id: str):
             
             # List of fields that contain item IDs to convert
             item_fields = [
-                'items_initial', 'items_after', 'items_upsellable', 'items_upselling_creators',
-                'items_upsold', 'items_upsold_creators', 'items_upsizeable', 'items_upsizing_creators',
-                'items_upsize_success', 'items_upsize_creators', 'items_addonable', 'items_addon_creators',
-                'items_addon_success', 'items_addon_final_creators'
+                'items_initial', 'items_after', 'upsell_candidate_items', 'upsell_offered_items',
+                'upsell_success_items', 'upsize_candidate_items', 'upsize_offered_items',
+                'upsize_success_items', 'addon_candidate_items', 'addon_offered_items',
+                'addon_success_items'
             ]
             
             for field in item_fields:
@@ -139,7 +144,11 @@ def get_run_transactions(run_id: str):
                     raw_value = processed_transaction[field]
                     processed_transaction[f"{field}_raw"] = raw_value
                     # Then convert to names
-                    processed_transaction[field] = convert_item_ids_to_names(raw_value, item_lookup)
+                    converted_value = convert_item_ids_to_names(raw_value, item_lookup)
+                    processed_transaction[field] = converted_value
+                    logger.info(f"Converted {field}: {raw_value} -> {converted_value}")
+                else:
+                    logger.debug(f"Field {field} not found in transaction")
             
             processed_transactions.append(processed_transaction)
         

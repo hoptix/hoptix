@@ -19,7 +19,7 @@ interface SiteHeaderProps {
 }
 
 export function SiteHeader({ 
-  title = "Hoptix Dashboard",
+  title = "Analytics Dashboard",
   showLocationDropdown = false,
   selectedLocationId,
   onLocationChange

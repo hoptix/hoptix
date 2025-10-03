@@ -210,15 +210,15 @@ export default function AnalyticsReportPage() {
               />
               <MetricCard
                 title="Success Rate"
-                value={`${((data.total_successes / Math.max(data.total_opportunities, 1)) * 100).toFixed(1)}%`}
-                subtitle="Overall performance"
+                value={`${((data.total_successes / Math.max(data.total_offers, 1)) * 100).toFixed(1)}%`}
+                subtitle={`${data.total_successes} of ${data.total_offers} offers converted`}
                 icon={IconTarget}
                 color="primary"
               />
               <MetricCard
-                title="Total Opportunities"
-                value={data.total_opportunities}
-                subtitle="Identified"
+                title="Total Offers"
+                value={data.total_offers}
+                subtitle="Offers made"
                 icon={IconCheck}
                 color="neutral"
               />
@@ -257,12 +257,12 @@ export default function AnalyticsReportPage() {
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-sm font-medium text-gray-700">Success Rate</span>
                       <Badge className={`${
-                        data.upsell_opportunities > 0 && ((data.upsell_successes / data.upsell_opportunities) * 100) >= 50
+                        data.upsell_offers > 0 && ((data.upsell_successes / data.upsell_offers) * 100) >= 50
                           ? 'bg-green-100 text-green-800 hover:bg-green-200'
                           : 'bg-red-100 text-red-800 hover:bg-red-200'
                       }`}>
-                        {data.upsell_opportunities > 0 
-                          ? `${((data.upsell_successes / data.upsell_opportunities) * 100).toFixed(1)}%`
+                        {data.upsell_offers > 0 
+                          ? `${((data.upsell_successes / data.upsell_offers) * 100).toFixed(1)}%`
                           : '0%'
                         }
                       </Badge>
@@ -300,12 +300,12 @@ export default function AnalyticsReportPage() {
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-sm font-medium text-gray-700">Success Rate</span>
                       <Badge className={`${
-                        data.upsize_opportunities > 0 && ((data.upsize_successes / data.upsize_opportunities) * 100) >= 50
+                        data.upsize_offers > 0 && ((data.upsize_successes / data.upsize_offers) * 100) >= 50
                           ? 'bg-green-100 text-green-800 hover:bg-green-200'
                           : 'bg-red-100 text-red-800 hover:bg-red-200'
                       }`}>
-                        {data.upsize_opportunities > 0 
-                          ? `${((data.upsize_successes / data.upsize_opportunities) * 100).toFixed(1)}%`
+                        {data.upsize_offers > 0 
+                          ? `${((data.upsize_successes / data.upsize_offers) * 100).toFixed(1)}%`
                           : '0%'
                         }
                       </Badge>
@@ -343,12 +343,12 @@ export default function AnalyticsReportPage() {
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-sm font-medium text-gray-700">Success Rate</span>
                       <Badge className={`${
-                        data.addon_opportunities > 0 && ((data.addon_successes / data.addon_opportunities) * 100) >= 50
+                        data.addon_offers > 0 && ((data.addon_successes / data.addon_offers) * 100) >= 50
                           ? 'bg-green-100 text-green-800 hover:bg-green-200'
                           : 'bg-red-100 text-red-800 hover:bg-red-200'
                       }`}>
-                        {data.addon_opportunities > 0 
-                          ? `${((data.addon_successes / data.addon_opportunities) * 100).toFixed(1)}%`
+                        {data.addon_offers > 0 
+                          ? `${((data.addon_successes / data.addon_offers) * 100).toFixed(1)}%`
                           : '0%'
                         }
                       </Badge>
@@ -404,10 +404,10 @@ export default function AnalyticsReportPage() {
                       <h4 className="font-semibold text-gray-800 mb-3 text-sm uppercase tracking-wide">Success Rate</h4>
                       <div className="text-center">
                         <div className="text-3xl font-bold text-gray-900 mb-1">
-                          {((data.total_successes / Math.max(data.total_opportunities, 1)) * 100).toFixed(1)}%
+                          {((data.total_successes / Math.max(data.total_offers, 1)) * 100).toFixed(1)}%
                         </div>
                         <div className="text-sm text-gray-600">
-                          {data.total_successes} of {data.total_opportunities} opportunities converted
+                          {data.total_successes} of {data.total_offers} offers converted
                         </div>
                       </div>
                     </div>
@@ -496,30 +496,30 @@ export default function AnalyticsReportPage() {
                                 <h4 className="font-semibold text-gray-900">Upselling</h4>
                               </div>
                               <Badge className={`${
-                                (data.detailed_analytics.operator_analytics.upselling?.[operatorName]?.success_rate || 0) >= 50
+                                (data.detailed_analytics?.operator_analytics?.upselling?.[operatorName]?.success_rate || 0) >= 50
                                   ? 'bg-green-100 text-green-800'
                                   : 'bg-red-100 text-red-800'
                               }`}>
-                                {data.detailed_analytics.operator_analytics.upselling?.[operatorName]?.success_rate?.toFixed(1) || '0'}%
+                                Success Rate: {data.detailed_analytics?.operator_analytics?.upselling?.[operatorName]?.success_rate?.toFixed(1) || '0'}%
                               </Badge>
                             </div>
                             <div className="space-y-3">
                               <div className="flex justify-between text-sm">
                                 <span className="text-gray-600">Offers:</span>
                                 <span className="font-medium text-gray-900">
-                                  {data.detailed_analytics.operator_analytics.upselling?.[operatorName]?.total_offers || 0}
+                                  {data.detailed_analytics?.operator_analytics?.upselling?.[operatorName]?.total_offers || 0}
                                 </span>
                               </div>
                               <div className="flex justify-between text-sm">
                                 <span className="text-gray-600">Successes:</span>
                                 <span className="font-medium text-green-600">
-                                  {data.detailed_analytics.operator_analytics.upselling?.[operatorName]?.total_successes || 0}
+                                  {data.detailed_analytics?.operator_analytics?.upselling?.[operatorName]?.total_successes || 0}
                                 </span>
                               </div>
                               <div className="flex justify-between text-sm">
                                 <span className="text-gray-600">Revenue:</span>
                                 <span className="font-semibold text-green-600">
-                                  ${data.detailed_analytics.operator_analytics.upselling?.[operatorName]?.total_revenue?.toFixed(2) || '0.00'}
+                                  ${data.detailed_analytics?.operator_analytics?.upselling?.[operatorName]?.total_revenue?.toFixed(2) || '0.00'}
                                 </span>
                               </div>
                             </div>
@@ -535,30 +535,30 @@ export default function AnalyticsReportPage() {
                                 <h4 className="font-semibold text-gray-900">Upsizing</h4>
                               </div>
                               <Badge className={`${
-                                (data.detailed_analytics.operator_analytics.upsizing?.[operatorName]?.success_rate || 0) >= 50
+                                (data.detailed_analytics?.operator_analytics?.upsizing?.[operatorName]?.success_rate || 0) >= 50
                                   ? 'bg-green-100 text-green-800'
                                   : 'bg-red-100 text-red-800'
                               }`}>
-                                {data.detailed_analytics.operator_analytics.upsizing?.[operatorName]?.success_rate?.toFixed(1) || '0'}%
+                                Success Rate: {data.detailed_analytics?.operator_analytics?.upsizing?.[operatorName]?.success_rate?.toFixed(1) || '0'}%
                               </Badge>
                             </div>
                             <div className="space-y-3">
                               <div className="flex justify-between text-sm">
                                 <span className="text-gray-600">Offers:</span>
                                 <span className="font-medium text-gray-900">
-                                  {data.detailed_analytics.operator_analytics.upsizing?.[operatorName]?.total_offers || 0}
+                                  {data.detailed_analytics?.operator_analytics?.upsizing?.[operatorName]?.total_offers || 0}
                                 </span>
                               </div>
                               <div className="flex justify-between text-sm">
                                 <span className="text-gray-600">Successes:</span>
                                 <span className="font-medium text-blue-600">
-                                  {data.detailed_analytics.operator_analytics.upsizing?.[operatorName]?.total_successes || 0}
+                                  {data.detailed_analytics?.operator_analytics?.upsizing?.[operatorName]?.total_successes || 0}
                                 </span>
                               </div>
                               <div className="flex justify-between text-sm">
                                 <span className="text-gray-600">Revenue:</span>
                                 <span className="font-semibold text-blue-600">
-                                  ${data.detailed_analytics.operator_analytics.upsizing?.[operatorName]?.total_revenue?.toFixed(2) || '0.00'}
+                                  ${data.detailed_analytics?.operator_analytics?.upsizing?.[operatorName]?.total_revenue?.toFixed(2) || '0.00'}
                                 </span>
                               </div>
                             </div>
@@ -574,30 +574,30 @@ export default function AnalyticsReportPage() {
                                 <h4 className="font-semibold text-gray-900">Add-ons</h4>
                               </div>
                               <Badge className={`${
-                                (data.detailed_analytics.operator_analytics.addons?.[operatorName]?.success_rate || 0) >= 50
+                                (data.detailed_analytics?.operator_analytics?.addons?.[operatorName]?.success_rate || 0) >= 50
                                   ? 'bg-green-100 text-green-800'
                                   : 'bg-red-100 text-red-800'
                               }`}>
-                                {data.detailed_analytics.operator_analytics.addons?.[operatorName]?.success_rate?.toFixed(1) || '0'}%
+                                Success Rate: {data.detailed_analytics?.operator_analytics?.addons?.[operatorName]?.success_rate?.toFixed(1) || '0'}%
                               </Badge>
                             </div>
                             <div className="space-y-3">
                               <div className="flex justify-between text-sm">
                                 <span className="text-gray-600">Offers:</span>
                                 <span className="font-medium text-gray-900">
-                                  {data.detailed_analytics.operator_analytics.addons?.[operatorName]?.total_offers || 0}
+                                  {data.detailed_analytics?.operator_analytics?.addons?.[operatorName]?.total_offers || 0}
                                 </span>
                               </div>
                               <div className="flex justify-between text-sm">
                                 <span className="text-gray-600">Successes:</span>
                                 <span className="font-medium text-purple-600">
-                                  {data.detailed_analytics.operator_analytics.addons?.[operatorName]?.total_successes || 0}
+                                  {data.detailed_analytics?.operator_analytics?.addons?.[operatorName]?.total_successes || 0}
                                 </span>
                               </div>
                               <div className="flex justify-between text-sm">
                                 <span className="text-gray-600">Revenue:</span>
                                 <span className="font-semibold text-purple-600">
-                                  ${data.detailed_analytics.operator_analytics.addons?.[operatorName]?.total_revenue?.toFixed(2) || '0.00'}
+                                  ${data.detailed_analytics?.operator_analytics?.addons?.[operatorName]?.total_revenue?.toFixed(2) || '0.00'}
                                 </span>
                               </div>
                             </div>
@@ -634,8 +634,8 @@ export default function AnalyticsReportPage() {
                     <CardContent>
                       <div className="space-y-3 max-h-80 overflow-y-auto">
                         {Object.entries(data.detailed_analytics.upselling.by_item)
-                          .filter(([_, itemData]: [string, any]) => itemData.successes > 0)
-                          .sort(([_, a]: [string, any], [__, b]: [string, any]) => b.successes - a.successes)
+                          .filter(([_, itemData]: [string, any]) => itemData.converted_count > 0)
+                          .sort(([_, a]: [string, any], [__, b]: [string, any]) => b.converted_count - a.converted_count)
                           .slice(0, 8)
                           .map(([itemName, itemData]: [string, any]) => (
                             <div key={itemName} className="border border-gray-200 rounded-lg p-3 hover:bg-green-50 transition-colors">
@@ -643,11 +643,11 @@ export default function AnalyticsReportPage() {
                                 <div className="flex-1 min-w-0">
                                   <div className="font-medium text-sm text-gray-900 truncate">{itemName}</div>
                                   <div className="text-xs text-gray-500 mt-1">
-                                    {itemData.offers} offers • {itemData.opportunities} opportunities
+                                    {itemData.offered_count} offers • {itemData.candidate_count} opportunities
                                   </div>
                                 </div>
                                 <div className="text-right ml-3">
-                                  <div className="font-bold text-green-600 text-sm">{itemData.successes}</div>
+                                  <div className="font-bold text-green-600 text-sm">{itemData.converted_count} sold</div>
                                   <div className="text-xs text-gray-500">
                                     {itemData.success_rate?.toFixed(1)}%
                                   </div>
@@ -677,8 +677,8 @@ export default function AnalyticsReportPage() {
                     <CardContent>
                       <div className="space-y-3 max-h-80 overflow-y-auto">
                         {Object.entries(data.detailed_analytics.upsizing.by_item)
-                          .filter(([_, itemData]: [string, any]) => itemData.successes > 0)
-                          .sort(([_, a]: [string, any], [__, b]: [string, any]) => b.successes - a.successes)
+                          .filter(([_, itemData]: [string, any]) => itemData.converted_count > 0)
+                          .sort(([_, a]: [string, any], [__, b]: [string, any]) => b.converted_count - a.converted_count)
                           .slice(0, 8)
                           .map(([itemName, itemData]: [string, any]) => (
                             <div key={itemName} className="border border-gray-200 rounded-lg p-3 hover:bg-blue-50 transition-colors">
@@ -686,11 +686,11 @@ export default function AnalyticsReportPage() {
                                 <div className="flex-1 min-w-0">
                                   <div className="font-medium text-sm text-gray-900 truncate">{itemName}</div>
                                   <div className="text-xs text-gray-500 mt-1">
-                                    {itemData.offers} offers • {itemData.opportunities} opportunities
+                                    {itemData.offered_count} offers • {itemData.candidate_count} opportunities
                                   </div>
                                 </div>
                                 <div className="text-right ml-3">
-                                  <div className="font-bold text-blue-600 text-sm">{itemData.successes}</div>
+                                  <div className="font-bold text-blue-600 text-sm">{itemData.converted_count} sold</div>
                                   <div className="text-xs text-gray-500">
                                     {itemData.success_rate?.toFixed(1)}%
                                   </div>
@@ -720,8 +720,8 @@ export default function AnalyticsReportPage() {
                     <CardContent>
                       <div className="space-y-3 max-h-80 overflow-y-auto">
                         {Object.entries(data.detailed_analytics.addons.by_item)
-                          .filter(([_, itemData]: [string, any]) => itemData.successes > 0)
-                          .sort(([_, a]: [string, any], [__, b]: [string, any]) => b.successes - a.successes)
+                          .filter(([_, itemData]: [string, any]) => itemData.converted_count > 0)
+                          .sort(([_, a]: [string, any], [__, b]: [string, any]) => b.converted_count - a.converted_count)
                           .slice(0, 8)
                           .map(([itemName, itemData]: [string, any]) => (
                             <div key={itemName} className="border border-gray-200 rounded-lg p-3 hover:bg-purple-50 transition-colors">
@@ -729,11 +729,11 @@ export default function AnalyticsReportPage() {
                                 <div className="flex-1 min-w-0">
                                   <div className="font-medium text-sm text-gray-900 truncate">{itemName}</div>
                                   <div className="text-xs text-gray-500 mt-1">
-                                    {itemData.offers} offers • {itemData.opportunities} opportunities
+                                    {itemData.offered_count} offers • {itemData.candidate_count} opportunities
                                   </div>
                                 </div>
                                 <div className="text-right ml-3">
-                                  <div className="font-bold text-purple-600 text-sm">{itemData.successes}</div>
+                                  <div className="font-bold text-purple-600 text-sm">{itemData.converted_count} sold</div>
                                   <div className="text-xs text-gray-500">
                                     {itemData.success_rate?.toFixed(1)}%
                                   </div>

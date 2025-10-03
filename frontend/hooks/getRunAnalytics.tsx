@@ -1,87 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 
 interface OperatorMetrics {
-  upselling?: {
-    summary?: {
-      total_opportunities: number;
-      total_offers: number;
-      total_successes: number;
-      total_revenue: number;
-      offer_rate: number;
-      success_rate: number;
-      conversion_rate: number;
-    };
-    // Direct properties (based on actual API response)
-    total_opportunities?: number;
-    total_offers?: number;
-    total_successes?: number;
-    total_revenue?: number;
-    offer_rate?: number;
-    success_rate?: number;
-    conversion_rate?: number;
-    item_breakdown?: Record<string, {
-      opportunities: number;
-      offers: number;
-      successes: number;
-      revenue: number;
-      offer_rate: number;
-      success_rate: number;
-    }>;
-  };
-  upsizing?: {
-    summary?: {
-      total_opportunities: number;
-      total_offers: number;
-      total_successes: number;
-      total_revenue: number;
-      offer_rate: number;
-      success_rate: number;
-      conversion_rate: number;
-    };
-    // Direct properties (based on actual API response)
-    total_opportunities?: number;
-    total_offers?: number;
-    total_successes?: number;
-    total_revenue?: number;
-    offer_rate?: number;
-    success_rate?: number;
-    conversion_rate?: number;
-    item_breakdown?: Record<string, {
-      opportunities: number;
-      offers: number;
-      successes: number;
-      revenue: number;
-      offer_rate: number;
-      success_rate: number;
-    }>;
-  };
-  addons?: {
-    summary?: {
-      total_opportunities: number;
-      total_offers: number;
-      total_successes: number;
-      total_revenue: number;
-      offer_rate: number;
-      success_rate: number;
-      conversion_rate: number;
-    };
-    // Direct properties (based on actual API response)
-    total_opportunities?: number;
-    total_offers?: number;
-    total_successes?: number;
-    total_revenue?: number;
-    offer_rate?: number;
-    success_rate?: number;
-    conversion_rate?: number;
-    item_breakdown?: Record<string, {
-      opportunities: number;
-      offers: number;
-      successes: number;
-      revenue: number;
-      offer_rate: number;
-      success_rate: number;
-    }>;
-  };
+  total_opportunities?: number;
+  total_offers?: number;
+  total_successes?: number;
+  total_revenue?: number;
+  offer_rate?: number;
+  success_rate?: number;
+  conversion_rate?: number;
+  avg_revenue_per_success?: number;
 }
 
 interface RunAnalytics {
@@ -129,8 +56,48 @@ interface RunAnalytics {
     
     // Detailed analytics with operator breakdown
     detailed_analytics?: {
-      operator_analytics?: Record<string, OperatorMetrics>;
+      operator_analytics?: {
+        upselling?: Record<string, OperatorMetrics>;
+        upsizing?: Record<string, OperatorMetrics>;
+        addons?: Record<string, OperatorMetrics>;
+      };
       recommendations?: string[];
+      upselling?: {
+        by_item?: Record<string, {
+          candidate_count: number;
+          offered_count: number;
+          converted_count: number;
+          offer_rate: number;
+          conversion_rate: number;
+          success_rate: number;
+          candidate_coverage: number;
+          revenue: number;
+        }>;
+      };
+      upsizing?: {
+        by_item?: Record<string, {
+          candidate_count: number;
+          offered_count: number;
+          converted_count: number;
+          offer_rate: number;
+          conversion_rate: number;
+          success_rate: number;
+          candidate_coverage: number;
+          revenue: number;
+        }>;
+      };
+      addons?: {
+        by_item?: Record<string, {
+          candidate_count: number;
+          offered_count: number;
+          converted_count: number;
+          offer_rate: number;
+          conversion_rate: number;
+          success_rate: number;
+          candidate_coverage: number;
+          revenue: number;
+        }>;
+      };
     };
   };
   error?: string;

@@ -1,0 +1,2275 @@
+{
+  "store": {
+    "location_id": "unknown",
+    "location_name": "Unknown Location",
+    "summary": {
+      "total_transactions": 315,
+      "complete_transactions": 0,
+      "completion_rate": 0.0,
+      "avg_items_initial": 0.0,
+      "avg_items_final": 0.0,
+      "avg_item_increase": 0.0,
+      "generated_at": "2025-10-01T14:25:58.880349"
+    },
+    "upselling": {
+      "summary": {
+        "total_opportunities": 141,
+        "total_offers": 27,
+        "total_successes": 15,
+        "conversion_rate": 10.638297872340425,
+        "offer_rate": 19.148936170212767,
+        "success_rate": 55.55555555555556,
+        "total_revenue": 70.46000000000001
+      },
+      "item_breakdown": {
+        "Sundae": {
+          "candidate_count": 1,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Small Sundae": {
+          "candidate_count": 25,
+          "offered_count": 1,
+          "converted_count": 1,
+          "offer_rate": 4.0,
+          "conversion_rate": 4.0,
+          "success_rate": 100.0,
+          "candidate_coverage": 4.0,
+          "revenue": 5.79
+        },
+        "Small Blizzard": {
+          "candidate_count": 0,
+          "offered_count": 0,
+          "converted_count": 3,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 18.81
+        },
+        "Fries": {
+          "candidate_count": 2,
+          "offered_count": 1,
+          "converted_count": 0,
+          "offer_rate": 50.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 50.0,
+          "revenue": 0.0
+        },
+        "Small Fries": {
+          "candidate_count": 1,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Medium/Regular Fries": {
+          "candidate_count": 19,
+          "offered_count": 7,
+          "converted_count": 3,
+          "offer_rate": 36.84210526315789,
+          "conversion_rate": 15.789473684210526,
+          "success_rate": 42.857142857142854,
+          "candidate_coverage": 36.84210526315789,
+          "revenue": 29.52
+        },
+        "Medium/Regular Onion Rings": {
+          "candidate_count": 0,
+          "offered_count": 0,
+          "converted_count": 1,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 3.97
+        },
+        "Pretzel sticks": {
+          "candidate_count": 24,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Drink": {
+          "candidate_count": 15,
+          "offered_count": 4,
+          "converted_count": 0,
+          "offer_rate": 26.666666666666668,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 26.666666666666668,
+          "revenue": 0.0
+        },
+        "Small Drink": {
+          "candidate_count": 34,
+          "offered_count": 4,
+          "converted_count": 1,
+          "offer_rate": 11.76470588235294,
+          "conversion_rate": 2.941176470588235,
+          "success_rate": 25.0,
+          "candidate_coverage": 11.76470588235294,
+          "revenue": 1.93
+        },
+        "Medium/Regular Drink": {
+          "candidate_count": 20,
+          "offered_count": 8,
+          "converted_count": 4,
+          "offer_rate": 40.0,
+          "conversion_rate": 20.0,
+          "success_rate": 50.0,
+          "candidate_coverage": 40.0,
+          "revenue": 9.08
+        },
+        "Large Drink": {
+          "candidate_count": 5,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Chilli dog": {
+          "candidate_count": 24,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Dipping Sauce": {
+          "candidate_count": 23,
+          "offered_count": 3,
+          "converted_count": 2,
+          "offer_rate": 13.043478260869565,
+          "conversion_rate": 8.695652173913043,
+          "success_rate": 66.66666666666666,
+          "candidate_coverage": 13.043478260869565,
+          "revenue": 1.36
+        }
+      }
+    },
+    "upsizing": {
+      "summary": {
+        "total_opportunities": 192,
+        "total_offers": 40,
+        "total_successes": 9,
+        "conversion_rate": 4.6875,
+        "offer_rate": 20.833333333333336,
+        "success_rate": 22.5,
+        "total_revenue": 66.70000000000002,
+        "largest_offers": 18,
+        "largest_offer_rate": 45.0
+      },
+      "item_breakdown": {
+        "Dilly Bar": {
+          "candidate_count": 1,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Shakes & Malts": {
+          "candidate_count": 1,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Small Shakes & Malts": {
+          "candidate_count": 4,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Large Shakes & Malts": {
+          "candidate_count": 2,
+          "offered_count": 0,
+          "converted_count": 2,
+          "offer_rate": 0.0,
+          "conversion_rate": 100.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 18.44
+        },
+        "Small Misty Slush": {
+          "candidate_count": 4,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Small Sundae": {
+          "candidate_count": 15,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Blizzard": {
+          "candidate_count": 4,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Small Blizzard": {
+          "candidate_count": 19,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Large Blizzard": {
+          "candidate_count": 0,
+          "offered_count": 0,
+          "converted_count": 4,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 36.92
+        },
+        "Small Fries": {
+          "candidate_count": 2,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Medium/Regular Fries": {
+          "candidate_count": 58,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Large Fries": {
+          "candidate_count": 2,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Medium/Regular Onion Rings": {
+          "candidate_count": 4,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Medium/Regular Cheese Curds": {
+          "candidate_count": 3,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Sundae": {
+          "candidate_count": 6,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Medium/Regular Sundae": {
+          "candidate_count": 1,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Large Sundae": {
+          "candidate_count": 1,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Small Original Cheeseburger": {
+          "candidate_count": 1,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "4-Piece CB Chicken (Strip) Basket (Includes a Regular Fries)": {
+          "candidate_count": 1,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Drink": {
+          "candidate_count": 1,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Small Drink": {
+          "candidate_count": 10,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Medium/Regular Drink": {
+          "candidate_count": 39,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Large Drink": {
+          "candidate_count": 1,
+          "offered_count": 0,
+          "converted_count": 2,
+          "offer_rate": 0.0,
+          "conversion_rate": 200.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 5.68
+        },
+        "Small Cone": {
+          "candidate_count": 5,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Large Cone": {
+          "candidate_count": 1,
+          "offered_count": 0,
+          "converted_count": 1,
+          "offer_rate": 0.0,
+          "conversion_rate": 100.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 5.66
+        },
+        "Dipped Cone": {
+          "candidate_count": 2,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Small Dipped Cone": {
+          "candidate_count": 3,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Large Dipped Cone": {
+          "candidate_count": 1,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        }
+      }
+    },
+    "addons": {
+      "summary": {
+        "total_opportunities": 318,
+        "total_offers": 9,
+        "total_successes": 2,
+        "conversion_rate": 0.628930817610063,
+        "offer_rate": 2.8301886792452833,
+        "success_rate": 22.22222222222222,
+        "total_revenue": 1.95
+      },
+      "item_breakdown": {
+        "Whipped Cream": {
+          "candidate_count": 40,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Nuts": {
+          "candidate_count": 29,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Sprinkles": {
+          "candidate_count": 60,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Double Dip": {
+          "candidate_count": 26,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Extra Malt": {
+          "candidate_count": 23,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        },
+        "Primary Topping": {
+          "candidate_count": 170,
+          "offered_count": 0,
+          "converted_count": 1,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.5882352941176471,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 1.21
+        },
+        "Ice Cream Topping": {
+          "candidate_count": 15,
+          "offered_count": 0,
+          "converted_count": 1,
+          "offer_rate": 0.0,
+          "conversion_rate": 6.666666666666667,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.74
+        },
+        "Pecans": {
+          "candidate_count": 3,
+          "offered_count": 0,
+          "converted_count": 0,
+          "offer_rate": 0.0,
+          "conversion_rate": 0.0,
+          "success_rate": 0.0,
+          "candidate_coverage": 0.0,
+          "revenue": 0.0
+        }
+      }
+    },
+    "operators": {
+      "Unknown": {
+        "upselling": {
+          "summary": {
+            "total_opportunities": 141,
+            "total_offers": 27,
+            "total_successes": 15,
+            "conversion_rate": 10.638297872340425,
+            "offer_rate": 19.148936170212767,
+            "success_rate": 55.55555555555556,
+            "total_revenue": 70.46000000000001
+          },
+          "item_breakdown": {
+            "Sundae": {
+              "candidate_count": 1,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Small Sundae": {
+              "candidate_count": 25,
+              "offered_count": 1,
+              "converted_count": 1,
+              "offer_rate": 4.0,
+              "conversion_rate": 4.0,
+              "success_rate": 100.0,
+              "candidate_coverage": 4.0,
+              "revenue": 5.79
+            },
+            "Small Blizzard": {
+              "candidate_count": 0,
+              "offered_count": 0,
+              "converted_count": 3,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 18.81
+            },
+            "Fries": {
+              "candidate_count": 2,
+              "offered_count": 1,
+              "converted_count": 0,
+              "offer_rate": 50.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 50.0,
+              "revenue": 0.0
+            },
+            "Small Fries": {
+              "candidate_count": 1,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Medium/Regular Fries": {
+              "candidate_count": 19,
+              "offered_count": 7,
+              "converted_count": 3,
+              "offer_rate": 36.84210526315789,
+              "conversion_rate": 15.789473684210526,
+              "success_rate": 42.857142857142854,
+              "candidate_coverage": 36.84210526315789,
+              "revenue": 29.52
+            },
+            "Medium/Regular Onion Rings": {
+              "candidate_count": 0,
+              "offered_count": 0,
+              "converted_count": 1,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 3.97
+            },
+            "Pretzel sticks": {
+              "candidate_count": 24,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Drink": {
+              "candidate_count": 15,
+              "offered_count": 4,
+              "converted_count": 0,
+              "offer_rate": 26.666666666666668,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 26.666666666666668,
+              "revenue": 0.0
+            },
+            "Small Drink": {
+              "candidate_count": 34,
+              "offered_count": 4,
+              "converted_count": 1,
+              "offer_rate": 11.76470588235294,
+              "conversion_rate": 2.941176470588235,
+              "success_rate": 25.0,
+              "candidate_coverage": 11.76470588235294,
+              "revenue": 1.93
+            },
+            "Medium/Regular Drink": {
+              "candidate_count": 20,
+              "offered_count": 8,
+              "converted_count": 4,
+              "offer_rate": 40.0,
+              "conversion_rate": 20.0,
+              "success_rate": 50.0,
+              "candidate_coverage": 40.0,
+              "revenue": 9.08
+            },
+            "Large Drink": {
+              "candidate_count": 5,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Chilli dog": {
+              "candidate_count": 24,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Dipping Sauce": {
+              "candidate_count": 23,
+              "offered_count": 3,
+              "converted_count": 2,
+              "offer_rate": 13.043478260869565,
+              "conversion_rate": 8.695652173913043,
+              "success_rate": 66.66666666666666,
+              "candidate_coverage": 13.043478260869565,
+              "revenue": 1.36
+            }
+          }
+        },
+        "upsizing": {
+          "summary": {
+            "total_opportunities": 192,
+            "total_offers": 40,
+            "total_successes": 9,
+            "conversion_rate": 4.6875,
+            "offer_rate": 20.833333333333336,
+            "success_rate": 22.5,
+            "total_revenue": 66.70000000000002,
+            "largest_offers": 18,
+            "largest_offer_rate": 45.0
+          },
+          "item_breakdown": {
+            "Dilly Bar": {
+              "candidate_count": 1,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Shakes & Malts": {
+              "candidate_count": 1,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Small Shakes & Malts": {
+              "candidate_count": 4,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Large Shakes & Malts": {
+              "candidate_count": 2,
+              "offered_count": 0,
+              "converted_count": 2,
+              "offer_rate": 0.0,
+              "conversion_rate": 100.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 18.44
+            },
+            "Small Misty Slush": {
+              "candidate_count": 4,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Small Sundae": {
+              "candidate_count": 15,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Blizzard": {
+              "candidate_count": 4,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Small Blizzard": {
+              "candidate_count": 19,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Large Blizzard": {
+              "candidate_count": 0,
+              "offered_count": 0,
+              "converted_count": 4,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 36.92
+            },
+            "Small Fries": {
+              "candidate_count": 2,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Medium/Regular Fries": {
+              "candidate_count": 58,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Large Fries": {
+              "candidate_count": 2,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Medium/Regular Onion Rings": {
+              "candidate_count": 4,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Medium/Regular Cheese Curds": {
+              "candidate_count": 3,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Sundae": {
+              "candidate_count": 6,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Medium/Regular Sundae": {
+              "candidate_count": 1,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Large Sundae": {
+              "candidate_count": 1,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Small Original Cheeseburger": {
+              "candidate_count": 1,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "4-Piece CB Chicken (Strip) Basket (Includes a Regular Fries)": {
+              "candidate_count": 1,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Drink": {
+              "candidate_count": 1,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Small Drink": {
+              "candidate_count": 10,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Medium/Regular Drink": {
+              "candidate_count": 39,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Large Drink": {
+              "candidate_count": 1,
+              "offered_count": 0,
+              "converted_count": 2,
+              "offer_rate": 0.0,
+              "conversion_rate": 200.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 5.68
+            },
+            "Small Cone": {
+              "candidate_count": 5,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Large Cone": {
+              "candidate_count": 1,
+              "offered_count": 0,
+              "converted_count": 1,
+              "offer_rate": 0.0,
+              "conversion_rate": 100.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 5.66
+            },
+            "Dipped Cone": {
+              "candidate_count": 2,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Small Dipped Cone": {
+              "candidate_count": 3,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Large Dipped Cone": {
+              "candidate_count": 1,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            }
+          }
+        },
+        "addons": {
+          "summary": {
+            "total_opportunities": 318,
+            "total_offers": 9,
+            "total_successes": 2,
+            "conversion_rate": 0.628930817610063,
+            "offer_rate": 2.8301886792452833,
+            "success_rate": 22.22222222222222,
+            "total_revenue": 1.95
+          },
+          "item_breakdown": {
+            "Whipped Cream": {
+              "candidate_count": 40,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Nuts": {
+              "candidate_count": 29,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Sprinkles": {
+              "candidate_count": 60,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Double Dip": {
+              "candidate_count": 26,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Extra Malt": {
+              "candidate_count": 23,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            },
+            "Primary Topping": {
+              "candidate_count": 170,
+              "offered_count": 0,
+              "converted_count": 1,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.5882352941176471,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 1.21
+            },
+            "Ice Cream Topping": {
+              "candidate_count": 15,
+              "offered_count": 0,
+              "converted_count": 1,
+              "offer_rate": 0.0,
+              "conversion_rate": 6.666666666666667,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.74
+            },
+            "Pecans": {
+              "candidate_count": 3,
+              "offered_count": 0,
+              "converted_count": 0,
+              "offer_rate": 0.0,
+              "conversion_rate": 0.0,
+              "success_rate": 0.0,
+              "candidate_coverage": 0.0,
+              "revenue": 0.0
+            }
+          }
+        }
+      }
+    }
+  },
+  "summary": {
+    "total_transactions": 315,
+    "complete_transactions": 0,
+    "completion_rate": 0.0,
+    "avg_items_initial": 0.0,
+    "avg_items_final": 0.0,
+    "avg_item_increase": 0.0,
+    "generated_at": "2025-10-01T14:25:58.880382"
+  },
+  "upselling": {
+    "total_opportunities": 141,
+    "total_offers": 27,
+    "total_successes": 15,
+    "offer_rate": 19.148936170212767,
+    "success_rate": 55.55555555555556,
+    "conversion_rate": 10.638297872340425,
+    "total_revenue": 70.46000000000001,
+    "avg_revenue_per_success": 4.697333333333334,
+    "violations": {
+      "offers_gt_opportunities": 0,
+      "successes_gt_offers": 1,
+      "declared_vs_list_mismatch": 2
+    },
+    "by_item": {
+      "Sundae": {
+        "candidate_count": 1,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Small Sundae": {
+        "candidate_count": 25,
+        "offered_count": 1,
+        "converted_count": 1,
+        "offer_rate": 4.0,
+        "conversion_rate": 4.0,
+        "success_rate": 100.0,
+        "candidate_coverage": 4.0,
+        "revenue": 5.79
+      },
+      "Small Blizzard": {
+        "candidate_count": 0,
+        "offered_count": 0,
+        "converted_count": 3,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 18.81
+      },
+      "Fries": {
+        "candidate_count": 2,
+        "offered_count": 1,
+        "converted_count": 0,
+        "offer_rate": 50.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 50.0,
+        "revenue": 0.0
+      },
+      "Small Fries": {
+        "candidate_count": 1,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Medium/Regular Fries": {
+        "candidate_count": 19,
+        "offered_count": 7,
+        "converted_count": 3,
+        "offer_rate": 36.84210526315789,
+        "conversion_rate": 15.789473684210526,
+        "success_rate": 42.857142857142854,
+        "candidate_coverage": 36.84210526315789,
+        "revenue": 29.52
+      },
+      "Medium/Regular Onion Rings": {
+        "candidate_count": 0,
+        "offered_count": 0,
+        "converted_count": 1,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 3.97
+      },
+      "Pretzel sticks": {
+        "candidate_count": 24,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Drink": {
+        "candidate_count": 15,
+        "offered_count": 4,
+        "converted_count": 0,
+        "offer_rate": 26.666666666666668,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 26.666666666666668,
+        "revenue": 0.0
+      },
+      "Small Drink": {
+        "candidate_count": 34,
+        "offered_count": 4,
+        "converted_count": 1,
+        "offer_rate": 11.76470588235294,
+        "conversion_rate": 2.941176470588235,
+        "success_rate": 25.0,
+        "candidate_coverage": 11.76470588235294,
+        "revenue": 1.93
+      },
+      "Medium/Regular Drink": {
+        "candidate_count": 20,
+        "offered_count": 8,
+        "converted_count": 4,
+        "offer_rate": 40.0,
+        "conversion_rate": 20.0,
+        "success_rate": 50.0,
+        "candidate_coverage": 40.0,
+        "revenue": 9.08
+      },
+      "Large Drink": {
+        "candidate_count": 5,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Chilli dog": {
+        "candidate_count": 24,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Dipping Sauce": {
+        "candidate_count": 23,
+        "offered_count": 3,
+        "converted_count": 2,
+        "offer_rate": 13.043478260869565,
+        "conversion_rate": 8.695652173913043,
+        "success_rate": 66.66666666666666,
+        "candidate_coverage": 13.043478260869565,
+        "revenue": 1.36
+      }
+    },
+    "most_converted_items": {
+      "5_2": 4,
+      "25_2": 3,
+      "22_1": 3,
+      "9008_0": 2,
+      "5_1": 1,
+      "1_1": 1,
+      "26_2": 1
+    }
+  },
+  "upsizing": {
+    "total_opportunities": 192,
+    "total_offers": 40,
+    "total_successes": 9,
+    "offer_rate": 20.833333333333336,
+    "success_rate": 22.5,
+    "conversion_rate": 4.6875,
+    "total_revenue": 66.70000000000002,
+    "avg_revenue_per_success": 7.411111111111113,
+    "largest_offers": 18,
+    "largest_offer_rate": 45.0,
+    "violations": {
+      "offers_gt_opportunities": 0,
+      "successes_gt_offers": 0,
+      "declared_vs_list_mismatch": 30
+    },
+    "by_item": {
+      "Dilly Bar": {
+        "candidate_count": 1,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Shakes & Malts": {
+        "candidate_count": 1,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Small Shakes & Malts": {
+        "candidate_count": 4,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Large Shakes & Malts": {
+        "candidate_count": 2,
+        "offered_count": 0,
+        "converted_count": 2,
+        "offer_rate": 0.0,
+        "conversion_rate": 100.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 18.44
+      },
+      "Small Misty Slush": {
+        "candidate_count": 4,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Small Sundae": {
+        "candidate_count": 15,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Blizzard": {
+        "candidate_count": 4,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Small Blizzard": {
+        "candidate_count": 19,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Large Blizzard": {
+        "candidate_count": 0,
+        "offered_count": 0,
+        "converted_count": 4,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 36.92
+      },
+      "Small Fries": {
+        "candidate_count": 2,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Medium/Regular Fries": {
+        "candidate_count": 58,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Large Fries": {
+        "candidate_count": 2,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Medium/Regular Onion Rings": {
+        "candidate_count": 4,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Medium/Regular Cheese Curds": {
+        "candidate_count": 3,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Sundae": {
+        "candidate_count": 6,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Medium/Regular Sundae": {
+        "candidate_count": 1,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Large Sundae": {
+        "candidate_count": 1,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Small Original Cheeseburger": {
+        "candidate_count": 1,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "4-Piece CB Chicken (Strip) Basket (Includes a Regular Fries)": {
+        "candidate_count": 1,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Drink": {
+        "candidate_count": 1,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Small Drink": {
+        "candidate_count": 10,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Medium/Regular Drink": {
+        "candidate_count": 39,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Large Drink": {
+        "candidate_count": 1,
+        "offered_count": 0,
+        "converted_count": 2,
+        "offer_rate": 0.0,
+        "conversion_rate": 200.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 5.68
+      },
+      "Small Cone": {
+        "candidate_count": 5,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Large Cone": {
+        "candidate_count": 1,
+        "offered_count": 0,
+        "converted_count": 1,
+        "offer_rate": 0.0,
+        "conversion_rate": 100.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 5.66
+      },
+      "Dipped Cone": {
+        "candidate_count": 2,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Small Dipped Cone": {
+        "candidate_count": 3,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Large Dipped Cone": {
+        "candidate_count": 1,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      }
+    },
+    "most_converted_items": {
+      "22_3": 4,
+      "13_3": 2,
+      "5_3": 2,
+      "7_3": 1
+    }
+  },
+  "addons": {
+    "total_opportunities": 318,
+    "total_offers": 9,
+    "total_successes": 2,
+    "offer_rate": 2.8301886792452833,
+    "success_rate": 22.22222222222222,
+    "conversion_rate": 0.628930817610063,
+    "total_revenue": 1.95,
+    "avg_revenue_per_success": 0.975,
+    "violations": {
+      "offers_gt_opportunities": 2,
+      "successes_gt_offers": 0,
+      "declared_vs_list_mismatch": 16
+    },
+    "by_item": {
+      "Whipped Cream": {
+        "candidate_count": 40,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Nuts": {
+        "candidate_count": 29,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Sprinkles": {
+        "candidate_count": 60,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Double Dip": {
+        "candidate_count": 26,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Extra Malt": {
+        "candidate_count": 23,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      },
+      "Primary Topping": {
+        "candidate_count": 170,
+        "offered_count": 0,
+        "converted_count": 1,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.5882352941176471,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 1.21
+      },
+      "Ice Cream Topping": {
+        "candidate_count": 15,
+        "offered_count": 0,
+        "converted_count": 1,
+        "offer_rate": 0.0,
+        "conversion_rate": 6.666666666666667,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.74
+      },
+      "Pecans": {
+        "candidate_count": 3,
+        "offered_count": 0,
+        "converted_count": 0,
+        "offer_rate": 0.0,
+        "conversion_rate": 0.0,
+        "success_rate": 0.0,
+        "candidate_coverage": 0.0,
+        "revenue": 0.0
+      }
+    },
+    "most_converted_items": {
+      "9009_0": 1,
+      "9007_0": 1
+    }
+  },
+  "operator_analytics": {
+    "upselling": {
+      "Unknown": {
+        "total_opportunities": 141,
+        "total_offers": 27,
+        "total_successes": 15,
+        "offer_rate": 19.148936170212767,
+        "success_rate": 55.55555555555556,
+        "conversion_rate": 10.638297872340425,
+        "total_revenue": 70.46000000000001,
+        "avg_revenue_per_success": 4.697333333333334,
+        "violations": {
+          "offers_gt_opportunities": 0,
+          "successes_gt_offers": 1,
+          "declared_vs_list_mismatch": 2
+        },
+        "by_item": {
+          "Sundae": {
+            "candidate_count": 1,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Small Sundae": {
+            "candidate_count": 25,
+            "offered_count": 1,
+            "converted_count": 1,
+            "offer_rate": 4.0,
+            "conversion_rate": 4.0,
+            "success_rate": 100.0,
+            "candidate_coverage": 4.0,
+            "revenue": 5.79
+          },
+          "Small Blizzard": {
+            "candidate_count": 0,
+            "offered_count": 0,
+            "converted_count": 3,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 18.81
+          },
+          "Fries": {
+            "candidate_count": 2,
+            "offered_count": 1,
+            "converted_count": 0,
+            "offer_rate": 50.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 50.0,
+            "revenue": 0.0
+          },
+          "Small Fries": {
+            "candidate_count": 1,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Medium/Regular Fries": {
+            "candidate_count": 19,
+            "offered_count": 7,
+            "converted_count": 3,
+            "offer_rate": 36.84210526315789,
+            "conversion_rate": 15.789473684210526,
+            "success_rate": 42.857142857142854,
+            "candidate_coverage": 36.84210526315789,
+            "revenue": 29.52
+          },
+          "Medium/Regular Onion Rings": {
+            "candidate_count": 0,
+            "offered_count": 0,
+            "converted_count": 1,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 3.97
+          },
+          "Pretzel sticks": {
+            "candidate_count": 24,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Drink": {
+            "candidate_count": 15,
+            "offered_count": 4,
+            "converted_count": 0,
+            "offer_rate": 26.666666666666668,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 26.666666666666668,
+            "revenue": 0.0
+          },
+          "Small Drink": {
+            "candidate_count": 34,
+            "offered_count": 4,
+            "converted_count": 1,
+            "offer_rate": 11.76470588235294,
+            "conversion_rate": 2.941176470588235,
+            "success_rate": 25.0,
+            "candidate_coverage": 11.76470588235294,
+            "revenue": 1.93
+          },
+          "Medium/Regular Drink": {
+            "candidate_count": 20,
+            "offered_count": 8,
+            "converted_count": 4,
+            "offer_rate": 40.0,
+            "conversion_rate": 20.0,
+            "success_rate": 50.0,
+            "candidate_coverage": 40.0,
+            "revenue": 9.08
+          },
+          "Large Drink": {
+            "candidate_count": 5,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Chilli dog": {
+            "candidate_count": 24,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Dipping Sauce": {
+            "candidate_count": 23,
+            "offered_count": 3,
+            "converted_count": 2,
+            "offer_rate": 13.043478260869565,
+            "conversion_rate": 8.695652173913043,
+            "success_rate": 66.66666666666666,
+            "candidate_coverage": 13.043478260869565,
+            "revenue": 1.36
+          }
+        },
+        "most_converted_items": {
+          "5_2": 4,
+          "25_2": 3,
+          "22_1": 3,
+          "9008_0": 2,
+          "5_1": 1,
+          "1_1": 1,
+          "26_2": 1
+        }
+      }
+    },
+    "upsizing": {
+      "Unknown": {
+        "total_opportunities": 192,
+        "total_offers": 40,
+        "total_successes": 9,
+        "offer_rate": 20.833333333333336,
+        "success_rate": 22.5,
+        "conversion_rate": 4.6875,
+        "total_revenue": 66.70000000000002,
+        "avg_revenue_per_success": 7.411111111111113,
+        "largest_offers": 18,
+        "largest_offer_rate": 45.0,
+        "violations": {
+          "offers_gt_opportunities": 0,
+          "successes_gt_offers": 0,
+          "declared_vs_list_mismatch": 30
+        },
+        "by_item": {
+          "Dilly Bar": {
+            "candidate_count": 1,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Shakes & Malts": {
+            "candidate_count": 1,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Small Shakes & Malts": {
+            "candidate_count": 4,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Large Shakes & Malts": {
+            "candidate_count": 2,
+            "offered_count": 0,
+            "converted_count": 2,
+            "offer_rate": 0.0,
+            "conversion_rate": 100.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 18.44
+          },
+          "Small Misty Slush": {
+            "candidate_count": 4,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Small Sundae": {
+            "candidate_count": 15,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Blizzard": {
+            "candidate_count": 4,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Small Blizzard": {
+            "candidate_count": 19,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Large Blizzard": {
+            "candidate_count": 0,
+            "offered_count": 0,
+            "converted_count": 4,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 36.92
+          },
+          "Small Fries": {
+            "candidate_count": 2,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Medium/Regular Fries": {
+            "candidate_count": 58,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Large Fries": {
+            "candidate_count": 2,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Medium/Regular Onion Rings": {
+            "candidate_count": 4,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Medium/Regular Cheese Curds": {
+            "candidate_count": 3,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Sundae": {
+            "candidate_count": 6,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Medium/Regular Sundae": {
+            "candidate_count": 1,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Large Sundae": {
+            "candidate_count": 1,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Small Original Cheeseburger": {
+            "candidate_count": 1,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "4-Piece CB Chicken (Strip) Basket (Includes a Regular Fries)": {
+            "candidate_count": 1,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Drink": {
+            "candidate_count": 1,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Small Drink": {
+            "candidate_count": 10,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Medium/Regular Drink": {
+            "candidate_count": 39,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Large Drink": {
+            "candidate_count": 1,
+            "offered_count": 0,
+            "converted_count": 2,
+            "offer_rate": 0.0,
+            "conversion_rate": 200.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 5.68
+          },
+          "Small Cone": {
+            "candidate_count": 5,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Large Cone": {
+            "candidate_count": 1,
+            "offered_count": 0,
+            "converted_count": 1,
+            "offer_rate": 0.0,
+            "conversion_rate": 100.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 5.66
+          },
+          "Dipped Cone": {
+            "candidate_count": 2,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Small Dipped Cone": {
+            "candidate_count": 3,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Large Dipped Cone": {
+            "candidate_count": 1,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          }
+        },
+        "most_converted_items": {
+          "22_3": 4,
+          "13_3": 2,
+          "5_3": 2,
+          "7_3": 1
+        }
+      }
+    },
+    "addons": {
+      "Unknown": {
+        "total_opportunities": 318,
+        "total_offers": 9,
+        "total_successes": 2,
+        "offer_rate": 2.8301886792452833,
+        "success_rate": 22.22222222222222,
+        "conversion_rate": 0.628930817610063,
+        "total_revenue": 1.95,
+        "avg_revenue_per_success": 0.975,
+        "violations": {
+          "offers_gt_opportunities": 2,
+          "successes_gt_offers": 0,
+          "declared_vs_list_mismatch": 16
+        },
+        "by_item": {
+          "Whipped Cream": {
+            "candidate_count": 40,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Nuts": {
+            "candidate_count": 29,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Sprinkles": {
+            "candidate_count": 60,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Double Dip": {
+            "candidate_count": 26,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Extra Malt": {
+            "candidate_count": 23,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          },
+          "Primary Topping": {
+            "candidate_count": 170,
+            "offered_count": 0,
+            "converted_count": 1,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.5882352941176471,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 1.21
+          },
+          "Ice Cream Topping": {
+            "candidate_count": 15,
+            "offered_count": 0,
+            "converted_count": 1,
+            "offer_rate": 0.0,
+            "conversion_rate": 6.666666666666667,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.74
+          },
+          "Pecans": {
+            "candidate_count": 3,
+            "offered_count": 0,
+            "converted_count": 0,
+            "offer_rate": 0.0,
+            "conversion_rate": 0.0,
+            "success_rate": 0.0,
+            "candidate_coverage": 0.0,
+            "revenue": 0.0
+          }
+        },
+        "most_converted_items": {
+          "9009_0": 1,
+          "9007_0": 1
+        }
+      }
+    }
+  },
+  "top_performing_items": {
+    "most_frequent_items": {},
+    "highest_success_rate_items": {},
+    "most_successful_items": {}
+  },
+  "time_analysis": {},
+  "recommendations": [
+    "\ud83c\udfaf Upselling offer rate is only 19.1%. Train staff to identify and act on more upselling opportunities.",
+    "\ud83d\udccf Upsizing offer rate is 20.8%. Encourage staff to suggest larger sizes more consistently.",
+    "\u2b06\ufe0f Only 45.0% of upsize offers mention the largest option. Train staff to always offer the premium size.",
+    "\ud83c\udf5f Add-on offer rate is 2.8%. Focus on suggesting extras like toppings, sides, and premium options.",
+    "\u2b50 '5_2' is your top upsold item. Create targeted promotions around this success."
+  ]
+}

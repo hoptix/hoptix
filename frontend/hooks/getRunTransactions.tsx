@@ -3,49 +3,46 @@ import { useQuery } from "@tanstack/react-query";
 export interface Transaction {
   transaction_id: string;
   transcript: string;
-  details: string;
+  details: any;
   items_initial: string;
   num_items_initial: number;
   items_after: string;
   num_items_after: number;
   num_upsell_opportunities: number;
-  items_upsellable: string;
-  items_upselling_creators: string;
+  upsell_base_items: any[];
+  upsell_candidate_items: string;
+  upsell_offered_items: string;
+  upsell_success_items: string;
   num_upsell_offers: number;
-  items_upsold: string;
-  items_upsold_creators: string;
   num_upsell_success: number;
   num_largest_offers: number;
   num_upsize_opportunities: number;
-  items_upsizeable: string;
-  items_upsizing_creators: string;
+  upsize_base_items: any[];
+  upsize_candidate_items: string;
+  upsize_offered_items: string;
+  upsize_success_items: string;
   num_upsize_offers: number;
   num_upsize_success: number;
-  items_upsize_success: string;
-  items_upsize_creators: string;
   num_addon_opportunities: number;
-  items_addonable: string;
-  items_addon_creators: string;
+  addon_base_items: string;
+  addon_candidate_items: string;
+  addon_offered_items: string;
+  addon_success_items: string;
   num_addon_offers: number;
   num_addon_success: number;
-  items_addon_success: string;
-  items_addon_final_creators: string;
+  items_addonable: string; // Added this field
+  items_upsizeable: string; // Added this field
   feedback: string;
   issues: string;
-  complete_order: boolean;
-  mobile_order: boolean;
-  coupon_used: boolean;
-  asked_more_time: boolean;
+  complete_order: number;
+  mobile_order: number;
+  coupon_used: number;
+  asked_more_time: number;
   out_of_stock_items: string;
-  gpt_price: number;
   reasoning_summary: string;
-  video_file_path: string;
-  video_link: string;
+  video_file_path: string | null;
+  video_link: string | null;
   score: number;
-  upsell_possible: boolean;
-  upsell_offered: boolean;
-  upsize_possible: boolean;
-  upsize_offered: boolean;
   worker_id: string;
   begin_time: string;
   end_time: string;
@@ -53,10 +50,10 @@ export interface Transaction {
   run_id: string;
   transaction_kind: string;
   transaction_meta: any;
-  clip_s3_url: string;
+  clip_s3_url: string | null;
   employee_id: string;
+  employee_legal_name: string;
   employee_name: string;
-
 }
 
 interface TransactionsResponse {
@@ -91,7 +88,9 @@ const fetchRunTransactions = async (
     throw new Error(`Failed to fetch run transactions: ${response.statusText}`);
   }
   
-  return response.json();
+  const ret = response.json();
+  console.log(ret);
+  return ret;
 };
 
 export function useGetRunTransactions(

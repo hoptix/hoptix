@@ -26,7 +26,7 @@ export default function Page() {
       <AppSidebar variant="inset" />
       <SidebarInset>
         <SiteHeader 
-          title="Hoptix Dashboard"
+          title="Dashboard"
           showLocationDropdown={true}
           selectedLocationId={selectedLocationId}
           onLocationChange={handleLocationChange}
