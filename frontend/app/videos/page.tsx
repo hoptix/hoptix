@@ -1232,8 +1232,8 @@ export default function VideosPage() {
                 If you're still having trouble, our support team is here to help.
               </p>
               <div className="space-y-1 text-sm">
-                <p><strong>Email:</strong> support@hoptix.com</p>
-                <p><strong>Phone:</strong> 1-800-HOPTIX (467-849)</p>
+                <p><strong>Email:</strong> support@analytics.com</p>
+                <p><strong>Phone:</strong> 1-800-ANALYTICS (262-598)</p>
                 <p><strong>Hours:</strong> Mon-Fri, 9 AM - 6 PM PST</p>
               </div>
             </div>

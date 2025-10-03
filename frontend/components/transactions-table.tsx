@@ -134,24 +134,23 @@ export function TransactionsTable({ runId, pageSize = 25 }: TransactionsTablePro
     { key: 'num_upsell_opportunities', label: 'Upsell Opportunities' },
     { key: 'num_upsell_offers', label: 'Upsell Offers' },
     { key: 'num_upsell_success', label: 'Upsell Successes' },
-    { key: 'items_upsellable', label: 'Items Upsellable', transform: cleanJSONForCSV },
-    { key: 'items_upsold', label: 'Items Upsold', transform: cleanJSONForCSV },
+    { key: 'upsell_candidate_items', label: 'Items Upsellable', transform: cleanJSONForCSV },
+    { key: 'upsell_success_items', label: 'Items Upsold', transform: cleanJSONForCSV },
     { key: 'num_upsize_opportunities', label: 'Upsize Opportunities' },
     { key: 'num_upsize_offers', label: 'Upsize Offers' },
     { key: 'num_upsize_success', label: 'Upsize Successes' },
-    { key: 'items_upsizeable', label: 'Items Upsizeable', transform: cleanJSONForCSV },
-    { key: 'items_upsize_success', label: 'Items Upsized', transform: cleanJSONForCSV },
+    { key: 'upsize_candidate_items', label: 'Items Upsizeable', transform: cleanJSONForCSV },
+    { key: 'upsize_success_items', label: 'Items Upsized', transform: cleanJSONForCSV },
     { key: 'num_addon_opportunities', label: 'Addon Opportunities' },
     { key: 'num_addon_offers', label: 'Addon Offers' },
     { key: 'num_addon_success', label: 'Addon Successes' },
-    { key: 'items_addonable', label: 'Items Addonable', transform: cleanJSONForCSV },
-    { key: 'items_addon_success', label: 'Items Added', transform: cleanJSONForCSV },
+    { key: 'addon_candidate_items', label: 'Items Addonable', transform: cleanJSONForCSV },
+    { key: 'addon_success_items', label: 'Items Added', transform: cleanJSONForCSV },
     { key: 'score', label: 'Score' },
-    { key: 'complete_order', label: 'Complete Order', transform: (value: boolean) => value ? 'Yes' : 'No' },
-    { key: 'mobile_order', label: 'Mobile Order', transform: (value: boolean) => value ? 'Yes' : 'No' },
-    { key: 'coupon_used', label: 'Coupon Used', transform: (value: boolean) => value ? 'Yes' : 'No' },
-    { key: 'asked_more_time', label: 'Asked More Time', transform: (value: boolean) => value ? 'Yes' : 'No' },
-    { key: 'gpt_price', label: 'GPT Price', transform: (value: number) => value?.toFixed(4) || '0.0000' },
+    { key: 'complete_order', label: 'Complete Order', transform: (value: number) => value ? 'Yes' : 'No' },
+    { key: 'mobile_order', label: 'Mobile Order', transform: (value: number) => value ? 'Yes' : 'No' },
+    { key: 'coupon_used', label: 'Coupon Used', transform: (value: number) => value ? 'Yes' : 'No' },
+    { key: 'asked_more_time', label: 'Asked More Time', transform: (value: number) => value ? 'Yes' : 'No' },
     { key: 'details', label: 'Details', transform: cleanJSONForCSV },
     { key: 'out_of_stock_items', label: 'Out of Stock Items', transform: cleanJSONForCSV },
     { key: 'reasoning_summary', label: 'Reasoning Summary', transform: cleanJSONForCSV },
@@ -318,7 +317,6 @@ export function TransactionsTable({ runId, pageSize = 25 }: TransactionsTablePro
                     <TableHead className="w-24">Mobile</TableHead>
                     <TableHead className="w-24">Coupon</TableHead>
                     <TableHead className="w-24">More Time</TableHead>
-                    <TableHead className="w-28">GPT Price</TableHead>
                     <TableHead className="w-64">Details</TableHead>
                     <TableHead className="w-48">Out of Stock</TableHead>
                     <TableHead className="w-64">Reasoning</TableHead>
@@ -416,15 +414,15 @@ export function TransactionsTable({ runId, pageSize = 25 }: TransactionsTablePro
                       
                       {/* Items Upsellable */}
                       <TableCell className="w-48">
-                        <div className="text-xs text-muted-foreground truncate" title={transaction.items_upsellable}>
-                          {transaction.items_upsellable || 'None'}
+                        <div className="text-xs text-muted-foreground truncate" title={String(transaction.upsell_candidate_items || 'None')}>
+                          {transaction.upsell_candidate_items || 'None'}
                         </div>
                       </TableCell>
-                      
+
                       {/* Items Upsold */}
                       <TableCell className="w-48">
-                        <div className="text-xs text-muted-foreground truncate" title={transaction.items_upsold}>
-                          {transaction.items_upsold || 'None'}
+                        <div className="text-xs text-muted-foreground truncate" title={String(transaction.upsell_success_items || 'None')}>
+                          {transaction.upsell_success_items || 'None'}
                         </div>
                       </TableCell>
                       
@@ -442,15 +440,15 @@ export function TransactionsTable({ runId, pageSize = 25 }: TransactionsTablePro
                       
                       {/* Items Upsizeable */}
                       <TableCell className="w-48">
-                        <div className="text-xs text-muted-foreground truncate" title={transaction.items_upsizeable}>
-                          {transaction.items_upsizeable || 'None'}
+                        <div className="text-xs text-muted-foreground truncate" title={String(transaction.upsize_candidate_items || 'None')}>
+                          {transaction.upsize_candidate_items || 'None'}
                         </div>
                       </TableCell>
-                      
+
                       {/* Items Upsized */}
                       <TableCell className="w-48">
-                        <div className="text-xs text-muted-foreground truncate" title={transaction.items_upsize_success}>
-                          {transaction.items_upsize_success || 'None'}
+                        <div className="text-xs text-muted-foreground truncate" title={String(transaction.upsize_success_items || 'None')}>
+                          {transaction.upsize_success_items || 'None'}
                         </div>
                       </TableCell>
                       
@@ -468,15 +466,15 @@ export function TransactionsTable({ runId, pageSize = 25 }: TransactionsTablePro
                       
                       {/* Items Addonable */}
                       <TableCell className="w-48">
-                        <div className="text-xs text-muted-foreground truncate" title={transaction.items_addonable}>
-                          {transaction.items_addonable || 'None'}
+                        <div className="text-xs text-muted-foreground truncate" title={String(transaction.addon_candidate_items || 'None')}>
+                          {transaction.addon_candidate_items || 'None'}
                         </div>
                       </TableCell>
-                      
+
                       {/* Items Added */}
                       <TableCell className="w-48">
-                        <div className="text-xs text-muted-foreground truncate" title={transaction.items_addon_success}>
-                          {transaction.items_addon_success || 'None'}
+                        <div className="text-xs text-muted-foreground truncate" title={String(transaction.addon_success_items || 'None')}>
+                          {transaction.addon_success_items || 'None'}
                         </div>
                       </TableCell>
                       
@@ -517,12 +515,6 @@ export function TransactionsTable({ runId, pageSize = 25 }: TransactionsTablePro
                         </Badge>
                       </TableCell>
                       
-                      {/* GPT Price */}
-                      <TableCell className="w-28">
-                        <div className="text-sm">
-                          ${transaction.gpt_price?.toFixed(4) || '0.0000'}
-                        </div>
-                      </TableCell>
                       
                       {/* Details */}
                       <TableCell className="w-64">
@@ -569,7 +561,7 @@ export function TransactionsTable({ runId, pageSize = 25 }: TransactionsTablePro
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => window.open(transaction.video_link, '_blank')}
+                              onClick={() => transaction.video_link && window.open(transaction.video_link, '_blank')}
                             >
                               <IconEye className="h-4 w-4" />
                             </Button>
@@ -578,7 +570,7 @@ export function TransactionsTable({ runId, pageSize = 25 }: TransactionsTablePro
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => window.open(transaction.clip_s3_url, '_blank')}
+                              onClick={() => transaction.clip_s3_url && window.open(transaction.clip_s3_url, '_blank')}
                             >
                               <IconExternalLink className="h-4 w-4" />
                             </Button>

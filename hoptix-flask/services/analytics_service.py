@@ -740,11 +740,11 @@ class HoptixAnalyticsService:
         
         # Calculate overall performance
         total_transactions = len(transactions)
-        complete_transactions = sum(1 for t in transactions if t.get("Complete Transcript?", 0) == 1)
+        complete_transactions = sum(1 for t in transactions if t.get("complete_order", 0) == 1)
         
         # Calculate average items per transaction
-        total_items_initial = sum(t.get("# of Items Ordered", 0) for t in transactions)
-        total_items_final = sum(t.get("# of Items Ordered After Upselling, Upsizing, and Add-on Offers", 0) for t in transactions)
+        total_items_initial = sum(t.get("num_items_initial", 0) for t in transactions)
+        total_items_final = sum(t.get("num_items_after", 0) for t in transactions)
         
         # Structure the report in the requested format: Store -> Summary + Items -> Operator -> Items
         report = {
@@ -923,7 +923,7 @@ class HoptixAnalyticsService:
         })
         
         for transaction in transactions:
-            initial_items = UpsellAnalytics._parse_items_field(transaction.get("Items Initially Requested", "0"))
+            initial_items = UpsellAnalytics._parse_items_field(transaction.get("items_initial", "0"))
             
             for item in initial_items:
                 stats = item_performance[item]
@@ -1042,7 +1042,7 @@ class HoptixAnalyticsService:
             # Filter transactions that include the specific item
             filtered_transactions = []
             for transaction in transactions:
-                initial_items = UpsellAnalytics._parse_items_field(transaction.get("Items Initially Requested", "0"))
+                initial_items = UpsellAnalytics._parse_items_field(transaction.get("items_initial", "0"))
                 if any(item_filter.lower() in str(item).lower() for item in initial_items):
                     filtered_transactions.append(transaction)
             transactions = filtered_transactions

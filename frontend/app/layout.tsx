@@ -3,8 +3,8 @@ import './globals.css'
 import { Providers } from '@/components/providers'
 
 export const metadata: Metadata = {
-  title: 'Hoptix',
-  description: 'Hoptix Frontend Application',
+  title: 'Analytics Dashboard',
+  description: 'Analytics Dashboard Application',
 }
 
 export default function RootLayout({

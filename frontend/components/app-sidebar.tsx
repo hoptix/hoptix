@@ -5,11 +5,8 @@ import Link from "next/link"
 import {
   LayoutDashboard,
   Video,
-  FileText,
   UtensilsCrossed,
   CircleDot,
-  BarChart3,
-  PlayCircle,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -26,8 +23,8 @@ import {
 
 const data = {
   user: {
-    name: "Operator",
-    email: "operator@hoptix.com",
+    name: "Andy Volkanov",
+    email: "andy@dq.ai",
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
@@ -37,24 +34,9 @@ const data = {
       icon: LayoutDashboard,
     },
     {
-      title: "Runs",
-      url: "/runs",
-      icon: PlayCircle,
-    },
-    {
-      title: "Videos",
-      url: "/videos",
+      title: "Samples",
+      url: "/samples",
       icon: Video,
-    },
-    {
-      title: "Analytics",
-      url: "/analytics",
-      icon: BarChart3,
-    },
-    {
-      title: "Reports",
-      url: "/reports",
-      icon: FileText,
     },
     {
       title: "Items",
@@ -76,7 +58,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <Link href="/dashboard">
                 <CircleDot className="!size-5" />
-                <span className="text-base font-semibold">Hoptix</span>
+                <span className="text-base font-semibold">Analytics</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
