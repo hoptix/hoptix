@@ -22,7 +22,7 @@ ORG_ID=$1
 LOCATION_ID=$2
 # Default to today's date in Pacific Time if not provided
 DATE_ARG=${3:-$(TZ=America/Los_Angeles date +%Y-%m-%d)}
-NUM_WORKERS=${4:-1}  # Default to 11 workers
+NUM_WORKERS=${4:-11}  # Default to 11 workers
 
 echo "🏢 Organization ID: $ORG_ID"
 echo "📍 Location ID: $LOCATION_ID"
