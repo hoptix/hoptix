@@ -96,16 +96,16 @@ def insert_transactions(db: Supa, video_row: Dict, transactions: List[Dict]) -> 
         })
     
     try:
-        # Insert transactions - Supabase should return full records by default
+        # Insert transactions and return inserted IDs (Supabase requires select() to return data)
         logger.debug(f"Inserting {len(rows)} transaction rows")
-        ins = db.client.table("transactions").insert(rows).execute()
+        ins = db.client.table("transactions").insert(rows).select("id").execute()
         
         if not ins.data:
             logger.error("Failed to insert transactions - no data returned")
             return []
         
-        # The insert should return the full records including IDs
-        tx_ids = [r["id"] for r in ins.data]
+        # Extract IDs from returned rows
+        tx_ids = [r.get("id") for r in ins.data if r.get("id")]
         logger.debug(f"Successfully inserted {len(tx_ids)} transactions")
         return tx_ids
         
