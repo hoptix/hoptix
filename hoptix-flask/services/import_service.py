@@ -21,7 +21,7 @@ class ImportService:
         self.video_service = VideoService()
         
         # Configuration for Google Drive
-        self.FOLDER_NAME = "My Videos"  # Use the passed folder name instead of hardcoded
+        self.FOLDER_NAME = "DQ Cary"
         self.S3_PREFIX = os.getenv("S3_PREFIX", f"gdrive/{folder_name}")
         self.DEFAULT_DURATION_SEC = int(os.getenv("GDRIVE_VIDEO_DURATION_SEC", "3600"))  # 1 hour default
     
