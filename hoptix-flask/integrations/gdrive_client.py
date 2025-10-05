@@ -719,7 +719,7 @@ def parse_timestamp_from_filename(filename: str) -> Optional[datetime]:
         if filename.startswith('audio_') and filename.endswith('.mp3'):
             try:
                 import re
-                match = re.match(r"audio_(\d{4}-\d{2}-\d{2})_(\d{2}-\d{2}-\d{2})\\.mp3$", filename)
+                match = re.match(r"audio_(\d{4}-\d{2}-\d{2})_(\d{2}-\d{2}-\d{2})\.mp3$", filename)
                 if match:
                     date_str = match.group(1)  # YYYY-MM-DD
                     time_str = match.group(2)  # HH-MM-SS
