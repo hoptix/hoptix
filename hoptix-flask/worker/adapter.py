@@ -240,19 +240,18 @@ Also output (non-numbered): 11_base — a jsonb array of the base items that cre
 12. Items in Order that Could be Upsized as a jsonb. If there were no items, write the number 0.
 13. Items that created the Upsizing Opportunity as a jsonb. For example, if large fries were sold because fries of unspecified size were ordered, then put small fries. If a size is not specified, assume it is the smallest size. If there were no items, write the number 0.
 14. Number of Upsizing Offers Made. Sometimes an operator may offer to upsize multiple items in the same offer. For example if a customer orders 2 fries, the operator may ask if the customer wants to upsize both to a large. This would count as 2 offers, one for each order of fries. Format this as an integer.
+Also output (non-numbered): 14_base — a jsonb array of the base items that created the upsize opportunities (e.g., small fries that could be upsized). If none, write 0.
 15. Number of Items Successfully Upsized. If an operator offers to upsize multiple items in the same offer, and a customer accepts, then count each item upsized separately. If 3 orders of fries were upsized, count each one separately, for a total count of 3. Format this as an integer.
 16. Items Successfully Upsized as a jsonb. If there were no items, write the number 0.
-17. Items that created the Upsizing as a jsonb. These are the items that caused the upsizing to happen. For example, if large fries were sold because fries of unspecified size were ordered, then put small fries. If none, write 0.
 
 **Add-ons**
 18. Number of Chances to add Additional Toppings. If there are multiple of one item that can have additional toppings, count them all individually. For example, 2 Blizzards = 2 chances. Format this as an integer.
-Also output (non-numbered): 17_base — a jsonb array of the base items that created the add-on opportunities (e.g., sundae that can have extra toppings). If none, write 0.
+Also output (non-numbered): 18_base — a jsonb array of the base items that created the add-on opportunities (e.g., sundae that can have extra toppings). If none, write 0.
 19. Additional toppings that could have been added as a jsonb. If there were no items, write the number 0.
 20. Items that created the Additional Topping Opportunities as a jsonb. For example, if whipped cream was offered because a sundae was ordered, then put the sundae. If none, write 0.
 21. Number of Additional Toppings Offers Made. Format this as an integer.
 22. Number of Successful Additional Toppings offers. Format this as an integer.
 23. Items that additional toppings were added successfully. If there were no items, write the number 0.
-24. Items that created the Additional Toppings as a jsonb. For example, if whipped cream was added because a sundae was ordered, then put the sundae. If none, write 0.
 
 **After Order**
 25. Meals and items ordered by customer AFTER upsells, upsizes, and additional toppings offers. Single jsonb, same rules as field 1. If no items, put 0.
@@ -570,7 +569,6 @@ def _map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -
         "addon_base_items":         _parse_json_field(step2_obj.get("18_base", "0")),
         "addon_candidate_items":    _parse_json_field(step2_obj.get("19", "0")),
         "num_addon_offers":         _ii(step2_obj.get("21", 0)),
-        "addon_offered_items":      _parse_json_field(step2_obj.get("21_offered", "0")),
         "addon_success_items":      _parse_json_field(step2_obj.get("23", "0")),
         "num_addon_success":        _ii(step2_obj.get("22", 0)),
 

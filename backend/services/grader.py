@@ -1,13 +1,149 @@
 # grades transcations using openai 
 
-from config import Prompts
+from config import Prompts, Settings
+from openai import OpenAI
 import json
 import os
+from typing import Dict, Any, List
+from utils.helpers import ii, parse_json_field, json_or_none, read_json_or_empty, calculate_gpt_price, calculate_gpt_price_batch
+
+
+settings = Settings()
+client = OpenAI(api_key=settings.OPENAI_APIKEY)
+
+prompts = Prompts()
+
+
+def grade_transactions(transactions: List[Dict], db=None, location_id: str = None, testing=True) -> List[Dict]:
+    graded: List[Dict] = []
+    for tx in transactions:
+        transcript = (tx.get("meta") or {}).get("text","")
+        tx_meta = tx.get("meta") or {}
+        
+        if not transcript.strip():
+            # produce an empty row but keep columns
+            base = map_step2_to_grade_cols({}, tx_meta)
+            continue
+
+        # Run Step‑2 with location-specific menu data
+        step2_prompt = build_step2_prompt(db, location_id)
+        prompt = step2_prompt + "\n\nProcess this transcript:\n" + transcript
+        try:
+            if testing: 
+                resp = client.responses.create(
+                    model=settings.STEP2_MODEL,
+                    include=["reasoning.encrypted_content"],
+                    input=[{"role":"user","content":[{"type":"input_text","text": prompt}]}],
+                    store=False,
+                    text={"format":{"type":"text"}},
+                    reasoning={"effort":"high","summary":"detailed"},
+                )
+
+            else: 
+                resp = client.responses.create(
+                    model=settings.STEP2_MODEL,
+                    input=[{"role":"user","content":[{"type":"input_text","text": prompt}]}],
+                    store=False,
+                    text={"format":{"type":"text"}},
+                    reasoning={"effort":"high","summary":"detailed"},
+                )
+
+            raw = resp.output[1].content[0].text if hasattr(resp,"output") else "{}"
+            print(f"\n=== STEP 2 (Grading) RAW OUTPUT ===")
+            print(f"Input transcript: {transcript[:200]}...")
+            print(f"Raw LLM response: {raw}")
+            print("=" * 50)
+            
+            parsed = json_or_none(raw)
+            if not parsed:
+                parsed = {}
+            print(f"Parsed JSON: {parsed}")
+
+            gpt_price = calculate_gpt_price(resp)
+        
+
+        except Exception as ex:
+            print("Step‑2 error:", ex)
+            parsed = {}
+            gpt_price = 0.0
+
+        details = map_step2_to_grade_cols(parsed, tx.get("meta") or {})
+        print(f"Mapped details: {details}")
+        print("=" * 50)
+
+        graded.append({
+            "details":         details,
+            "transcript":      transcript,  # Add raw transcript
+            "gpt_price":       gpt_price    # Add calculated price
+        })
+    return graded
+
+# ---------- 3) GRADE (Step‑2 prompt per transaction, return ALL columns) ----------
+def map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -> Dict[str,Any]:
+    """Map numbered Step-2 keys (UPDATED) to `public.grades` columns with candidates + offered + converted."""
+    # Parse JSON/JSONB-like fields
+    print(f"Step2 object: {step2_obj}")
+    print(f"Tx meta: {tx_meta}")
+
+    out = {
+        # Meta flags from tx, unchanged
+        "complete_order":   ii(tx_meta.get("complete_order", 0)),
+        "mobile_order":     ii(tx_meta.get("mobile_order", 0)),
+        "coupon_used":      ii(tx_meta.get("coupon_used", 0)),
+        "asked_more_time":  ii(tx_meta.get("asked_more_time", 0)),
+        "out_of_stock_items": tx_meta.get("out_of_stock_items", "0"),
+
+        # BEFORE items
+        "items_initial":         step2_obj.get("1", "0"),
+        "num_items_initial":     ii(step2_obj.get("2", 0)),
+
+        # ---- Upsell (candidates → offered → converted) ----
+        "num_upsell_opportunities": ii(step2_obj.get("3", 0)),
+        "upsell_base_items":        parse_json_field(step2_obj.get("4_base", "0")),
+        "upsell_candidate_items":   parse_json_field(step2_obj.get("4", "0")),
+        "num_upsell_offers":        ii(step2_obj.get("5", 0)),
+        "upsell_offered_items":     parse_json_field(step2_obj.get("6", "0")),
+        "upsell_success_items":     parse_json_field(step2_obj.get("7", "0")),
+        "num_upsell_success":       ii(step2_obj.get("9", 0)),
+        "num_largest_offers":       ii(step2_obj.get("10", 0)),
+
+        # ---- Upsize (candidates → offered → converted) ----
+        "num_upsize_opportunities": ii(step2_obj.get("11", 0)),
+        "upsize_base_items":        parse_json_field(step2_obj.get("11_base", "0")),
+        "upsize_candidate_items":   parse_json_field(step2_obj.get("12", "0")),
+        "num_upsize_offers":        ii(step2_obj.get("14", 0)),
+        "upsize_offered_items":     parse_json_field(step2_obj.get("14_offered", "0")),
+        "upsize_success_items":     parse_json_field(step2_obj.get("16", "0")),
+        "num_upsize_success":       ii(step2_obj.get("15", 0)),
+
+        # ---- Add-on (candidates → offered → converted) ----
+        "num_addon_opportunities":  ii(step2_obj.get("18", 0)),
+        "addon_base_items":         parse_json_field(step2_obj.get("18_base", "0")),
+        "addon_candidate_items":    parse_json_field(step2_obj.get("19", "0")),
+        "num_addon_offers":         ii(step2_obj.get("21", 0)),
+        "addon_offered_items":      parse_json_field(step2_obj.get("21_offered", "0")),
+        "addon_success_items":      parse_json_field(step2_obj.get("23", "0")),
+        "num_addon_success":        ii(step2_obj.get("22", 0)),
+
+        # AFTER items
+        "items_after":              step2_obj.get("25", "0"),
+        "num_items_after":          ii(step2_obj.get("26", 0)),
+
+        # Text feedback
+        "feedback":                 step2_obj.get("27", ""),
+        "issues":                   step2_obj.get("28", ""),
+
+        # Optional extras
+        "reasoning_summary":        step2_obj.get("reasoning_summary", "")
+    }
+    print(f"Out: {out}")
+    return out
+
 
 def build_step2_prompt(db=None, location_id: str = None) -> str:
     """Build the step 2 prompt with menu data from database or JSON fallback"""
     
-    upselling, upsizing, addons, items, meals = _get_menu_data_from_db(db, location_id)
+    upselling, upsizing, addons, items, meals = get_menu_data_from_db(db, location_id)
 
     print(f"Menu data loaded: {len(upselling)} upselling scenarios, {len(upsizing)} upsizing scenarios, {len(addons)} add-ons, {len(items)} items, {len(meals)} meals")
 
@@ -21,95 +157,7 @@ def build_step2_prompt(db=None, location_id: str = None) -> str:
             .replace("<<MEALS_JSON>>", json.dumps(meals)))
 
 
-# ---------- 3) GRADE (Step‑2 prompt per transaction, return ALL columns) ----------
-def _map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -> Dict[str,Any]:
-    """Map numbered Step-2 keys (UPDATED) to `public.grades` columns with candidates + offered + converted."""
-    # Defaults
-    def _ii(x, default=0):
-        try:
-            return int(x)
-        except:
-            return default
-
-    # Parse JSON/JSONB-like fields
-    def _parse_json_field(value, default="0"):
-        if value is None:
-            return default
-        if isinstance(value, (list, dict)):
-            return value
-        if isinstance(value, str):
-            s = value.strip()
-            if s in ("", "0"):
-                return default
-            try:
-                if s[0] in "{[":
-                    import json
-                    return json.loads(s)
-                return value  # already a plain string like "0" or a CSV that upstream expects
-            except:
-                return value
-        return value
-
-    print(f"Step2 object: {step2_obj}")
-    print(f"Tx meta: {tx_meta}")
-
-    out = {
-        # Meta flags from tx, unchanged
-        "complete_order":   _ii(tx_meta.get("complete_order", 0)),
-        "mobile_order":     _ii(tx_meta.get("mobile_order", 0)),
-        "coupon_used":      _ii(tx_meta.get("coupon_used", 0)),
-        "asked_more_time":  _ii(tx_meta.get("asked_more_time", 0)),
-        "out_of_stock_items": tx_meta.get("out_of_stock_items", "0"),
-
-        # BEFORE items
-        "items_initial":         step2_obj.get("1", "0"),
-        "num_items_initial":     _ii(step2_obj.get("2", 0)),
-
-        # ---- Upsell (candidates → offered → converted) ----
-        "num_upsell_opportunities": _ii(step2_obj.get("3", 0)),
-        "upsell_base_items":        _parse_json_field(step2_obj.get("4_base", "0")),
-        "upsell_candidate_items":   _parse_json_field(step2_obj.get("4", "0")),
-        "num_upsell_offers":        _ii(step2_obj.get("5", 0)),
-        "upsell_offered_items":     _parse_json_field(step2_obj.get("6", "0")),
-        "upsell_success_items":     _parse_json_field(step2_obj.get("7", "0")),
-        "num_upsell_success":       _ii(step2_obj.get("9", 0)),
-        "num_largest_offers":       _ii(step2_obj.get("10", 0)),
-
-        # ---- Upsize (candidates → offered → converted) ----
-        "num_upsize_opportunities": _ii(step2_obj.get("11", 0)),
-        "upsize_base_items":        _parse_json_field(step2_obj.get("11_base", "0")),
-        "upsize_candidate_items":   _parse_json_field(step2_obj.get("12", "0")),
-        "num_upsize_offers":        _ii(step2_obj.get("14", 0)),
-        "upsize_offered_items":     _parse_json_field(step2_obj.get("14_offered", "0")),
-        "upsize_success_items":     _parse_json_field(step2_obj.get("16", "0")),
-        "num_upsize_success":       _ii(step2_obj.get("15", 0)),
-
-        # ---- Add-on (candidates → offered → converted) ----
-        "num_addon_opportunities":  _ii(step2_obj.get("18", 0)),
-        "addon_base_items":         _parse_json_field(step2_obj.get("18_base", "0")),
-        "addon_candidate_items":    _parse_json_field(step2_obj.get("19", "0")),
-        "num_addon_offers":         _ii(step2_obj.get("21", 0)),
-        "addon_offered_items":      _parse_json_field(step2_obj.get("21_offered", "0")),
-        "addon_success_items":      _parse_json_field(step2_obj.get("23", "0")),
-        "num_addon_success":        _ii(step2_obj.get("22", 0)),
-
-        # AFTER items
-        "items_after":              step2_obj.get("25", "0"),
-        "num_items_after":          _ii(step2_obj.get("26", 0)),
-
-        # Text feedback
-        "feedback":                 step2_obj.get("27", ""),
-        "issues":                   step2_obj.get("28", ""),
-
-        # Optional extras
-        "reasoning_summary":        step2_obj.get("reasoning_summary", "")
-    }
-    print(f"Out: {out}")
-    return out
-
-
-
-def _get_menu_data_from_db(db, location_id: str) -> tuple[list, list, list, list, list]:
+def get_menu_data_from_db(db, location_id: str) -> tuple[list, list, list, list, list]:
     """Fetch menu data from database tables for the given location"""
     try:
         # Get items for this location
@@ -156,8 +204,8 @@ def _get_menu_data_from_db(db, location_id: str) -> tuple[list, list, list, list
             })
         
         # For now, keep upselling and upsizing as static (can be moved to DB later if needed)
-        upselling = _read_json_or_empty(os.path.join(_settings.PROMPTS_DIR, _settings.UPSELLING_JSON))
-        upsizing  = _read_json_or_empty(os.path.join(_settings.PROMPTS_DIR, _settings.UPSIZING_JSON))
+        upselling = read_json_or_empty(os.path.join(settings.PROMPTS_DIR, settings.UPSELLING_JSON))
+        upsizing  = read_json_or_empty(os.path.join(settings.PROMPTS_DIR, settings.UPSIZING_JSON))
         
         print(f"Loaded menu data for location {location_id}: {len(items)} items, {len(meals)} meals, {len(addons)} add-ons")
         
@@ -165,3 +213,4 @@ def _get_menu_data_from_db(db, location_id: str) -> tuple[list, list, list, list
         
     except Exception as e:
         print(f"Error loading menu data from database: {e}")
+

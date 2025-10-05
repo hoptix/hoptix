@@ -1,0 +1,48 @@
+# Core Flask and Web Framework
+flask==3.0.0
+flask-cors==4.0.0
+gunicorn==21.2.0
+
+# Environment and Configuration
+python-dotenv==1.0.0
+
+# AWS SDK and Cloud Services
+boto3==1.34.34
+botocore>=1.34.0
+
+# Database and ORM
+supabase==2.7.4
+
+# OpenAI API
+openai>=1.26.0
+
+# Audio and Video Processing
+librosa==0.11.0
+moviepy==1.0.3
+numpy>=1.22,<2.0
+
+# Data Processing and Analysis
+pandas>=2.0,<2.3
+scikit-learn>=1.3,<1.7
+
+# Date and Time Utilities
+python-dateutil==2.9.0.post0
+
+# HTTP Requests
+requests>=2.32.0
+
+# Development and Testing
+pytest==7.4.3
+pytest-cov==4.1.0
+
+# Production Dependencies
+psutil>=7.0.0
+
+# Google Drive API
+google-api-python-client>=2.181.0
+google-auth-httplib2>=0.2.0
+google-auth-oauthlib>=1.2.0
+
+# Audio processing additional dependencies for Docker
+soundfile>=0.13.0
+audioread>=3.0.0
