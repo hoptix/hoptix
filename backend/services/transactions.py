@@ -2,7 +2,7 @@ from typing import List, Dict, Any
 from openai import OpenAI
 import os
 import json
-from datetime import timedelta
+from datetime import timedelta, datetime
 from dateutil import parser as dateparse
 from config import Settings
 from config import Prompts
@@ -12,8 +12,12 @@ prompts = Prompts()
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 
-def split_into_transactions(transcript_segments: List[Dict], audio_started_at_iso: str) -> List[Dict]:
-
+def split_into_transactions(transcript_segments: List[Dict], audio_started_at_iso: str = None, date: str = None) -> List[Dict]:
+    # Default to current day at 7 AM if not provided
+    if audio_started_at_iso is None:
+        current_day = dateparse.parse(date).strftime("%Y-%m-%d")
+        audio_started_at_iso = f"{current_day}T07:00:00Z"
+    
     actual_audio_start = audio_started_at_iso
     print(f"Using database timestamp: {actual_audio_start}")
     

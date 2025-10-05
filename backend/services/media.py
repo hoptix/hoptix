@@ -1,4 +1,4 @@
-from services.database_service import DatabaseService
+from services.database import Supa
 from services.gdrive import GoogleDriveClient
 from config import Settings
 from supabase import create_client, Client
@@ -6,7 +6,7 @@ from datetime import datetime
 import os
 import tempfile
 
-db = DatabaseService()
+db = Supa()
 gdrive = GoogleDriveClient()
 
 def get_audio_from_location_and_date(location_id: str, date: str):
@@ -18,14 +18,7 @@ def get_audio_from_location_and_date(location_id: str, date: str):
     if audio and status != "uploaded":
         return
 
-    #if the audio is there and status = "uploaded", download the audio from gdrive
-    if audio and status == "uploaded":
-        audio = get_audio_from_gdrive(location_id, date)
-        return audio
-
-    #if the audio is not there, download it to google drive and upload it to the supabase 
-    if not audio: 
-        #get from google drive 
+    else: 
         audio = get_audio_from_gdrive(location_id, date)
         return audio
     
@@ -54,23 +47,69 @@ def get_audio_from_gdrive(location_id: str, date: str):
         date_obj = datetime.strptime(date, "%Y-%m-%d")
         date_formatted = date_obj.strftime("%Y%m%d")
         
+        # Get folder ID from location name
+        folder_id = gdrive.get_folder_id_from_name(location_name)
+        if not folder_id:
+            print(f"❌ Folder '{location_name}' not found in 'Shared with Me'")
+            return None
 
-        search_pattern = f"{location_name}_{date_formatted}-{date_formatted}"
-        
-        # Search Google Drive for files matching the pattern
-        files = gdrive.list_media_files_shared_with_me(search_pattern)
+        else: 
+            print(f"📂 Folder ID: {folder_id}")
 
+        # Get all media files in the folder
+        files = gdrive.list_media_files_shared_with_me(folder_id)
         if not files:
-            print(f"❌ No files found for date {date}")
+            print(f"❌ No media files found in folder '{location_name}'")
+            # Let's also try to list ALL files to debug
+            print("🔍 Debugging: Let's check what files are actually in the folder...")
+            try:
+                # Try to list all files without MIME type filtering
+                query = f"('{folder_id}' in parents) and trashed=false"
+                all_files = gdrive.service.files().list(
+                    q=query,
+                    fields='files(id,name,size,mimeType)',
+                    corpora='user'
+                ).execute()
+                all_files_list = all_files.get('files', [])
+                print(f"📋 Found {len(all_files_list)} total files in folder:")
+                for file in all_files_list:
+                    print(f"   - {file.get('name')} ({file.get('mimeType')})")
+            except Exception as debug_error:
+                print(f"❌ Debug query failed: {debug_error}")
             return None
         
-        # Look for MP3 files only
+        print(f"📋 Found {len(files)} media files in folder. Listing all files:")
+        for file in files:
+            file_name = file.get('name', '')
+            file_size = file.get('size', 'Unknown')
+            print(f"   - {file_name} ({file_size} bytes)")
+        
+        # Look for MP3 files matching the audio_date pattern
+        # Pattern: audio_YYYY-MM-DD_HH-MM-SS.mp3
+        search_pattern = f"audio_{date}_"
+        print(f"🔍 Looking for files starting with: '{search_pattern}'")
+        
         mp3_file = None
+        matching_files = []
+        
         for file in files:
             file_name = file.get('name', '')
             if file_name.startswith(search_pattern) and file_name.endswith('.mp3'):
-                mp3_file = file
-                break
+                matching_files.append(file)
+                print(f"✅ Found matching file: {file_name}")
+        
+        if matching_files:
+            mp3_file = matching_files[0]  # Take the first match
+            print(f"📥 Selected file: {mp3_file.get('name')}")
+        else:
+            print(f"❌ No MP3 files found matching pattern '{search_pattern}'")
+            print("💡 Available audio file patterns in folder:")
+            for file in files:
+                file_name = file.get('name', '')
+                if file_name.startswith("audio_") and file_name.endswith('.mp3'):
+                    # Extract the date part
+                    date_part = file_name.replace("audio_", "").split('_')[0]
+                    print(f"   - audio_{date_part}_*")
         
         if not mp3_file:
             print(f"❌ No MP3 files found for date {date}")
