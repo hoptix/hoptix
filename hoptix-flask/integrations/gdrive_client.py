@@ -690,7 +690,7 @@ def parse_timestamp_from_filename(filename: str) -> Optional[datetime]:
     Parse timestamp from filename formats:
     1. DT_File format: DT_File{YYYYMMDDHHMMSSFFF}.avi
     2. Legacy DQ Cary format: DQ Cary_YYYYMMDD-YYYYMMDD_1000.mkv
-    3. Audio capture format: audio_YYYY-MM-DD_HH-MM-SS.mp3
+    3. Audio capture format: audio_YYYY-MM-DD_HH-MM-SS.(mp3|wav)
     """
     try:
         # Try DT_File format first (new format)
@@ -715,11 +715,11 @@ def parse_timestamp_from_filename(filename: str) -> Optional[datetime]:
                              millisecond * 1000, timezone.utc)
                 return dt
         
-        # Try audio capture format: audio_YYYY-MM-DD_HH-MM-SS.mp3
-        if filename.startswith('audio_') and filename.endswith('.mp3'):
+        # Try audio capture format: audio_YYYY-MM-DD_HH-MM-SS.(mp3|wav)
+        if filename.startswith('audio_') and (filename.endswith('.mp3') or filename.endswith('.wav')):
             try:
                 import re
-                match = re.match(r"audio_(\d{4}-\d{2}-\d{2})_(\d{2}-\d{2}-\d{2})\.mp3$", filename)
+                match = re.match(r"audio_(\d{4}-\d{2}-\d{2})_(\d{2}-\d{2}-\d{2})\.(mp3|wav)$", filename)
                 if match:
                     date_str = match.group(1)  # YYYY-MM-DD
                     time_str = match.group(2)  # HH-MM-SS
@@ -730,16 +730,14 @@ def parse_timestamp_from_filename(filename: str) -> Optional[datetime]:
                 # If parsing fails, fall through to other strategies
                 pass
 
-        # Try legacy DQ Cary format
+        # Try legacy DQ Cary format (any extension)
         if filename.startswith('DQ Cary_'):
             # Extract the date part: DQ Cary_20250925-20250925_1000.mkv -> 20250925-20250925
             # Remove the prefix and suffix to get the date range
             date_part = filename[8:]  # Skip 'DQ Cary_' prefix
-            if not date_part.endswith('.mkv'):
-                return None
-                
-            # Remove .mkv extension
-            date_part = date_part[:-4]
+            # Remove extension generically (.mkv, .wav, etc.)
+            if '.' in date_part:
+                date_part = date_part[:date_part.rfind('.')]
             
             # Split by underscore to get date and time parts
             parts = date_part.split('_')
