@@ -6,104 +6,106 @@ db = Supa()
 
 class Analytics:
 
-    def __init__(self, run_id: str):
+    def __init__(self, run_id: str, worker_id=None):
+        self.worker_id = worker_id
         self.run_id = run_id
+        self.worker_id = worker_id
 
-    def get_total_transactions(self, worker_id=None):
-        if worker_id:
-            result = db.view("graded_rows_filtered").select("*").eq("run_id", self.run_id).eq("worker_id", worker_id).execute()
+    def get_total_transactions(self):
+        if self.worker_id:
+            result = db.view("graded_rows_filtered").select("*").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
         else:
             result = db.view("graded_rows_filtered").select("*").eq("run_id", self.run_id).execute()
         return len(result.data) if result.data else 0
     
-    def get_complete_transactions(self, worker_id=None):
-        if worker_id:
-            result = db.view("graded_rows_filtered").select("*").eq("run_id", self.run_id).eq("complete_order", 1).eq("worker_id", worker_id).execute()
+    def get_complete_transactions(self):
+        if self.worker_id:
+            result = db.view("graded_rows_filtered").select("*").eq("run_id", self.run_id).eq("complete_order", 1).eq("worker_id", self.worker_id).execute()
         else:
             result = db.view("graded_rows_filtered").select("*").eq("run_id", self.run_id).eq("complete_order", 1).execute()
         return len(result.data) if result.data else 0
 
-    def get_completion_rate(self, worker_id=None):
-        return self.get_complete_transactions(worker_id) / self.get_total_transactions(worker_id)
+    def get_completion_rate(self):
+        return self.get_complete_transactions() / self.get_total_transactions()
 
-    def avg_items_initial_order(self, worker_id=None):
-        if worker_id:
-            result = db.view("graded_rows_filtered").select("items_initial").eq("run_id", self.run_id).eq("worker_id", worker_id).execute()
+    def avg_items_initial_order(self):
+        if self.worker_id:
+            result = db.view("graded_rows_filtered").select("items_initial").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
         else:
             result = db.view("graded_rows_filtered").select("items_initial").eq("run_id", self.run_id).execute()
         return sum(len(row["items_initial"]) for row in result.data) / len(result.data) if result.data else 0
     
-    def avg_items_after_order(self, worker_id=None):
-        if worker_id:
+    def avg_items_after_order(self):
+        if self.worker_id:
             result = db.view("graded_rows_filtered").select("items_after").eq("run_id", self.run_id).eq("worker_id", worker_id).execute()
         else:
             result = db.view("graded_rows_filtered").select("items_after").eq("run_id", self.run_id).execute()
         return sum(len(row["items_after"]) for row in result.data) / len(result.data) if result.data else 0
 
-    def get_total_upsell_opportunities(self, worker_id=None): 
-        if worker_id:
-            result = db.view("graded_rows_filtered").select("num_upsell_opportunities").eq("run_id", self.run_id).eq("worker_id", worker_id).execute()
+    def get_total_upsell_opportunities(self): 
+        if self.worker_id:
+            result = db.view("graded_rows_filtered").select("num_upsell_opportunities").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
         else:
             result = db.view("graded_rows_filtered").select("num_upsell_opportunities").eq("run_id", self.run_id).execute()
         return sum(row["num_upsell_opportunities"] for row in result.data) if result.data else 0
 
-    def get_total_upsell_offers(self, worker_id=None): 
-        if worker_id:
-            result = db.view("graded_rows_filtered").select("num_upsell_offers").eq("run_id", self.run_id).eq("worker_id", worker_id).execute()
+    def get_total_upsell_offers(self): 
+        if self.worker_id:
+            result = db.view("graded_rows_filtered").select("num_upsell_offers").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
         else:
             result = db.view("graded_rows_filtered").select("num_upsell_offers").eq("run_id", self.run_id).execute()
         return sum(row["num_upsell_offers"] for row in result.data) if result.data else 0
     
-    def get_total_upsell_success(self, worker_id=None): 
-        if worker_id:
-            result = db.view("graded_rows_filtered").select("num_upsell_success").eq("run_id", self.run_id).eq("worker_id", worker_id).execute()
+    def get_total_upsell_success(self): 
+        if self.worker_id:
+            result = db.view("graded_rows_filtered").select("num_upsell_success").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
         else:
             result = db.view("graded_rows_filtered").select("num_upsell_success").eq("run_id", self.run_id).execute()
         return sum(row["num_upsell_success"] for row in result.data) if result.data else 0
     
-    def get_total_upsize_opportunities(self, worker_id=None): 
-        if worker_id:
-            result = db.view("graded_rows_filtered").select("num_upsize_opportunities").eq("run_id", self.run_id).eq("worker_id", worker_id).execute()
+    def get_total_upsize_opportunities(self): 
+        if self.worker_id:
+            result = db.view("graded_rows_filtered").select("num_upsize_opportunities").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
         else:
             result = db.view("graded_rows_filtered").select("num_upsize_opportunities").eq("run_id", self.run_id).execute()
         return sum(row["num_upsize_opportunities"] for row in result.data) if result.data else 0
 
-    def get_total_upsize_offers(self, worker_id=None): 
-        if worker_id:
-            result = db.view("graded_rows_filtered").select("num_upsize_offers").eq("run_id", self.run_id).eq("worker_id", worker_id).execute()
+    def get_total_upsize_offers(self): 
+        if self.worker_id:
+            result = db.view("graded_rows_filtered").select("num_upsize_offers").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
         else:
             result = db.view("graded_rows_filtered").select("num_upsize_offers").eq("run_id", self.run_id).execute()
         return sum(row["num_upsize_offers"] for row in result.data) if result.data else 0
     
-    def get_total_upsize_success(self, worker_id=None): 
-        if worker_id:
-            result = db.view("graded_rows_filtered").select("num_upsize_success").eq("run_id", self.run_id).eq("worker_id", worker_id).execute()
+    def get_total_upsize_success(self): 
+        if self.worker_id:
+            result = db.view("graded_rows_filtered").select("num_upsize_success").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
         else:
             result = db.view("graded_rows_filtered").select("num_upsize_success").eq("run_id", self.run_id).execute()
         return sum(row["num_upsize_success"] for row in result.data) if result.data else 0
    
-    def get_total_addon_opportunities(self, worker_id=None): 
-        if worker_id:
-            result = db.view("graded_rows_filtered").select("num_addon_opportunities").eq("run_id", self.run_id).eq("worker_id", worker_id).execute()
+    def get_total_addon_opportunities(self): 
+        if self.worker_id:
+            result = db.view("graded_rows_filtered").select("num_addon_opportunities").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
         else:
             result = db.view("graded_rows_filtered").select("num_addon_opportunities").eq("run_id", self.run_id).execute()
         return sum(row["num_addon_opportunities"] for row in result.data) if result.data else 0
 
-    def get_total_addon_offers(self, worker_id=None): 
-        if worker_id:
-            result = db.view("graded_rows_filtered").select("num_addon_offers").eq("run_id", self.run_id).eq("worker_id", worker_id).execute()
+    def get_total_addon_offers(self): 
+        if self.worker_id:
+            result = db.view("graded_rows_filtered").select("num_addon_offers").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
         else:
             result = db.view("graded_rows_filtered").select("num_addon_offers").eq("run_id", self.run_id).execute()
         return sum(row["num_addon_offers"] for row in result.data) if result.data else 0
     
-    def get_total_addon_success(self, worker_id=None): 
-        if worker_id:
-            result = db.view("graded_rows_filtered").select("num_addon_success").eq("run_id", self.run_id).eq("worker_id", worker_id).execute()
+    def get_total_addon_success(self): 
+        if self.worker_id:
+            result = db.view("graded_rows_filtered").select("num_addon_success").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
         else:
             result = db.view("graded_rows_filtered").select("num_addon_success").eq("run_id", self.run_id).execute()
         return sum(row["num_addon_success"] for row in result.data) if result.data else 0
 
-    def get_item_analytics(self, worker_id=None):
+    def get_item_analytics(self):
         """Get item-level analytics with size tracking"""
         items = db.get_items()
         item_analytics = {}
@@ -117,8 +119,8 @@ class Analytics:
             }
         
         # Get transaction data
-        if worker_id:
-            transactions = db.view("graded_rows_filtered").select("*").eq("run_id", self.run_id).eq("worker_id", worker_id).execute()
+        if self.worker_id:
+            transactions = db.view("graded_rows_filtered").select("*").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
         else:
             transactions = db.view("graded_rows_filtered").select("*").eq("run_id", self.run_id).execute()
         
@@ -211,35 +213,35 @@ class Analytics:
                             item_analytics[success_item_id]["transitions"][transition_key] += 1
                     break
     
-    def generate_analytics_json(self, worker_id=None):
+    def generate_analytics_json(self):
         """Generate complete analytics JSON that fits the database schema"""
         # Calculate all metrics
-        total_transactions = self.get_total_transactions(worker_id)
-        complete_transactions = self.get_complete_transactions(worker_id)
-        completion_rate = self.get_completion_rate(worker_id) if total_transactions > 0 else 0
+        total_transactions = self.get_total_transactions()
+        complete_transactions = self.get_complete_transactions()
+        completion_rate = self.get_completion_rate() if total_transactions > 0 else 0
         
-        avg_items_initial = self.avg_items_initial_order(worker_id)
-        avg_items_final = self.avg_items_after_order(worker_id)
+        avg_items_initial = self.avg_items_initial_order()
+        avg_items_final = self.avg_items_after_order()
         avg_item_increase = avg_items_final - avg_items_initial
         
         # Upsell metrics
-        upsell_opportunities = self.get_total_upsell_opportunities(worker_id)
-        upsell_offers = self.get_total_upsell_offers(worker_id)
-        upsell_successes = self.get_total_upsell_success(worker_id)
+        upsell_opportunities = self.get_total_upsell_opportunities()
+        upsell_offers = self.get_total_upsell_offers()
+        upsell_successes = self.get_total_upsell_success()
         upsell_conversion_rate = upsell_successes / upsell_offers if upsell_offers > 0 else 0
         upsell_revenue = 0  # TODO: Calculate based on item prices
         
         # Upsize metrics
-        upsize_opportunities = self.get_total_upsize_opportunities(worker_id)
-        upsize_offers = self.get_total_upsize_offers(worker_id)
-        upsize_successes = self.get_total_upsize_success(worker_id)
+        upsize_opportunities = self.get_total_upsize_opportunities()
+        upsize_offers = self.get_total_upsize_offers()
+        upsize_successes = self.get_total_upsize_success()
         upsize_conversion_rate = upsize_successes / upsize_offers if upsize_offers > 0 else 0
         upsize_revenue = 0  # TODO: Calculate based on size upgrade prices
         
         # Addon metrics
-        addon_opportunities = self.get_total_addon_opportunities(worker_id)
-        addon_offers = self.get_total_addon_offers(worker_id)
-        addon_successes = self.get_total_addon_success(worker_id)
+        addon_opportunities = self.get_total_addon_opportunities()
+        addon_offers = self.get_total_addon_offers()
+        addon_successes = self.get_total_addon_success()
         addon_conversion_rate = addon_successes / addon_offers if addon_offers > 0 else 0
         addon_revenue = 0  # TODO: Calculate based on addon prices
         
@@ -251,7 +253,7 @@ class Analytics:
         total_revenue = upsell_revenue + upsize_revenue + addon_revenue
         
         # Get detailed item analytics
-        item_analytics = self.get_item_analytics(worker_id)
+        item_analytics = self.get_item_analytics()
         
         # Create the analytics JSON structure
         analytics_data = {
@@ -287,7 +289,7 @@ class Analytics:
         
         return analytics_data
 
-    def generate_analytics_over_time(self, start_date=None, end_date=None, worker_id=None): 
+    def generate_analytics_over_time(self, start_date=None, end_date=None): 
         """Generate analytics over time"""
         
         if start_date is None:
@@ -345,9 +347,9 @@ class Analytics:
         
         return analytics_map
     
-    def get_analytics_with_conversion_rates(self, start_date=None, end_date=None, worker_id=None):
+    def get_analytics_with_conversion_rates(self, start_date=None, end_date=None):
         """Get analytics over time with conversion rates calculated"""
-        analytics_map = self.generate_analytics_over_time(start_date, end_date, worker_id)
+        analytics_map = self.generate_analytics_over_time(start_date, end_date)
         
         # Calculate conversion rates for each date
         for date, data in analytics_map.items():
@@ -377,26 +379,26 @@ class Analytics:
         
         return analytics_map
     
-    def get_run_analytics(self, run_id=None, worker_id=None):
+    def get_run_analytics(self):
         """Get run analytics from database"""
-        if run_id and worker_id:
+        if self.run_id and self.worker_id:
             # Get worker-specific analytics for a specific run
-            result = db.client.table("run_analytics_worker").select("*").eq("run_id", run_id).eq("worker_id", worker_id).execute()
-        elif run_id:
+            result = db.client.table("run_analytics_worker").select("*").eq("run_id", run_id).eq("worker_id", self.worker_id).execute()
+        elif self.run_id:
             # Get all analytics for a specific run (from main table)
-            result = db.client.table("run_analytics").select("*").eq("run_id", run_id).execute()
-        elif worker_id:
+            result = db.client.table("run_analytics").select("*").eq("run_id", self.run_id).execute()
+        elif self.worker_id:
             # Get all analytics for a specific worker
-            result = db.client.table("run_analytics_worker").select("*").eq("worker_id", worker_id).execute()
+            result = db.client.table("run_analytics_worker").select("*").eq("worker_id", self.worker_id).execute()
         else:
             # Get all analytics from main table
             result = db.client.table("run_analytics").select("*").execute()
         
         return result.data if result.data else []
     
-    def get_workers_for_run(self, run_id=None):
+    def get_workers_for_run(self):
         """Get all workers that have analytics for a specific run"""
-        if run_id:
+        if self.run_id:
             result = db.view("graded_rows_filtered").select("worker_id, employee_name").eq("run_id", run_id).execute()
         else:
             result = db.view("graded_rows_filtered").select("worker_id, employee_name").eq("run_id", self.run_id).execute()
@@ -412,17 +414,17 @@ class Analytics:
         
         return workers
     
-    def upload_to_db(self, worker_id=None):
+    def upload_to_db(self):
         """Upload analytics to database"""
-        analytics_data = self.generate_analytics_json(worker_id)
+        analytics_data = self.generate_analytics_json()
 
         # Insert into appropriate table
-        if worker_id:
+        if self.worker_id:
             # Add worker_id to the analytics data for the worker table
-            analytics_data["worker_id"] = worker_id
+            analytics_data["worker_id"] = self.worker_id
             result = db.client.table("run_analytics_worker").insert(analytics_data).execute()
         else:
             result = db.client.table("run_analytics").insert(analytics_data).execute()
 
-        print(f"Uploaded analytics to database for run_id: {self.run_id}, worker_id: {worker_id}")
+        print(f"Uploaded analytics to database for run_id: {self.run_id}, worker_id: {self.worker_id}")
         return result.data

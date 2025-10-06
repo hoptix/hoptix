@@ -7,18 +7,26 @@ db = Supa()
 # Create blueprint
 analytics_bp = Blueprint('analytics', __name__, url_prefix='/api')
 
-@analytics_bp.route("/analytics/run/<run_id>", methods=["GET"])
-def get_run_analytics(run_id):
+@analytics_bp.route("/analytics/run/<run_id>/<worker_id>", methods=["GET"])
+def get_run_analytics(run_id, worker_id=None):
     """Get analytics for a specific run"""
     try:
         # Get run analytics from database
-        result = db.client.table("run_analytics").select("""
-            *,
-            runs!inner(run_date, location_id, org_id),
-            locations!inner(name),
-            organizations!inner(name)
-        """).eq("run_id", run_id).single().execute()
-        
+        if worker_id:
+            result = db.client.table("run_analytics_worker").select("""
+                *,
+                runs!inner(run_date, location_id, org_id),
+                locations!inner(name),
+                organizations!inner(name)
+            """).eq("run_id", run_id).eq("worker_id", worker_id).single().execute()
+        else:
+            result = db.client.table("run_analytics").select("""
+                *,
+                runs!inner(run_date, location_id, org_id),
+                locations!inner(name),
+                organizations!inner(name)
+            """).eq("run_id", run_id).single().execute()
+            
         if not result.data:
             return jsonify({
                 "success": False,
@@ -82,21 +90,21 @@ def get_run_analytics(run_id):
         }), 500
 
 @analytics_bp.route("/analytics/over_time", methods=["GET"])
-def get_analytics_over_time():
-    analytics = Analytics()
+def get_analytics_over_time(run_id, worker_id=None):
+    analytics = Analytics(run_id)
     return jsonify(analytics.generate_analytics_over_time())
 
 @analytics_bp.route("/analytics/item_analytics", methods=["GET"])
-def get_item_analytics():
+def get_item_analytics(run_id, worker_id=None):
     analytics = Analytics()
     return jsonify(analytics.get_item_analytics())
 
 @analytics_bp.route("/analytics/item_analytics_over_time", methods=["GET"])
-def get_item_analytics_over_time():
+def get_item_analytics_over_time(run_id, worker_id=None):
     analytics = Analytics()
     return jsonify(analytics.generate_item_analytics_over_time())
 
-@analytics_bp.route("/generate_report", methods=["GET"])
-def generate_report():
-    analytics = Analytics()
+@analytics_bp.route("/generate_report/<run_id>/<worker_id>", methods=["GET"])
+def generate_report(run_id, worker_id=None):
+    analytics = Analytics(run_id, worker_id)
     return jsonify(analytics.generate_report())
