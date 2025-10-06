@@ -250,6 +250,7 @@ Also output (non-numbered): 18_base — a jsonb array of the base items that cre
 19. Additional toppings that could have been added as a jsonb. If there were no items, write the number 0.
 20. Items that created the Additional Topping Opportunities as a jsonb. For example, if whipped cream was offered because a sundae was ordered, then put the sundae. If none, write 0.
 21. Number of Additional Toppings Offers Made. Format this as an integer.
+Also output (non-numbered): 21_base — a jsonb array of the base items that created the add-on opportunities (e.g., sundae that can have extra toppings). If none, write 0.
 22. Number of Successful Additional Toppings offers. Format this as an integer.
 23. Items that additional toppings were added successfully. If there were no items, write the number 0.
 
@@ -569,6 +570,7 @@ def _map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -
         "addon_base_items":         _parse_json_field(step2_obj.get("18_base", "0")),
         "addon_candidate_items":    _parse_json_field(step2_obj.get("19", "0")),
         "num_addon_offers":         _ii(step2_obj.get("21", 0)),
+        "addon_offered_items":      _parse_json_field(step2_obj.get("21_base", "0")),
         "addon_success_items":      _parse_json_field(step2_obj.get("23", "0")),
         "num_addon_success":        _ii(step2_obj.get("22", 0)),
 
