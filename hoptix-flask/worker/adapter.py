@@ -560,7 +560,7 @@ def _map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -
         "upsize_base_items":        _parse_json_field(step2_obj.get("11_base", "0")),
         "upsize_candidate_items":   _parse_json_field(step2_obj.get("12", "0")),
         "num_upsize_offers":        _ii(step2_obj.get("14", 0)),
-        "upsize_offered_items":     _parse_json_field(step2_obj.get("14_offered", "0")),
+        "upsize_offered_items":     _parse_json_field(step2_obj.get("14_base", "0")),
         "upsize_success_items":     _parse_json_field(step2_obj.get("16", "0")),
         "num_upsize_success":       _ii(step2_obj.get("15", 0)),
 
