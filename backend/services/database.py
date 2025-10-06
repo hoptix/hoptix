@@ -104,3 +104,7 @@ class Supa:
         """Get all menu items"""
         result = self.client.table("items").select("*").execute()
         return result.data if result.data else []
+    
+    def insert_analytics(self, analytics: dict):
+        """Insert analytics into database"""
+        self.client.table("analytics").insert(analytics).execute()

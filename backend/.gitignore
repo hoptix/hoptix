@@ -8,3 +8,5 @@
 .env.production.local
 .env.staging.local
 .env.test.local
+.venv/
+venv/
