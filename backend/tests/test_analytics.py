@@ -21,11 +21,8 @@ analytics = Analytics(RUN_ID)
 # assert analytics.get_total_addon_success() == 2
 
 # Test item-level analytics
-item_analytics = analytics.get_item_analytics()
-print(f"Found {len(item_analytics)} items in analytics")
+item_analytics = analytics.upload_to_db()
+print(f"Uploaded {len(item_analytics)} items in analytics")
 
 # Print sample item data
-with open(f"item_analytics_{RUN_ID}.json", "w") as f:
-    json.dump(item_analytics, f)
-    
-print("All tests passed")
+# upload_to_db()
