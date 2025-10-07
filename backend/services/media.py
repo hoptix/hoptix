@@ -13,14 +13,15 @@ def get_audio_from_location_and_date(location_id: str, date: str):
     
     #Check if the audio is in the db with the date and location_id and return audio and status 
     audio, status = db.get_audio_from_location_and_date(location_id, date)
+    print(f"Audio: {audio}, Status: {status}")
 
     #if the audio is there and status != "uploaded", say audio is already processed 
     if audio and status != "uploaded":
-        return
+        return 
 
     else: 
-        audio = get_audio_from_gdrive(location_id, date)
-        return audio
+        audio, gdrive_path = get_audio_from_gdrive(location_id, date)
+        return audio, gdrive_path
     
 
 def get_audio_from_gdrive(location_id: str, date: str):
@@ -32,7 +33,7 @@ def get_audio_from_gdrive(location_id: str, date: str):
         date (str): Date in YYYY-MM-DD format
         
     Returns:
-        str: Local path to downloaded MP3 file
+        tuple[str | None, str | None]: (local path to downloaded MP3 file, Google Drive file URL)
     """
 
     try:
@@ -51,7 +52,7 @@ def get_audio_from_gdrive(location_id: str, date: str):
         folder_id = gdrive.get_folder_id_from_name(location_name)
         if not folder_id:
             print(f"❌ Folder '{location_name}' not found in 'Shared with Me'")
-            return None
+            return None, None
 
         else: 
             print(f"📂 Folder ID: {folder_id}")
@@ -76,7 +77,7 @@ def get_audio_from_gdrive(location_id: str, date: str):
                     print(f"   - {file.get('name')} ({file.get('mimeType')})")
             except Exception as debug_error:
                 print(f"❌ Debug query failed: {debug_error}")
-            return None
+            return None, None
         
         print(f"📋 Found {len(files)} media files in folder. Listing all files:")
         for file in files:
@@ -113,7 +114,7 @@ def get_audio_from_gdrive(location_id: str, date: str):
         
         if not mp3_file:
             print(f"❌ No MP3 files found for date {date}")
-            return None
+            return None, None
         
         file_id = mp3_file['id']
         file_name = mp3_file['name']
@@ -128,19 +129,19 @@ def get_audio_from_gdrive(location_id: str, date: str):
         if gdrive.download_file(file_id, tmp_audio_path):
             file_size = os.path.getsize(tmp_audio_path)
             print(f"✅ Downloaded {file_name} ({file_size:,} bytes)")
-
-            return tmp_audio_path
+            gdrive_path = f"https://drive.google.com/file/d/{file_id}/view"
+            return tmp_audio_path, gdrive_path
 
         else:
             print(f"❌ Failed to download {file_name}")
             # Clean up failed download
             if os.path.exists(tmp_audio_path):
                 os.remove(tmp_audio_path)
-            return None
+            return None, None
     
     except Exception as e:
         print(f"❌ Error downloading DQ Cary MP3: {e}")
-        return None
+        return None, None
 
     
 

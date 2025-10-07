@@ -7,14 +7,16 @@ class Supa:
         self.client: Client = create_client(Settings.SUPABASE_URL, Settings.SUPABASE_SERVICE_KEY)
 
     # ------- runs -------
-    def insert_run(self, org_id: str, location_id: str, run_date: str) -> str:
+    def insert_run(self, location_id: str, run_date: str) -> str:
+        org_id = self.client.table("locations").select("org_id").eq("id", location_id).limit(1).execute().data[0]["org_id"]
+
         res = self.client.table("runs").insert({
             "org_id": org_id,
             "location_id": location_id,
             "run_date": run_date,
             "status": "uploading"
-        }).select("id").single().execute()
-        return res.data["id"]
+        }).execute()
+        return res.data[0]["id"]
 
     def get_run(self, run_id: str) -> Optional[dict[str, Any]]:
         res = self.client.table("runs").select(
@@ -33,8 +35,8 @@ class Supa:
             "started_at": started_at,
             "ended_at": ended_at,
             "status": "uploading"
-        }).select("id").single().execute()
-        return res.data["id"]
+        }).execute()
+        return res.data[0]["id"]
 
     def get_videos_from_location_and_date(self, location_id: str, date: str):
         res = self.client.table("videos").select("*").eq("location_id", location_id).eq("date", date).execute()
@@ -59,11 +61,14 @@ class Supa:
         res = self.client.table("locations").select("name").eq("id", location_id).execute()
         return res.data[0]["name"]
 
+    def set_audio_status(self, audio_id: str, status: str):
+        self.client.table("audios").update({"status": status}).eq("id", audio_id).execute()
+
     def set_audio_to_processing(self, audio_id: str):
-        self.client.table("audios").update({"status": "processing"}).eq("id", audio_id).execute()
+            self.client.table("audios").update({"status": "processing"}).eq("id", audio_id).execute()
 
     def set_audio_link(self, audio_id: str, gdrive_path: str):
-        self.client.table("audios").update({"gdrive_path": gdrive_path}).eq("id", audio_id).execute()
+        self.client.table("audios").update({"link": gdrive_path}).eq("id", audio_id).execute()
 
     def set_pipeline_to_complete(self, run_id: str, audio_id: str):
 
@@ -81,14 +86,20 @@ class Supa:
         res = self.client.table("audios").select("id").eq("location_id", location_id).eq("date", date).execute()
         return res.data[0]["id"]
 
-    def create_audio(self, location_id: str, date: str, gdrive_path: str):
+    def create_audio(self, location_id: str, date: str, gdrive_path: str, started_at="10:00:00", ended_at="22:00:00"):
+        # Convert time-only strings into full ISO 8601 timestamps for timestamptz columns
+        started_at_ts = f"{date}T{started_at}Z"
+        ended_at_ts = f"{date}T{ended_at}Z"
+        
         res = self.client.table("audios").insert({
             "location_id": location_id,
             "date": date,
-            "gdrive_path": gdrive_path,
+            "started_at": started_at_ts,
+            "ended_at": ended_at_ts,
+            "link": gdrive_path,
             "status": "uploaded"
-        }).select("id").single().execute()
-        return res.data["id"]
+        }).execute()
+        return res.data[0]["id"]
 
     def set_audio_to_ready(self, audio_id: str):
         self.client.table("audios").update({"status": "ready"}).eq("id", audio_id).execute()
@@ -108,3 +119,14 @@ class Supa:
     def insert_analytics(self, analytics: dict):
         """Insert analytics into database"""
         self.client.table("analytics").insert(analytics).execute()
+
+    def upsert_grades(self, grades: list[dict]):
+        """Upsert grades into database"""
+        self.client.table("grades").upsert(grades, on_conflict="transaction_id").execute()
+
+    def upsert_transactions(self, transactions: list[dict]):
+        """Insert transactions into database"""
+        if not transactions:
+            return
+
+        self.client.table("transactions").upsert(transactions).execute()

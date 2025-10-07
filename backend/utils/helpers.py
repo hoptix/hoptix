@@ -1,7 +1,13 @@
 import json
 import os
 from typing import Dict, Any
+from services.database import Supa
+from services.items import ItemLookupService
+import logging
 
+logger = logging.getLogger(__name__)
+
+db = Supa()
 
 def parse_json_field(value, default="0"):
     if value is None:
@@ -53,3 +59,40 @@ def calculate_gpt_price_batch(resp: Any) -> float:
         output_cost = (resp.usage.output_tokens / 1000000) * 4.0
         return input_cost + output_cost
     return 0.0
+
+
+def convert_item_ids_to_names(item_data, item_lookup: ItemLookupService) -> str:
+    """Convert item IDs to human-readable names. Handles strings, lists, numbers, and None."""
+    if not item_data or item_data in ['0', '[]', 'None', 'null', None, 0]:
+        return 'None'
+    
+    try:
+        # Handle different data types
+        if isinstance(item_data, list):
+            item_list = item_data
+        elif isinstance(item_data, (int, float)):
+            # Single numeric item ID
+            item_list = [str(item_data)]
+        elif isinstance(item_data, str):
+            if item_data.startswith('[') and item_data.endswith(']'):
+                # Parse as proper JSON array
+                item_list = json.loads(item_data)
+            else:
+                # Single item or comma-separated
+                item_list = [item_data.strip()]
+        else:
+            item_list = [str(item_data)]
+        
+        # Convert each item ID to name
+        item_names = []
+        for item_id in item_list:
+            if item_id and str(item_id) != '0' and str(item_id).strip():
+                item_name = item_lookup.get_item_name(str(item_id).strip())
+                item_names.append(item_name)
+        
+        return ', '.join(item_names) if item_names else 'None'
+    except (json.JSONDecodeError, TypeError, ValueError) as e:
+        logger.warning(f"Failed to convert item data '{item_data}': {e}")
+        return str(item_data)  # Return original if parsing fails
+
+

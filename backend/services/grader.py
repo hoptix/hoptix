@@ -9,7 +9,7 @@ from utils.helpers import ii, parse_json_field, json_or_none, read_json_or_empty
 
 
 settings = Settings()
-client = OpenAI(api_key=settings.OPENAI_APIKEY)
+client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 prompts = Prompts()
 

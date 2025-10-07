@@ -39,7 +39,10 @@ def clip_audio_with_ffmpeg(input_path: str, output_path: str, start_time: float,
         "-i", input_path,
         "-ss", str(start_time),  # start time
         "-t", str(end_time - start_time),  # duration
-        "-acodec", "pcm_s16le",  # WAV format
+        "-vn",  # no video
+        "-acodec", "pcm_s16le",  # WAV PCM 16-bit
+        "-ar", "16000",  # 16 kHz sample rate
+        "-ac", "1",  # mono
         output_path
     ]
     subprocess.run(cmd, check=True)
@@ -51,6 +54,7 @@ def transcribe_audio(audio_path: str) -> List[Dict]:
     
     # Create audio directory for segments
     audio_dir = "extracted_audio"
+    os.makedirs(audio_dir, exist_ok=True)
 
     duration = get_duration(audio_path)
     
@@ -61,7 +65,7 @@ def transcribe_audio(audio_path: str) -> List[Dict]:
         
     for i, (b, e) in enumerate(spans):
         # Create permanent segment audio file instead of temporary
-        segment_audio = os.path.join(audio_dir, f"{audio_path}_segment_{i+1:03d}_{int(b)}s-{int(e)}s.mp3")
+        segment_audio = os.path.join(audio_dir, f"{audio_path}_segment_{i+1:03d}_{int(b)}s-{int(e)}s.wav")
         
         # Ensure end time doesn't exceed video duration
         end_time = min(int(e+1), duration)

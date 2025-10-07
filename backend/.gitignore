@@ -10,3 +10,13 @@
 .env.test.local
 .venv/
 venv/
+.venv/
+__pycache__/
+.DS_Store
+.idea/
+.vscode/
+.pytest_cache/
+.coverage
+.coverage.*
+.coverage.*
+routes/__pycache__/

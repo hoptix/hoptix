@@ -37,7 +37,7 @@ class Analytics:
     
     def avg_items_after_order(self):
         if self.worker_id:
-            result = db.view("graded_rows_filtered").select("items_after").eq("run_id", self.run_id).eq("worker_id", worker_id).execute()
+            result = db.view("graded_rows_filtered").select("items_after").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
         else:
             result = db.view("graded_rows_filtered").select("items_after").eq("run_id", self.run_id).execute()
         return sum(len(row["items_after"]) for row in result.data) / len(result.data) if result.data else 0
@@ -383,7 +383,7 @@ class Analytics:
         """Get run analytics from database"""
         if self.run_id and self.worker_id:
             # Get worker-specific analytics for a specific run
-            result = db.client.table("run_analytics_worker").select("*").eq("run_id", run_id).eq("worker_id", self.worker_id).execute()
+            result = db.client.table("run_analytics_worker").select("*").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
         elif self.run_id:
             # Get all analytics for a specific run (from main table)
             result = db.client.table("run_analytics").select("*").eq("run_id", self.run_id).execute()
@@ -399,7 +399,7 @@ class Analytics:
     def get_workers_for_run(self):
         """Get all workers that have analytics for a specific run"""
         if self.run_id:
-            result = db.view("graded_rows_filtered").select("worker_id, employee_name").eq("run_id", run_id).execute()
+            result = db.view("graded_rows_filtered").select("worker_id, employee_name").eq("run_id", self.run_id).execute()
         else:
             result = db.view("graded_rows_filtered").select("worker_id, employee_name").eq("run_id", self.run_id).execute()
         
