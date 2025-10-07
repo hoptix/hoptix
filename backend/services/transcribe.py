@@ -5,9 +5,12 @@ from typing import List, Dict
 import librosa
 import subprocess
 from openai import OpenAI
+from config import Settings
 
+settings = Settings()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key=settings.OPENAI_API_KEY)
+ASR_MODEL = settings.ASR_MODEL
 
 # parses transactions from audio files and feeds them to the grader@contextlib.contextmanager
 def segment_active_spans(y: np.ndarray, sr: int, window_s: float = 15.0) -> List[tuple[float,float]]:
@@ -76,7 +79,7 @@ def transcribe_audio(audio_path: str) -> List[Dict]:
         with open(segment_audio, "rb") as af:
             try:
                 txt = client.audio.transcriptions.create(
-                    model=client.ASR_MODEL,
+                    model=ASR_MODEL,
                     file=af,
                     response_format="text",
                     temperature=0.001,

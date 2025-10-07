@@ -1,5 +1,34 @@
 import { useQuery } from "@tanstack/react-query";
 
+interface SizeMetrics {
+  upsell_base: number;
+  upsell_candidates: number;
+  upsell_offered: number;
+  upsell_success: number;
+  upsize_base: number;
+  upsize_candidates: number;
+  upsize_offered: number;
+  upsize_success: number;
+  addon_base: number;
+  addon_candidates: number;
+  addon_offered: number;
+  addon_success: number;
+}
+
+interface ItemAnalytics {
+  name: string;
+  sizes: Record<string, SizeMetrics>;
+  transitions: {
+    "1_to_2": number;
+    "1_to_3": number;
+    "2_to_3": number;
+  };
+}
+
+interface DetailedAnalytics {
+  [itemId: string]: ItemAnalytics;
+}
+
 interface OperatorMetrics {
   total_opportunities?: number;
   total_offers?: number;
@@ -12,98 +41,51 @@ interface OperatorMetrics {
 }
 
 interface RunAnalytics {
-  success: boolean;
-  data?: {
-    run_id: string;
-    run_date: string;
-    location_id: string;
-    location_name: string;
-    org_name: string;
-    total_transactions: number;
-    complete_transactions: number;
-    completion_rate: number;
-    avg_items_initial: number;
-    avg_items_final: number;
-    avg_item_increase: number;
-    
-    // Upselling metrics
-    upsell_opportunities: number;
-    upsell_offers: number;
-    upsell_successes: number;
-    upsell_conversion_rate: number;
-    upsell_revenue: number;
-    
-    // Upsizing metrics
-    upsize_opportunities: number;
-    upsize_offers: number;
-    upsize_successes: number;
-    upsize_conversion_rate: number;
-    upsize_revenue: number;
-    
-    // Add-on metrics
-    addon_opportunities: number;
-    addon_offers: number;
-    addon_successes: number;
-    addon_conversion_rate: number;
-    addon_revenue: number;
-    
-    // Overall metrics
-    total_opportunities: number;
-    total_offers: number;
-    total_successes: number;
-    overall_conversion_rate: number;
-    total_revenue: number;
-    
-    // Detailed analytics with operator breakdown
-    detailed_analytics?: {
-      operator_analytics?: {
-        upselling?: Record<string, OperatorMetrics>;
-        upsizing?: Record<string, OperatorMetrics>;
-        addons?: Record<string, OperatorMetrics>;
-      };
-      recommendations?: string[];
-      upselling?: {
-        by_item?: Record<string, {
-          candidate_count: number;
-          offered_count: number;
-          converted_count: number;
-          offer_rate: number;
-          conversion_rate: number;
-          success_rate: number;
-          candidate_coverage: number;
-          revenue: number;
-        }>;
-      };
-      upsizing?: {
-        by_item?: Record<string, {
-          candidate_count: number;
-          offered_count: number;
-          converted_count: number;
-          offer_rate: number;
-          conversion_rate: number;
-          success_rate: number;
-          candidate_coverage: number;
-          revenue: number;
-        }>;
-      };
-      addons?: {
-        by_item?: Record<string, {
-          candidate_count: number;
-          offered_count: number;
-          converted_count: number;
-          offer_rate: number;
-          conversion_rate: number;
-          success_rate: number;
-          candidate_coverage: number;
-          revenue: number;
-        }>;
-      };
-    };
-  };
-  error?: string;
+  run_id: string;
+  run_date: string;
+  location_id: string;
+  location_name: string;
+  org_name: string;
+  total_transactions: number;
+  complete_transactions: number;
+  completion_rate: number;
+  avg_items_initial: number;
+  avg_items_final: number;
+  avg_item_increase: number;
+  
+  // Upselling metrics
+  upsell_opportunities: number;
+  upsell_offers: number;
+  upsell_successes: number;
+  upsell_conversion_rate: number;
+  upsell_revenue: number;
+  
+  // Upsizing metrics
+  upsize_opportunities: number;
+  upsize_offers: number;
+  upsize_successes: number;
+  upsize_conversion_rate: number;
+  upsize_revenue: number;
+  
+  // Add-on metrics
+  addon_opportunities: number;
+  addon_offers: number;
+  addon_successes: number;
+  addon_conversion_rate: number;
+  addon_revenue: number;
+  
+  // Overall metrics
+  total_opportunities: number;
+  total_offers: number;
+  total_successes: number;
+  overall_conversion_rate: number;
+  total_revenue: number;
+  
+  // Detailed analytics with per-item breakdown
+  detailed_analytics?: string; // JSON string containing item analytics
 }
 
-const fetchRunAnalytics = async (runId: string): Promise<RunAnalytics> => {
+const fetchRunAnalytics = async (runId: string): Promise<{ success: boolean; data: RunAnalytics }> => {
   // Use environment variable or fallback to localhost for development
   const baseUrl = typeof window !== 'undefined' 
     ? (window.location.origin.includes('localhost') ? 'http://localhost:8000' : window.location.origin)
@@ -130,4 +112,50 @@ export function useGetRunAnalytics(runId: string, enabled: boolean = true) {
   });
 }
 
-export type { RunAnalytics, OperatorMetrics };
+// Worker Analytics type (same structure as RunAnalytics but with worker_id)
+interface WorkerAnalytics extends RunAnalytics {
+  worker_id: string;
+}
+
+// Hook to fetch worker analytics for a run
+export function useGetWorkerAnalytics(runId: string) {
+  const baseUrl = typeof window !== 'undefined' 
+    ? (window.location.origin.includes('localhost') ? 'http://localhost:8000' : window.location.origin)
+    : 'http://localhost:8000';
+    
+  return useQuery({
+    queryKey: ['workerAnalytics', runId],
+    queryFn: async (): Promise<{ success: boolean; data: WorkerAnalytics[] }> => {
+      const response = await fetch(`${baseUrl}/api/analytics/run/${runId}/workers`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch worker analytics: ${response.statusText}`);
+      }
+      return response.json();
+    },
+    enabled: !!runId,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnWindowFocus: false,
+  });
+}
+
+// Hook to fetch all worker analytics for the data table
+export function useGetAllWorkerAnalytics() {
+  const baseUrl = typeof window !== 'undefined' 
+    ? (window.location.origin.includes('localhost') ? 'http://localhost:8000' : window.location.origin)
+    : 'http://localhost:8000';
+    
+  return useQuery({
+    queryKey: ['allWorkerAnalytics'],
+    queryFn: async (): Promise<{ success: boolean; data: WorkerAnalytics[] }> => {
+      const response = await fetch(`${baseUrl}/api/analytics/workers`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch all worker analytics: ${response.statusText}`);
+      }
+      return response.json();
+    },
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnWindowFocus: false,
+  });
+}
+
+export type { RunAnalytics, OperatorMetrics, ItemAnalytics, SizeMetrics, DetailedAnalytics, WorkerAnalytics };
