@@ -30,6 +30,11 @@
 
     WORKDIR /app
     
+    # Install runtime system dependencies
+    RUN apt-get update && apt-get install -y \
+        ffmpeg \
+        && rm -rf /var/lib/apt/lists/*
+    
     # Copy the Python environment from builder stage
     COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
     COPY --from=builder /usr/local/bin /usr/local/bin
@@ -59,6 +64,6 @@
     ENV PATH="/app/scripts:$PATH"
     
     # Default command
-    CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120", "app:app"]
+    CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120", "--access-logfile", "-", "--error-logfile", "-", "--log-level", "info", "app:app"]
     
     
