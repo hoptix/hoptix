@@ -284,29 +284,42 @@ class ProcessingService:
         start_time = datetime.now()
 
         try:
-            # 1) Load WAV and create speech-active segments (<= 20 minutes each)
-            logger.info(f"🎤 [1/6] Loading WAV and creating segments...")
-            y, sr = librosa.load(local_wav_path, sr=None)
-            duration_s = len(y) / float(sr)
-            spans = _segment_active_spans(y, sr, 15.0) or [(0.0, duration_s)]
+            # 1) Get WAV file info without loading entire file into memory
+            logger.info(f"🎤 [1/6] Analyzing WAV file structure...")
+            
+            # Get file info using soundfile (more memory efficient)
+            with sf.SoundFile(local_wav_path) as f:
+                sr = f.samplerate
+                frames = f.frames
+                duration_s = frames / float(sr)
+                channels = f.channels
+                
+            logger.info(f"📊 WAV Info: {duration_s:.1f}s, {sr}Hz, {channels} channels, {frames:,} frames")
+            
+            # For large files, use a simpler segmentation approach to avoid memory issues
+            # Since we're already working with chunks from the splitter, we can process more directly
+            max_seg_s = 1200.0  # 20 minutes max per segment
+            
+            # Create segments based on duration rather than loading entire file
+            if duration_s <= max_seg_s:
+                # File is small enough to process as one segment
+                final_spans = [(0.0, duration_s)]
+                logger.info(f"📏 File is small enough ({duration_s:.1f}s), processing as single segment")
+            else:
+                # Split into 20-minute chunks with small overlap
+                overlap_s = 5.0  # 5 second overlap
+                final_spans = []
+                current_start = 0.0
+                
+                while current_start < duration_s:
+                    current_end = min(current_start + max_seg_s, duration_s)
+                    final_spans.append((current_start, current_end))
+                    current_start = current_end - overlap_s
+                    
+                logger.info(f"📏 File split into {len(final_spans)} segments of ~{max_seg_s/60:.1f}min each")
 
-            # enforce API segment limit (~25m). Use 20 minutes to be safe
-            max_seg_s = 1200.0
-            final_spans = []
-            for b, e in spans:
-                seg_len = float(e - b)
-                if seg_len <= max_seg_s:
-                    final_spans.append((b, e))
-                else:
-                    num_chunks = int(np.ceil(seg_len / max_seg_s))
-                    chunk_len = seg_len / num_chunks
-                    for i in range(num_chunks):
-                        cb = b + i * chunk_len
-                        ce = min(b + (i + 1) * chunk_len, e)
-                        final_spans.append((cb, ce))
-
-            # 2) Transcribe each segment
-            logger.info(f"🧩 Created {len(final_spans)} audio segments for ASR")
+            # 2) Transcribe each segment using memory-efficient approach
+            logger.info(f"🧩 Processing {len(final_spans)} audio segments for ASR")
             client = OpenAI(api_key=self.settings.OPENAI_API_KEY)
             audio_dir = "extracted_audio"
             os.makedirs(audio_dir, exist_ok=True)
@@ -314,12 +327,24 @@ class ProcessingService:
 
             segments = []
             for i, (b, e) in enumerate(final_spans, start=1):
-                start_idx = int(b * sr)
-                end_idx = int(e * sr)
-                seg_y = y[start_idx:end_idx]
+                logger.info(f"🎵 Processing segment {i}/{len(final_spans)}: {b:.1f}s - {e:.1f}s")
+                
+                # Extract segment using soundfile (memory efficient)
                 seg_path = os.path.join(audio_dir, f"{base}_seg_{i:03d}_{int(b)}s-{int(e)}s.wav")
-                sf.write(seg_path, seg_y, sr)
+                
                 try:
+                    # Use soundfile to extract just this segment
+                    with sf.SoundFile(local_wav_path) as f:
+                        # Seek to start position
+                        f.seek(int(b * sr))
+                        # Read only the frames we need
+                        frames_to_read = int((e - b) * sr)
+                        seg_data = f.read(frames_to_read)
+                        
+                    # Write segment to file
+                    sf.write(seg_path, seg_data, sr)
+                    
+                    # Transcribe the segment
                     with open(seg_path, "rb") as af:
                         txt = client.audio.transcriptions.create(
                             model=self.settings.ASR_MODEL,
@@ -330,9 +355,17 @@ class ProcessingService:
                         )
                     text = str(txt)
                     logger.info(f"✅ ASR {i}/{len(final_spans)}: {len(text)} chars")
+                    
+                    # Clean up segment file immediately to save disk space
+                    os.remove(seg_path)
+                    
                 except Exception as asr_err:
                     logger.warning(f"❌ ASR failed for segment {i}: {asr_err}")
                     text = ""
+                    # Clean up failed segment file
+                    if os.path.exists(seg_path):
+                        os.remove(seg_path)
+                        
                 segments.append({"start": float(b), "end": float(e), "text": text})
 
             logger.info(f"✅ [1/6] Transcription completed: {len(segments)} segments generated")

@@ -25,23 +25,35 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 
 def create_test_wav_file(duration_seconds: int, sample_rate: int = 44100) -> str:
-    """Create a test WAV file with the specified duration."""
-    # Generate a simple sine wave for testing
-    t = np.linspace(0, duration_seconds, int(duration_seconds * sample_rate), False)
-    # Create a 440Hz sine wave (A note)
-    audio_data = np.sin(2 * np.pi * 440 * t) * 0.5
+    """Create a test WAV file with the specified duration using memory-efficient approach."""
+    # For very long files, create in chunks to avoid memory issues
+    chunk_duration = 60  # 1 minute chunks
+    total_samples = int(duration_seconds * sample_rate)
+    chunk_samples = int(chunk_duration * sample_rate)
     
     # Create temporary file
     with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_file:
         tmp_path = tmp_file.name
     
-    # Write the audio data
-    sf.write(tmp_path, audio_data, sample_rate)
-    
-    file_size = os.path.getsize(tmp_path)
-    logger.info(f"Created test WAV file: {tmp_path}")
+    logger.info(f"Creating test WAV file: {tmp_path}")
     logger.info(f"  Duration: {duration_seconds}s")
     logger.info(f"  Sample rate: {sample_rate}Hz")
+    
+    # Write audio data in chunks to avoid memory issues
+    with sf.SoundFile(tmp_path, 'w', sample_rate, 1) as f:
+        for start_sample in range(0, total_samples, chunk_samples):
+            end_sample = min(start_sample + chunk_samples, total_samples)
+            chunk_duration_actual = (end_sample - start_sample) / sample_rate
+            
+            # Generate chunk data
+            t = np.linspace(0, chunk_duration_actual, end_sample - start_sample, False)
+            # Create a 440Hz sine wave (A note) with some variation
+            frequency = 440 + (start_sample / total_samples) * 100  # Vary frequency slightly
+            audio_chunk = np.sin(2 * np.pi * frequency * t) * 0.5
+            
+            f.write(audio_chunk)
+    
+    file_size = os.path.getsize(tmp_path)
     logger.info(f"  File size: {file_size:,} bytes ({file_size / (1024*1024):.1f}MB)")
     
     return tmp_path
