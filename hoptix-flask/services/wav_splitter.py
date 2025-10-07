@@ -46,11 +46,12 @@ class WAVSplitter:
         if file_size_mb > self.max_file_size_mb:
             return True, f"File size ({file_size_mb:.1f}MB) exceeds limit ({self.max_file_size_mb}MB)"
             
-        # Check duration
+        # Check duration using soundfile (memory efficient)
         try:
-            y, sr = librosa.load(wav_path, sr=None)
-            duration_seconds = len(y) / float(sr)
-            duration_minutes = duration_seconds / 60.0
+            import soundfile as sf
+            with sf.SoundFile(wav_path) as f:
+                duration_seconds = f.frames / float(f.samplerate)
+                duration_minutes = duration_seconds / 60.0
             
             if duration_minutes > self.max_duration_minutes:
                 return True, f"Duration ({duration_minutes:.1f}min) exceeds limit ({self.max_duration_minutes}min)"
@@ -65,6 +66,7 @@ class WAVSplitter:
     def split_wav_file(self, wav_path: str, original_video_row: Dict) -> List[Dict]:
         """
         Split a large WAV file into smaller chunks and create video records for each chunk.
+        Uses memory-efficient approach to avoid loading entire file into RAM.
         
         Args:
             wav_path: Path to the original WAV file
@@ -75,69 +77,84 @@ class WAVSplitter:
         """
         logger.info(f"🔪 Starting WAV file splitting for: {os.path.basename(wav_path)}")
         
-        # Load the WAV file
+        # Get file info without loading entire file into memory
         try:
-            y, sr = librosa.load(wav_path, sr=None)
-            duration_seconds = len(y) / float(sr)
-            logger.info(f"📊 Original file: {duration_seconds:.1f}s duration, {len(y)} samples at {sr}Hz")
+            import soundfile as sf
+            with sf.SoundFile(wav_path) as f:
+                sr = f.samplerate
+                total_frames = f.frames
+                duration_seconds = total_frames / float(sr)
+                channels = f.channels
+                
+            logger.info(f"📊 Original file: {duration_seconds:.1f}s duration, {total_frames:,} frames at {sr}Hz, {channels} channels")
         except Exception as e:
-            logger.error(f"❌ Failed to load WAV file {wav_path}: {e}")
+            logger.error(f"❌ Failed to analyze WAV file {wav_path}: {e}")
             raise
             
         # Calculate chunk parameters
         chunk_duration_seconds = self.chunk_duration_minutes * 60
-        overlap_samples = int(self.overlap_seconds * sr)
-        chunk_samples = int(chunk_duration_seconds * sr)
+        overlap_frames = int(self.overlap_seconds * sr)
+        chunk_frames = int(chunk_duration_seconds * sr)
         
         # Calculate number of chunks needed
-        total_samples = len(y)
-        num_chunks = int(np.ceil(total_samples / (chunk_samples - overlap_samples)))
+        num_chunks = int(np.ceil(total_frames / (chunk_frames - overlap_frames)))
         
         logger.info(f"📏 Splitting into {num_chunks} chunks of ~{self.chunk_duration_minutes}min each")
         
-        # Create chunks
+        # Create chunks using memory-efficient approach
         chunk_video_records = []
         base_filename = os.path.splitext(os.path.basename(wav_path))[0]
         
         for i in range(num_chunks):
-            # Calculate chunk boundaries
-            start_sample = i * (chunk_samples - overlap_samples)
-            end_sample = min(start_sample + chunk_samples, total_samples)
+            # Calculate chunk boundaries in frames
+            start_frame = i * (chunk_frames - overlap_frames)
+            end_frame = min(start_frame + chunk_frames, total_frames)
             
             # Ensure we don't go beyond the file
-            if start_sample >= total_samples:
+            if start_frame >= total_frames:
                 break
                 
-            start_time_seconds = start_sample / sr
-            end_time_seconds = end_sample / sr
+            start_time_seconds = start_frame / sr
+            end_time_seconds = end_frame / sr
             
             logger.info(f"🎵 Creating chunk {i+1}/{num_chunks}: {start_time_seconds:.1f}s - {end_time_seconds:.1f}s")
-            
-            # Extract chunk audio
-            chunk_audio = y[start_sample:end_sample]
             
             # Create temporary file for this chunk
             with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_file:
                 chunk_path = tmp_file.name
                 
-            # Save chunk to temporary file
-            sf.write(chunk_path, chunk_audio, sr)
-            chunk_size = os.path.getsize(chunk_path)
-            
-            logger.info(f"💾 Chunk {i+1} saved: {chunk_path} ({chunk_size:,} bytes)")
-            
-            # Create video record for this chunk
-            chunk_video_record = self._create_chunk_video_record(
-                original_video_row, 
-                i + 1, 
-                num_chunks,
-                start_time_seconds,
-                end_time_seconds,
-                chunk_path,
-                chunk_size
-            )
-            
-            chunk_video_records.append(chunk_video_record)
+            try:
+                # Extract chunk using soundfile (memory efficient)
+                with sf.SoundFile(wav_path) as f:
+                    f.seek(start_frame)
+                    frames_to_read = end_frame - start_frame
+                    chunk_data = f.read(frames_to_read)
+                    
+                # Save chunk to temporary file
+                sf.write(chunk_path, chunk_data, sr)
+                chunk_size = os.path.getsize(chunk_path)
+                
+                logger.info(f"💾 Chunk {i+1} saved: {chunk_path} ({chunk_size:,} bytes)")
+                
+                # Create video record for this chunk
+                chunk_video_record = self._create_chunk_video_record(
+                    original_video_row, 
+                    i + 1, 
+                    num_chunks,
+                    start_time_seconds,
+                    end_time_seconds,
+                    chunk_path,
+                    chunk_size
+                )
+                
+                chunk_video_records.append(chunk_video_record)
+                
+            except Exception as e:
+                logger.error(f"❌ Failed to create chunk {i+1}: {e}")
+                # Clean up failed chunk file
+                if os.path.exists(chunk_path):
+                    os.remove(chunk_path)
+                continue
             
         logger.info(f"✅ Successfully created {len(chunk_video_records)} WAV chunks")
         return chunk_video_records
