@@ -11,6 +11,7 @@ from services.transactions import split_into_transactions
 from services.grader import grade_transactions
 from services.analytics import Analytics
 from services.clipper import clip_transactions
+from concurrent.futures import ThreadPoolExecutor
 
 
 db = Supa() 
@@ -44,16 +45,21 @@ def full_pipeline(location_id: str, date: str):
 
     #3) Split audio into transactions 
     print(f"[4/9] Splitting audio into transactions")
-    transactions = split_into_transactions(transcript_segments, run_id, date=date)
-    print(f"Split {len(transactions)} transactions")
 
-    #4) Insert transactions into database 
-    print(f"[5/9] Inserting transactions into database")
-    inserted_transactions = db.upsert_transactions(transactions)
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        transactions = list(executor.map(lambda x: split_into_transactions(x, run_id, date=date), transcript_segments))
+        inserted_transactions = db.upsert_transactions(transactions)
+
+    print(f"[4/9] Split and inserted {len(inserted_transactions)} transactions")
 
     #5) Grade transactions 
     print(f"[6/9] Grading transactions")
-    grades = grade_transactions(inserted_transactions, location_id)
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        grades = list(executor.map(lambda x: grade_transactions(x, location_id), inserted_transactions))
+        db.upsert_grades(grades)
+
+    print(f"[6/9] Graded {len(grades)} transactions")
+
 
 
 

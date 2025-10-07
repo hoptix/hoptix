@@ -5,6 +5,7 @@ from openai import OpenAI
 import json
 import os
 from typing import Dict, Any, List
+from concurrent.futures import ThreadPoolExecutor
 from utils.helpers import ii, parse_json_field, json_or_none, read_json_or_empty, calculate_gpt_price, calculate_gpt_price_batch
 from services.database import Supa
 
@@ -15,77 +16,85 @@ client = OpenAI(api_key=settings.OPENAI_API_KEY)
 prompts = Prompts()
 db = Supa() 
 
-
 def grade_transactions(transactions: List[Dict], location_id: str, testing=True) -> List[Dict]:
-    graded: List[Dict] = []
-    for tx in transactions:
-        transcript = (tx.get("meta") or {}).get("text","")
-        tx_meta = tx.get("meta") or {}
-        
-        if not transcript.strip():
-            # produce an empty row but keep columns
-            base = map_step2_to_grade_cols({}, tx_meta)
-            graded.append({
-                "transaction_id":  tx.get("id"),  # Add transaction ID
-                "details":         base,
-                "transcript":      transcript,
-                "gpt_price":       0.0
-            })
-            continue
-
-        # Run Step‑2 with location-specific menu data
-        step2_prompt = build_step2_prompt(location_id)
-        prompt = step2_prompt + "\n\nProcess this transcript:\n" + transcript
-        try:
-            if testing: 
-                resp = client.responses.create(
-                    model=settings.STEP2_MODEL,
-                    include=["reasoning.encrypted_content"],
-                    input=[{"role":"user","content":[{"type":"input_text","text": prompt}]}],
-                    store=False,
-                    text={"format":{"type":"text"}},
-                    reasoning={"effort":"high","summary":"detailed"},
-                )
-
-            else: 
-                resp = client.responses.create(
-                    model=settings.STEP2_MODEL,
-                    input=[{"role":"user","content":[{"type":"input_text","text": prompt}]}],
-                    store=False,
-                    text={"format":{"type":"text"}},
-                    reasoning={"effort":"high","summary":"detailed"},
-                )
-
-            raw = resp.output[1].content[0].text if hasattr(resp,"output") else "{}"
-            print(f"\n=== STEP 2 (Grading) RAW OUTPUT ===")
-            print(f"Input transcript: {transcript[:200]}...")
-            print(f"Raw LLM response: {raw}")
-            print("=" * 50)
-            
-            parsed = json_or_none(raw)
-            if not parsed:
-                parsed = {}
-            print(f"Parsed JSON: {parsed}")
-
-            gpt_price = calculate_gpt_price(resp)
-        
-
-        except Exception as ex:
-            print("Step‑2 error:", ex)
-            parsed = {}
-            gpt_price = 0.0
-
-        details = map_step2_to_grade_cols(parsed, tx.get("meta") or {})
-        print(f"Mapped details: {details}")
-        print("=" * 50)
-
-        graded.append({
-            "transaction_id":  tx.get("id"),  # Add transaction ID
-            "details":         details,
-            "transcript":      transcript,  # Add raw transcript
-            "gpt_price":       gpt_price    # Add calculated price
-        })
+    # Build prompt once (shared across all transactions)
+    step2_prompt = build_step2_prompt(location_id)
+    
+    # Parallelize transaction grading
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        graded = list(executor.map(
+            lambda tx: _grade_transaction(tx, location_id, step2_prompt, testing),
+            transactions
+        ))
+    
     return graded
+
+def _grade_transaction(tx: Dict, location_id: str, step2_prompt: str, testing: bool) -> Dict:
+    """Grade a single transaction"""
+    transcript = (tx.get("meta") or {}).get("text","")
+    tx_meta = tx.get("meta") or {}
+    
+    if not transcript.strip():
+        # produce an empty row but keep columns
+        base = map_step2_to_grade_cols({}, tx_meta)
+        return {
+            "transaction_id":  tx.get("id"),  # Add transaction ID
+            "details":         base,
+            "transcript":      transcript,
+            "gpt_price":       0.0
+        }
+
+    # Run Step‑2 with location-specific menu data
+    prompt = step2_prompt + "\n\nProcess this transcript:\n" + transcript
+    try:
+        if testing: 
+            resp = client.responses.create(
+                model=settings.STEP2_MODEL,
+                include=["reasoning.encrypted_content"],
+                input=[{"role":"user","content":[{"type":"input_text","text": prompt}]}],
+                store=False,
+                text={"format":{"type":"text"}},
+                reasoning={"effort":"high","summary":"detailed"},
+            )
+
+        else: 
+            resp = client.responses.create(
+                model=settings.STEP2_MODEL,
+                input=[{"role":"user","content":[{"type":"input_text","text": prompt}]}],
+                store=False,
+                text={"format":{"type":"text"}},
+                reasoning={"effort":"high","summary":"detailed"},
+            )
+
+        raw = resp.output[1].content[0].text if hasattr(resp,"output") else "{}"
+        print(f"\n=== STEP 2 (Grading) RAW OUTPUT ===")
+        print(f"Input transcript: {transcript[:200]}...")
+        print(f"Raw LLM response: {raw}")
+        print("=" * 50)
+        
+        parsed = json_or_none(raw)
+        if not parsed:
+            parsed = {}
+        print(f"Parsed JSON: {parsed}")
+
+        gpt_price = calculate_gpt_price(resp)
+    
+
+    except Exception as ex:
+        print("Step‑2 error:", ex)
+        parsed = {}
+        gpt_price = 0.0
+
+    details = map_step2_to_grade_cols(parsed, tx.get("meta") or {})
+    print(f"Mapped details: {details}")
+    print("=" * 50)
+
+    return {
+        "transaction_id":  tx.get("id"),  # Add transaction ID
+        "details":         details,
+        "transcript":      transcript,  # Add raw transcript
+        "gpt_price":       gpt_price    # Add calculated price
+    }
 
 # ---------- 3) GRADE (Step‑2 prompt per transaction, return ALL columns) ----------
 def map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -> Dict[str,Any]:
