@@ -3,6 +3,7 @@ import pathlib
 import subprocess
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 def mkv_to_wav(input_path: str, output_path: str, sr: int = 16000, channels: int = 1):

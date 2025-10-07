@@ -1,19 +1,18 @@
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
+from services.database import Supa
 
-from services.database_service import DatabaseService
 from services.media import get_audio_from_location_and_date
 from services.transcribe import transcribe_audio
 from services.transactions import split_into_transactions
 from services.grader import grade_transactions
-from services.database_service import insert_transactions
-from services.database_service import upsert_grades
-from services.report import generate_report
-from services.google_drive import write_clips_to_google_drive
-from services.voice_diarization import conduct_voice_diarization
-from services.voice_diarization import insert_voice_diarization
+from services.analytics import Analytics
 
-db = DatabaseService()
+
+db = Supa() 
 
 def full_pipeline(location_id: str, date: str):
 
@@ -21,9 +20,14 @@ def full_pipeline(location_id: str, date: str):
 
     print(f"Processing full pipeline for {location_name} on {date}")
 
-
     # 1) Check and pull audio from location and date, audio path is a temp file in your local storage
-    audio_path, gdrive_path = get_audio_from_location_and_date(location_id, date)
+    print(f"Checking and pulling audio from {location_name} on {date}")
+
+    try: 
+        audio_path, gdrive_path = get_audio_from_location_and_date(location_id, date)
+    except Exception as e:
+        print(f"Error checking and pulling audio from {location_name} on {date}: {e}")
+        return 
 
     # if we have an audio, begin the pipeline 
     if audio_path: 
@@ -32,25 +36,27 @@ def full_pipeline(location_id: str, date: str):
     else: 
         return "No audio found for {location_name} on {date}"
         
-
     # 2) Transcribe audio to text 
     transcript_segments = transcribe_audio(audio_path)
 
     #3) Split audio into transactions 
     transactions = split_into_transactions(transcript_segments, date=date)
+    print(f"Split {len(transactions)} transactions")
 
+    #4) Insert transactions into database 
+    db.upsert_transactions(transactions)
 
-    #4) Grade transactions 
+    #5) Grade transactions 
     grades = grade_transactions(transactions, location_id)
 
-    #5) Insert transactions into database 
-    insert_transactions(transactions)
+
 
     #6) Upsert grades into database 
-    upsert_grades(grades)
+    db.upsert_grades(grades)
 
     # Generate the report 
-    generate_report(run_id)
+    analytics = Analytics(run_id)
+    analytics.generate_report()
 
 
     # #6) Write clips to google drive 
