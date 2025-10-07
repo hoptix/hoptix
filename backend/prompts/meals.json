@@ -1,0 +1,450 @@
+[
+  {
+    "Item": "$7 Meal deal",
+    "Item ID": 1001,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 4,
+    "Order Inclusions for Combo/Meal": "1.) Original Cheese Burger or 3 Piece Chicken strips\n2.) Regular fries\n3.) Small Sundae\n4.) Reguar drink",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Upsize Sundae to Blizzard (1)",
+    "Add on Chance": 0,
+    "Price": 7.0
+  },
+  {
+    "Item": "# 12 Chicken strip Sandwich (classic) combo",
+    "Item ID": 1002,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1.) Classic Chicken  Strip Sandwich\n2.)Fries\n3.) Drink",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 12.81
+  },
+  {
+    "Item": "# 13 Chili Cheese dog combo",
+    "Item ID": 1003,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1.)Chili cheese dog\n2.) Drink\n3.) Fries",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 12.47
+  },
+  {
+    "Item": "Kids Meal",
+    "Item ID": 1004,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1.) Choose one entre - 2 piece chicken strips or Hamburger or Hot dog\n2.) Choose one side - applesauce or banana pr fries\n3.) Choose one drink - Milk or bottled water or kids cone",
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 6.29785716398701
+  },
+  {
+    "Item": "2 For $5 Meal (Mix and Match)",
+    "Item ID": 1005,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 2,
+    "Order Inclusions for Combo/Meal": "1.) Two items from the following:  2-Piece Chicken Strip, Small Sundae, Original Cheeseburger, Regular Fries, Any Size Drink, Pretzel Sticks with Zesty Queso Sauce",
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 5.0
+  },
+  {
+    "Item": "Rotisserie-Style Chicken Bites Meal",
+    "Item ID": 1006,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 2,
+    "Order Inclusions for Combo/Meal": "1. 6/8 pc white meat chicken\n2. One Medium Drink",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Rotisserie-Style Chicken Bites (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 12.76
+  },
+  {
+    "Item": "Regular Rotisserie-Style Chicken Bites Meal",
+    "Item ID": 1007,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 2,
+    "Order Inclusions for Combo/Meal": "1. 6 pc white meat chicken\n2. One Medium Drink",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 12.26
+  },
+  {
+    "Item": "Large Rotisserie-Style Chicken Bites Meal",
+    "Item ID": 1008,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 2,
+    "Order Inclusions for Combo/Meal": "1. 8 pc white meat chicken\n2. One Medium Drink",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 12.8
+  },
+  {
+    "Item": "#1 Bacon Cheese Deluxe Meal / combo [Sizes: double]",
+    "Item ID": 1009,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One Bacon Cheese Deluxe double \n2. One R Fries (Upgrade options: Cheese Curds, Onion Rings, Fry/Rings)\n3. One M Drink (Upsize option: Large)",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 10.24
+  },
+  {
+    "Item": "#2 Bacon Cheese Deluxe Meal/combo [Sizes: Triple]",
+    "Item ID": 1010,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One Bacon Cheese Deluxe triple\n2. One R Fries (Upgrade options: Cheese Curds, Onion Rings, Fry/Rings)\n3. One M Drink (Upsize option: Large)",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 10.07
+  },
+  {
+    "Item": "Loaded A.1 Meal [Sizes: Single, Double, Triple]",
+    "Item ID": 1011,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One Loaded A.1\n2. One R Fries (Upgrade options: Cheese Curds, Onion Rings, Fry/Rings)\n3. One M Drink (Upsize option: Large)",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "(Larger Size of) Sandwich (1), (Larger Size of) Fries (1), (Larger Size of) Drink (1)",
+    "Add on Chance": 0,
+    "Price": 14.73
+  },
+  {
+    "Item": "#5 Cheese Deluxe Meal/combo - double",
+    "Item ID": 1012,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One Two Cheese Deluxe \n2. One R Fries (Upgrade options: Cheese Curds, Onion Rings, Fry/Rings)\n3. One M Drink (Upsize option: Large)",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 13.94
+  },
+  {
+    "Item": "#6 Cheese Deluxe Meal/combo - triple",
+    "Item ID": 1013,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One Two Cheese Deluxe \n2. One R Fries (Upgrade options: Cheese Curds, Onion Rings, Fry/Rings)\n3. One M Drink (Upsize option: Large)",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 13.86
+  },
+  {
+    "Item": "# 7 Flamethrower Meal/combo Double",
+    "Item ID": 1014,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One Flamethrower\n2. One R Fries (Upgrade options: Cheese Curds, Onion Rings, Fry/Rings)\n3. One M Drink (Upsize option: Large)",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 14.55
+  },
+  {
+    "Item": "# 8 Flamethrower Meal/combo Triple",
+    "Item ID": 1015,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One Flamethrower\n2. One R Fries (Upgrade options: Cheese Curds, Onion Rings, Fry/Rings)\n3. One M Drink (Upsize option: Large)",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 9.14
+  },
+  {
+    "Item": "# 9 Original Cheeseburger Meal/ combo single",
+    "Item ID": 1016,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One Original Cheeseburger\n2. One R Fries (Upgrade options: Cheese Curds, Onion Rings, Fry/Rings)\n3. One M Drink (Upsize option: Large)",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 14.68
+  },
+  {
+    "Item": "# 10 Original Cheeseburger Meal/ combo double",
+    "Item ID": 1017,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One Original Cheeseburger\n2. One R Fries (Upgrade options: Cheese Curds, Onion Rings, Fry/Rings)\n3. One M Drink (Upsize option: Large)",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 13.41
+  },
+  {
+    "Item": "# 11 Original Cheeseburger Meal/ combo  triple",
+    "Item ID": 1018,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One Original Cheeseburger\n2. One R Fries (Upgrade options: Cheese Curds, Onion Rings, Fry/Rings)\n3. One M Drink (Upsize option: Large)",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 10.57
+  },
+  {
+    "Item": "# 3 Backyard Bacon Ranch Meal [Sizes: Single, Double]",
+    "Item ID": 1019,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One Backyard Bacon Ranch\n2. One R Fries (Upgrade options: Cheese Curds, Onion Rings, Fry/Rings)\n3. One M Drink (Upsize option: Large)",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 13.52
+  },
+  {
+    "Item": "# 4 Backyard Bacon Ranch Meal [Sizes: Single, Triple]",
+    "Item ID": 1020,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One Backyard Bacon Ranch\n2. One R Fries (Upgrade options: Cheese Curds, Onion Rings, Fry/Rings)\n3. One M Drink (Upsize option: Large)",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 9.06
+  },
+  {
+    "Item": "Crispy Chicken Meal (Original/Spicy) [Sizes: None]",
+    "Item ID": 1021,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One Crispy Chicken Sandwich\n2. One side: Fries (Upgrade Options: Cheese Curds or Onion Rings)\n3. One M Drink (Upsize Option: Large)",
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 13.32
+  },
+  {
+    "Item": "Hot Dog Meal [Sizes: None]",
+    "Item ID": 1022,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One Hot dog\n2. One R Fries (Upgrade Options: Cheese Curds or Onion Rings)\n3. One M Drink (Upsize Option: Large)",
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 10.95
+  },
+  {
+    "Item": "CB Chicken (Strip) Basket Meal",
+    "Item ID": 1023,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One 6 Chicken strips with one sauce\n2. One R Fries (Upgrade Options: Cheese Curds or Onion Rings)\n3. One M Drink (Upsize option: Large)\n4. Dipping Sauce",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 10.57
+  },
+  {
+    "Item": "Chicken Strips and Fry-Ring Basket Meal",
+    "Item ID": 1024,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 4,
+    "Order Inclusions for Combo/Meal": "1. One 6 pc Chicken strips wiith one sauce\n2. One R Fries (Upsize Option: Large)\n3. One R Onion Rings (Upsize Option: Large)\n4. One M Drink (Upsie Option: Large)\n5. Dipping Sauce",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1), Large Onion Rings (1), Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 9.08
+  },
+  {
+    "Item": "Honey BBQ Chicken Basket Meal",
+    "Item ID": 1025,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One 6 pc tossed in honey bbq glaze\n2. One R Fries (Upgrade Options: Cheese Curds or Onion Rings)\n3. One M Drink (Upsize Option: Large)\n4. Dipping Sauce",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 11.16
+  },
+  {
+    "Item": "Rotisserie-Style Chicken Basket Meal",
+    "Item ID": 1026,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One 8 white meat chicken\n2. R Fries (Upgrade Options: Cheese Curds or Onion Rings)\n3. M Drink (Upsize Option: Large)\n4. Dipping Sauce",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 12.48
+  },
+  {
+    "Item": "Popcorn Shrimp Basket Meal [Sizes: None]",
+    "Item ID": 1027,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One Breaded popcorn shrimp\n2. R Fries (Upgrade Options: Cheese Curds or Onion Rings)\n3. M Drink (Upsize Option: Large)\n4. Dipping Sauce",
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1) and Large Drink (1)",
+    "Add on Chance": 0,
+    "Price": 11.37
+  },
+  {
+    "Item": "Original Chicken Strip Sandwich Meal [Sizes: None]",
+    "Item ID": 1028,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 3,
+    "Order Inclusions for Combo/Meal": "1. One Original Chicken Strip Sandwich\n2. One side: Fries (Upgrade Options: Cheese Curds or Onion Rings)\n3. One M Drink (Upsize Option: Large)",
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 12.76
+  }
+]
