@@ -1,8 +1,7 @@
 from typing import List, Dict, Any
 from openai import OpenAI
-import os
 import json
-from datetime import timedelta, datetime
+from datetime import timedelta
 from dateutil import parser as dateparse
 from config import Settings
 from config import Prompts
@@ -12,7 +11,7 @@ prompts = Prompts()
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 
-def split_into_transactions(transcript_segments: List[Dict], audio_started_at_iso: str = None, date: str = None) -> List[Dict]:
+def split_into_transactions(transcript_segments: List[Dict], run_id: str, audio_started_at_iso: str = None, date: str = None) -> List[Dict]:
     # Default to current day at 7 AM if not provided
     if audio_started_at_iso is None:
         current_day = dateparse.parse(date).strftime("%Y-%m-%d")
@@ -56,8 +55,10 @@ def split_into_transactions(transcript_segments: List[Dict], audio_started_at_is
             s_rel = float(seg["start"]) + i*slice_dur
             e_rel = float(seg["start"]) + (i+1)*slice_dur
             results.append({
+                "run_id": run_id,
                 "started_at": _iso_from_start(actual_audio_start, s_rel),
                 "ended_at":   _iso_from_start(actual_audio_start, e_rel),
+                "tx_range": f'["{_iso_from_start(actual_audio_start, s_rel)}","{_iso_from_start(actual_audio_start, e_rel)}")',
                 "kind": "order",
                 "meta": {
                     "text": d.get("1", raw),

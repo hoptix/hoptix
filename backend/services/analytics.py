@@ -10,6 +10,7 @@ class Analytics:
         self.worker_id = worker_id
         self.run_id = run_id
         self.worker_id = worker_id
+        self.location_id = db.get_location_from_run(self.run_id)
 
     def get_total_transactions(self):
         if self.worker_id:
@@ -107,7 +108,7 @@ class Analytics:
 
     def get_item_analytics(self):
         """Get item-level analytics with size tracking"""
-        items = db.get_items()
+        items = db.get_items(self.location_id)
         item_analytics = {}
         
         # Initialize item structure

@@ -1,0 +1,162 @@
+[
+  {
+    "Item ID": 9001,
+    "Item": "Whipped Cream",
+    "Size IDs": [
+      0
+    ],
+    "Ordered Items Count": 0,
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 0.89
+  },
+  {
+    "Item ID": 9002,
+    "Item": "Nuts",
+    "Size IDs": [
+      0
+    ],
+    "Ordered Items Count": 0,
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 1.02
+  },
+  {
+    "Item ID": 9003,
+    "Item": "Sprinkles",
+    "Size IDs": [
+      0
+    ],
+    "Ordered Items Count": 0,
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 0.92
+  },
+  {
+    "Item ID": 9004,
+    "Item": "Double Dip",
+    "Size IDs": [
+      0
+    ],
+    "Ordered Items Count": 0,
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 1.23
+  },
+  {
+    "Item ID": 9005,
+    "Item": "Extra Malt",
+    "Size IDs": [
+      0
+    ],
+    "Ordered Items Count": 0,
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 1.47
+  },
+  {
+    "Item ID": 9006,
+    "Item": "Banana Boost",
+    "Size IDs": [
+      0
+    ],
+    "Ordered Items Count": 0,
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 1.02
+  },
+  {
+    "Item ID": 9007,
+    "Item": "Primary Topping",
+    "Size IDs": [
+      0
+    ],
+    "Ordered Items Count": 0,
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 1.21
+  },
+  {
+    "Item ID": 9008,
+    "Item": "Dipping Sauce",
+    "Size IDs": [
+      0
+    ],
+    "Ordered Items Count": 0,
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 0.68
+  },
+  {
+    "Item ID": 9009,
+    "Item": "Ice Cream Topping",
+    "Size IDs": [
+      0
+    ],
+    "Ordered Items Count": 0,
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 0.74
+  },
+  {
+    "Item ID": 9010,
+    "Item": "Pecans",
+    "Size IDs": [
+      0
+    ],
+    "Ordered Items Count": 0,
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 1.42
+  }
+]

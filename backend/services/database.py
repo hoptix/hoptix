@@ -2,7 +2,10 @@
 from supabase import create_client, Client
 from typing import Any, Optional
 from config import Settings
+
+
 class Supa:
+
     def __init__(self):
         self.client: Client = create_client(Settings.SUPABASE_URL, Settings.SUPABASE_SERVICE_KEY)
 
@@ -111,9 +114,9 @@ class Supa:
         """Access database views"""
         return self.client.table(view_name)
     
-    def get_items(self):
+    def get_items(self, location_id: str):
         """Get all menu items"""
-        result = self.client.table("items").select("*").execute()
+        result = self.client.table("items").select("*").eq("location_id", location_id).execute()
         return result.data if result.data else []
     
     def insert_analytics(self, analytics: dict):
@@ -122,11 +125,50 @@ class Supa:
 
     def upsert_grades(self, grades: list[dict]):
         """Upsert grades into database"""
-        self.client.table("grades").upsert(grades, on_conflict="transaction_id").execute()
+        if not grades:
+            return
+        
+        # Flatten the nested structure
+        flattened_grades = []
+        for grade in grades:
+            flattened = {
+                "transaction_id": grade.get("transaction_id"),
+                "transcript": grade.get("transcript"),
+                "gpt_price": grade.get("gpt_price"),
+                **grade.get("details", {})  # Spread the details into the main object
+            }
+            flattened_grades.append(flattened)
+        
+        self.client.table("grades").upsert(flattened_grades, on_conflict="transaction_id").execute()
 
     def upsert_transactions(self, transactions: list[dict]):
-        """Insert transactions into database"""
+        """Insert transactions into database and return them with IDs"""
         if not transactions:
-            return
+            return []
 
-        self.client.table("transactions").upsert(transactions).execute()
+        result = self.client.table("transactions").upsert(transactions).execute()
+        return result.data
+
+    def get_meals(self, location_id: str):
+        result = self.client.table("meals").select("*").eq("location_id", location_id).execute()
+        return result.data if result.data else []
+
+    def get_transactions(self, run_id: str, limit: int = 0):
+        """Get transactions for a run"""
+        query = self.client.table("transactions").select("*").eq("run_id", run_id)
+        if limit > 0:
+            query = query.limit(limit)
+        result = query.execute()
+        return result.data if result.data else []
+
+    def update_transaction(self, transaction_id: str, updates: dict):
+        """Update a transaction record"""
+        self.client.table("transactions").update(updates).eq("id", transaction_id).execute()
+
+    def get_add_ons(self, location_id: str):
+        result = self.client.table("add_ons").select("*").eq("location_id", location_id).execute()
+        return result.data if result.data else []
+
+    def get_location_from_run(self, run_id: str):
+        result = self.client.table("runs").select("location_id").eq("id", run_id).execute()
+        return result.data[0]["location_id"]

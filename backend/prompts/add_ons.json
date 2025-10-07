@@ -1,0 +1,162 @@
+[
+  {
+    "Scenario": "Scenario 1",
+    "Extra Toppings Chance": "Primary Topping",
+    "Description": "Customer ordered a blizzard/cupfection",
+    "Employee Offer Statement": "Would you like (item's primary topping)?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Extra Topping Offer"
+  },
+  {
+    "Scenario": "Scenario 2",
+    "Extra Toppings Chance": "Sprinkles",
+    "Description": "Customer ordered a Twist cone or vanilla/chocolate cone",
+    "Employee Offer Statement": "Would you like sprinkles?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Extra Topping Offer"
+  },
+  {
+    "Scenario": "Scenario 3",
+    "Extra Toppings Chance": "Extra Dip/Double Dip",
+    "Description": "Customer ordered a dipped cone",
+    "Employee Offer Statement": "Would you like an extra dip? Would you like that double-dipped?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Extra Topping Offer"
+  },
+  {
+    "Scenario": "Scenario 4",
+    "Extra Toppings Chance": "Whipped Cream/Nuts/Sprinkles",
+    "Description": "Customer ordered a banana split or a peanut",
+    "Employee Offer Statement": "Would you like to add nuts?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Extra Topping Offer"
+  },
+  {
+    "Scenario": "Scenario 5",
+    "Extra Toppings Chance": "Whipped Cream/Nuts/Sprinkles",
+    "Description": "Customer ordered a sundae or a meal with a sundae",
+    "Employee Offer Statement": "Would you like Whipped Cream/Nuts/Sprinkles?\"\n\"Would you like Whipped Cream and Nuts? How about Sprinkles?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Extra Topping Offer"
+  },
+  {
+    "Scenario": "Scenario 6",
+    "Extra Toppings Chance": "Ice cream",
+    "Description": "Customer ordered a slush or a misty slush",
+    "Employee Offer Statement": "Would you like to add an Ice Cream?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Extra Topping Offer"
+  },
+  {
+    "Scenario": "Scenario 7",
+    "Extra Toppings Chance": "Banana Boost",
+    "Description": "Customer ordered a Fruit Smoothie or Julius Originals",
+    "Employee Offer Statement": "Would you like to add a banana boost?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Valid Extra Topping Offer"
+  },
+  {
+    "Scenario": "Scenario 8",
+    "Extra Toppings Chance": "Primary Topping",
+    "Description": "Customer ordered a blizzard/cupfection",
+    "Employee Offer Statement": "Would you like candies? Or other toppings instead of the primary topping",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Invalid Extra Topping Offer"
+  },
+  {
+    "Scenario": "Scenario 9",
+    "Extra Toppings Chance": "Sprinkles",
+    "Description": "Customer ordered a Twist cone or vanilla/chocolate cone",
+    "Employee Offer Statement": "The employee offered extra dip instead of sprinkles",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Invalid Extra Topping Offer"
+  },
+  {
+    "Scenario": "Scenario 10",
+    "Extra Toppings Chance": "Whipped Cream/Nuts/Sprinkles",
+    "Description": "Customer ordered a sundae or a meal with a sundae",
+    "Employee Offer Statement": "Would you like Whipped Cream and Nuts? (Did not mention Sprinkles)\nWould you like Nuts? (Did not mention Whipped cream and sprinkles)\nWould you like Sprinkles? (Did not mention Whipped Cream and nuts)",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Invalid Extra Topping Offer"
+  },
+  {
+    "Scenario": "Scenario 11",
+    "Extra Toppings Chance": "Whipped Cream/Nuts/Sprinkles",
+    "Description": "Customer ordered a sundae or a meal with a sundae",
+    "Employee Offer Statement": "Would you like extra toppings/candies?",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Invalid Extra Topping Offer"
+  },
+  {
+    "Scenario": "Scenario 12",
+    "Extra Toppings Chance": "Extra Dip",
+    "Description": "Customer ordered a dipped cone",
+    "Employee Offer Statement": "The employee offered sprinkles instead of extra dip",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Invalid Extra Topping Offer"
+  },
+  {
+    "Scenario": "Scenario 13",
+    "Extra Toppings Chance": "Nuts",
+    "Description": "Customer ordered a banana split or a peanut buster parfait",
+    "Employee Offer Statement": "Would you like spinkles/candies? (instead of nuts)",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "Invalid Extra Topping Offer"
+  },
+  {
+    "Scenario": "Scenario 14",
+    "Extra Toppings Chance": "Whipped Cream/Nuts/Sprinkles",
+    "Description": "Customer ordered a sundae or a meal with a sundae",
+    "Employee Offer Statement": "No Offer",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "No Offer"
+  },
+  {
+    "Scenario": "Scenario 15",
+    "Extra Toppings Chance": "Extra Dip",
+    "Description": "Customer ordered a dipped cone",
+    "Employee Offer Statement": "No Offer",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "No Offer"
+  },
+  {
+    "Scenario": "Scenario 16",
+    "Extra Toppings Chance": "Primary Topping",
+    "Description": "Customer ordered a blizzard/cupfection",
+    "Employee Offer Statement": "No Offer",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "No Offer"
+  },
+  {
+    "Scenario": "Scenario 17",
+    "Extra Toppings Chance": "Sprinkles",
+    "Description": "Customer ordered a Twist cone or vanilla/chocolate cone",
+    "Employee Offer Statement": "No Offer",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "No Offer"
+  },
+  {
+    "Scenario": "Scenario 18",
+    "Extra Toppings Chance": "Nuts",
+    "Description": "Customer ordered a banana split or a peanut buster parfait",
+    "Employee Offer Statement": "No Offer",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "No Offer"
+  },
+  {
+    "Scenario": "Scenario 19",
+    "Extra Toppings Chance": "Ice cream",
+    "Description": "Customer ordered a slush or a misty slush",
+    "Employee Offer Statement": "No Offer",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "No Offer"
+  },
+  {
+    "Scenario": "Scenario 20",
+    "Extra Toppings Chance": "Banana Boost",
+    "Description": "Customer ordered a Fruit Smoothie or Julius Originals",
+    "Employee Offer Statement": "No Offer",
+    "Chance Guide": "With Chance to Offer",
+    "Chance Guide__1": "No Offer"
+  }
+]

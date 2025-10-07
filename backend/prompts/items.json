@@ -1,0 +1,1043 @@
+[
+  {
+    "Item": "Sundae [Size: Small]",
+    "Item ID": 1,
+    "Size IDs": [
+      1
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "2 (valid items) for $5. Valid items: Small Sundae, Pretzel, Chilli dog or any size drink",
+    "Upsizing Chance": "Large Sundae (1)",
+    "Add on Chance": "Whipped Cream/Nuts/Sprinkles",
+    "Price": 5.79
+  },
+  {
+    "Item": "Sundae [Size: Medium, Large, No Size]",
+    "Item ID": 2,
+    "Size IDs": [
+      0,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Sundae (1)",
+    "Add on Chance": "Whipped Cream/Nuts/Sprinkles",
+    "Prices": {
+      "0": 5.89,
+      "2": 5.89,
+      "3": 7.36
+    }
+  },
+  {
+    "Item": "Chips",
+    "Item ID": 3,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Pretzel Sticks (1)",
+    "Add on Chance": 0,
+    "Price": 3.0
+  },
+  {
+    "Item": "Pretzel sticks [Size: None]",
+    "Item ID": 4,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "2 (valid items) for $5. Valid items: Small Sundae, Pretzel, Chilli dog or any size drink",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 4.79
+  },
+  {
+    "Item": "Drink [Sizes: Small, Medium, Large]",
+    "Item ID": 5,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "2 (valid items) for $5. Valid items: Small Sundae, Pretzel, Chilli dog or any size drink",
+    "Upsizing Chance": "Large Drink (1)",
+    "Add on Chance": 0,
+    "Prices": {
+      "1": 1.93,
+      "2": 2.27,
+      "3": 2.84
+    }
+  },
+  {
+    "Item": "Chilli dog",
+    "Item ID": 6,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "2 (valid items) for $5. Valid items: Small Sundae, Pretzel, Chilli dog or any size drink",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 3.0
+  },
+  {
+    "Item": "Cone [Sizes: Small, Medium, Large]",
+    "Item ID": 7,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Cone (1)",
+    "Add on Chance": "Sprinkles",
+    "Prices": {
+      "1": 3.85,
+      "2": 4.53,
+      "3": 5.66
+    }
+  },
+  {
+    "Item": "Dipped Cone [Sizes: Small, Medium, Large]",
+    "Item ID": 8,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Dipped Cone (1)",
+    "Add on Chance": "Double Dip",
+    "Prices": {
+      "1": 5.88,
+      "2": 6.92,
+      "3": 8.65
+    }
+  },
+  {
+    "Item": "Churro Dipped Cone [Sizes: Small, Medium, Large]",
+    "Item ID": 9,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Dipped Cone (1)",
+    "Add on Chance": 0,
+    "Prices": {
+      "1": 5.92,
+      "2": 6.97,
+      "3": 8.71
+    }
+  },
+  {
+    "Item": "Twist Cone  [Sizes: Small, Medium, Large]",
+    "Item ID": 10,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Twist Cone (1)",
+    "Add on Chance": "Sprinkles",
+    "Prices": {
+      "1": 5.68,
+      "2": 6.69,
+      "3": 8.36
+    }
+  },
+  {
+    "Item": "Triple Chocolate Brownie [Sizes: None]",
+    "Item ID": 11,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 3.0
+  },
+  {
+    "Item": "Dilly Bar",
+    "Item ID": 12,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Box of 6 (1)",
+    "Add on Chance": 0,
+    "Price": 3.0
+  },
+  {
+    "Item": "Shakes & Malts [Sizes: Small, Medium, Large]",
+    "Item ID": 13,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Shake/Malt (1)",
+    "Add on Chance": "Extra Malt or primary topping",
+    "Prices": {
+      "1": 6.27,
+      "2": 7.38,
+      "3": 9.22
+    }
+  },
+  {
+    "Item": "MooLattes [Sizes: Small, Medium, Large]",
+    "Item ID": 14,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large MooLatte (1)",
+    "Add on Chance": "Primary topping",
+    "Prices": {
+      "1": 2.55,
+      "2": 3.0,
+      "3": 3.75
+    }
+  },
+  {
+    "Item": "Misty Slush [Sizes: Small, Medium, Large]",
+    "Item ID": 15,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Misty Slush (1)",
+    "Add on Chance": "ice cream",
+    "Prices": {
+      "1": 2.1,
+      "2": 2.47,
+      "3": 3.08
+    }
+  },
+  {
+    "Item": "Misty Freeze [Sizes: Small, Medium, Large]",
+    "Item ID": 16,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Misty Freeze (1)",
+    "Add on Chance": 0,
+    "Prices": {
+      "1": 2.55,
+      "2": 3.0,
+      "3": 3.75
+    }
+  },
+  {
+    "Item": "Bottled Water [Sizes: None]",
+    "Item ID": 17,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 3.0
+  },
+  {
+    "Item": "Fruit Smoothies [Sizes: Small, Medium, Large]",
+    "Item ID": 18,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fruit Smoothie (1)",
+    "Add on Chance": "Banana boost",
+    "Prices": {
+      "1": 2.55,
+      "2": 3.0,
+      "3": 3.75
+    }
+  },
+  {
+    "Item": "Julius Originals [Sizes: Small, Medium, Large]",
+    "Item ID": 19,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Julius Original (1)",
+    "Add on Chance": "Banana boost",
+    "Prices": {
+      "1": 2.55,
+      "2": 3.0,
+      "3": 3.75
+    }
+  },
+  {
+    "Item": "Frozen Cakes [Sizes: 11x14 (1/12 slice), 10\" (1/12 slice), 9\" (1/10 slice), 8\" (1/8 slice)]",
+    "Item ID": 20,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Sheet Cake (1)",
+    "Add on Chance": 0,
+    "Price": 3.0
+  },
+  {
+    "Item": "Blizzard Cakes [Sizes: Kid's, Small, Medium, Large]",
+    "Item ID": 21,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Sheet Cake (1)",
+    "Add on Chance": 0,
+    "Prices": {
+      "1": 5.18,
+      "2": 6.09,
+      "3": 7.61
+    }
+  },
+  {
+    "Item": "Blizzard [Sizes: Small, Medium, Large]",
+    "Item ID": 22,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Blizzard (1)",
+    "Add on Chance": "Primary Topping/Ingredient",
+    "Prices": {
+      "1": 6.27,
+      "2": 7.38,
+      "3": 9.23
+    }
+  },
+  {
+    "Item": "Cupfection [Sizes: None]",
+    "Item ID": 23,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0",
+      "94502831-f644-4d0d-a0e2-894b897668eb"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": "Primary Topping/Ingredient",
+    "Price": 5.31
+  },
+  {
+    "Item": "Side Salad [Sizes: None]",
+    "Item ID": 24,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 3.0
+  },
+  {
+    "Item": "Fries [Sizes: Kid's, Regular, Large, Basket]",
+    "Item ID": 25,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Fries (1)",
+    "Add on Chance": 0,
+    "Prices": {
+      "1": 8.36,
+      "2": 9.84,
+      "3": 12.3
+    }
+  },
+  {
+    "Item": "Onion Rings [Sizes: Regular, Large]",
+    "Item ID": 26,
+    "Size IDs": [
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Onion Rings (1)",
+    "Add on Chance": 0,
+    "Prices": {
+      "2": 3.97,
+      "3": 4.96
+    }
+  },
+  {
+    "Item": "Cheese Curds [Sizes: Regular, Large]",
+    "Item ID": 27,
+    "Size IDs": [
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": 0,
+    "Upsizing Chance": "Large Cheese Curds (1)",
+    "Add on Chance": 0,
+    "Prices": {
+      "2": 6.65,
+      "3": 8.31
+    }
+  },
+  {
+    "Item": "Crispy Chicken Strips Salad [Sizes: None]",
+    "Item ID": 28,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "Drink (1)",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 11.57
+  },
+  {
+    "Item": "Orignal Cheeseburger [Sizes: Single, Double, Triple]",
+    "Item ID": 29,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1) and/or Sundae/Blizzard (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Prices": {
+      "1": 6.49,
+      "2": 7.63,
+      "3": 9.54
+    }
+  },
+  {
+    "Item": "3-Piece Chicken Strips [Sizes: None]",
+    "Item ID": 30,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1) and/or Sundae/Blizzard (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 8.19
+  },
+  {
+    "Item": "Bacon Cheeseburger delux double or triple",
+    "Item ID": 31,
+    "Size IDs": [
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1) and/or Sundae/Blizzard (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Prices": {
+      "2": 8.66,
+      "3": 10.83
+    }
+  },
+  {
+    "Item": "Bacon Two Cheese Deluxe [Sizes: Single, Double, Triple]",
+    "Item ID": 32,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Prices": {
+      "1": 7.5,
+      "2": 8.82,
+      "3": 11.03
+    }
+  },
+  {
+    "Item": "Loaded A.1 [Sizes: Single, Double, Triple]",
+    "Item ID": 33,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Prices": {
+      "1": 2.55,
+      "2": 3.0,
+      "3": 3.75
+    }
+  },
+  {
+    "Item": "Cheese Deluxe [Sizes:  Double, Triple]",
+    "Item ID": 34,
+    "Size IDs": [
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Prices": {
+      "2": 7.12,
+      "3": 8.9
+    }
+  },
+  {
+    "Item": "Flamethrower [Sizes: Double, Triple]",
+    "Item ID": 35,
+    "Size IDs": [
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Prices": {
+      "2": 3.0,
+      "3": 3.75
+    }
+  },
+  {
+    "Item": "Original Cheeseburger [Sizes: Single, Double, Triple]",
+    "Item ID": 36,
+    "Size IDs": [
+      1,
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Prices": {
+      "1": 7.41,
+      "2": 8.72,
+      "3": 10.9
+    }
+  },
+  {
+    "Item": "Backyard Bacon Ranch [Sizes Double, Triple]",
+    "Item ID": 37,
+    "Size IDs": [
+      2,
+      3
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Prices": {
+      "2": 7.22,
+      "3": 9.03
+    }
+  },
+  {
+    "Item": "Grilled Cheese Sandwich [Sizes: None]",
+    "Item ID": 38,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 7.49
+  },
+  {
+    "Item": "Wild Alaskan [Sizes: None]",
+    "Item ID": 39,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 3.0
+  },
+  {
+    "Item": "Chili Cheese Dog [Sizes: None]",
+    "Item ID": 40,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 7.72
+  },
+  {
+    "Item": "Chili Dog [Sizes: None]",
+    "Item ID": 41,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 3.0
+  },
+  {
+    "Item": "Hot Dog [Sizes: None]",
+    "Item ID": 42,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 3.94
+  },
+  {
+    "Item": "Popcorn Shrimp Basket [Sizes: None]",
+    "Item ID": 43,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 9.45
+  },
+  {
+    "Item": "Original Chicken Strip Sandwich [Sizes: None]",
+    "Item ID": 44,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 7.26
+  },
+  {
+    "Item": "Crispy Chicken (Original/Spicy) [Sizes: None]",
+    "Item ID": 45,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 9.22
+  },
+  {
+    "Item": "Grilled Chicken [Sizes: None]",
+    "Item ID": 46,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 10.0
+  },
+  {
+    "Item": "Grilled Cheese Sandwich [Sizes: None]",
+    "Item ID": 47,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 7.22
+  },
+  {
+    "Item": "Wild Alaskan [Sizes: None]",
+    "Item ID": 48,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 3.0
+  },
+  {
+    "Item": "Chili Cheese Dog [Sizes: None]",
+    "Item ID": 49,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 7.78
+  },
+  {
+    "Item": "Hot Dog [Sizes: None]",
+    "Item ID": 50,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 1,
+    "Upselling Chance": "[Drink (1) and/or Fries (1)] OR [Meal Item (See Meal table)]",
+    "Upsizing Chance": 0,
+    "Add on Chance": 0,
+    "Price": 5.21
+  },
+  {
+    "Item": "Popcorn Shrimp Basket [Sizes: None] (Includes a Regular Fries)",
+    "Item ID": 51,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 2,
+    "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
+    "Upsizing Chance": "Large Fries (1)",
+    "Add on Chance": 0,
+    "Price": 10.61
+  },
+  {
+    "Item": "4-Piece CB Chicken (Strip) Basket (Includes a Regular Fries)",
+    "Item ID": 52,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 2,
+    "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
+    "Upsizing Chance": "Large Fries (1), Large drink (1)",
+    "Add on Chance": 0,
+    "Price": 8.55
+  },
+  {
+    "Item": "6-Piece CB Chicken (Strip) Basket (Includes a Regular Fries)",
+    "Item ID": 53,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 2,
+    "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
+    "Upsizing Chance": "Large Fries (1), Large drink (1)",
+    "Add on Chance": 0,
+    "Price": 10.43
+  },
+  {
+    "Item": "4-Piece Chicken Strips and Fry-Ring Basket (Includes a Regular Fries)",
+    "Item ID": 54,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 2,
+    "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
+    "Upsizing Chance": "Large Fries (1), Large drink (1)",
+    "Add on Chance": 0,
+    "Price": 11.8
+  },
+  {
+    "Item": "6-Piece Chicken Strips and Fry-Ring Basket (Includes a Regular Fries)",
+    "Item ID": 55,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 2,
+    "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
+    "Upsizing Chance": "Large Fries (1), Large drink (1)",
+    "Add on Chance": 0,
+    "Price": 7.68
+  },
+  {
+    "Item": "4-Piece Honey BBQ Chicken Basket (Includes a Regular Fries)",
+    "Item ID": 56,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 2,
+    "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
+    "Upsizing Chance": "Large Fries (1),Large drink(1)",
+    "Add on Chance": 0,
+    "Price": 11.63
+  },
+  {
+    "Item": "6-Piece Honey BBQ Chicken Basket (Includes a Regular Fries)",
+    "Item ID": 57,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 2,
+    "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
+    "Upsizing Chance": "Large Fries (1). Large drink (1)",
+    "Add on Chance": 0,
+    "Price": 9.45
+  },
+  {
+    "Item": "Regular Rotisserie-Style Chicken Basket (Includes a Regular Fries)",
+    "Item ID": 58,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 2,
+    "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
+    "Upsizing Chance": "Large Fries (1), Large drink (1)",
+    "Add on Chance": 0,
+    "Price": 9.16
+  },
+  {
+    "Item": "Large Rotisserie-Style Chicken Basket (Includes a Regular Fries) [Sizes: Regular, Large]",
+    "Item ID": 59,
+    "Size IDs": [
+      0
+    ],
+    "Store IDs": [
+      "e8f72fab-8061-4e38-ab37-5677596f30a0"
+    ],
+    "Ordered Items Count": 2,
+    "Upselling Chance": "[Drink (1) and/or Dipping Sauce (1)]",
+    "Upsizing Chance": "Large Fries (1). Large drink (1)",
+    "Add on Chance": 0,
+    "Price": 9.84
+  }
+]

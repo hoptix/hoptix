@@ -6,15 +6,17 @@ import json
 import os
 from typing import Dict, Any, List
 from utils.helpers import ii, parse_json_field, json_or_none, read_json_or_empty, calculate_gpt_price, calculate_gpt_price_batch
+from services.database import Supa
 
 
 settings = Settings()
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 prompts = Prompts()
+db = Supa() 
 
 
-def grade_transactions(transactions: List[Dict], db=None, location_id: str = None, testing=True) -> List[Dict]:
+def grade_transactions(transactions: List[Dict], location_id: str, testing=True) -> List[Dict]:
     graded: List[Dict] = []
     for tx in transactions:
         transcript = (tx.get("meta") or {}).get("text","")
@@ -23,10 +25,16 @@ def grade_transactions(transactions: List[Dict], db=None, location_id: str = Non
         if not transcript.strip():
             # produce an empty row but keep columns
             base = map_step2_to_grade_cols({}, tx_meta)
+            graded.append({
+                "transaction_id":  tx.get("id"),  # Add transaction ID
+                "details":         base,
+                "transcript":      transcript,
+                "gpt_price":       0.0
+            })
             continue
 
         # Run Step‑2 with location-specific menu data
-        step2_prompt = build_step2_prompt(db, location_id)
+        step2_prompt = build_step2_prompt(location_id)
         prompt = step2_prompt + "\n\nProcess this transcript:\n" + transcript
         try:
             if testing: 
@@ -72,6 +80,7 @@ def grade_transactions(transactions: List[Dict], db=None, location_id: str = Non
         print("=" * 50)
 
         graded.append({
+            "transaction_id":  tx.get("id"),  # Add transaction ID
             "details":         details,
             "transcript":      transcript,  # Add raw transcript
             "gpt_price":       gpt_price    # Add calculated price
@@ -140,10 +149,10 @@ def map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) ->
     return out
 
 
-def build_step2_prompt(db=None, location_id: str = None) -> str:
+def build_step2_prompt(location_id: str) -> str:
     """Build the step 2 prompt with menu data from database or JSON fallback"""
     
-    upselling, upsizing, addons, items, meals = get_menu_data_from_db(db, location_id)
+    upselling, upsizing, addons, items, meals = get_menu_data_from_db(location_id)
 
     print(f"Menu data loaded: {len(upselling)} upselling scenarios, {len(upsizing)} upsizing scenarios, {len(addons)} add-ons, {len(items)} items, {len(meals)} meals")
 
@@ -157,21 +166,21 @@ def build_step2_prompt(db=None, location_id: str = None) -> str:
             .replace("<<MEALS_JSON>>", json.dumps(meals)))
 
 
-def get_menu_data_from_db(db, location_id: str) -> tuple[list, list, list, list, list]:
+def get_menu_data_from_db(location_id: str) -> tuple[list, list, list, list, list]:
     """Fetch menu data from database tables for the given location"""
     try:
         # Get items for this location
-        items_result = db.client.table("items").select("*").eq("location_id", location_id).execute()
+        items_result = db.get_items(location_id)
         
         # Get meals for this location
-        meals_result = db.client.table("meals").select("*").eq("location_id", location_id).execute()
+        meals_result = db.get_meals(location_id)
         
         # Get add-ons for this location
-        addons_result = db.client.table("add_ons").select("*").eq("location_id", location_id).execute()
+        addons_result = db.get_add_ons(location_id)
         
         # Convert to the format expected by the prompt
         items = []
-        for item in items_result.data:
+        for item in items_result:
             items.append({
                 "Item": item["item_name"],
                 "Item ID": item["item_id"],
@@ -183,7 +192,7 @@ def get_menu_data_from_db(db, location_id: str) -> tuple[list, list, list, list,
             })
         
         meals = []
-        for meal in meals_result.data:
+        for meal in meals_result:
             meals.append({
                 "Item": meal["item_name"],
                 "Item ID": meal["item_id"],
@@ -196,7 +205,7 @@ def get_menu_data_from_db(db, location_id: str) -> tuple[list, list, list, list,
             })
         
         addons = []
-        for addon in addons_result.data:
+        for addon in addons_result:
             addons.append({
                 "Item": addon["item_name"],
                 "Item ID": addon["item_id"],
