@@ -18,7 +18,7 @@ import {
   IconUsers,
 } from "@tabler/icons-react"
 
-import { useGetRunAnalytics, type RunAnalytics, type OperatorMetrics } from "@/hooks/getRunAnalytics"
+import { useGetRunAnalytics, type RunAnalytics, type OperatorMetrics, type ItemAnalytics, type SizeMetrics, type DetailedAnalytics } from "@/hooks/getRunAnalytics"
 import { TransactionsTable } from "@/components/transactions-table"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -177,6 +177,161 @@ const PerformanceSection = ({
     </Card>
   )
 }
+
+const SizeTransitionCard = ({ itemId, itemName, transitions }: { itemId: string, itemName: string, transitions: ItemAnalytics['transitions'] }) => {
+  const totalTransitions = transitions["1_to_2"] + transitions["1_to_3"] + transitions["2_to_3"];
+  
+  if (totalTransitions === 0) {
+    return null; // Don't show items with no transitions
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">{itemName}</CardTitle>
+        <p className="text-sm text-muted-foreground">Size Upgrade Transitions</p>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="text-2xl font-bold text-blue-600">{transitions["1_to_2"]}</div>
+            <div className="text-sm text-blue-600">Small → Medium</div>
+          </div>
+          <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
+            <div className="text-2xl font-bold text-green-600">{transitions["1_to_3"]}</div>
+            <div className="text-sm text-green-600">Small → Large</div>
+          </div>
+          <div className="text-center p-3 bg-purple-50 rounded-lg border border-purple-200">
+            <div className="text-2xl font-bold text-purple-600">{transitions["2_to_3"]}</div>
+            <div className="text-sm text-purple-600">Medium → Large</div>
+          </div>
+        </div>
+        <div className="mt-4 text-center">
+          <div className="text-lg font-semibold text-gray-900">{totalTransitions}</div>
+          <div className="text-sm text-muted-foreground">Total Size Upgrades</div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+const ItemSizeBreakdown = ({ itemId, itemName, sizes }: { itemId: string, itemName: string, sizes: Record<string, SizeMetrics> }) => {
+  const sizeEntries = Object.entries(sizes);
+  
+  if (sizeEntries.length === 0) {
+    return null; // Don't show items with no size data
+  }
+
+  const getSizeName = (sizeKey: string) => {
+    const sizeMap: Record<string, string> = {
+      "0": "One Size",
+      "1": "Small", 
+      "2": "Medium",
+      "3": "Large"
+    };
+    return sizeMap[sizeKey] || `Size ${sizeKey}`;
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">{itemName}</CardTitle>
+        <p className="text-sm text-muted-foreground">Per-Size Performance Breakdown</p>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {sizeEntries.map(([sizeKey, metrics]) => {
+            const sizeName = getSizeName(sizeKey);
+            const totalActivity = metrics.upsell_base + metrics.upsize_base + metrics.addon_base;
+            
+            if (totalActivity === 0) return null; // Skip sizes with no activity
+            
+            return (
+              <div key={sizeKey} className="border rounded-lg p-4">
+                <h4 className="font-semibold mb-3 text-gray-900">{sizeName}</h4>
+                
+                {/* Upselling */}
+                {(metrics.upsell_base > 0 || metrics.upsell_offered > 0 || metrics.upsell_success > 0) && (
+                  <div className="mb-3">
+                    <h5 className="text-sm font-medium text-blue-600 mb-2">Upselling</h5>
+                    <div className="grid grid-cols-4 gap-2 text-sm">
+                      <div className="text-center">
+                        <div className="font-semibold">{metrics.upsell_base}</div>
+                        <div className="text-xs text-muted-foreground">Base</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold">{metrics.upsell_candidates}</div>
+                        <div className="text-xs text-muted-foreground">Candidates</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold">{metrics.upsell_offered}</div>
+                        <div className="text-xs text-muted-foreground">Offered</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-green-600">{metrics.upsell_success}</div>
+                        <div className="text-xs text-muted-foreground">Success</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Upsizing */}
+                {(metrics.upsize_base > 0 || metrics.upsize_offered > 0 || metrics.upsize_success > 0) && (
+                  <div className="mb-3">
+                    <h5 className="text-sm font-medium text-green-600 mb-2">Upsizing</h5>
+                    <div className="grid grid-cols-4 gap-2 text-sm">
+                      <div className="text-center">
+                        <div className="font-semibold">{metrics.upsize_base}</div>
+                        <div className="text-xs text-muted-foreground">Base</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold">{metrics.upsize_candidates}</div>
+                        <div className="text-xs text-muted-foreground">Candidates</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold">{metrics.upsize_offered}</div>
+                        <div className="text-xs text-muted-foreground">Offered</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-green-600">{metrics.upsize_success}</div>
+                        <div className="text-xs text-muted-foreground">Success</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Add-ons */}
+                {(metrics.addon_base > 0 || metrics.addon_offered > 0 || metrics.addon_success > 0) && (
+                  <div>
+                    <h5 className="text-sm font-medium text-purple-600 mb-2">Add-ons</h5>
+                    <div className="grid grid-cols-4 gap-2 text-sm">
+                      <div className="text-center">
+                        <div className="font-semibold">{metrics.addon_base}</div>
+                        <div className="text-xs text-muted-foreground">Base</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold">{metrics.addon_candidates}</div>
+                        <div className="text-xs text-muted-foreground">Candidates</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold">{metrics.addon_offered}</div>
+                        <div className="text-xs text-muted-foreground">Offered</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-green-600">{metrics.addon_success}</div>
+                        <div className="text-xs text-muted-foreground">Success</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
 export function RunAnalyticsReport({ runId, runDate, isOpen, onClose }: RunAnalyticsReportProps) {
   const { data: analytics, isLoading, isError, error } = useGetRunAnalytics(runId, isOpen)
@@ -362,6 +517,19 @@ export function RunAnalyticsReport({ runId, runDate, isOpen, onClose }: RunAnaly
 
         {analytics?.data && (
           <div className="space-y-6 print:space-y-4 analytics-report-content">
+            {(() => {
+              // Parse the detailed analytics JSON
+              let detailedAnalytics: DetailedAnalytics = {};
+              try {
+                if (analytics.data.detailed_analytics) {
+                  detailedAnalytics = JSON.parse(analytics.data.detailed_analytics);
+                }
+              } catch (error) {
+                console.error('Failed to parse detailed analytics:', error);
+              }
+              
+              return (
+                <>
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <MetricCard
@@ -429,154 +597,46 @@ export function RunAnalyticsReport({ runId, runDate, isOpen, onClose }: RunAnaly
               />
             </div>
 
-            {/* Operator Breakdown */}
-            {analytics.data.detailed_analytics?.operator_analytics && (
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold flex items-center gap-2">
-                  <IconUsers className="h-5 w-5" />
-                  Operator Performance Breakdown
-                </h2>
-                {/* Get unique operator names from all categories */}
-                {(() => {
-                  const operatorNames = new Set<string>();
-                  const operatorAnalytics = analytics.data.detailed_analytics.operator_analytics;
-                  
-                  // Collect all operator names from different categories
-                  if (operatorAnalytics.upselling) {
-                    Object.keys(operatorAnalytics.upselling).forEach(name => operatorNames.add(name));
-                  }
-                  if (operatorAnalytics.upsizing) {
-                    Object.keys(operatorAnalytics.upsizing).forEach(name => operatorNames.add(name));
-                  }
-                  if (operatorAnalytics.addons) {
-                    Object.keys(operatorAnalytics.addons).forEach(name => operatorNames.add(name));
-                  }
-                  
-                  return Array.from(operatorNames).map(operatorName => {
-                    const upsellingData = operatorAnalytics.upselling?.[operatorName];
-                    const upsizingData = operatorAnalytics.upsizing?.[operatorName];
-                    const addonsData = operatorAnalytics.addons?.[operatorName];
-                    
-                    return (
-                  <Card key={operatorName}>
-                    <CardHeader>
-                      <CardTitle className="text-lg">{operatorName}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      {/* Operator Summary Cards */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                          <div className="text-2xl font-bold text-gray-900">
-                            {upsellingData?.total_successes || 0}
-                          </div>
-                          <div className="text-sm text-muted-foreground">Upselling Successes</div>
-                          <div className="text-xs text-muted-foreground">
-                            {(upsellingData?.conversion_rate || 0).toFixed(1)}% conversion
-                          </div>
-                        </div>
-                        <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                          <div className="text-2xl font-bold text-gray-900">
-                            {upsizingData?.total_successes || 0}
-                          </div>
-                          <div className="text-sm text-muted-foreground">Upsizing Successes</div>
-                          <div className="text-xs text-muted-foreground">
-                            {(upsizingData?.conversion_rate || 0).toFixed(1)}% conversion
-                          </div>
-                        </div>
-                        <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                          <div className="text-2xl font-bold text-gray-900">
-                            {addonsData?.total_successes || 0}
-                          </div>
-                          <div className="text-sm text-muted-foreground">Add-on Successes</div>
-                          <div className="text-xs text-muted-foreground">
-                            {(addonsData?.conversion_rate || 0).toFixed(1)}% conversion
-                          </div>
-                        </div>
+                  {/* Per-Item Analytics Breakdown */}
+                  {Object.keys(detailedAnalytics).length > 0 && (
+                    <div className="space-y-6">
+                      <h2 className="text-xl font-semibold flex items-center gap-2">
+                        <IconTarget className="h-5 w-5" />
+                        Per-Item Performance Breakdown
+                      </h2>
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {Object.entries(detailedAnalytics).map(([itemId, itemData]) => (
+                          <ItemSizeBreakdown
+                            key={itemId}
+                            itemId={itemId}
+                            itemName={itemData.name}
+                            sizes={itemData.sizes}
+                          />
+                        ))}
                       </div>
+                    </div>
+                  )}
 
-                      {/* Operator Revenue Breakdown */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="text-center">
-                          <div className="text-lg font-semibold text-gray-900">
-                            ${(upsellingData?.total_revenue || 0).toFixed(2)}
-                          </div>
-                          <div className="text-sm text-muted-foreground">Upselling Revenue</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-lg font-semibold text-gray-900">
-                            ${(upsizingData?.total_revenue || 0).toFixed(2)}
-                          </div>
-                          <div className="text-sm text-muted-foreground">Upsizing Revenue</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-lg font-semibold text-gray-900">
-                            ${(addonsData?.total_revenue || 0).toFixed(2)}
-                          </div>
-                          <div className="text-sm text-muted-foreground">Add-on Revenue</div>
-                        </div>
+                  {/* Size Transition Analysis */}
+                  {Object.keys(detailedAnalytics).length > 0 && (
+                    <div className="space-y-6">
+                      <h2 className="text-xl font-semibold flex items-center gap-2">
+                        <IconTrendingUp className="h-5 w-5" />
+                        Size Upgrade Transitions
+                      </h2>
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {Object.entries(detailedAnalytics).map(([itemId, itemData]) => (
+                          <SizeTransitionCard
+                            key={itemId}
+                            itemId={itemId}
+                            itemName={itemData.name}
+                            transitions={itemData.transitions}
+                          />
+                        ))}
                       </div>
+                    </div>
+                  )}
 
-                      {/* Performance Metrics */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                        <div>
-                          <h5 className="font-medium mb-2">Upselling Performance</h5>
-                          <div className="space-y-1">
-                            <div>Opportunities: <span className="font-medium">{upsellingData?.total_opportunities || 0}</span></div>
-                            <div>Offers: <span className="font-medium">{upsellingData?.total_offers || 0}</span></div>
-                            <div>Offer Rate: <span className="font-medium">{(upsellingData?.offer_rate || 0).toFixed(1)}%</span></div>
-                            <div>Success Rate: <span className="font-medium">{(upsellingData?.success_rate || 0).toFixed(1)}%</span></div>
-                          </div>
-                        </div>
-                        <div>
-                          <h5 className="font-medium mb-2">Upsizing Performance</h5>
-                          <div className="space-y-1">
-                            <div>Opportunities: <span className="font-medium">{upsizingData?.total_opportunities || 0}</span></div>
-                            <div>Offers: <span className="font-medium">{upsizingData?.total_offers || 0}</span></div>
-                            <div>Offer Rate: <span className="font-medium">{(upsizingData?.offer_rate || 0).toFixed(1)}%</span></div>
-                            <div>Success Rate: <span className="font-medium">{(upsizingData?.success_rate || 0).toFixed(1)}%</span></div>
-                          </div>
-                        </div>
-                        <div>
-                          <h5 className="font-medium mb-2">Add-on Performance</h5>
-                          <div className="space-y-1">
-                            <div>Opportunities: <span className="font-medium">{addonsData?.total_opportunities || 0}</span></div>
-                            <div>Offers: <span className="font-medium">{addonsData?.total_offers || 0}</span></div>
-                            <div>Offer Rate: <span className="font-medium">{(addonsData?.offer_rate || 0).toFixed(1)}%</span></div>
-                            <div>Success Rate: <span className="font-medium">{(addonsData?.success_rate || 0).toFixed(1)}%</span></div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                    );
-                  });
-                })()}
-              </div>
-            )}
-
-            {/* Recommendations */}
-            {analytics.data.detailed_analytics?.recommendations && analytics.data.detailed_analytics.recommendations.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <IconTarget className="h-5 w-5" />
-                    AI Recommendations
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {analytics.data.detailed_analytics.recommendations.map((recommendation, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <Badge variant="outline" className="mt-0.5 text-xs">
-                          {index + 1}
-                        </Badge>
-                        <span className="text-sm">{recommendation}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            )}
 
             {/* Summary Section */}
             <Card>
@@ -646,8 +706,11 @@ export function RunAnalyticsReport({ runId, runDate, isOpen, onClose }: RunAnaly
               </CardContent>
             </Card>
 
-            {/* Transaction Details */}
-            <TransactionsTable runId={analytics.data.run_id} pageSize={25} />
+                  {/* Transaction Details */}
+                  <TransactionsTable runId={analytics.data.run_id} pageSize={25} />
+                </>
+              );
+            })()}
           </div>
         )}
       </DialogContent>

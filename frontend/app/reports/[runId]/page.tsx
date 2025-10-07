@@ -3,6 +3,7 @@
 import * as React from "react"
 import { format } from "date-fns"
 import { useParams, useRouter } from "next/navigation"
+import { useState } from "react"
 import {
   IconTrendingUp,
   IconTrendingDown,
@@ -18,9 +19,11 @@ import {
   IconShoppingCart,
   IconUsers,
   IconEye,
+  IconChevronDown,
+  IconChevronRight,
 } from "@tabler/icons-react"
 
-import { useGetRunAnalytics, type RunAnalytics, type OperatorMetrics } from "@/hooks/getRunAnalytics"
+import { useGetRunAnalytics, useGetWorkerAnalytics, type RunAnalytics, type OperatorMetrics, type ItemAnalytics, type SizeMetrics, type DetailedAnalytics, type WorkerAnalytics } from "@/hooks/getRunAnalytics"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -90,113 +93,728 @@ const MetricCard = ({
   )
 }
 
-export default function AnalyticsReportPage() {
-  const params = useParams()
-  const router = useRouter()
-  const runId = params.runId as string
-
-  const { data: analytics, isLoading, isError, error } = useGetRunAnalytics(runId)
-
-  const handleViewTransactions = () => {
-    router.push(`/reports/${runId}/transactions`)
+// Component for displaying size transition data
+const SizeTransitionCard = ({ itemId, itemName, transitions }: { itemId: string, itemName: string, transitions: ItemAnalytics['transitions'] }) => {
+  const totalTransitions = transitions["1_to_2"] + transitions["1_to_3"] + transitions["2_to_3"];
+  
+  if (totalTransitions === 0) {
+    return null; // Don't show items with no transitions
   }
 
-  const handleGoBack = () => {
-    router.back()
-  }
+  const transitionData = [
+    { key: "1_to_2", label: "Small → Medium", value: transitions["1_to_2"], color: "blue" },
+    { key: "1_to_3", label: "Small → Large", value: transitions["1_to_3"], color: "green" },
+    { key: "2_to_3", label: "Medium → Large", value: transitions["2_to_3"], color: "purple" }
+  ].filter(item => item.value > 0);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <IconLoader className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <h2 className="text-xl font-semibold">Loading Analytics...</h2>
-          <p className="text-muted-foreground">Please wait while we fetch the run data.</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (isError) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <IconAlertCircle className="h-8 w-8 text-red-600 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-red-600">Error Loading Analytics</h2>
-          <p className="text-muted-foreground">{error?.message || 'Failed to load analytics data'}</p>
-          <Button onClick={handleGoBack} className="mt-4">
-            <IconArrowLeft className="h-4 w-4 mr-2" />
-            Go Back
-          </Button>
-        </div>
-      </div>
-    )
-  }
-
-  if (!analytics?.success || !analytics?.data) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <IconAlertCircle className="h-8 w-8 text-yellow-600 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold">No Data Available</h2>
-          <p className="text-muted-foreground">No analytics data found for this run.</p>
-          <Button onClick={handleGoBack} className="mt-4">
-            <IconArrowLeft className="h-4 w-4 mr-2" />
-            Go Back
-          </Button>
-        </div>
-      </div>
-    )
-  }
-
-  const data = analytics.data
+  if (transitionData.length === 0) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-6 py-8 max-w-7xl">
-        {/* Header */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
-              <Button variant="outline" onClick={handleGoBack} className="border-gray-300 hover:border-gray-400">
-                <IconArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
-              <div className="border-l border-gray-300 pl-6">
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">Analytics Report</h1>
-                <div className="flex items-center space-x-3 text-gray-600">
-                  <span className="text-lg font-medium">
-                    {format(new Date(data.run_date), "MMMM dd, yyyy")}
-                  </span>
-                  <span className="text-gray-400">•</span>
-                  <span className="text-lg">{data.location_name}</span>
+    <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-xl font-bold text-gray-900">{itemName}</CardTitle>
+            <p className="text-sm text-gray-600 mt-1">Size upgrade transitions</p>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-gray-900">{totalTransitions}</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wide">Total Upgrades</div>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {transitionData.map(({ key, label, value, color }) => {
+            const percentage = totalTransitions > 0 ? (value / totalTransitions * 100) : 0;
+            const colorClasses = {
+              blue: "bg-blue-50 border-blue-200 text-blue-700",
+              green: "bg-green-50 border-green-200 text-green-700", 
+              purple: "bg-purple-50 border-purple-200 text-purple-700"
+            };
+            
+            return (
+              <div key={key} className={`p-4 rounded-lg border ${colorClasses[color as keyof typeof colorClasses]}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="font-semibold">{label}</div>
+                  <div className="text-2xl font-bold">{value}</div>
                 </div>
+                <div className="w-full bg-white/50 rounded-full h-2">
+                  <div 
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      color === 'blue' ? 'bg-blue-500' : 
+                      color === 'green' ? 'bg-green-500' : 'bg-purple-500'
+                    }`}
+                    style={{ width: `${percentage}%` }}
+                  ></div>
+                </div>
+                <div className="text-xs mt-1 opacity-75">{percentage.toFixed(1)}% of total upgrades</div>
               </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Button variant="outline" onClick={handleViewTransactions} className="border-gray-300 hover:border-gray-400">
-                <IconEye className="h-4 w-4 mr-2" />
-                View Raw Transactions
-              </Button>
-              <Button variant="outline" onClick={() => window.print()} className="border-gray-300 hover:border-gray-400">
-                <IconPrinter className="h-4 w-4 mr-2" />
-                Print Report
-              </Button>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+// Component for displaying item performance in a collapsible table format
+const ItemPerformanceTable = ({ items }: { items: [string, ItemAnalytics][] }) => {
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const [sortKey, setSortKey] = useState<
+    'name' | 'totalBase' | 'upsell' | 'upsize' | 'addon' | 'successRate'
+  >('name');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  const [filterQuery, setFilterQuery] = useState<string>('');
+
+  const toggleItem = (itemId: string) => {
+    const newExpanded = new Set(expandedItems);
+    if (newExpanded.has(itemId)) {
+      newExpanded.delete(itemId);
+    } else {
+      newExpanded.add(itemId);
+    }
+    setExpandedItems(newExpanded);
+  };
+
+  const getItemTotals = (itemData: ItemAnalytics) => {
+    const sizeEntries = Object.entries(itemData.sizes);
+    return sizeEntries.reduce((acc, [_, metrics]) => ({
+      upsell: {
+        base: acc.upsell.base + metrics.upsell_base,
+        candidates: acc.upsell.candidates + metrics.upsell_candidates,
+        offered: acc.upsell.offered + metrics.upsell_offered,
+        success: acc.upsell.success + metrics.upsell_success
+      },
+      upsize: {
+        base: acc.upsize.base + metrics.upsize_base,
+        candidates: acc.upsize.candidates + metrics.upsize_candidates,
+        offered: acc.upsize.offered + metrics.upsize_offered,
+        success: acc.upsize.success + metrics.upsize_success
+      },
+      addon: {
+        base: acc.addon.base + metrics.addon_base,
+        candidates: acc.addon.candidates + metrics.addon_candidates,
+        offered: acc.addon.offered + metrics.addon_offered,
+        success: acc.addon.success + metrics.addon_success
+      }
+    }), {
+      upsell: { base: 0, candidates: 0, offered: 0, success: 0 },
+      upsize: { base: 0, candidates: 0, offered: 0, success: 0 },
+      addon: { base: 0, candidates: 0, offered: 0, success: 0 }
+    });
+  };
+
+  const filteredItems = items.filter(([_, itemData]) => {
+    if (!filterQuery.trim()) return true;
+    return itemData.name.toLowerCase().includes(filterQuery.trim().toLowerCase());
+  });
+
+  const withComputed = filteredItems.map(([itemId, itemData]) => {
+    const totals = getItemTotals(itemData);
+    const totalBase = totals.upsell.base + totals.upsize.base + totals.addon.base;
+    const totalOffers = totals.upsell.offered + totals.upsize.offered + totals.addon.offered;
+    const totalSuccesses = totals.upsell.success + totals.upsize.success + totals.addon.success;
+    const successRate = totalOffers > 0 ? (totalSuccesses / totalOffers) * 100 : 0;
+    return { itemId, itemData, totals, totalBase, totalOffers, totalSuccesses, successRate };
+  });
+
+  const sorted = [...withComputed].sort((a, b) => {
+    const dir = sortDir === 'asc' ? 1 : -1;
+    switch (sortKey) {
+      case 'name':
+        return a.itemData.name.localeCompare(b.itemData.name) * dir;
+      case 'totalBase':
+        return (a.totalBase - b.totalBase) * dir;
+      case 'upsell':
+        return (a.totals.upsell.success - b.totals.upsell.success) * dir;
+      case 'upsize':
+        return (a.totals.upsize.success - b.totals.upsize.success) * dir;
+      case 'addon':
+        return (a.totals.addon.success - b.totals.addon.success) * dir;
+      case 'successRate':
+        return (a.successRate - b.successRate) * dir;
+      default:
+        return 0;
+    }
+  });
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const start = (currentPage - 1) * pageSize;
+  const pageItems = sorted.slice(start, start + pageSize);
+
+  const setSort = (key: typeof sortKey) => {
+    if (sortKey === key) {
+      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
+    setPage(1);
+  };
+
+    return (
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+      {/* Controls and status */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 py-3 bg-gray-50 border-b border-gray-200 space-y-3 md:space-y-0">
+        <div className="flex items-center space-x-2">
+          <input
+            type="text"
+            value={filterQuery}
+            onChange={(e) => { setFilterQuery(e.target.value); setPage(1); }}
+            placeholder="Filter items by name..."
+            className="w-full md:w-72 px-3 py-2 text-sm border border-gray-300 rounded"
+          />
+        </div>
+        <div className="text-xs text-gray-600">
+          <span className="mr-3">Sorting by: <span className="font-medium">{
+            sortKey === 'name' ? 'Item' :
+            sortKey === 'totalBase' ? 'Total Base' :
+            sortKey === 'upsell' ? 'Upsell (successes)' :
+            sortKey === 'upsize' ? 'Upsize (successes)' :
+            sortKey === 'addon' ? 'Add-ons (successes)' :
+            'Success Rate'
+          } ({sortDir.toUpperCase()})</span></span>
+          <span>Filter: <span className="font-medium">{filterQuery.trim() ? `name contains "${filterQuery.trim()}"` : 'None'}</span></span>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <button onClick={() => setSort('name')} className="flex items-center space-x-1">
+                  <span>Item</span>
+                  <span className="text-gray-400 text-[10px]">{sortKey==='name' ? (sortDir==='asc'?'▲':'▼') : ''}</span>
+                </button>
+              </th>
+              
+              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <button onClick={() => setSort('upsell')} className="inline-flex items-center space-x-1">
+                  <span>Upsell</span>
+                  <span className="text-gray-400 text-[10px]">{sortKey==='upsell' ? (sortDir==='asc'?'▲':'▼') : ''}</span>
+                </button>
+              </th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <button onClick={() => setSort('upsize')} className="inline-flex items-center space-x-1">
+                  <span>Upsize</span>
+                  <span className="text-gray-400 text-[10px]">{sortKey==='upsize' ? (sortDir==='asc'?'▲':'▼') : ''}</span>
+                </button>
+              </th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <button onClick={() => setSort('addon')} className="inline-flex items-center space-x-1">
+                  <span>Add-ons</span>
+                  <span className="text-gray-400 text-[10px]">{sortKey==='addon' ? (sortDir==='asc'?'▲':'▼') : ''}</span>
+                </button>
+              </th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <button onClick={() => setSort('successRate')} className="inline-flex items-center space-x-1">
+                  <span>Success Rate</span>
+                  <span className="text-gray-400 text-[10px]">{sortKey==='successRate' ? (sortDir==='asc'?'▲':'▼') : ''}</span>
+                </button>
+              </th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {pageItems.map(({ itemId, itemData, totals, totalBase, successRate }) => {
+              const isExpanded = expandedItems.has(itemId);
+
+              return (
+                <React.Fragment key={itemId}>
+                  <tr className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <button
+                          onClick={() => toggleItem(itemId)}
+                          className="flex items-center space-x-3 text-left hover:text-blue-600 transition-colors"
+                        >
+                          {isExpanded ? (
+                            <IconChevronDown className="h-4 w-4 text-gray-400" />
+                          ) : (
+                            <IconChevronRight className="h-4 w-4 text-gray-400" />
+                          )}
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{itemData.name}</div>
+                            <div className="text-xs text-gray-500">Click to expand details</div>
+                          </div>
+                        </button>
+                      </div>
+                    </td>
+                    
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <div className="text-sm text-gray-900">
+                        {totals.upsell.offered > 0 ? (
+                          <div>
+                            <div className="font-semibold">{totals.upsell.success}</div>
+                            <div className="text-xs text-gray-500">of {totals.upsell.offered}</div>
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <div className="text-sm text-gray-900">
+                        {totals.upsize.offered > 0 ? (
+                          <div>
+                            <div className="font-semibold">{totals.upsize.success}</div>
+                            <div className="text-xs text-gray-500">of {totals.upsize.offered}</div>
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <div className="text-sm text-gray-900">
+                        {totals.addon.offered > 0 ? (
+                          <div>
+                            <div className="font-semibold">{totals.addon.success}</div>
+                            <div className="text-xs text-gray-500">of {totals.addon.offered}</div>
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <div className={`text-sm font-semibold ${
+                        successRate >= 50 ? 'text-green-600' : 
+                        successRate > 0 ? 'text-yellow-600' : 'text-gray-400'
+                      }`}>
+                        {successRate.toFixed(1)}%
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <button
+                        onClick={() => toggleItem(itemId)}
+                        className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
+                      >
+                        {isExpanded ? 'Collapse' : 'Expand'}
+                      </button>
+                    </td>
+                  </tr>
+                  
+                  {/* Expanded Details Row */}
+                  {isExpanded && (
+                    <tr>
+                      <td colSpan={7} className="px-6 py-4 bg-gray-50">
+                        <div className="space-y-4">
+                          {/* Category Breakdown */}
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {totals.upsell.base > 0 && (
+                              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                                <div className="flex items-center space-x-2 mb-3">
+                                  <IconTrendingUp className="h-4 w-4 text-green-600" />
+                                  <h4 className="font-semibold text-gray-900">Upselling</h4>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 text-sm">
+        <div className="text-center">
+                                    <div className="font-semibold text-gray-900">{totals.upsell.base}</div>
+                                    <div className="text-xs text-gray-500">Base</div>
+        </div>
+                                  <div className="text-center">
+                                    <div className="font-semibold text-blue-600">{totals.upsell.candidates}</div>
+                                    <div className="text-xs text-gray-500">Candidates</div>
+      </div>
+                                  <div className="text-center">
+                                    <div className="font-semibold text-orange-600">{totals.upsell.offered}</div>
+                                    <div className="text-xs text-gray-500">Offered</div>
+                                  </div>
+                                  <div className="text-center">
+                                    <div className="font-semibold text-green-600">{totals.upsell.success}</div>
+                                    <div className="text-xs text-gray-500">Success</div>
+                                  </div>
+                                </div>
+                                <div className="mt-2 text-center">
+                                  <div className="text-xs text-gray-500">
+                                    {totals.upsell.offered > 0 ? 
+                                      `${(totals.upsell.success / totals.upsell.offered * 100).toFixed(1)}% conversion` : 
+                                      'No offers made'
+                                    }
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            
+                            {totals.upsize.base > 0 && (
+                              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                                <div className="flex items-center space-x-2 mb-3">
+                                  <IconTarget className="h-4 w-4 text-blue-600" />
+                                  <h4 className="font-semibold text-gray-900">Upsizing</h4>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 text-sm">
+        <div className="text-center">
+                                    <div className="font-semibold text-gray-900">{totals.upsize.base}</div>
+                                    <div className="text-xs text-gray-500">Base</div>
+        </div>
+                                  <div className="text-center">
+                                    <div className="font-semibold text-blue-600">{totals.upsize.candidates}</div>
+                                    <div className="text-xs text-gray-500">Candidates</div>
+      </div>
+                                  <div className="text-center">
+                                    <div className="font-semibold text-orange-600">{totals.upsize.offered}</div>
+                                    <div className="text-xs text-gray-500">Offered</div>
+                                  </div>
+                                  <div className="text-center">
+                                    <div className="font-semibold text-green-600">{totals.upsize.success}</div>
+                                    <div className="text-xs text-gray-500">Success</div>
+                                  </div>
+                                </div>
+                                <div className="mt-2 text-center">
+                                  <div className="text-xs text-gray-500">
+                                    {totals.upsize.offered > 0 ? 
+                                      `${(totals.upsize.success / totals.upsize.offered * 100).toFixed(1)}% conversion` : 
+                                      'No offers made'
+                                    }
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            
+                            {totals.addon.base > 0 && (
+                              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                                <div className="flex items-center space-x-2 mb-3">
+                                  <IconShoppingCart className="h-4 w-4 text-purple-600" />
+                                  <h4 className="font-semibold text-gray-900">Add-ons</h4>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 text-sm">
+                                  <div className="text-center">
+                                    <div className="font-semibold text-gray-900">{totals.addon.base}</div>
+                                    <div className="text-xs text-gray-500">Base</div>
+                                  </div>
+                                  <div className="text-center">
+                                    <div className="font-semibold text-blue-600">{totals.addon.candidates}</div>
+                                    <div className="text-xs text-gray-500">Candidates</div>
+                                  </div>
+                                  <div className="text-center">
+                                    <div className="font-semibold text-orange-600">{totals.addon.offered}</div>
+                                    <div className="text-xs text-gray-500">Offered</div>
+                                  </div>
+                                  <div className="text-center">
+                                    <div className="font-semibold text-green-600">{totals.addon.success}</div>
+                                    <div className="text-xs text-gray-500">Success</div>
+                                  </div>
+                                </div>
+                                <div className="mt-2 text-center">
+                                  <div className="text-xs text-gray-500">
+                                    {totals.addon.offered > 0 ? 
+                                      `${(totals.addon.success / totals.addon.offered * 100).toFixed(1)}% conversion` : 
+                                      'No offers made'
+                                    }
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Size Breakdown */}
+                          {Object.keys(itemData.sizes).length > 1 && (
+                            <div className="bg-white p-4 rounded-lg border border-gray-200">
+                              <h5 className="font-semibold text-gray-900 mb-3 flex items-center">
+                                <IconUsers className="h-4 w-4 mr-2 text-gray-600" />
+                                Size Breakdown
+                              </h5>
+                              <div className="grid grid-cols-1 gap-2">
+                                {Object.entries(itemData.sizes).map(([sizeKey, metrics]) => {
+                                  const sizeName = sizeKey === "0" ? "One Size" : 
+                                                  sizeKey === "1" ? "Small" : 
+                                                  sizeKey === "2" ? "Medium" : 
+                                                  sizeKey === "3" ? "Large" : `Size ${sizeKey}`;
+                                  const sizeActivity = metrics.upsell_base + metrics.upsize_base + metrics.addon_base;
+                                  
+                                  if (sizeActivity === 0) return null;
+                                  
+    return (
+                                    <div key={sizeKey} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                      <div className="font-medium text-gray-900">{sizeName}</div>
+                                      <div className="flex items-center space-x-4 text-sm">
+        <div className="text-center">
+                                          <div className="font-semibold text-gray-900">{sizeActivity}</div>
+                                          <div className="text-xs text-gray-500">Base</div>
+        </div>
+                                        <div className="text-center">
+                                          <div className="font-semibold text-blue-600">{metrics.upsell_candidates + metrics.upsize_candidates + metrics.addon_candidates}</div>
+                                          <div className="text-xs text-gray-500">Candidates</div>
+      </div>
+                                        <div className="text-center">
+                                          <div className="font-semibold text-orange-600">{metrics.upsell_offered + metrics.upsize_offered + metrics.addon_offered}</div>
+                                          <div className="text-xs text-gray-500">Offered</div>
+                                        </div>
+                                        <div className="text-center">
+                                          <div className="font-semibold text-green-600">{metrics.upsell_success + metrics.upsize_success + metrics.addon_success}</div>
+                                          <div className="text-xs text-gray-500">Success</div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      {/* Pagination controls */}
+      <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-gray-50">
+        <div className="text-sm text-gray-600">Page {currentPage} of {totalPages}</div>
+        <div className="space-x-2">
+          <button
+            className="px-3 py-1 text-sm rounded border border-gray-300 disabled:opacity-50"
+            disabled={currentPage === 1}
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+          >
+            Previous
+          </button>
+          <button
+            className="px-3 py-1 text-sm rounded border border-gray-300 disabled:opacity-50"
+            disabled={currentPage === totalPages}
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Component for displaying per-item size breakdown
+const ItemSizeBreakdown = ({ itemId, itemName, sizes }: { itemId: string, itemName: string, sizes: Record<string, SizeMetrics> }) => {
+  const sizeEntries = Object.entries(sizes);
+  
+  if (sizeEntries.length === 0) {
+    return null; // Don't show items with no size data
+  }
+
+  const getSizeName = (sizeKey: string) => {
+    const sizeMap: Record<string, string> = {
+      "0": "One Size",
+      "1": "Small", 
+      "2": "Medium",
+      "3": "Large"
+    };
+    return sizeMap[sizeKey] || `Size ${sizeKey}`;
+  };
+
+  // Calculate totals for the item
+  const itemTotals = sizeEntries.reduce((acc, [_, metrics]) => ({
+    upsell: {
+      base: acc.upsell.base + metrics.upsell_base,
+      candidates: acc.upsell.candidates + metrics.upsell_candidates,
+      offered: acc.upsell.offered + metrics.upsell_offered,
+      success: acc.upsell.success + metrics.upsell_success
+    },
+    upsize: {
+      base: acc.upsize.base + metrics.upsize_base,
+      candidates: acc.upsize.candidates + metrics.upsize_candidates,
+      offered: acc.upsize.offered + metrics.upsize_offered,
+      success: acc.upsize.success + metrics.upsize_success
+    },
+    addon: {
+      base: acc.addon.base + metrics.addon_base,
+      candidates: acc.addon.candidates + metrics.addon_candidates,
+      offered: acc.addon.offered + metrics.addon_offered,
+      success: acc.addon.success + metrics.addon_success
+    }
+  }), {
+    upsell: { base: 0, candidates: 0, offered: 0, success: 0 },
+    upsize: { base: 0, candidates: 0, offered: 0, success: 0 },
+    addon: { base: 0, candidates: 0, offered: 0, success: 0 }
+  });
+
+  const totalActivity = itemTotals.upsell.base + itemTotals.upsize.base + itemTotals.addon.base;
+  if (totalActivity === 0) return null;
+
+  const MetricRow = ({ 
+    title, 
+    data, 
+    color, 
+    icon: Icon 
+  }: { 
+    title: string, 
+    data: { base: number, candidates: number, offered: number, success: number }, 
+    color: string,
+    icon: any 
+  }) => {
+    const conversionRate = data.offered > 0 ? (data.success / data.offered * 100) : 0;
+
+  return (
+      <div className="bg-gray-50 rounded-lg p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center space-x-2">
+            <Icon className={`h-4 w-4 ${color}`} />
+            <h4 className="font-semibold text-gray-900">{title}</h4>
+          </div>
+          <div className="text-right">
+            <div className="text-sm font-medium text-gray-600">Conversion Rate</div>
+            <div className={`text-lg font-bold ${conversionRate >= 50 ? 'text-green-600' : conversionRate > 0 ? 'text-yellow-600' : 'text-gray-400'}`}>
+              {conversionRate.toFixed(1)}%
             </div>
           </div>
         </div>
+        
+        <div className="grid grid-cols-4 gap-3">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-gray-900">{data.base}</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wide">Base</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-blue-600">{data.candidates}</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wide">Candidates</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-orange-600">{data.offered}</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wide">Offered</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-green-600">{data.success}</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wide">Success</div>
+          </div>
+        </div>
+        
+        {/* Progress bar */}
+        <div className="mt-3">
+          <div className="flex justify-between text-xs text-gray-500 mb-1">
+            <span>Progress</span>
+            <span>{data.offered} of {data.candidates} offers made</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
+              style={{ width: `${data.candidates > 0 ? (data.offered / data.candidates * 100) : 0}%` }}
+            ></div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
+  return (
+    <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+      <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-xl font-bold text-gray-900">{itemName}</CardTitle>
+            <p className="text-sm text-gray-600 mt-1">Performance across all sizes</p>
+                </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-gray-900">{totalActivity}</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wide">Total Base</div>
+              </div>
+            </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Show only categories with activity */}
+        {itemTotals.upsell.base > 0 && (
+          <MetricRow 
+            title="Upselling" 
+            data={itemTotals.upsell} 
+            color="text-green-600" 
+            icon={IconTrendingUp} 
+          />
+        )}
+        
+        {itemTotals.upsize.base > 0 && (
+          <MetricRow 
+            title="Upsizing" 
+            data={itemTotals.upsize} 
+            color="text-blue-600" 
+            icon={IconTarget} 
+          />
+        )}
+        
+        {itemTotals.addon.base > 0 && (
+          <MetricRow 
+            title="Add-ons" 
+            data={itemTotals.addon} 
+            color="text-purple-600" 
+            icon={IconShoppingCart} 
+          />
+        )}
+
+        {/* Size breakdown - only show if multiple sizes */}
+        {sizeEntries.length > 1 && (
+          <div className="border-t border-gray-200 pt-4">
+            <h5 className="font-semibold text-gray-900 mb-3 flex items-center">
+              <IconUsers className="h-4 w-4 mr-2 text-gray-600" />
+              Size Breakdown
+            </h5>
+            <div className="grid grid-cols-1 gap-2">
+              {sizeEntries.map(([sizeKey, metrics]) => {
+                const sizeName = getSizeName(sizeKey);
+                const sizeActivity = metrics.upsell_base + metrics.upsize_base + metrics.addon_base;
+                
+                if (sizeActivity === 0) return null;
+                
+                return (
+                  <div key={sizeKey} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="font-medium text-gray-900">{sizeName}</div>
+                    <div className="flex items-center space-x-4 text-sm">
+                      <div className="text-center">
+                        <div className="font-semibold text-gray-900">{sizeActivity}</div>
+                        <div className="text-xs text-gray-500">Base</div>
+            </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-blue-600">{metrics.upsell_candidates + metrics.upsize_candidates + metrics.addon_candidates}</div>
+                        <div className="text-xs text-gray-500">Candidates</div>
+          </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-orange-600">{metrics.upsell_offered + metrics.upsize_offered + metrics.addon_offered}</div>
+                        <div className="text-xs text-gray-500">Offered</div>
+        </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-green-600">{metrics.upsell_success + metrics.upsize_success + metrics.addon_success}</div>
+                        <div className="text-xs text-gray-500">Success</div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+// Reusable Analytics Report Component
+const AnalyticsReportContent = ({ 
+  data, 
+  title, 
+  subtitle 
+}: { 
+  data: RunAnalytics | WorkerAnalytics, 
+  title: string, 
+  subtitle?: string 
+}) => {
+  return (
         <div className="space-y-8">
           {/* Key Metrics Section */}
           <section>
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Key Performance Metrics</h2>
-              <p className="text-gray-600">Overview of transaction performance and revenue impact</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{title}</h2>
+          {subtitle && <p className="text-gray-600">{subtitle}</p>}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <MetricCard
                 title="Total Transactions"
-                value={data.total_transactions}
+                value={data.complete_transactions}
                 subtitle="Orders processed"
                 icon={IconShoppingCart}
                 color="neutral"
@@ -363,391 +981,361 @@ export default function AnalyticsReportPage() {
             </div>
           </section>
 
-          {/* Summary Section */}
-          <section>
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Summary & Details</h2>
-              <p className="text-gray-600">Comprehensive overview and run information</p>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Performance Summary */}
-              <Card className="bg-white border border-gray-200 shadow-sm">
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold text-gray-900">Performance Summary</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="font-semibold text-gray-800 mb-3 text-sm uppercase tracking-wide">Opportunities</h4>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-gray-50 p-3 rounded-lg">
-                          <div className="text-lg font-bold text-gray-900">{data.total_opportunities}</div>
-                          <div className="text-xs text-gray-600">Total</div>
-                        </div>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Upselling:</span>
-                            <span className="font-medium text-gray-900">{data.upsell_opportunities}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Upsizing:</span>
-                            <span className="font-medium text-gray-900">{data.upsize_opportunities}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Add-ons:</span>
-                            <span className="font-medium text-gray-900">{data.addon_opportunities}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="border-t border-gray-200 pt-4">
-                      <h4 className="font-semibold text-gray-800 mb-3 text-sm uppercase tracking-wide">Success Rate</h4>
-                      <div className="text-center">
-                        <div className="text-3xl font-bold text-gray-900 mb-1">
-                          {((data.total_successes / Math.max(data.total_offers, 1)) * 100).toFixed(1)}%
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          {data.total_successes} of {data.total_offers} offers converted
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+      {/* Per-Item Performance Section */}
+      {data.detailed_analytics && (() => {
+        // Parse the detailed analytics JSON
+        let detailedAnalytics: DetailedAnalytics = {};
+        try {
+          detailedAnalytics = JSON.parse(data.detailed_analytics);
+        } catch (error) {
+          console.error('Error parsing detailed analytics:', error);
+          return null;
+        }
 
-              {/* Run Information */}
-              <Card className="bg-white border border-gray-200 shadow-sm">
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold text-gray-900">Run Information</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="p-3 bg-gray-50 rounded-lg">
-                        <div className="text-sm font-medium text-gray-700 mb-1">Run ID</div>
-                        <div className="font-mono text-xs text-gray-600 break-all">{data.run_id}</div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <div className="text-sm font-medium text-gray-700 mb-1">Date</div>
-                          <div className="text-sm text-gray-900">{format(new Date(data.run_date), "MMM dd, yyyy")}</div>
-                        </div>
-                        <div>
-                          <div className="text-sm font-medium text-gray-700 mb-1">Transactions</div>
-                          <div className="text-sm text-gray-900">{data.total_transactions}</div>
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-700 mb-1">Location</div>
-                        <div className="text-sm text-gray-900">{data.location_name}</div>
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-700 mb-1">Organization</div>
-                        <div className="text-sm text-gray-900">{data.org_name}</div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </section>
+        // Get items with activity
+        const itemsWithActivity = Object.entries(detailedAnalytics).filter(([_, itemData]) => {
+          const hasSizeActivity = Object.values(itemData.sizes).some(size => 
+            size.upsell_base > 0 || size.upsize_base > 0 || size.addon_base > 0 ||
+            size.upsell_offered > 0 || size.upsize_offered > 0 || size.addon_offered > 0
+          );
+          const hasTransitions = itemData.transitions["1_to_2"] > 0 || 
+                               itemData.transitions["1_to_3"] > 0 || 
+                               itemData.transitions["2_to_3"] > 0;
+          return hasSizeActivity || hasTransitions;
+        });
 
-          {/* Operator Performance Section */}
-          {data.detailed_analytics?.operator_analytics && (
+        if (itemsWithActivity.length === 0) {
+          return null;
+        }
+
+        return (
             <section>
               <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Operator Performance</h2>
-                <p className="text-gray-600">Individual performance metrics by team member</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Per-Item Performance Breakdown</h2>
+              <p className="text-gray-600">Detailed analysis of individual menu items and size transitions</p>
               </div>
-              {/* Get all unique operator names from the three categories */}
-              {(() => {
-                const operators = new Set<string>();
-                if (data.detailed_analytics.operator_analytics.upselling) {
-                  Object.keys(data.detailed_analytics.operator_analytics.upselling).forEach(op => operators.add(op));
-                }
-                if (data.detailed_analytics.operator_analytics.upsizing) {
-                  Object.keys(data.detailed_analytics.operator_analytics.upsizing).forEach(op => operators.add(op));
-                }
-                if (data.detailed_analytics.operator_analytics.addons) {
-                  Object.keys(data.detailed_analytics.operator_analytics.addons).forEach(op => operators.add(op));
-                }
-                
-                return Array.from(operators).map(operatorName => (
-                  <div key={operatorName} className="mb-8">
-                    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
-                        <div className="flex items-center space-x-3">
-                          <div className="p-2 bg-blue-100 rounded-full">
-                            <IconUsers className="h-5 w-5 text-blue-600" />
+            
+            <div className="space-y-8">
+              {/* Per-Item Performance Table */}
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-semibold text-gray-900">Item Performance</h3>
+                  <div className="text-sm text-gray-500">
+                    {itemsWithActivity.length} items with activity
                           </div>
-                          <h3 className="text-xl font-semibold text-gray-900">{operatorName}</h3>
                         </div>
+                <ItemPerformanceTable items={itemsWithActivity} />
                       </div>
                       
-                      <div className="p-6">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                          {/* Operator Upselling */}
-                          <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                            <div className="flex items-center justify-between mb-4">
-                              <div className="flex items-center space-x-2">
-                                <div className="p-1 bg-green-100 rounded-lg">
-                                  <IconTrendingUp className="h-4 w-4 text-green-600" />
+              {/* Size Transition Analysis */}
+              <div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Size Upgrade Transitions</h3>
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {itemsWithActivity.map(([itemId, itemData]) => (
+                    <SizeTransitionCard
+                      key={itemId}
+                      itemId={itemId}
+                      itemName={itemData.name}
+                      transitions={itemData.transitions}
+                    />
+                  ))}
                                 </div>
-                                <h4 className="font-semibold text-gray-900">Upselling</h4>
-                              </div>
-                              <Badge className={`${
-                                (data.detailed_analytics?.operator_analytics?.upselling?.[operatorName]?.success_rate || 0) >= 50
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-red-100 text-red-800'
-                              }`}>
-                                Success Rate: {data.detailed_analytics?.operator_analytics?.upselling?.[operatorName]?.success_rate?.toFixed(1) || '0'}%
-                              </Badge>
-                            </div>
-                            <div className="space-y-3">
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Offers:</span>
-                                <span className="font-medium text-gray-900">
-                                  {data.detailed_analytics?.operator_analytics?.upselling?.[operatorName]?.total_offers || 0}
-                                </span>
-                              </div>
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Successes:</span>
-                                <span className="font-medium text-green-600">
-                                  {data.detailed_analytics?.operator_analytics?.upselling?.[operatorName]?.total_successes || 0}
-                                </span>
-                              </div>
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Revenue:</span>
-                                <span className="font-semibold text-green-600">
-                                  ${data.detailed_analytics?.operator_analytics?.upselling?.[operatorName]?.total_revenue?.toFixed(2) || '0.00'}
-                                </span>
                               </div>
                             </div>
-                          </div>
+          </section>
+        );
+      })()}
+                              </div>
+  );
+};
 
-                          {/* Operator Upsizing */}
-                          <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                            <div className="flex items-center justify-between mb-4">
-                              <div className="flex items-center space-x-2">
-                                <div className="p-1 bg-blue-100 rounded-lg">
-                                  <IconTarget className="h-4 w-4 text-blue-600" />
-                                </div>
-                                <h4 className="font-semibold text-gray-900">Upsizing</h4>
-                              </div>
-                              <Badge className={`${
-                                (data.detailed_analytics?.operator_analytics?.upsizing?.[operatorName]?.success_rate || 0) >= 50
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-red-100 text-red-800'
-                              }`}>
-                                Success Rate: {data.detailed_analytics?.operator_analytics?.upsizing?.[operatorName]?.success_rate?.toFixed(1) || '0'}%
-                              </Badge>
-                            </div>
-                            <div className="space-y-3">
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Offers:</span>
-                                <span className="font-medium text-gray-900">
-                                  {data.detailed_analytics?.operator_analytics?.upsizing?.[operatorName]?.total_offers || 0}
-                                </span>
-                              </div>
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Successes:</span>
-                                <span className="font-medium text-blue-600">
-                                  {data.detailed_analytics?.operator_analytics?.upsizing?.[operatorName]?.total_successes || 0}
-                                </span>
-                              </div>
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Revenue:</span>
-                                <span className="font-semibold text-blue-600">
-                                  ${data.detailed_analytics?.operator_analytics?.upsizing?.[operatorName]?.total_revenue?.toFixed(2) || '0.00'}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
+export default function AnalyticsReportPage() {
+  const params = useParams()
+  const router = useRouter()
+  const runId = params.runId as string
+  const [isMainReportExpanded, setIsMainReportExpanded] = useState(true)
+  const [expandedWorkers, setExpandedWorkers] = useState<Set<string>>(new Set())
 
-                          {/* Operator Add-ons */}
-                          <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                            <div className="flex items-center justify-between mb-4">
-                              <div className="flex items-center space-x-2">
-                                <div className="p-1 bg-purple-100 rounded-lg">
-                                  <IconShoppingCart className="h-4 w-4 text-purple-600" />
+  // Worker ID to name mapping
+  const workerNameMap: Record<string, string> = {
+    "234ad11f-ceb8-4aea-b77d-2bf814fbcc70": "Sharon",
+    "48f43602-ae51-4104-ab64-780d8f475bba": "Emily B",
+    "639effce-e0dc-4283-bd6e-fa4dfd5910b8": "Adrijana",
+    "7716dd87-ad7e-4419-830c-2161fe7db19b": "Latasha",
+    "80b84d5e-59e2-4e3d-af7e-78f2544cbb23": "Jamarie Moore",
+    "946c2ae8-5fe2-4d39-ae2f-286be9d09d7d": "Jalissa",
+    "9bd60a00-4611-46f9-8285-bb329d871775": "Mario",
+    "a52f9c84-9556-4171-b6f3-c149837cd54a": "Malaika",
+    "a8b39309-16f9-4d52-b542-e3f8e1033a02": "Kayla",
+    "ea6bc885-4e3c-423f-a333-5223624b90d1": "Cayden",
+    "ffec99f2-ec72-401a-b799-ecc41724b6b1": "Jacob"
+  }
+
+  // Get operator from URL search params
+  const [searchParams] = React.useState(() => {
+    if (typeof window !== 'undefined') {
+      return new URLSearchParams(window.location.search)
+    }
+    return new URLSearchParams()
+  })
+  const selectedOperator = searchParams.get('operator')
+
+  const { data: analyticsResponse, isLoading, isError, error } = useGetRunAnalytics(runId)
+  const { data: workerAnalytics, isLoading: isLoadingWorkers, isError: isErrorWorkers } = useGetWorkerAnalytics(runId)
+
+  const handleViewTransactions = () => {
+    router.push(`/reports/${runId}/transactions`)
+  }
+
+  const handleGoBack = () => {
+    router.back()
+  }
+
+  const toggleMainReport = () => {
+    setIsMainReportExpanded(!isMainReportExpanded)
+  }
+
+  const toggleWorker = (workerId: string) => {
+    const newExpanded = new Set(expandedWorkers)
+    if (newExpanded.has(workerId)) {
+      newExpanded.delete(workerId)
+    } else {
+      newExpanded.add(workerId)
+    }
+    setExpandedWorkers(newExpanded)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <IconLoader className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <h2 className="text-xl font-semibold">Loading Analytics...</h2>
+          <p className="text-muted-foreground">Please wait while we fetch the run data.</p>
+                              </div>
+                              </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <IconAlertCircle className="h-8 w-8 text-red-600 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-red-600">Error Loading Analytics</h2>
+          <p className="text-muted-foreground">{error?.message || 'Failed to load analytics data'}</p>
+          <Button onClick={handleGoBack} className="mt-4">
+            <IconArrowLeft className="h-4 w-4 mr-2" />
+            Go Back
+          </Button>
                                 </div>
-                                <h4 className="font-semibold text-gray-900">Add-ons</h4>
                               </div>
-                              <Badge className={`${
-                                (data.detailed_analytics?.operator_analytics?.addons?.[operatorName]?.success_rate || 0) >= 50
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-red-100 text-red-800'
-                              }`}>
-                                Success Rate: {data.detailed_analytics?.operator_analytics?.addons?.[operatorName]?.success_rate?.toFixed(1) || '0'}%
-                              </Badge>
-                            </div>
-                            <div className="space-y-3">
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Offers:</span>
-                                <span className="font-medium text-gray-900">
-                                  {data.detailed_analytics?.operator_analytics?.addons?.[operatorName]?.total_offers || 0}
+    )
+  }
+
+  if (!analyticsResponse?.success || !analyticsResponse?.data) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <IconAlertCircle className="h-8 w-8 text-yellow-600 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold">No Data Available</h2>
+          <p className="text-muted-foreground">No analytics data found for this run.</p>
+          <Button onClick={handleGoBack} className="mt-4">
+            <IconArrowLeft className="h-4 w-4 mr-2" />
+            Go Back
+          </Button>
+                                </div>
+                              </div>
+    )
+  }
+
+  const data = analyticsResponse.data
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-6 py-8 max-w-7xl">
+        {/* Header */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <Button variant="outline" onClick={handleGoBack} className="border-gray-300 hover:border-gray-400">
+                <IconArrowLeft className="h-4 w-4 mr-2" />
+                Back
+              </Button>
+              <div className="border-l border-gray-300 pl-6">
+                <h1 className="text-4xl font-bold text-gray-900 mb-2">Analytics Report</h1>
+                <div className="flex items-center space-x-3 text-gray-600">
+                  <span className="text-lg font-medium">
+                    {format(new Date(data.run_date), "MMMM dd, yyyy")}
                                 </span>
+                  <span className="text-gray-400">•</span>
+                  <span className="text-lg">{data.location_name}</span>
                               </div>
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Successes:</span>
-                                <span className="font-medium text-purple-600">
-                                  {data.detailed_analytics?.operator_analytics?.addons?.[operatorName]?.total_successes || 0}
-                                </span>
                               </div>
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Revenue:</span>
-                                <span className="font-semibold text-purple-600">
-                                  ${data.detailed_analytics?.operator_analytics?.addons?.[operatorName]?.total_revenue?.toFixed(2) || '0.00'}
-                                </span>
                               </div>
+            <div className="flex items-center space-x-3">
+              <Button variant="outline" onClick={handleViewTransactions} className="border-gray-300 hover:border-gray-400">
+                <IconEye className="h-4 w-4 mr-2" />
+                View Raw Transactions
+              </Button>
+              <Button variant="outline" onClick={() => window.print()} className="border-gray-300 hover:border-gray-400">
+                <IconPrinter className="h-4 w-4 mr-2" />
+                Print Report
+              </Button>
                             </div>
                           </div>
                         </div>
+
+        <div className="space-y-8">
+          {/* Main Report Section - Collapsible (hidden when viewing specific operator) */}
+          {!selectedOperator && (
+            <section>
+              <div className="mb-6">
+                <button
+                  onClick={toggleMainReport}
+                  className="flex items-center space-x-3 text-left w-full hover:bg-gray-50 p-4 rounded-lg transition-colors"
+                >
+                  {isMainReportExpanded ? (
+                    <IconChevronDown className="h-5 w-5 text-gray-600" />
+                  ) : (
+                    <IconChevronRight className="h-5 w-5 text-gray-600" />
+                  )}
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-1">Overall Run Analytics</h2>
+                    <p className="text-gray-600">Complete performance overview for all operators</p>
                       </div>
+                </button>
                     </div>
-                  </div>
-                ));
-              })()}
+              
+              {isMainReportExpanded && (
+                <AnalyticsReportContent
+                  data={data}
+                  title="Overall Performance"
+                  subtitle="Combined analytics from all operators"
+                />
+              )}
             </section>
           )}
 
-          {/* Item Performance Section */}
-          {data.detailed_analytics && (
+          {/* Worker Analytics Section */}
+          {workerAnalytics?.success && workerAnalytics.data.length > 0 && (
             <section>
               <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Item Performance Breakdown</h2>
-                <p className="text-gray-600">Top performing items across all categories</p>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  {selectedOperator ? `Operator Report: ${workerNameMap[selectedOperator] || selectedOperator}` : "Individual Operator Reports"}
+                </h2>
+                <p className="text-gray-600">
+                  {selectedOperator ? "Performance breakdown for the selected operator" : "Performance breakdown by individual operators"}
+                </p>
               </div>
               
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Upselling Items */}
-                {data.detailed_analytics.upselling?.by_item && (
-                  <Card className="bg-white border border-gray-200 shadow-sm">
-                    <CardHeader className="pb-4">
+              <div className="space-y-6">
+                {workerAnalytics.data
+                  .filter(workerData => (!selectedOperator || workerData.worker_id === selectedOperator) && workerData.total_transactions > 0)
+                  .sort((a, b) => b.total_transactions - a.total_transactions)
+                  .map((workerData) => {
+                    const isExpanded = selectedOperator ? true : expandedWorkers.has(workerData.worker_id);
+                    
+                    return (
+                      <Card key={workerData.worker_id} className="bg-white border border-gray-200 shadow-sm">
+                        {!selectedOperator && (
+                          <CardHeader>
+                            <button
+                              onClick={() => toggleWorker(workerData.worker_id)}
+                              className="flex items-center justify-between w-full text-left hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                            >
                       <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-green-100 rounded-lg">
-                          <IconTrendingUp className="h-5 w-5 text-green-600" />
+                                {isExpanded ? (
+                                  <IconChevronDown className="h-5 w-5 text-gray-600" />
+                                ) : (
+                                  <IconChevronRight className="h-5 w-5 text-gray-600" />
+                                )}
+                      <div className="flex items-center space-x-3">
+                                  <div className="p-2 bg-blue-100 rounded-lg">
+                                    <IconUsers className="h-5 w-5 text-blue-600" />
                         </div>
-                        <CardTitle className="text-lg font-semibold text-gray-900">Top Upselling Items</CardTitle>
+                                  <div>
+                                    <h3 className="text-lg font-semibold text-gray-900">
+                                      Operator: {workerNameMap[workerData.worker_id] || workerData.worker_id}
+                                    </h3>
+                                    <p className="text-sm text-gray-600">
+                                      {workerData.total_transactions} transactions • {workerData.total_offers} offers • {workerData.total_successes} successes
+                                    </p>
                       </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3 max-h-80 overflow-y-auto">
-                        {Object.entries(data.detailed_analytics.upselling.by_item)
-                          .filter(([_, itemData]: [string, any]) => itemData.converted_count > 0)
-                          .sort(([_, a]: [string, any], [__, b]: [string, any]) => b.converted_count - a.converted_count)
-                          .slice(0, 8)
-                          .map(([itemName, itemData]: [string, any]) => (
-                            <div key={itemName} className="border border-gray-200 rounded-lg p-3 hover:bg-green-50 transition-colors">
-                              <div className="flex items-center justify-between">
-                                <div className="flex-1 min-w-0">
-                                  <div className="font-medium text-sm text-gray-900 truncate">{itemName}</div>
-                                  <div className="text-xs text-gray-500 mt-1">
-                                    {itemData.offered_count} offers • {itemData.candidate_count} opportunities
                                   </div>
                                 </div>
-                                <div className="text-right ml-3">
-                                  <div className="font-bold text-green-600 text-sm">{itemData.converted_count} sold</div>
-                                  <div className="text-xs text-gray-500">
-                                    {itemData.success_rate?.toFixed(1)}%
+                              <div className="text-right">
+                                <div className="text-lg font-bold text-gray-900">
+                                  {((workerData.total_successes / Math.max(workerData.total_offers, 1)) * 100).toFixed(1)}%
                                   </div>
-                                  <div className="text-xs font-medium text-green-600">
-                                    ${itemData.revenue?.toFixed(2)}
+                                <div className="text-sm text-gray-600">Success Rate</div>
                                   </div>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Upsizing Items */}
-                {data.detailed_analytics.upsizing?.by_item && (
-                  <Card className="bg-white border border-gray-200 shadow-sm">
-                    <CardHeader className="pb-4">
+                            </button>
+                          </CardHeader>
+                        )}
+                        
+                        {selectedOperator && (
+                          <CardHeader>
                       <div className="flex items-center space-x-3">
                         <div className="p-2 bg-blue-100 rounded-lg">
-                          <IconTarget className="h-5 w-5 text-blue-600" />
+                                <IconUsers className="h-5 w-5 text-blue-600" />
                         </div>
-                        <CardTitle className="text-lg font-semibold text-gray-900">Top Upsizing Items</CardTitle>
+                              <div>
+                                <h3 className="text-lg font-semibold text-gray-900">
+                                  Operator: {workerNameMap[workerData.worker_id] || workerData.worker_id}
+                                </h3>
+                                <p className="text-sm text-gray-600">
+                                  {workerData.total_transactions} transactions • {workerData.total_offers} offers • {workerData.total_successes} successes
+                                </p>
                       </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3 max-h-80 overflow-y-auto">
-                        {Object.entries(data.detailed_analytics.upsizing.by_item)
-                          .filter(([_, itemData]: [string, any]) => itemData.converted_count > 0)
-                          .sort(([_, a]: [string, any], [__, b]: [string, any]) => b.converted_count - a.converted_count)
-                          .slice(0, 8)
-                          .map(([itemName, itemData]: [string, any]) => (
-                            <div key={itemName} className="border border-gray-200 rounded-lg p-3 hover:bg-blue-50 transition-colors">
-                              <div className="flex items-center justify-between">
-                                <div className="flex-1 min-w-0">
-                                  <div className="font-medium text-sm text-gray-900 truncate">{itemName}</div>
-                                  <div className="text-xs text-gray-500 mt-1">
-                                    {itemData.offered_count} offers • {itemData.candidate_count} opportunities
                                   </div>
+                            <div className="text-right">
+                              <div className="text-lg font-bold text-gray-900">
+                                {((workerData.total_successes / Math.max(workerData.total_offers, 1)) * 100).toFixed(1)}%
                                 </div>
-                                <div className="text-right ml-3">
-                                  <div className="font-bold text-blue-600 text-sm">{itemData.converted_count} sold</div>
-                                  <div className="text-xs text-gray-500">
-                                    {itemData.success_rate?.toFixed(1)}%
+                              <div className="text-sm text-gray-600">Success Rate</div>
                                   </div>
-                                  <div className="text-xs font-medium text-blue-600">
-                                    ${itemData.revenue?.toFixed(2)}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                      </div>
+                          </CardHeader>
+                        )}
+                        
+                        {isExpanded && (
+                          <CardContent className={selectedOperator ? "pt-0" : "pt-0"}>
+                            <AnalyticsReportContent
+                              data={workerData}
+                              title={`Operator Performance: ${workerNameMap[workerData.worker_id] || workerData.worker_id}`}
+                              subtitle="Individual operator analytics and performance metrics"
+                            />
                     </CardContent>
+                        )}
                   </Card>
-                )}
+                    );
+                  })}
+              </div>
+            </section>
+          )}
 
-                {/* Add-on Items */}
-                {data.detailed_analytics.addons?.by_item && (
-                  <Card className="bg-white border border-gray-200 shadow-sm">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-purple-100 rounded-lg">
-                          <IconShoppingCart className="h-5 w-5 text-purple-600" />
+          {/* Loading state for worker analytics */}
+          {isLoadingWorkers && (
+            <section>
+              <div className="flex items-center justify-center py-8">
+                <div className="text-center">
+                  <IconLoader className="h-8 w-8 animate-spin mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold">Loading Operator Reports...</h3>
+                  <p className="text-muted-foreground">Fetching individual operator analytics</p>
                         </div>
-                        <CardTitle className="text-lg font-semibold text-gray-900">Top Add-on Items</CardTitle>
                       </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3 max-h-80 overflow-y-auto">
-                        {Object.entries(data.detailed_analytics.addons.by_item)
-                          .filter(([_, itemData]: [string, any]) => itemData.converted_count > 0)
-                          .sort(([_, a]: [string, any], [__, b]: [string, any]) => b.converted_count - a.converted_count)
-                          .slice(0, 8)
-                          .map(([itemName, itemData]: [string, any]) => (
-                            <div key={itemName} className="border border-gray-200 rounded-lg p-3 hover:bg-purple-50 transition-colors">
-                              <div className="flex items-center justify-between">
-                                <div className="flex-1 min-w-0">
-                                  <div className="font-medium text-sm text-gray-900 truncate">{itemName}</div>
-                                  <div className="text-xs text-gray-500 mt-1">
-                                    {itemData.offered_count} offers • {itemData.candidate_count} opportunities
-                                  </div>
-                                </div>
-                                <div className="text-right ml-3">
-                                  <div className="font-bold text-purple-600 text-sm">{itemData.converted_count} sold</div>
-                                  <div className="text-xs text-gray-500">
-                                    {itemData.success_rate?.toFixed(1)}%
-                                  </div>
-                                  <div className="text-xs font-medium text-purple-600">
-                                    ${itemData.revenue?.toFixed(2)}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+            </section>
+          )}
+
+          {/* Error state for worker analytics */}
+          {isErrorWorkers && (
+            <section>
+              <div className="flex items-center justify-center py-8">
+                <div className="text-center">
+                  <IconAlertCircle className="h-8 w-8 text-yellow-600 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-yellow-600">No Operator Data Available</h3>
+                  <p className="text-muted-foreground">Individual operator reports are not available for this run</p>
+                </div>
               </div>
             </section>
           )}

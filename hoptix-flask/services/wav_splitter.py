@@ -151,6 +151,8 @@ class WAVSplitter:
                 
             except Exception as e:
                 logger.error(f"❌ Failed to create chunk {i+1}: {e}")
+                import traceback
+                traceback.print_exc()
                 # Clean up failed chunk file
                 if os.path.exists(chunk_path):
                     os.remove(chunk_path)
@@ -171,10 +173,13 @@ class WAVSplitter:
         chunk_start = original_start + timedelta(seconds=start_time)
         chunk_end = original_start + timedelta(seconds=end_time)
         
-        # Create S3 key for this chunk
+        # Create S3 key for this chunk (make it unique)
         original_s3_key = original_row.get("s3_key", "")
-        base_s3_key = os.path.splitext(original_s3_key)[0] if original_s3_key else f"chunk_{chunk_id}"
-        chunk_s3_key = f"{base_s3_key}_chunk_{chunk_num:03d}.wav"
+        if original_s3_key:
+            base_s3_key = os.path.splitext(original_s3_key)[0]
+            chunk_s3_key = f"{base_s3_key}_chunk_{chunk_num:03d}.wav"
+        else:
+            chunk_s3_key = f"local/wav_processing/{original_row['run_id']}/chunk_{chunk_id}.wav"
         
         # Create metadata for this chunk
         original_meta = original_row.get("meta", {})
@@ -196,14 +201,12 @@ class WAVSplitter:
             "id": chunk_id,
             "run_id": original_row["run_id"],
             "location_id": original_row["location_id"],
-            "organization_id": original_row["organization_id"],
+            "camera_id": original_row.get("camera_id", f"chunk-{chunk_num}"),
             "started_at": chunk_start.isoformat(),
             "ended_at": chunk_end.isoformat(),
             "status": "uploaded",  # Ready for processing
             "s3_key": chunk_s3_key,
-            "meta": chunk_meta,
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat()
+            "meta": chunk_meta
         }
         
         logger.info(f"📝 Created video record for chunk {chunk_num}: {chunk_id}")
@@ -257,7 +260,11 @@ class WAVSplitter:
         try:
             logger.info(f"💾 Inserting {len(chunk_video_records)} chunk video records into database")
             
-            # Insert all chunk records
+            if not chunk_video_records:
+                logger.warning("No chunk video records to insert")
+                return []
+            
+            # Insert all chunk records (let the database handle column selection)
             result = self.db.client.table("videos").insert(chunk_video_records).execute()
             
             if result.data:
@@ -283,6 +290,30 @@ class WAVSplitter:
                 except Exception as e:
                     logger.warning(f"⚠️ Could not clean up chunk file {chunk_path}: {e}")
     
+    def split_wav_file_only(self, wav_path: str, original_video_row: Dict) -> List[Dict]:
+        """
+        Split a large WAV file into chunks and return chunk file info without creating video records.
+        
+        Args:
+            wav_path: Path to the original WAV file
+            original_video_row: Original video record
+            
+        Returns:
+            List[Dict]: List of chunk file info with paths and metadata
+        """
+        logger.info(f"🚀 Splitting large WAV file: {os.path.basename(wav_path)}")
+        
+        try:
+            # Step 1: Split the WAV file
+            chunk_files = self.split_wav_file(wav_path, original_video_row)
+            
+            logger.info(f"✅ Successfully split WAV file into {len(chunk_files)} chunks")
+            return chunk_files
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to split WAV file: {e}")
+            return []
+
     def process_large_wav_file(self, wav_path: str, original_video_row: Dict) -> List[Dict]:
         """
         Complete process for handling a large WAV file:
@@ -312,6 +343,7 @@ class WAVSplitter:
                 return []
             
             logger.info(f"✅ Successfully processed large WAV file into {len(chunk_ids)} chunks")
+            logger.info("📝 Chunk files will be cleaned up after processing by workers")
             return chunk_video_records
             
         except Exception as e:

@@ -182,8 +182,11 @@ export function TransactionsTable({ runId, pageSize = 25 }: TransactionsTablePro
       let hasMoreData = true;
 
       while (hasMoreData) {
+        const baseUrl = typeof window !== 'undefined' 
+          ? (window.location.origin.includes('localhost') ? 'http://localhost:8000' : window.location.origin)
+          : 'http://localhost:8000';
         const response = await fetch(
-          `http://localhost:8000/api/analytics/run/${runId}/transactions?limit=${batchSize}&offset=${currentOffset}`
+          `${baseUrl}/runs/${runId}/transactions?limit=${batchSize}&offset=${currentOffset}`
         );
         
         if (!response.ok) {
@@ -191,9 +194,11 @@ export function TransactionsTable({ runId, pageSize = 25 }: TransactionsTablePro
         }
         
         const data = await response.json();
-        if (data.success && data.data.transactions) {
-          allTransactions.push(...data.data.transactions);
-          hasMoreData = data.data.has_more;
+        const txs = data?.data?.transactions ?? data?.transactions ?? [];
+        const hasMore = data?.data?.has_more ?? false;
+        if (txs.length) {
+          allTransactions.push(...txs);
+          hasMoreData = hasMore;
           currentOffset += batchSize;
         } else {
           hasMoreData = false;
