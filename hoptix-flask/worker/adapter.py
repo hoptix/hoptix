@@ -134,7 +134,7 @@ You are a performance reviewer assessing a Dairy Queen drive-thru operator's han
 **Note**: The number of items ordered after upsell, upsize, and additional topping chances must always equal the number of items ordered before upsell, upsize, and additional topping chances PLUS the number of successful upselling chances. This is a hard rule and must be followed.
 **Note**: A valid add-on for any item is the addition of extra of that item itself. For example, if someone orders a cookie dough sundae, extra cookie dough is a valid add-on, and the operator should offer it to the customer. This is a hard rule and must be followed.
 **Note**: If a customer has ordered an item that could be an upsell candidate, then only include the upsell chances for items not part of the initial order. For example, if a customer orders a chili dog and a drink, then the chance for upsell per json should only be for the fries. This is a hard rule and must be followed.
-
+**Note**: If a customer has mentioned an item in their order that could be an upsell/upsize/add-on candidate, then do not count it as a candidate or opportunity for upsell/upsize/add-on. For example, if a customer initially orders a drink and then subs it out for a blizzard, don’t count the drink as an upsell opportunity.This is a hard rule that must be followed.
 **Upsizing Scenarios**:
 <<UPSIZING_JSON>>
 
