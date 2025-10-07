@@ -27,7 +27,7 @@
     
     # ---- Final Stage ----
     FROM python:3.11.12-slim AS final
-    
+
     WORKDIR /app
     
     # Copy the Python environment from builder stage
@@ -37,16 +37,14 @@
     # Copy application files from builder stage
     COPY --from=builder /app/app.py /app/app.py
     COPY --from=builder /app/config.py /app/config.py
-    COPY --from=builder /app/integrations /app/integrations
     COPY --from=builder /app/routes /app/routes
     COPY --from=builder /app/services /app/services
-    COPY --from=builder /app/worker /app/worker
-    COPY --from=builder /app/commands /app/commands
-    COPY --from=builder /app/prompts /app/prompts
+    COPY --from=builder /app/pipeline /app/pipeline
+    COPY --from=builder /app/tests /app/tests
+    COPY --from=builder /app/utils /app/utils
     COPY --from=builder /app/scripts /app/scripts
     
     # Ensure the scripts are executable
-    RUN chmod +x /app/scripts/*.sh
     RUN chmod +x /app/scripts/*.py
     
     # Create a non-root user
