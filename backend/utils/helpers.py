@@ -4,6 +4,8 @@ from typing import Dict, Any
 from services.database import Supa
 from services.items import ItemLookupService
 import logging
+import psutil
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -96,3 +98,14 @@ def convert_item_ids_to_names(item_data, item_lookup: ItemLookupService) -> str:
         return str(item_data)  # Return original if parsing fails
 
 
+
+def get_memory_usage():
+    """Get current memory usage in MB"""
+    process = psutil.Process(os.getpid())
+    return process.memory_info().rss / 1024 / 1024
+
+def log_memory_usage(step_name: str, step_number: int, total_steps: int):
+    """Log memory usage for a pipeline step"""
+    memory_mb = get_memory_usage()
+    timestamp = datetime.now().strftime("%H:%M:%S")
+    print(f"[{timestamp}] [{step_number}/{total_steps}] {step_name} - Memory: {memory_mb:.1f} MB")

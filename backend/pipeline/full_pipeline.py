@@ -2,6 +2,9 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import psutil
+import gc
+from datetime import datetime
 
 from services.database import Supa
 
@@ -11,80 +14,76 @@ from services.transactions import split_into_transactions
 from services.grader import grade_transactions
 from services.analytics import Analytics
 from services.clipper import clip_transactions
-from concurrent.futures import ThreadPoolExecutor
-
+from utils.helpers import get_memory_usage, log_memory_usage
 
 db = Supa() 
 
 def full_pipeline(location_id: str, date: str):
-
+    TOTAL_STEPS = 9
+    
     location_name = db.get_location_name(location_id)
-
-    print(f"Processing full pipeline for {location_name} on {date}")
+    initial_memory = get_memory_usage()
+    
+    print(f"🚀 Starting full pipeline for {location_name} on {date}")
+    print(f"📊 Initial memory usage: {initial_memory:.1f} MB")
 
     # 1) Check and pull audio from location and date, audio path is a temp file in your local storage
-    print(f"[1/9] Checking and pulling audio from {location_name} on {date}")
-
+    log_memory_usage("Checking and pulling audio", 1, TOTAL_STEPS)
     try: 
         audio_path, gdrive_path = get_audio_from_location_and_date(location_id, date)
-    except Exception as e:
-        print(f"[1/9] Error checking and pulling audio from {location_name} on {date}: {e}")
+    except Exception as e: 
+        print(f"❌ Error checking and pulling audio from {location_name} on {date}: {e}")
         return 
 
     # if we have an audio, begin the pipeline 
-    print(f"[2/9] Audio found: {audio_path}")
     if audio_path: 
+        print(f"✅ Audio found: {audio_path}")
         run_id, audio_id = initialize_pipeline(location_id, date, gdrive_path)
-
     else: 
-        return "No audio found for {location_name} on {date}"
+        return f"No audio found for {location_name} on {date}"
         
-    # 2) Transcribe audio to text 
-    print(f"[3/9] Transcribing audio to text")
+    # 2) Transcribe audio to text (now using chunked processing)
+    log_memory_usage("Transcribing audio to text (chunked)", 2, TOTAL_STEPS)
     transcript_segments = transcribe_audio(audio_path)
+    
+    # Force garbage collection after transcription
+    gc.collect()
+    log_memory_usage("Transcription completed, memory cleaned", 2, TOTAL_STEPS)
 
     #3) Split audio into transactions 
-    print(f"[4/9] Splitting audio into transactions")
+    log_memory_usage("Splitting audio into transactions", 3, TOTAL_STEPS)
+    transactions = split_into_transactions(transcript_segments, run_id, date=date)
+    print(f"📝 Split {len(transactions)} transactions")
 
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        transactions = list(executor.map(lambda x: split_into_transactions(x, run_id, date=date), transcript_segments))
-        inserted_transactions = db.upsert_transactions(transactions)
-
-    print(f"[4/9] Split and inserted {len(inserted_transactions)} transactions")
+    #4) Insert transactions into database 
+    log_memory_usage("Inserting transactions into database", 4, TOTAL_STEPS)
+    inserted_transactions = db.upsert_transactions(transactions)
 
     #5) Grade transactions 
-    print(f"[6/9] Grading transactions")
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        grades = list(executor.map(lambda x: grade_transactions(x, location_id), inserted_transactions))
-        db.upsert_grades(grades)
-
-    print(f"[6/9] Graded {len(grades)} transactions")
-
-
-
+    log_memory_usage("Grading transactions", 5, TOTAL_STEPS)
+    grades = grade_transactions(inserted_transactions, location_id)
 
     #6) Upsert grades into database 
-    print(f"[7/9] Upserting grades into database")
+    log_memory_usage("Upserting grades into database", 6, TOTAL_STEPS)
     db.upsert_grades(grades)
 
     # Generate the report 
-    print(f"[8/9] Generating report")
+    log_memory_usage("Generating analytics report", 7, TOTAL_STEPS)
     analytics = Analytics(run_id)
     analytics.upload_to_db()
 
-
-    # #6) Write clips to google drive 
-    print(f"[9/9] Writing clips to google drive")
+    #7) Write clips to google drive 
+    log_memory_usage("Writing clips to google drive", 8, TOTAL_STEPS)
     clip_transactions(run_id, audio_path, date)
 
-    # #7) Conduct voice diarization 
-    # conduct_voice_diarization(run_id)
-
-    # #8) Insert voice diarization into database 
-    # insert_voice_diarization(run_id)
-
-    #9) Set pipeline to complete 
+    #8) Set pipeline to complete 
+    log_memory_usage("Completing pipeline", 9, TOTAL_STEPS)
     complete_pipeline(run_id, audio_id)
+
+    final_memory = get_memory_usage()
+    print(f"\n🎉 Successfully completed full pipeline!")
+    print(f"📊 Memory usage: {initial_memory:.1f} MB → {final_memory:.1f} MB")
+    print(f"📈 Memory efficiency: {((final_memory - initial_memory) / initial_memory * 100):+.1f}%")
 
     return "Successfully completed full pipeline"
 
