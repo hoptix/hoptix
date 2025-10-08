@@ -96,7 +96,7 @@ def initialize_pipeline(location_id: str, date: str, gdrive_path: str):
     audio_exists = db.audio_exists(location_id, date)
 
     if not audio_exists:
-        audio_id = db.create_audio(location_id, date, gdrive_path)
+        audio_id = db.create_audio(location_id, run_id, date, gdrive_path)
     else:
         audio_id = db.get_audio_id(location_id, date)
 

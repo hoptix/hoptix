@@ -89,13 +89,14 @@ class Supa:
         res = self.client.table("audios").select("id").eq("location_id", location_id).eq("date", date).execute()
         return res.data[0]["id"]
 
-    def create_audio(self, location_id: str, date: str, gdrive_path: str, started_at="10:00:00", ended_at="22:00:00"):
+    def create_audio(self, location_id: str, run_id: str, date: str, gdrive_path: str, started_at="10:00:00", ended_at="22:00:00"):
         # Convert time-only strings into full ISO 8601 timestamps for timestamptz columns
         started_at_ts = f"{date}T{started_at}Z"
         ended_at_ts = f"{date}T{ended_at}Z"
         
         res = self.client.table("audios").insert({
             "location_id": location_id,
+            "run_id": run_id,
             "date": date,
             "started_at": started_at_ts,
             "ended_at": ended_at_ts,
