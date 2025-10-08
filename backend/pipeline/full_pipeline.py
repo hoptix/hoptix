@@ -52,7 +52,7 @@ def full_pipeline(location_id: str, date: str):
 
     #3) Split audio into transactions 
     log_memory_usage("Splitting audio into transactions", 3, TOTAL_STEPS)
-    transactions = split_into_transactions(transcript_segments, run_id, date=date)
+    transactions = split_into_transactions(transcript_segments, run_id, date=date, audio_id=audio_id)
     print(f"📝 Split {len(transactions)} transactions")
 
     #4) Insert transactions into database 

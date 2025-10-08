@@ -12,7 +12,7 @@ prompts = Prompts()
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 
-def _process_segment(seg: Dict, run_id: str, actual_audio_start: str) -> List[Dict]:
+def _process_segment(seg: Dict, run_id: str, actual_audio_start: str, audio_id: str) -> List[Dict]:
     """Process a single transcript segment"""
     raw = seg.get("text","") or ""
     if not raw.strip():
@@ -50,6 +50,7 @@ def _process_segment(seg: Dict, run_id: str, actual_audio_start: str) -> List[Di
         e_rel = float(seg["start"]) + (i+1)*slice_dur
         results.append({
             "run_id": run_id,
+            "audio_id": audio_id,
             "started_at": _iso_from_start(actual_audio_start, s_rel),
             "ended_at":   _iso_from_start(actual_audio_start, e_rel),
             "tx_range": f'["{_iso_from_start(actual_audio_start, s_rel)}","{_iso_from_start(actual_audio_start, e_rel)}")',
@@ -72,7 +73,7 @@ def _process_segment(seg: Dict, run_id: str, actual_audio_start: str) -> List[Di
     return results
 
 
-def split_into_transactions(transcript_segments: List[Dict], run_id: str, audio_started_at_iso: str = None, date: str = None) -> List[Dict]:
+def split_into_transactions(transcript_segments: List[Dict], run_id: str, audio_started_at_iso: str = None, date: str = None, audio_id: str = None) -> List[Dict]:
     # Default to current day at 7 AM if not provided
     if audio_started_at_iso is None:
         current_day = dateparse.parse(date).strftime("%Y-%m-%d")
@@ -84,7 +85,7 @@ def split_into_transactions(transcript_segments: List[Dict], run_id: str, audio_
     # Parallelize segment processing
     with ThreadPoolExecutor(max_workers=10) as executor:
         segment_results = list(executor.map(
-            lambda seg: _process_segment(seg, run_id, actual_audio_start), 
+            lambda seg: _process_segment(seg, run_id, actual_audio_start, audio_id), 
             transcript_segments
         ))
     
