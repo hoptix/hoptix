@@ -68,7 +68,7 @@ def detect_silence_ffmpeg(audio_path: str, start_time: float, duration: float) -
             "-avoid_negative_ts", "make_zero",  # Handle timing edge cases
             chunk_path
         ]
-        subprocess.run(cmd, check=True, capture_output=True, stderr=subprocess.DEVNULL)
+        subprocess.run(cmd, check=True, capture_output=True)
         
         # Use ffmpeg to detect silence
         silence_cmd = [
@@ -77,7 +77,7 @@ def detect_silence_ffmpeg(audio_path: str, start_time: float, duration: float) -
             "-f", "null", "-"
         ]
         
-        result = subprocess.run(silence_cmd, capture_output=True, text=True, stderr=subprocess.DEVNULL)
+        result = subprocess.run(silence_cmd, capture_output=True, text=True)
         
         # Parse silence detection output
         active_segments = []
@@ -217,7 +217,7 @@ def clip_audio_with_ffmpeg(input_path: str, output_path: str, start_time: float,
         "-ac", "1",  # mono
         output_path
     ]
-    subprocess.run(cmd, check=True, capture_output=True, stderr=subprocess.DEVNULL)
+    subprocess.run(cmd, check=True, capture_output=True)
     return output_path
 
 # ---------- 1) TRANSCRIBE (chunked processing for memory efficiency) ----------
