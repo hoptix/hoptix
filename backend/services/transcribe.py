@@ -109,19 +109,16 @@ def process_audio_chunk(audio_path: str, chunk_start: float, chunk_duration: flo
     Process a single chunk of audio for transcription.
     Returns list of transcript segments with global timestamps.
     """
-    if VERBOSE_LOGGING:
-        print(f"🎵 Processing chunk {chunk_index + 1}/{total_chunks} ({chunk_start:.1f}s - {chunk_start + chunk_duration:.1f}s)")
+    print(f"🎵 Processing chunk {chunk_index + 1}/{total_chunks} ({chunk_start:.1f}s - {chunk_start + chunk_duration:.1f}s)")
     
     # Detect active segments in this chunk
     active_segments = detect_silence_ffmpeg(audio_path, chunk_start, chunk_duration)
     
     if not active_segments:
-        if VERBOSE_LOGGING:
-            print(f"   ⏸️  No active segments found in chunk {chunk_index + 1}")
+        print(f"   ⏸️  No active segments found in chunk {chunk_index + 1}")
         return []
     
-    if VERBOSE_LOGGING:
-        print(f"   🎬 Found {len(active_segments)} active segments in chunk {chunk_index + 1}")
+    print(f"   🎬 Found {len(active_segments)} active segments in chunk {chunk_index + 1}")
     
     chunk_segments = []
     
@@ -149,8 +146,7 @@ def process_audio_chunk(audio_path: str, chunk_start: float, chunk_duration: flo
                         prompt="Label each line as Operator: or Customer: where possible."
                     )
                     text = str(txt).strip()
-                    if VERBOSE_LOGGING:
-                        print(f"   ✅ Segment {i+1} transcribed: {len(text)} characters")
+                    print(f"   ✅ Segment {i+1} transcribed: {len(text)} characters")
                 except Exception as ex:
                     print(f"   ❌ ASR error for segment {i+1}: {ex}")
                     text = ""
@@ -233,8 +229,7 @@ def transcribe_audio(audio_path: str) -> List[Dict]:
         chunk_start = chunk_index * CHUNK_SIZE_SECONDS
         chunk_duration = min(CHUNK_SIZE_SECONDS, duration - chunk_start)
         
-        if VERBOSE_LOGGING:
-            print(f"\n🔄 Processing chunk {chunk_index + 1}/{total_chunks}")
+        print(f"\n🔄 Processing chunk {chunk_index + 1}/{total_chunks}")
         
         chunk_memory_before = get_memory_usage() if MEMORY_MONITORING else 0
         
