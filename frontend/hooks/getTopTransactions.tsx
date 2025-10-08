@@ -1,6 +1,7 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
+import { apiClient } from "@/lib/api-client"
 
 export interface TopTransaction {
   transaction_id: string
@@ -66,25 +67,17 @@ export function useGetTopTransactions(
   limit: number = 5,
   enabled: boolean = true
 ) {
-  const baseUrl = typeof window !== 'undefined' 
-    ? (window.location.origin.includes('localhost') ? 'http://localhost:8000' : window.location.origin)
-    : 'http://localhost:8000'
-
   return useQuery<TopTransactionsResponse>({
     queryKey: ['topTransactions', locationId, date, limit],
     queryFn: async () => {
       const params = new URLSearchParams()
       if (date) params.append('date', date)
       if (limit !== 5) params.append('limit', limit.toString())
-      
+
       const queryString = params.toString()
-      const url = `${baseUrl}/api/analytics/location/${locationId}/top-transactions/daily${queryString ? `?${queryString}` : ''}`
-      
-      const response = await fetch(url)
-      if (!response.ok) {
-        throw new Error('Failed to fetch top transactions')
-      }
-      return response.json()
+      const url = `/api/analytics/location/${locationId}/top-transactions/daily${queryString ? `?${queryString}` : ''}`
+
+      return apiClient.get<TopTransactionsResponse>(url)
     },
     enabled: enabled && !!locationId,
     staleTime: 5 * 60 * 1000, // 5 minutes

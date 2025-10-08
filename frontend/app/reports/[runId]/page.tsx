@@ -3,6 +3,7 @@
 import * as React from "react"
 import { format } from "date-fns"
 import { useParams, useRouter } from "next/navigation"
+import { RequireAuth } from "@/components/auth/RequireAuth"
 import { useState } from "react"
 import {
   IconTrendingUp,
@@ -1152,7 +1153,8 @@ export default function AnalyticsReportPage() {
   const data = analyticsResponse.data
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <RequireAuth>
+      <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-6 py-8 max-w-7xl">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
@@ -1342,5 +1344,6 @@ export default function AnalyticsReportPage() {
         </div>
       </div>
     </div>
+    </RequireAuth>
   )
 }

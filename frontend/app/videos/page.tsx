@@ -1,14 +1,14 @@
 "use client"
 
 import React, { useState, useCallback } from 'react'
-import { 
-  IconUpload, 
-  IconVideo, 
-  IconX, 
-  IconLoader2, 
-  IconClock, 
-  IconPlayerPlay, 
-  IconCheck, 
+import {
+  IconUpload,
+  IconVideo,
+  IconX,
+  IconLoader2,
+  IconClock,
+  IconPlayerPlay,
+  IconCheck,
   IconAlertTriangle,
   IconRefresh,
   IconTrash,
@@ -23,6 +23,7 @@ import {
   IconUsers
 } from '@tabler/icons-react'
 import { format } from 'date-fns'
+import { RequireAuth } from '@/components/auth/RequireAuth'
 import { AppLayout } from '@/components/app-layout'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -634,7 +635,8 @@ export default function VideosPage() {
   }
 
   return (
-    <AppLayout>
+    <RequireAuth>
+      <AppLayout>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="max-w-6xl mx-auto w-full">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -1262,5 +1264,6 @@ export default function VideosPage() {
         </DialogContent>
       </Dialog>
     </AppLayout>
+    </RequireAuth>
   )
 }

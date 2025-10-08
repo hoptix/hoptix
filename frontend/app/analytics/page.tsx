@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useState, useEffect } from "react"
+import { RequireAuth } from "@/components/auth/RequireAuth"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
@@ -209,7 +210,8 @@ export default function AnalyticsPage() {
     analytics.addons.summary.total_revenue : 0
 
   return (
-    <SidebarProvider>
+    <RequireAuth>
+      <SidebarProvider>
       <AppSidebar variant="inset" />
       <SidebarInset>
         <SiteHeader />
@@ -527,5 +529,6 @@ export default function AnalyticsPage() {
         </div>
       </SidebarInset>
     </SidebarProvider>
+    </RequireAuth>
   )
 }
