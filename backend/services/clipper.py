@@ -82,6 +82,7 @@ def clip_transactions(run_id: str, audio_path: str, date: str, anchor_audio: str
     print(f"📁 Found audio file: {audio_path}")
 
     anchor_started_at = f"{date}T10:00:00Z"
+    print(f"🕐 Anchor started at: {anchor_started_at}")
     # Compute T0 from anchor
     anchor_abs = iso_or_die(anchor_started_at)
     anchor_audio_seconds = parse_hms(anchor_audio)
