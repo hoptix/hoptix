@@ -7,6 +7,7 @@ import { SectionCards } from "@/components/section-cards"
 import { TopTransactionsHighlight } from "@/components/top-transactions-highlight"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { RequireAuth } from "@/components/auth/RequireAuth"
 import { useState } from "react"
 import type { Location } from "@/hooks/getLocations"
 
@@ -22,7 +23,8 @@ export default function Page() {
   }
 
   return (
-    <SidebarProvider>
+    <RequireAuth>
+      <SidebarProvider>
       <AppSidebar variant="inset" />
       <SidebarInset>
         <SiteHeader 
@@ -52,5 +54,6 @@ export default function Page() {
         </div>
       </SidebarInset>
     </SidebarProvider>
+    </RequireAuth>
   )
 }

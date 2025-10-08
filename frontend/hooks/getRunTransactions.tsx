@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query"
+import { apiClient } from "@/lib/api-client"
 
 export interface Transaction {
   transaction_id: string;
@@ -69,27 +70,12 @@ interface TransactionsResponse {
 }
 
 const fetchRunTransactions = async (
-  runId: string, 
-  limit: number = 50, 
+  runId: string,
+  limit: number = 50,
   offset: number = 0
 ): Promise<TransactionsResponse> => {
-  // Use environment variable or fallback to localhost for development
-  const baseUrl = typeof window !== 'undefined' 
-    ? (window.location.origin.includes('localhost') ? 'http://localhost:8000' : window.location.origin)
-    : 'http://localhost:8000';
-  
-  // Backend route lives under /runs/<run_id>/transactions
-  const url = new URL(`/runs/${runId}/transactions`, baseUrl);
-  url.searchParams.append('limit', limit.toString());
-  url.searchParams.append('offset', offset.toString());
-  
-  const response = await fetch(url.toString());
-  
-  if (!response.ok) {
-    throw new Error(`Failed to fetch run transactions: ${response.statusText}`);
-  }
-  
-  const raw = await response.json();
+  // Use apiClient which auto-attaches auth headers
+  const raw = await apiClient.get<any>(`/runs/${runId}/transactions?limit=${limit}&offset=${offset}`);
   const rows: any[] = raw?.data?.transactions ?? raw?.transactions ?? [];
 
   // Normalize backend fields to Transaction interface

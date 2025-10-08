@@ -21,30 +21,23 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-const data = {
-  user: {
-    name: "Andy Volkanov",
-    email: "andy@dq.ai",
-    avatar: "/avatars/shadcn.jpg",
+const navMain = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: LayoutDashboard,
   },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      title: "Samples",
-      url: "/samples",
-      icon: Video,
-    },
-    {
-      title: "Items",
-      url: "/items",
-      icon: UtensilsCrossed,
-    },
-  ],
-}
+  {
+    title: "Samples",
+    url: "/samples",
+    icon: Video,
+  },
+  {
+    title: "Items",
+    url: "/items",
+    icon: UtensilsCrossed,
+  },
+]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -65,10 +58,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   )

@@ -2,6 +2,7 @@
 
 import React, { useCallback, useState } from "react"
 import { IconUpload, IconCheck } from "@tabler/icons-react"
+import { RequireAuth } from "@/components/auth/RequireAuth"
 import { AppLayout } from "@/components/app-layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -68,7 +69,8 @@ export default function SamplesPage() {
   }
 
   return (
-    <AppLayout>
+    <RequireAuth>
+      <AppLayout>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="max-w-4xl mx-auto w-full">
           <Card className="mt-6">
@@ -148,6 +150,7 @@ export default function SamplesPage() {
         </div>
       </div>
     </AppLayout>
+    </RequireAuth>
   )
 }
 
