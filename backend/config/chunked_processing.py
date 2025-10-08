@@ -13,8 +13,8 @@ MAX_MEMORY_MB = 1000  # Maximum memory usage before forcing cleanup
 CLEANUP_FREQUENCY = 5  # Force garbage collection every N chunks
 
 # Performance tuning
-PARALLEL_CHUNKS = False  # Set to True to process chunks in parallel (uses more memory)
-MAX_WORKERS = 2  # Number of parallel workers if PARALLEL_CHUNKS is True
+PARALLEL_CHUNKS = True  # Set to True to process chunks in parallel (uses more memory)
+MAX_WORKERS = 10  # Number of parallel workers if PARALLEL_CHUNKS is True
 
 # Audio processing
 SAMPLE_RATE = 16000  # Target sample rate for processing

@@ -9,6 +9,8 @@ from config import Settings
 import tempfile
 import psutil
 import gc
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
 
 settings = Settings()
 
@@ -19,7 +21,8 @@ ASR_MODEL = settings.ASR_MODEL
 try:
     from config.chunked_processing import (
         CHUNK_SIZE_SECONDS, SILENCE_THRESHOLD, MIN_ACTIVE_DURATION,
-        MAX_MEMORY_MB, CLEANUP_FREQUENCY, VERBOSE_LOGGING, MEMORY_MONITORING
+        MAX_MEMORY_MB, CLEANUP_FREQUENCY, VERBOSE_LOGGING, MEMORY_MONITORING,
+        PARALLEL_CHUNKS, MAX_WORKERS
     )
 except ImportError:
     # Fallback configuration if config file doesn't exist
@@ -30,11 +33,17 @@ except ImportError:
     CLEANUP_FREQUENCY = 5  # Force garbage collection every N chunks
     VERBOSE_LOGGING = True
     MEMORY_MONITORING = True
+    PARALLEL_CHUNKS = True  # Enable parallel processing
+    MAX_WORKERS = 10  # Number of parallel workers
 
 def get_memory_usage():
     """Get current memory usage in MB"""
     process = psutil.Process(os.getpid())
     return process.memory_info().rss / 1024 / 1024
+
+# Thread-safe progress tracking
+progress_lock = threading.Lock()
+completed_chunks = 0
 
 def detect_silence_ffmpeg(audio_path: str, start_time: float, duration: float) -> List[Tuple[float, float]]:
     """
@@ -46,19 +55,20 @@ def detect_silence_ffmpeg(audio_path: str, start_time: float, duration: float) -
         chunk_path = tmp_file.name
     
     try:
-        # Extract chunk using ffmpeg
+        # Extract chunk using ffmpeg with precise timing
         cmd = [
             "ffmpeg", "-y",
+            "-ss", str(start_time),  # Seek before input for better precision
             "-i", audio_path,
-            "-ss", str(start_time),
             "-t", str(duration),
             "-vn",
             "-acodec", "pcm_s16le",
             "-ar", "16000",
             "-ac", "1",
+            "-avoid_negative_ts", "make_zero",  # Handle timing edge cases
             chunk_path
         ]
-        subprocess.run(cmd, check=True, capture_output=True)
+        subprocess.run(cmd, check=True, capture_output=True, stderr=subprocess.DEVNULL)
         
         # Use ffmpeg to detect silence
         silence_cmd = [
@@ -67,7 +77,7 @@ def detect_silence_ffmpeg(audio_path: str, start_time: float, duration: float) -
             "-f", "null", "-"
         ]
         
-        result = subprocess.run(silence_cmd, capture_output=True, text=True)
+        result = subprocess.run(silence_cmd, capture_output=True, text=True, stderr=subprocess.DEVNULL)
         
         # Parse silence detection output
         active_segments = []
@@ -163,6 +173,12 @@ def process_audio_chunk(audio_path: str, chunk_start: float, chunk_duration: flo
             if os.path.exists(segment_path):
                 os.remove(segment_path)
     
+    # Update progress tracking
+    global completed_chunks
+    with progress_lock:
+        completed_chunks += 1
+        print(f"✅ Completed chunk {chunk_index + 1}/{total_chunks} ({completed_chunks}/{total_chunks} total)")
+    
     return chunk_segments
 
 # Legacy function - kept for backward compatibility but not used in new approach
@@ -201,7 +217,7 @@ def clip_audio_with_ffmpeg(input_path: str, output_path: str, start_time: float,
         "-ac", "1",  # mono
         output_path
     ]
-    subprocess.run(cmd, check=True)
+    subprocess.run(cmd, check=True, capture_output=True, stderr=subprocess.DEVNULL)
     return output_path
 
 # ---------- 1) TRANSCRIBE (chunked processing for memory efficiency) ----------
@@ -224,49 +240,135 @@ def transcribe_audio(audio_path: str) -> List[Dict]:
     
     all_segments = []
     
-    # Process each chunk sequentially
-    for chunk_index in range(total_chunks):
-        chunk_start = chunk_index * CHUNK_SIZE_SECONDS
-        chunk_duration = min(CHUNK_SIZE_SECONDS, duration - chunk_start)
+    # Process chunks with small overlap to handle boundary transactions
+    CHUNK_OVERLAP = 30  # 30 seconds overlap between chunks
+    
+    # Reset progress tracking
+    global completed_chunks
+    completed_chunks = 0
+    
+    if PARALLEL_CHUNKS:
+        print(f"🚀 Processing {total_chunks} chunks in parallel with {MAX_WORKERS} workers")
         
-        print(f"\n🔄 Processing chunk {chunk_index + 1}/{total_chunks}")
+        # Create list of chunk tasks
+        chunk_tasks = []
+        for chunk_index in range(total_chunks):
+            chunk_start = max(0, chunk_index * CHUNK_SIZE_SECONDS - CHUNK_OVERLAP)
+            chunk_duration = min(CHUNK_SIZE_SECONDS + CHUNK_OVERLAP, duration - chunk_start)
+            chunk_tasks.append((chunk_index, chunk_start, chunk_duration))
         
-        chunk_memory_before = get_memory_usage() if MEMORY_MONITORING else 0
-        
-        try:
-            # Process this chunk
-            chunk_segments = process_audio_chunk(
-                audio_path, 
-                chunk_start, 
-                chunk_duration, 
-                chunk_start,  # global_offset
-                chunk_index, 
-                total_chunks
-            )
+        # Process chunks in parallel
+        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+            # Submit all tasks
+            future_to_chunk = {
+                executor.submit(
+                    process_audio_chunk,
+                    audio_path,
+                    chunk_start,
+                    chunk_duration,
+                    chunk_start,  # global_offset
+                    chunk_index,
+                    total_chunks
+                ): chunk_index for chunk_index, chunk_start, chunk_duration in chunk_tasks
+            }
             
-            all_segments.extend(chunk_segments)
+            # Collect results as they complete
+            for future in as_completed(future_to_chunk):
+                chunk_index = future_to_chunk[future]
+                try:
+                    chunk_segments = future.result()
+                    all_segments.extend(chunk_segments)
+                    
+                    # Periodic memory cleanup
+                    if completed_chunks % CLEANUP_FREQUENCY == 0:
+                        gc.collect()
+                        
+                except Exception as e:
+                    print(f"   ❌ Error processing chunk {chunk_index + 1}: {e}")
+                    continue
+    else:
+        print(f"🔄 Processing {total_chunks} chunks sequentially")
+        
+        # Sequential processing (original approach)
+        for chunk_index in range(total_chunks):
+            chunk_start = max(0, chunk_index * CHUNK_SIZE_SECONDS - CHUNK_OVERLAP)
+            chunk_duration = min(CHUNK_SIZE_SECONDS + CHUNK_OVERLAP, duration - chunk_start)
             
-            if MEMORY_MONITORING:
-                chunk_memory_after = get_memory_usage()
-                print(f"   📊 Memory: {chunk_memory_before:.1f} → {chunk_memory_after:.1f} MB")
+            print(f"\n🔄 Processing chunk {chunk_index + 1}/{total_chunks}")
+            
+            chunk_memory_before = get_memory_usage() if MEMORY_MONITORING else 0
+            
+            try:
+                # Process this chunk
+                chunk_segments = process_audio_chunk(
+                    audio_path, 
+                    chunk_start, 
+                    chunk_duration, 
+                    chunk_start,  # global_offset
+                    chunk_index, 
+                    total_chunks
+                )
                 
-                # Force cleanup if memory usage is too high
-                if chunk_memory_after > MAX_MEMORY_MB:
-                    print(f"   🧹 High memory usage detected, forcing cleanup...")
+                all_segments.extend(chunk_segments)
+                
+                if MEMORY_MONITORING:
+                    chunk_memory_after = get_memory_usage()
+                    print(f"   📊 Memory: {chunk_memory_before:.1f} → {chunk_memory_after:.1f} MB")
+                    
+                    # Force cleanup if memory usage is too high
+                    if chunk_memory_after > MAX_MEMORY_MB:
+                        print(f"   🧹 High memory usage detected, forcing cleanup...")
+                        gc.collect()
+                
+                # Periodic cleanup
+                if (chunk_index + 1) % CLEANUP_FREQUENCY == 0:
                     gc.collect()
-            
-            # Periodic cleanup
-            if (chunk_index + 1) % CLEANUP_FREQUENCY == 0:
-                gc.collect()
-            
-        except Exception as e:
-            print(f"   ❌ Error processing chunk {chunk_index + 1}: {e}")
-            # Continue with next chunk instead of failing completely
-            continue
+                
+            except Exception as e:
+                print(f"   ❌ Error processing chunk {chunk_index + 1}: {e}")
+                # Continue with next chunk instead of failing completely
+                continue
     
     final_memory = get_memory_usage()
     print(f"\n🎉 Completed chunked transcription!")
     print(f"📊 Final memory usage: {final_memory:.1f} MB (started with {initial_memory:.1f} MB)")
     print(f"📝 Total segments transcribed: {len(all_segments)}")
     
+    # Validate timing accuracy
+    if all_segments:
+        validate_timing_accuracy(all_segments, duration)
+    
     return all_segments
+
+def validate_timing_accuracy(segments: List[Dict], total_duration: float):
+    """Validate that segment timings are accurate and don't exceed file duration"""
+    print(f"\n🔍 Timing Validation:")
+    
+    timing_issues = []
+    for i, segment in enumerate(segments):
+        start = segment['start']
+        end = segment['end']
+        
+        # Check for timing issues
+        if start < 0:
+            timing_issues.append(f"Segment {i+1}: Negative start time ({start:.2f}s)")
+        if end > total_duration:
+            timing_issues.append(f"Segment {i+1}: End time exceeds duration ({end:.2f}s > {total_duration:.2f}s)")
+        if start >= end:
+            timing_issues.append(f"Segment {i+1}: Start >= End ({start:.2f}s >= {end:.2f}s)")
+        if end - start < 0.1:
+            timing_issues.append(f"Segment {i+1}: Very short duration ({end-start:.2f}s)")
+    
+    if timing_issues:
+        print(f"   ⚠️  Found {len(timing_issues)} timing issues:")
+        for issue in timing_issues[:5]:  # Show first 5 issues
+            print(f"      - {issue}")
+        if len(timing_issues) > 5:
+            print(f"      - ... and {len(timing_issues) - 5} more")
+    else:
+        print(f"   ✅ All {len(segments)} segments have valid timing")
+    
+    # Show timing coverage
+    total_segment_duration = sum(seg['end'] - seg['start'] for seg in segments)
+    coverage = (total_segment_duration / total_duration * 100) if total_duration > 0 else 0
+    print(f"   📊 Audio coverage: {coverage:.1f}% of total duration")
