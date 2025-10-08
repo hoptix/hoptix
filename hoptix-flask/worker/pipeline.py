@@ -147,6 +147,7 @@ def upsert_grades(db: Supa, tx_ids: List[str], grades: List[Dict]):
             "upsell_candidate_items": d.get("upsell_candidate_items"),
             "upsell_base_items": d.get("upsell_base_items"),
             "upsell_success_items": d.get("upsell_success_items"),
+            "upsell_base_sold_items": d.get("upsell_base_sold_items"),
             
             # Upsize fields
             "num_upsize_opportunities": d.get("num_upsize_opportunities"),
@@ -156,6 +157,7 @@ def upsert_grades(db: Supa, tx_ids: List[str], grades: List[Dict]):
             "upsize_candidate_items": d.get("upsize_candidate_items"),
             "upsize_base_items": d.get("upsize_base_items"),
             "upsize_success_items": d.get("upsize_success_items"),
+            "upsize_base_sold_items": d.get("upsize_base_sold_items"),
             
             # Addon fields
             "num_addon_opportunities": d.get("num_addon_opportunities"),
@@ -165,6 +167,7 @@ def upsert_grades(db: Supa, tx_ids: List[str], grades: List[Dict]):
             "addon_candidate_items": d.get("addon_candidate_items"),
             "addon_base_items": d.get("addon_base_items"),
             "addon_success_items": d.get("addon_success_items"),
+            "addon_base_sold_items": d.get("addon_base_sold_items"),
             
             # Meta fields
             "feedback": d.get("feedback"),

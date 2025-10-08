@@ -231,6 +231,7 @@ Also output (non-numbered): 4_base — a jsonb array of the base items that crea
 6. Item candidates that were offered for upselling as a jsonb. If there were no candidates offered, write the number 0. For example, if the customer ordered a burger, the candidates that were offered for upselling would be the fries and the drink.
 7. Items Successfully Upsold as a jsonb. If there were no items, write the number 0. Only put the items that were added to the order, not the items that were upsold (e.g. if a burger was upsold, put the fries and drink, not the burger).
 8. Items that created the Successful Upselling Opportunities as a jsonb. These are the items that caused the upsell to happen. For example, if fries and a drink were upsold because a burger was ordered, then put the burger.
+Also output (non-numbered): 8_base_sold — a jsonb array of the base items that were actually upsold (e.g., the burgers that were converted to meals). If none, write 0.
 9. Number of Successful Upselling Offers. If an operator offers to upsell multiple items in the same offer, and a customer accepts, then count each item upsized separately. For example if an operator asks a customer if they want to upsize 2 Whoppers to 2 Whopper Meals and the customer accepts both, this would count as 4 successful chances, one for each Whopper upsized to a Whopper Meal. Format this as an integer.
 10. Number of Items for which the Largest Option for that Item was Offered. If multiple of the largest size of the same item are ordered, like 3 offers to turn an order of fries into large fries, each order of large fries is counted separately, for a total of 3 times the largest option was offered. Format this as an integer.
 
@@ -243,6 +244,7 @@ Also output (non-numbered): 11_base — a jsonb array of the base items that cre
 Also output (non-numbered): 14_base — a jsonb array of the base items that created the upsize opportunities (e.g., small fries that could be upsized). If none, write 0.
 15. Number of Items Successfully Upsized. If an operator offers to upsize multiple items in the same offer, and a customer accepts, then count each item upsized separately. If 3 orders of fries were upsized, count each one separately, for a total count of 3. Format this as an integer.
 16. Items Successfully Upsized as a jsonb. If there were no items, write the number 0.
+Also output (non-numbered): 16_base_sold — a jsonb array of the base items that were actually upsized (e.g., the small fries that were converted to large fries). If none, write 0.
 
 **Add-ons**
 18. Number of Chances to add Additional Toppings. If there are multiple of one item that can have additional toppings, count them all individually. For example, 2 Blizzards = 2 chances. Format this as an integer.
@@ -253,6 +255,7 @@ Also output (non-numbered): 18_base — a jsonb array of the base items that cre
 Also output (non-numbered): 21_base — a jsonb array of the base items that created the add-on opportunities (e.g., sundae that can have extra toppings). If none, write 0.
 22. Number of Successful Additional Toppings offers. Format this as an integer.
 23. Items that additional toppings were added successfully. If there were no items, write the number 0.
+Also output (non-numbered): 23_base_sold — a jsonb array of the base items that had additional toppings successfully added (e.g., the sundaes that got extra toppings). If none, write 0.
 
 **After Order**
 25. Meals and items ordered by customer AFTER upsells, upsizes, and additional toppings offers. Single jsonb, same rules as field 1. If no items, put 0.
@@ -553,6 +556,7 @@ def _map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -
         "num_upsell_offers":        _ii(step2_obj.get("5", 0)),
         "upsell_offered_items":     _parse_json_field(step2_obj.get("6", "0")),
         "upsell_success_items":     _parse_json_field(step2_obj.get("7", "0")),
+        "upsell_base_sold_items":   _parse_json_field(step2_obj.get("8_base_sold", "0")),
         "num_upsell_success":       _ii(step2_obj.get("9", 0)),
         "num_largest_offers":       _ii(step2_obj.get("10", 0)),
 
@@ -563,6 +567,7 @@ def _map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -
         "num_upsize_offers":        _ii(step2_obj.get("14", 0)),
         "upsize_offered_items":     _parse_json_field(step2_obj.get("14_base", "0")),
         "upsize_success_items":     _parse_json_field(step2_obj.get("16", "0")),
+        "upsize_base_sold_items":   _parse_json_field(step2_obj.get("16_base_sold", "0")),
         "num_upsize_success":       _ii(step2_obj.get("15", 0)),
 
         # ---- Add-on (candidates → offered → converted) ----
@@ -572,6 +577,7 @@ def _map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -
         "num_addon_offers":         _ii(step2_obj.get("21", 0)),
         "addon_offered_items":      _parse_json_field(step2_obj.get("21_base", "0")),
         "addon_success_items":      _parse_json_field(step2_obj.get("23", "0")),
+        "addon_base_sold_items":    _parse_json_field(step2_obj.get("23_base_sold", "0")),
         "num_addon_success":        _ii(step2_obj.get("22", 0)),
 
         # AFTER items
