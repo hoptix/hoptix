@@ -43,5 +43,8 @@ RUN apt-get update && apt-get install -y \
 # Install Python test dependencies
 RUN pip3 install --break-system-packages -r /app/requirements.txt
 
+# Expose port
+EXPOSE 8081
+
 # Set the CMD to run the auth service
 CMD ["/app/auth-service-server"] 

@@ -3,6 +3,7 @@
 import * as React from "react"
 import { useParams, useRouter } from "next/navigation"
 import { IconArrowLeft } from "@tabler/icons-react"
+import { RequireAuth } from "@/components/auth/RequireAuth"
 
 import { TransactionsTable } from "@/components/transactions-table"
 import { Button } from "@/components/ui/button"
@@ -17,7 +18,8 @@ export default function TransactionsPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
+    <RequireAuth>
+      <div className="container mx-auto p-6 max-w-7xl">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4">
@@ -37,5 +39,6 @@ export default function TransactionsPage() {
       {/* Transactions Table */}
       <TransactionsTable runId={runId} pageSize={50} />
     </div>
+    </RequireAuth>
   )
 }

@@ -1,5 +1,6 @@
 "use client"
 
+import { RequireAuth } from "@/components/auth/RequireAuth"
 import { AppSidebar } from "@/components/app-sidebar"
 import { RunsTable } from "@/components/runs-table"
 import { SiteHeader } from "@/components/site-header"
@@ -17,7 +18,8 @@ export default function RunsPage() {
   }
 
   return (
-    <SidebarProvider>
+    <RequireAuth>
+      <SidebarProvider>
       <AppSidebar variant="inset" />
       <SidebarInset>
         <SiteHeader 
@@ -95,5 +97,6 @@ export default function RunsPage() {
         </div>
       </SidebarInset>
     </SidebarProvider>
+    </RequireAuth>
   )
 }
