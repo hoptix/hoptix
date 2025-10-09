@@ -42,9 +42,25 @@ def full_pipeline(location_id: str, date: str):
     else: 
         return f"No audio found for {location_name} on {date}"
         
-    # 2) Transcribe audio to text (now using chunked processing)
+    # 2) Transcribe audio to text (now using proper file chunking)
     log_memory_usage("Transcribing audio to text (chunked)", 2, TOTAL_STEPS)
-    transcript_segments = transcribe_audio(audio_path)
+    
+    # Get audio record for proper chunking
+    audio_record = db.get_audio_record(audio_id)
+    if not audio_record:
+        # Create a basic audio record if none exists
+        audio_record = {
+            "id": audio_id,
+            "run_id": run_id,
+            "location_id": location_id,
+            "date": date,
+            "started_at": f"{date}T10:00:00Z",
+            "ended_at": f"{date}T18:00:00Z",
+            "link": gdrive_path,
+            "status": "processing"
+        }
+    
+    transcript_segments = transcribe_audio(audio_path, db=db, audio_record=audio_record)
     
     # Force garbage collection after transcription
     gc.collect()

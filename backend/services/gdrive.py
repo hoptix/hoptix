@@ -233,15 +233,28 @@ class GoogleDriveClient:
                 while done is False:
                     status, done = downloader.next_chunk()
                     chunks_downloaded += 1
-                    if chunks_downloaded % 10 == 0:  # Log every 10MB downloaded
-                        if status:
-                            progress_pct = int(status.progress() * 100)
-                            logger.info(f"📊 Download progress: {progress_pct}% complete...")
-                        else:
+                    
+                    if status:
+                        progress_pct = int(status.progress() * 100)
+                        # Create a simple progress bar
+                        bar_length = 30
+                        filled_length = int(bar_length * status.progress())
+                        bar = '█' * filled_length + '░' * (bar_length - filled_length)
+                        
+                        # Show progress every 5% or every 5MB
+                        if progress_pct % 5 == 0 or chunks_downloaded % 5 == 0:
+                            logger.info(f"📊 Download progress: [{bar}] {progress_pct}% ({chunks_downloaded}MB)")
+                    else:
+                        # Fallback when status is not available
+                        if chunks_downloaded % 5 == 0:  # Log every 5MB
                             logger.info(f"📊 Downloaded {chunks_downloaded} MB...")
                 
                 fh.close()
                 fh = None
+                
+                # Show final progress bar completion
+                final_bar = '█' * 30
+                logger.info(f"📊 Download complete: [{final_bar}] 100% ({chunks_downloaded}MB)")
                 
                 # Get actual file size for logging
                 actual_size = os.path.getsize(local_path)

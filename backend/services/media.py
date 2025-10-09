@@ -124,8 +124,9 @@ def get_audio_from_gdrive(location_id: str, date: str):
         with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as tmp_file:
             tmp_audio_path = tmp_file.name
         
-        # Download the MP3 file
-        print(f"⬇️ Downloading {file_name} to {tmp_audio_path}")
+        # Download the MP3 file with progress bar
+        print(f"⬇️ Downloading {file_name}")
+        print(f"📁 Destination: {tmp_audio_path}")
         if gdrive.download_file(file_id, tmp_audio_path):
             file_size = os.path.getsize(tmp_audio_path)
             print(f"✅ Downloaded {file_name} ({file_size:,} bytes)")

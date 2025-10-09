@@ -6,7 +6,8 @@ This script tests the memory-efficient transcription without running the full pi
 
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+# Add the parent directory to the path so we can import from services
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import psutil
 import time
@@ -33,7 +34,7 @@ def test_chunked_processing(audio_path: str):
     start_time = time.time()
     
     try:
-        # Run the chunked transcription
+        # Run the chunked transcription (without db/audio_record for simple test)
         segments = transcribe_audio(audio_path)
         
         end_time = time.time()

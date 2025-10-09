@@ -1,4 +1,5 @@
 from services.converter import get_duration
+from services.wav_splitter import AudioSplitter
 import os
 import numpy as np
 from typing import List, Dict, Tuple
@@ -113,73 +114,6 @@ def detect_silence_ffmpeg(audio_path: str, start_time: float, duration: float) -
         if os.path.exists(chunk_path):
             os.remove(chunk_path)
 
-def process_audio_chunk(audio_path: str, chunk_start: float, chunk_duration: float, 
-                       global_offset: float, chunk_index: int, total_chunks: int) -> List[Dict]:
-    """
-    Process a single chunk of audio for transcription.
-    Returns list of transcript segments with global timestamps.
-    """
-    print(f"🎵 Processing chunk {chunk_index + 1}/{total_chunks} ({chunk_start:.1f}s - {chunk_start + chunk_duration:.1f}s)")
-    
-    # Detect active segments in this chunk
-    active_segments = detect_silence_ffmpeg(audio_path, chunk_start, chunk_duration)
-    
-    if not active_segments:
-        print(f"   ⏸️  No active segments found in chunk {chunk_index + 1}")
-        return []
-    
-    print(f"   🎬 Found {len(active_segments)} active segments in chunk {chunk_index + 1}")
-    
-    chunk_segments = []
-    
-    for i, (seg_start, seg_end) in enumerate(active_segments):
-        # Convert to global timestamps
-        global_start = global_offset + seg_start
-        global_end = global_offset + seg_end
-        
-        # Create temporary file for this segment
-        with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_file:
-            segment_path = tmp_file.name
-        
-        try:
-            # Extract segment using ffmpeg
-            clip_audio_with_ffmpeg(audio_path, segment_path, global_start, global_end)
-            
-            # Transcribe the segment
-            with open(segment_path, "rb") as af:
-                try:
-                    txt = client.audio.transcriptions.create(
-                        model=ASR_MODEL,
-                        file=af,
-                        response_format="text",
-                        temperature=0.001,
-                        prompt="Label each line as Operator: or Customer: where possible."
-                    )
-                    text = str(txt).strip()
-                    print(f"   ✅ Segment {i+1} transcribed: {len(text)} characters")
-                except Exception as ex:
-                    print(f"   ❌ ASR error for segment {i+1}: {ex}")
-                    text = ""
-            
-            if text:  # Only add segments with actual text
-                chunk_segments.append({
-                    "start": global_start,
-                    "end": global_end,
-                    "text": text
-                })
-                
-        finally:
-            # Clean up temporary segment file
-            if os.path.exists(segment_path):
-                os.remove(segment_path)
-    
-    # Update progress tracking
-    global completed_chunks
-    with progress_lock:
-        completed_chunks += 1
-        print(f"✅ Completed chunk {chunk_index + 1}/{total_chunks} ({completed_chunks}/{total_chunks} total)")
-    
-    return chunk_segments
 
 # Legacy function - kept for backward compatibility but not used in new approach
 def segment_active_spans(y: np.ndarray, sr: int, window_s: float = 15.0) -> List[tuple[float,float]]:
@@ -206,11 +140,14 @@ def segment_active_spans(y: np.ndarray, sr: int, window_s: float = 15.0) -> List
     return list(zip(begins, ends))
 
 def clip_audio_with_ffmpeg(input_path: str, output_path: str, start_time: float, end_time: float):
+    """Extract audio segment using ffmpeg (works for WAV, MP3, and other formats)"""
+    duration = end_time - start_time
     cmd = [
         "ffmpeg", "-y",
-        "-i", input_path,
+        "-hide_banner", "-loglevel", "error",
         "-ss", str(start_time),  # start time
-        "-t", str(end_time - start_time),  # duration
+        "-i", input_path,
+        "-t", str(duration),  # duration
         "-vn",  # no video
         "-acodec", "pcm_s16le",  # WAV PCM 16-bit
         "-ar", "16000",  # 16 kHz sample rate
@@ -220,13 +157,13 @@ def clip_audio_with_ffmpeg(input_path: str, output_path: str, start_time: float,
     subprocess.run(cmd, check=True, capture_output=True)
     return output_path
 
-# ---------- 1) TRANSCRIBE (chunked processing for memory efficiency) ----------
-def transcribe_audio(audio_path: str) -> List[Dict]:
+# ---------- 1) TRANSCRIBE (using proper file chunking) ----------
+def transcribe_audio(audio_path: str, db=None, audio_record=None) -> List[Dict]:
     """
-    Transcribe audio using chunked processing to avoid memory issues.
-    Processes audio in fixed-size chunks without loading entire file into memory.
+    Transcribe audio using proper file chunking approach.
+    If the file is large, it will be split into physical chunks and processed independently.
     """
-    print(f"🎬 Starting chunked transcription for {audio_path}")
+    print(f"🎬 Starting transcription for {audio_path}")
     initial_memory = get_memory_usage()
     print(f"📊 Initial memory usage: {initial_memory:.1f} MB")
     
@@ -234,110 +171,158 @@ def transcribe_audio(audio_path: str) -> List[Dict]:
     duration = get_duration(audio_path)
     print(f"⏱️  Audio duration: {duration:.1f} seconds ({duration/60:.1f} minutes)")
     
-    # Calculate number of chunks needed
-    total_chunks = int((duration + CHUNK_SIZE_SECONDS - 1) // CHUNK_SIZE_SECONDS)
-    print(f"📦 Processing in {total_chunks} chunks of {CHUNK_SIZE_SECONDS} seconds each")
+    # Check if we need to split the file
+    if db and audio_record:
+        audio_splitter = AudioSplitter(db, settings)
+        should_split, reason = audio_splitter.should_split_audio(audio_path)
+        print(f"🔍 File analysis: {reason}")
+        
+        if should_split:
+            print(f"🔪 Large audio file detected, splitting into chunks...")
+            return transcribe_large_audio_file(audio_path, audio_record, audio_splitter)
+    
+    # Process as single file (small enough)
+    print(f"🎵 Processing as single audio file...")
+    return transcribe_single_audio_file(audio_path)
+
+def transcribe_large_audio_file(audio_path: str, audio_record: Dict, audio_splitter: AudioSplitter) -> List[Dict]:
+    """
+    Handle large audio files by splitting them into chunks and processing each chunk.
+    """
+    print(f"🔪 Processing large audio file with chunking...")
+    
+    # Split the audio file into chunks
+    chunk_records = audio_splitter.process_large_audio_file(audio_path, audio_record)
+    
+    if not chunk_records:
+        print("❌ Failed to split audio file")
+        return []
+    
+    print(f"✅ Successfully split into {len(chunk_records)} chunks")
     
     all_segments = []
     
-    # Process chunks with small overlap to handle boundary transactions
-    CHUNK_OVERLAP = 30  # 30 seconds overlap between chunks
+    # Process chunks in parallel
+    print(f"🚀 Processing {len(chunk_records)} chunks in parallel with {MAX_WORKERS} workers")
     
-    # Reset progress tracking
-    global completed_chunks
-    completed_chunks = 0
+    def process_chunk_file(chunk_record):
+        """Process a single chunk file"""
+        chunk_id = chunk_record["id"]
+        chunk_path = chunk_record["meta"]["local_chunk_path"]
+        chunk_start_time = chunk_record["meta"]["chunk_start_time"]
+        
+        print(f"🎵 Processing chunk {chunk_id}: {chunk_path}")
+        
+        try:
+            # Transcribe the chunk file
+            chunk_segments = transcribe_single_audio_file(chunk_path)
+            
+            # Adjust timestamps to be relative to original file
+            for segment in chunk_segments:
+                segment["start"] += chunk_start_time
+                segment["end"] += chunk_start_time
+            
+            print(f"✅ Chunk {chunk_id} completed: {len(chunk_segments)} segments")
+            return chunk_segments
+            
+        except Exception as e:
+            print(f"❌ Error processing chunk {chunk_id}: {e}")
+            return []
     
-    if PARALLEL_CHUNKS:
-        print(f"🚀 Processing {total_chunks} chunks in parallel with {MAX_WORKERS} workers")
+    # Process chunks in parallel
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        # Submit all chunk processing tasks
+        future_to_chunk = {
+            executor.submit(process_chunk_file, chunk_record): chunk_record
+            for chunk_record in chunk_records
+        }
         
-        # Create list of chunk tasks
-        chunk_tasks = []
-        for chunk_index in range(total_chunks):
-            chunk_start = max(0, chunk_index * CHUNK_SIZE_SECONDS - CHUNK_OVERLAP)
-            chunk_duration = min(CHUNK_SIZE_SECONDS + CHUNK_OVERLAP, duration - chunk_start)
-            chunk_tasks.append((chunk_index, chunk_start, chunk_duration))
-        
-        # Process chunks in parallel
-        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            # Submit all tasks
-            future_to_chunk = {
-                executor.submit(
-                    process_audio_chunk,
-                    audio_path,
-                    chunk_start,
-                    chunk_duration,
-                    chunk_start,  # global_offset
-                    chunk_index,
-                    total_chunks
-                ): chunk_index for chunk_index, chunk_start, chunk_duration in chunk_tasks
-            }
-            
-            # Collect results as they complete
-            for future in as_completed(future_to_chunk):
-                chunk_index = future_to_chunk[future]
-                try:
-                    chunk_segments = future.result()
-                    all_segments.extend(chunk_segments)
-                    
-                    # Periodic memory cleanup
-                    if completed_chunks % CLEANUP_FREQUENCY == 0:
-                        gc.collect()
-                        
-                except Exception as e:
-                    print(f"   ❌ Error processing chunk {chunk_index + 1}: {e}")
-                    continue
-    else:
-        print(f"🔄 Processing {total_chunks} chunks sequentially")
-        
-        # Sequential processing (original approach)
-        for chunk_index in range(total_chunks):
-            chunk_start = max(0, chunk_index * CHUNK_SIZE_SECONDS - CHUNK_OVERLAP)
-            chunk_duration = min(CHUNK_SIZE_SECONDS + CHUNK_OVERLAP, duration - chunk_start)
-            
-            print(f"\n🔄 Processing chunk {chunk_index + 1}/{total_chunks}")
-            
-            chunk_memory_before = get_memory_usage() if MEMORY_MONITORING else 0
-            
+        # Collect results as they complete
+        for future in as_completed(future_to_chunk):
+            chunk_record = future_to_chunk[future]
             try:
-                # Process this chunk
-                chunk_segments = process_audio_chunk(
-                    audio_path, 
-                    chunk_start, 
-                    chunk_duration, 
-                    chunk_start,  # global_offset
-                    chunk_index, 
-                    total_chunks
-                )
-                
+                chunk_segments = future.result()
                 all_segments.extend(chunk_segments)
                 
-                if MEMORY_MONITORING:
-                    chunk_memory_after = get_memory_usage()
-                    print(f"   📊 Memory: {chunk_memory_before:.1f} → {chunk_memory_after:.1f} MB")
-                    
-                    # Force cleanup if memory usage is too high
-                    if chunk_memory_after > MAX_MEMORY_MB:
-                        print(f"   🧹 High memory usage detected, forcing cleanup...")
-                        gc.collect()
-                
-                # Periodic cleanup
-                if (chunk_index + 1) % CLEANUP_FREQUENCY == 0:
+                # Periodic memory cleanup
+                if len(all_segments) % CLEANUP_FREQUENCY == 0:
                     gc.collect()
-                
+                    
             except Exception as e:
-                print(f"   ❌ Error processing chunk {chunk_index + 1}: {e}")
-                # Continue with next chunk instead of failing completely
+                print(f"❌ Chunk processing failed: {e}")
                 continue
+    
+    # Clean up chunk files
+    audio_splitter.cleanup_chunk_files(chunk_records)
     
     final_memory = get_memory_usage()
     print(f"\n🎉 Completed chunked transcription!")
-    print(f"📊 Final memory usage: {final_memory:.1f} MB (started with {initial_memory:.1f} MB)")
+    print(f"📊 Final memory usage: {final_memory:.1f} MB")
     print(f"📝 Total segments transcribed: {len(all_segments)}")
     
-    # Validate timing accuracy
-    if all_segments:
-        validate_timing_accuracy(all_segments, duration)
+    return all_segments
+
+def transcribe_single_audio_file(audio_path: str) -> List[Dict]:
+    """
+    Transcribe a single audio file (chunk or small file).
+    Uses the existing segment-based approach for individual files.
+    """
+    print(f"🎵 Transcribing single audio file: {os.path.basename(audio_path)}")
     
+    # Get duration
+    duration = get_duration(audio_path)
+    
+    # Use the existing segment detection approach for the single file
+    active_segments = detect_silence_ffmpeg(audio_path, 0, duration)
+    
+    if not active_segments:
+        print(f"   ⏸️  No active segments found")
+        return []
+    
+    print(f"   🎬 Found {len(active_segments)} active segments")
+    
+    all_segments = []
+    
+    for i, (seg_start, seg_end) in enumerate(active_segments):
+        print(f"   🎯 Processing segment {i+1}/{len(active_segments)}: {seg_start:.1f}s - {seg_end:.1f}s")
+        
+        # Create temporary file for this segment
+        with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_file:
+            segment_path = tmp_file.name
+        
+        try:
+            # Extract segment using ffmpeg
+            clip_audio_with_ffmpeg(audio_path, segment_path, seg_start, seg_end)
+            
+            # Transcribe the segment
+            with open(segment_path, "rb") as af:
+                try:
+                    txt = client.audio.transcriptions.create(
+                        model=ASR_MODEL,
+                        file=af,
+                        response_format="text",
+                        temperature=0.001,
+                        prompt="Label each line as Operator: or Customer: where possible."
+                    )
+                    text = str(txt).strip()
+                    print(f"   ✅ Segment {i+1} transcribed: {len(text)} characters")
+                except Exception as ex:
+                    print(f"   ❌ ASR error for segment {i+1}: {ex}")
+                    text = ""
+            
+            if text:  # Only add segments with actual text
+                all_segments.append({
+                    "start": seg_start,
+                    "end": seg_end,
+                    "text": text
+                })
+                
+        finally:
+            # Clean up temporary segment file
+            if os.path.exists(segment_path):
+                os.remove(segment_path)
+    
+    print(f"✅ Single file transcription completed: {len(all_segments)} segments")
     return all_segments
 
 def validate_timing_accuracy(segments: List[Dict], total_duration: float):

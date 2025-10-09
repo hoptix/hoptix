@@ -122,6 +122,7 @@ def map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) ->
         "num_upsell_offers":        ii(step2_obj.get("5", 0)),
         "upsell_offered_items":     parse_json_field(step2_obj.get("6", "0")),
         "upsell_success_items":     parse_json_field(step2_obj.get("7", "0")),
+        "upsell_base_sold_items":   parse_json_field(step2_obj.get("8_base_sold", "0")),
         "num_upsell_success":       ii(step2_obj.get("9", 0)),
         "num_largest_offers":       ii(step2_obj.get("10", 0)),
 
@@ -132,6 +133,7 @@ def map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) ->
         "num_upsize_offers":        ii(step2_obj.get("14", 0)),
         "upsize_offered_items":     parse_json_field(step2_obj.get("14_offered", "0")),
         "upsize_success_items":     parse_json_field(step2_obj.get("16", "0")),
+        "upsize_base_sold_items":   parse_json_field(step2_obj.get("16_base_sold", "0")),
         "num_upsize_success":       ii(step2_obj.get("15", 0)),
 
         # ---- Add-on (candidates → offered → converted) ----
@@ -141,6 +143,7 @@ def map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) ->
         "num_addon_offers":         ii(step2_obj.get("21", 0)),
         "addon_offered_items":      parse_json_field(step2_obj.get("21_offered", "0")),
         "addon_success_items":      parse_json_field(step2_obj.get("23", "0")),
+        "addon_base_sold_items":    parse_json_field(step2_obj.get("23_base_sold", "0")),
         "num_addon_success":        ii(step2_obj.get("22", 0)),
 
         # AFTER items

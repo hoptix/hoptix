@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from services.analytics import Analytics
 
 
-RUN_ID = "04756716-6564-4b2c-9396-4d72eab50af9"
+RUN_ID = "3afe854f-6cf6-403e-b2b2-77e039b6f8ca"
 analytics = Analytics(RUN_ID)
 
 # assert analytics.get_total_upsell_opportunities() == 135
