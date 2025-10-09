@@ -82,17 +82,29 @@ def split_into_transactions(transcript_segments: List[Dict], run_id: str, audio_
     actual_audio_start = audio_started_at_iso
     print(f"Using database timestamp: {actual_audio_start}")
     
-    # Parallelize segment processing
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        segment_results = list(executor.map(
-            lambda seg: _process_segment(seg, run_id, actual_audio_start, audio_id), 
-            transcript_segments
-        ))
+    # Combine all segments into one complete transcript for transaction analysis
+    print(f"📝 Combining {len(transcript_segments)} chunks into complete transcript for transaction analysis")
     
-    # Flatten results
-    results = []
-    for segment_result in segment_results:
-        results.extend(segment_result)
+    # Combine all segments into one complete transcript
+    combined_text = ""
+    total_start = float(transcript_segments[0]["start"])
+    total_end = float(transcript_segments[-1]["end"])
+    
+    for i, seg in enumerate(transcript_segments):
+        if seg.get("text", "").strip():
+            combined_text += seg["text"].strip() + "\n"
+    
+    # Create one complete transcript segment
+    complete_transcript = {
+        "start": total_start,
+        "end": total_end,
+        "text": combined_text.strip()
+    }
+    
+    print(f"📊 Complete transcript: {len(combined_text)} characters, {total_end - total_start:.1f}s duration")
+    
+    # Process the complete transcript to identify actual transactions
+    results = _process_segment(complete_transcript, run_id, actual_audio_start, audio_id)
     
     return results
 
