@@ -187,24 +187,27 @@ const ItemPerformanceTable = ({ items }: { items: [string, ItemAnalytics][] }) =
         base: acc.upsell.base + metrics.upsell_base,
         candidates: acc.upsell.candidates + metrics.upsell_candidates,
         offered: acc.upsell.offered + metrics.upsell_offered,
-        success: acc.upsell.success + metrics.upsell_success
+        success: acc.upsell.success + metrics.upsell_success,
+        base_sold: acc.upsell.base_sold + metrics.upsell_base_sold
       },
       upsize: {
         base: acc.upsize.base + metrics.upsize_base,
         candidates: acc.upsize.candidates + metrics.upsize_candidates,
         offered: acc.upsize.offered + metrics.upsize_offered,
-        success: acc.upsize.success + metrics.upsize_success
+        success: acc.upsize.success + metrics.upsize_success,
+        base_sold: acc.upsize.base_sold + metrics.upsize_base_sold
       },
       addon: {
         base: acc.addon.base + metrics.addon_base,
         candidates: acc.addon.candidates + metrics.addon_candidates,
         offered: acc.addon.offered + metrics.addon_offered,
-        success: acc.addon.success + metrics.addon_success
+        success: acc.addon.success + metrics.addon_success,
+        base_sold: acc.addon.base_sold + metrics.addon_base_sold
       }
     }), {
-      upsell: { base: 0, candidates: 0, offered: 0, success: 0 },
-      upsize: { base: 0, candidates: 0, offered: 0, success: 0 },
-      addon: { base: 0, candidates: 0, offered: 0, success: 0 }
+      upsell: { base: 0, candidates: 0, offered: 0, success: 0, base_sold: 0 },
+      upsize: { base: 0, candidates: 0, offered: 0, success: 0, base_sold: 0 },
+      addon: { base: 0, candidates: 0, offered: 0, success: 0, base_sold: 0 }
     });
   };
 
@@ -222,25 +225,9 @@ const ItemPerformanceTable = ({ items }: { items: [string, ItemAnalytics][] }) =
     return { itemId, itemData, totals, totalBase, totalOffers, totalSuccesses, successRate };
   });
 
-  const sorted = [...withComputed].sort((a, b) => {
-    const dir = sortDir === 'asc' ? 1 : -1;
-    switch (sortKey) {
-      case 'name':
-        return a.itemData.name.localeCompare(b.itemData.name) * dir;
-      case 'totalBase':
-        return (a.totalBase - b.totalBase) * dir;
-      case 'upsell':
-        return (a.totals.upsell.success - b.totals.upsell.success) * dir;
-      case 'upsize':
-        return (a.totals.upsize.success - b.totals.upsize.success) * dir;
-      case 'addon':
-        return (a.totals.addon.success - b.totals.addon.success) * dir;
-      case 'successRate':
-        return (a.successRate - b.successRate) * dir;
-      default:
-        return 0;
-    }
-  });
+  const sorted = [...withComputed]
+    .filter((x) => x.totalOffers > 0)
+    .sort((a, b) => b.totalOffers - a.totalOffers);
 
   const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
   const currentPage = Math.min(page, totalPages);
@@ -271,14 +258,7 @@ const ItemPerformanceTable = ({ items }: { items: [string, ItemAnalytics][] }) =
           />
         </div>
         <div className="text-xs text-gray-600">
-          <span className="mr-3">Sorting by: <span className="font-medium">{
-            sortKey === 'name' ? 'Item' :
-            sortKey === 'totalBase' ? 'Total Base' :
-            sortKey === 'upsell' ? 'Upsell (successes)' :
-            sortKey === 'upsize' ? 'Upsize (successes)' :
-            sortKey === 'addon' ? 'Add-ons (successes)' :
-            'Success Rate'
-          } ({sortDir.toUpperCase()})</span></span>
+          <span className="mr-3">Sorting by: <span className="font-medium">Offers (DESC)</span></span>
           <span>Filter: <span className="font-medium">{filterQuery.trim() ? `name contains "${filterQuery.trim()}"` : 'None'}</span></span>
         </div>
       </div>
@@ -294,38 +274,20 @@ const ItemPerformanceTable = ({ items }: { items: [string, ItemAnalytics][] }) =
                 </button>
               </th>
               
-              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <button onClick={() => setSort('upsell')} className="inline-flex items-center space-x-1">
-                  <span>Upsell</span>
-                  <span className="text-gray-400 text-[10px]">{sortKey==='upsell' ? (sortDir==='asc'?'▲':'▼') : ''}</span>
-                </button>
-              </th>
-              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <button onClick={() => setSort('upsize')} className="inline-flex items-center space-x-1">
-                  <span>Upsize</span>
-                  <span className="text-gray-400 text-[10px]">{sortKey==='upsize' ? (sortDir==='asc'?'▲':'▼') : ''}</span>
-                </button>
-              </th>
-              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <button onClick={() => setSort('addon')} className="inline-flex items-center space-x-1">
-                  <span>Add-ons</span>
-                  <span className="text-gray-400 text-[10px]">{sortKey==='addon' ? (sortDir==='asc'?'▲':'▼') : ''}</span>
-                </button>
-              </th>
-              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <button onClick={() => setSort('successRate')} className="inline-flex items-center space-x-1">
-                  <span>Success Rate</span>
-                  <span className="text-gray-400 text-[10px]">{sortKey==='successRate' ? (sortDir==='asc'?'▲':'▼') : ''}</span>
-                </button>
-              </th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Offers</th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Opportunities</th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Conversions</th>
               <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {pageItems.map(({ itemId, itemData, totals, totalBase, successRate }) => {
+            {pageItems.map(({ itemId, itemData, totals }) => {
               const isExpanded = expandedItems.has(itemId);
+              const totalOffers = totals.upsell.offered + totals.upsize.offered + totals.addon.offered;
+              const totalOpportunities = totals.upsell.candidates + totals.upsize.candidates + totals.addon.candidates;
+              const totalConversions = totals.upsell.success + totals.upsize.success + totals.addon.success;
 
               return (
                 <React.Fragment key={itemId}>
@@ -349,50 +311,9 @@ const ItemPerformanceTable = ({ items }: { items: [string, ItemAnalytics][] }) =
                       </div>
                     </td>
                     
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <div className="text-sm text-gray-900">
-                        {totals.upsell.offered > 0 ? (
-                          <div>
-                            <div className="font-semibold">{totals.upsell.success}</div>
-                            <div className="text-xs text-gray-500">of {totals.upsell.offered}</div>
-                          </div>
-                        ) : (
-                          <span className="text-gray-400">-</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <div className="text-sm text-gray-900">
-                        {totals.upsize.offered > 0 ? (
-                          <div>
-                            <div className="font-semibold">{totals.upsize.success}</div>
-                            <div className="text-xs text-gray-500">of {totals.upsize.offered}</div>
-                          </div>
-                        ) : (
-                          <span className="text-gray-400">-</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <div className="text-sm text-gray-900">
-                        {totals.addon.offered > 0 ? (
-                          <div>
-                            <div className="font-semibold">{totals.addon.success}</div>
-                            <div className="text-xs text-gray-500">of {totals.addon.offered}</div>
-                          </div>
-                        ) : (
-                          <span className="text-gray-400">-</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <div className={`text-sm font-semibold ${
-                        successRate >= 50 ? 'text-green-600' : 
-                        successRate > 0 ? 'text-yellow-600' : 'text-gray-400'
-                      }`}>
-                        {successRate.toFixed(1)}%
-                      </div>
-                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center"><div className="text-sm font-semibold text-gray-900">{totalOffers}</div></td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center"><div className="text-sm font-semibold text-gray-900">{totalOpportunities}</div></td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center"><div className="text-sm font-semibold text-gray-900">{totalConversions}</div></td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       <button
                         onClick={() => toggleItem(itemId)}
@@ -410,20 +331,16 @@ const ItemPerformanceTable = ({ items }: { items: [string, ItemAnalytics][] }) =
                         <div className="space-y-4">
                           {/* Category Breakdown */}
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {totals.upsell.base > 0 && (
+                            {(totals.upsell.candidates + totals.upsell.offered + totals.upsell.success) > 0 && (
                               <div className="bg-white p-4 rounded-lg border border-gray-200">
                                 <div className="flex items-center space-x-2 mb-3">
                                   <IconTrendingUp className="h-4 w-4 text-green-600" />
                                   <h4 className="font-semibold text-gray-900">Upselling</h4>
                                 </div>
-                                <div className="grid grid-cols-2 gap-2 text-sm">
-        <div className="text-center">
-                                    <div className="font-semibold text-gray-900">{totals.upsell.base}</div>
-                                    <div className="text-xs text-gray-500">Base</div>
-        </div>
+                                <div className="grid grid-cols-3 gap-2 text-sm">
                                   <div className="text-center">
                                     <div className="font-semibold text-blue-600">{totals.upsell.candidates}</div>
-                                    <div className="text-xs text-gray-500">Candidates</div>
+                                    <div className="text-xs text-gray-500">Opportunities</div>
       </div>
                                   <div className="text-center">
                                     <div className="font-semibold text-orange-600">{totals.upsell.offered}</div>
@@ -431,7 +348,7 @@ const ItemPerformanceTable = ({ items }: { items: [string, ItemAnalytics][] }) =
                                   </div>
                                   <div className="text-center">
                                     <div className="font-semibold text-green-600">{totals.upsell.success}</div>
-                                    <div className="text-xs text-gray-500">Success</div>
+                                    <div className="text-xs text-gray-500">Conversions</div>
                                   </div>
                                 </div>
                                 <div className="mt-2 text-center">
@@ -452,13 +369,9 @@ const ItemPerformanceTable = ({ items }: { items: [string, ItemAnalytics][] }) =
                                   <h4 className="font-semibold text-gray-900">Upsizing</h4>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 text-sm">
-        <div className="text-center">
-                                    <div className="font-semibold text-gray-900">{totals.upsize.base}</div>
-                                    <div className="text-xs text-gray-500">Base</div>
-        </div>
                                   <div className="text-center">
                                     <div className="font-semibold text-blue-600">{totals.upsize.candidates}</div>
-                                    <div className="text-xs text-gray-500">Candidates</div>
+                                    <div className="text-xs text-gray-500">Opportunities</div>
       </div>
                                   <div className="text-center">
                                     <div className="font-semibold text-orange-600">{totals.upsize.offered}</div>
@@ -488,12 +401,8 @@ const ItemPerformanceTable = ({ items }: { items: [string, ItemAnalytics][] }) =
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 text-sm">
                                   <div className="text-center">
-                                    <div className="font-semibold text-gray-900">{totals.addon.base}</div>
-                                    <div className="text-xs text-gray-500">Base</div>
-                                  </div>
-                                  <div className="text-center">
                                     <div className="font-semibold text-blue-600">{totals.addon.candidates}</div>
-                                    <div className="text-xs text-gray-500">Candidates</div>
+                                    <div className="text-xs text-gray-500">Opportunities</div>
                                   </div>
                                   <div className="text-center">
                                     <div className="font-semibold text-orange-600">{totals.addon.offered}</div>
@@ -594,6 +503,246 @@ const ItemPerformanceTable = ({ items }: { items: [string, ItemAnalytics][] }) =
   );
 };
 
+// Component for displaying items suggestively sold
+const ItemsSuggestivelySoldTable = ({ items }: { items: [string, ItemAnalytics][] }) => {
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const [sortKey, setSortKey] = useState<
+    'name' | 'upsellOffered' | 'upsellSold' | 'upsizeOffered' | 'upsizeSold' | 'addonOffered' | 'addonSold'
+  >('name');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  const [filterQuery, setFilterQuery] = useState<string>('');
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+
+  const getItemTotals = (itemData: ItemAnalytics) => {
+    const sizeEntries = Object.entries(itemData.sizes);
+    return sizeEntries.reduce((acc, [_, metrics]) => ({
+      upsell: {
+        candidates: (acc.upsell.candidates || 0) + (metrics.upsell_candidates || 0),
+        offered: (acc.upsell.offered || 0) + (metrics.upsell_offered || 0),
+        sold: (acc.upsell.sold || 0) + (metrics.upsell_base_sold || 0)
+      },
+      upsize: {
+        candidates: (acc.upsize.candidates || 0) + (metrics.upsize_candidates || 0),
+        offered: (acc.upsize.offered || 0) + (metrics.upsize_offered || 0),
+        sold: (acc.upsize.sold || 0) + (metrics.upsize_base_sold || 0)
+      },
+      addon: {
+        candidates: (acc.addon.candidates || 0) + (metrics.addon_candidates || 0),
+        offered: (acc.addon.offered || 0) + (metrics.addon_offered || 0),
+        sold: (acc.addon.sold || 0) + (metrics.addon_base_sold || 0)
+      }
+    }), {
+      upsell: { candidates: 0, offered: 0, sold: 0 },
+      upsize: { candidates: 0, offered: 0, sold: 0 },
+      addon: { candidates: 0, offered: 0, sold: 0 }
+    });
+  };
+
+  const filteredItems = items.filter(([_, itemData]) => {
+    if (!filterQuery.trim()) return true;
+    return itemData.name.toLowerCase().includes(filterQuery.trim().toLowerCase());
+  });
+
+  const withComputed = filteredItems.map(([itemId, itemData]) => {
+    const totals = getItemTotals(itemData);
+    const totalOffers = (totals.upsell.offered || 0) + (totals.upsize.offered || 0) + (totals.addon.offered || 0);
+    const totalOpportunities = (totals.upsell.candidates || 0) + (totals.upsize.candidates || 0) + (totals.addon.candidates || 0);
+    const totalConversions = (totals.upsell.sold || 0) + (totals.upsize.sold || 0) + (totals.addon.sold || 0);
+    return { itemId, itemData, totals, totalOffers, totalOpportunities, totalConversions };
+  });
+
+  const sorted = [...withComputed]
+    .filter((x) => (x.totalOffers || 0) > 0)
+    .sort((a, b) => (b.totalOffers || 0) - (a.totalOffers || 0));
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const start = (currentPage - 1) * pageSize;
+  const pageItems = sorted.slice(start, start + pageSize);
+
+  const setSort = (key: typeof sortKey) => {
+    if (sortKey === key) {
+      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
+    setPage(1);
+  };
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+      {/* Controls and status */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 py-3 bg-gray-50 border-b border-gray-200 space-y-3 md:space-y-0">
+        <div className="flex items-center space-x-2">
+          <input
+            type="text"
+            value={filterQuery}
+            onChange={(e) => { setFilterQuery(e.target.value); setPage(1); }}
+            placeholder="Filter items by name..."
+            className="w-full md:w-72 px-3 py-2 text-sm border border-gray-300 rounded"
+          />
+        </div>
+        <div className="text-xs text-gray-600">
+          <span className="mr-3">Sorting by: <span className="font-medium">{
+            sortKey === 'name' ? 'Item' :
+            sortKey === 'upsellBase' ? 'Upsell Base' :
+            sortKey === 'upsellOffered' ? 'Upsell Offered' :
+            sortKey === 'upsellSold' ? 'Upsell Sold' :
+            sortKey === 'upsizeBase' ? 'Upsize Base' :
+            sortKey === 'upsizeOffered' ? 'Upsize Offered' :
+            sortKey === 'upsizeSold' ? 'Upsize Sold' :
+            sortKey === 'addonBase' ? 'Add-on Base' :
+            sortKey === 'addonOffered' ? 'Add-on Offered' :
+            'Add-on Sold'
+          } ({sortDir.toUpperCase()})</span></span>
+          <span>Filter: <span className="font-medium">{filterQuery.trim() ? `name contains "${filterQuery.trim()}"` : 'None'}</span></span>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <button onClick={() => setSort('name')} className="flex items-center space-x-1">
+                  <span>Item</span>
+                  <span className="text-gray-400 text-[10px]">{sortKey==='name' ? (sortDir==='asc'?'▲':'▼') : ''}</span>
+                </button>
+              </th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Offers</th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Opportunities</th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Conversions</th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {pageItems.map(({ itemId, itemData, totals }) => {
+              const isExpanded = expandedItems.has(itemId);
+              const totalOffers = totals.upsell.offered + totals.upsize.offered + totals.addon.offered;
+              const totalOpportunities = (totals.upsell.candidates || 0) + (totals.upsize.candidates || 0) + (totals.addon.candidates || 0);
+              const totalConversions = totals.upsell.sold + totals.upsize.sold + totals.addon.sold;
+
+              return (
+                <React.Fragment key={itemId}>
+                  <tr className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <button
+                          onClick={() => {
+                            const next = new Set(expandedItems);
+                            next.has(itemId) ? next.delete(itemId) : next.add(itemId);
+                            setExpandedItems(next);
+                          }}
+                          className="flex items-center space-x-3 text-left hover:text-blue-600 transition-colors"
+                        >
+                          {isExpanded ? (
+                            <IconChevronDown className="h-4 w-4 text-gray-400" />
+                          ) : (
+                            <IconChevronRight className="h-4 w-4 text-gray-400" />
+                          )}
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{itemData.name}</div>
+                            <div className="text-xs text-gray-500">Click to expand details</div>
+                          </div>
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center"><div className="text-sm font-semibold text-gray-900">{totalOffers}</div></td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center"><div className="text-sm font-semibold text-gray-900">{totalOpportunities}</div></td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center"><div className="text-sm font-semibold text-gray-900">{totalConversions}</div></td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <button
+                        onClick={() => {
+                          const next = new Set(expandedItems);
+                          next.has(itemId) ? next.delete(itemId) : next.add(itemId);
+                          setExpandedItems(next);
+                        }}
+                        className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
+                      >
+                        {isExpanded ? 'Collapse' : 'Expand'}
+                      </button>
+                    </td>
+                  </tr>
+
+                  {isExpanded && (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-4 bg-gray-50">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          {(totals.upsell.candidates || totals.upsell.offered || totals.upsell.sold) > 0 && (
+                            <div className="bg-white p-4 rounded-lg border border-gray-200">
+                              <div className="flex items-center space-x-2 mb-3">
+                                <IconTrendingUp className="h-4 w-4 text-green-600" />
+                                <h4 className="font-semibold text-gray-900">Upselling</h4>
+                              </div>
+                              <div className="grid grid-cols-3 gap-2 text-sm">
+                                <div className="text-center"><div className="font-semibold text-blue-600">{totals.upsell.candidates || 0}</div><div className="text-xs text-gray-500">Opportunities</div></div>
+                                <div className="text-center"><div className="font-semibold text-orange-600">{totals.upsell.offered}</div><div className="text-xs text-gray-500">Offered</div></div>
+                                <div className="text-center"><div className="font-semibold text-green-600">{totals.upsell.sold}</div><div className="text-xs text-gray-500">Conversions</div></div>
+                              </div>
+                            </div>
+                          )}
+                          {(totals.upsize.candidates || totals.upsize.offered || totals.upsize.sold) > 0 && (
+                            <div className="bg-white p-4 rounded-lg border border-gray-200">
+                              <div className="flex items-center space-x-2 mb-3">
+                                <IconTarget className="h-4 w-4 text-blue-600" />
+                                <h4 className="font-semibold text-gray-900">Upsizing</h4>
+                              </div>
+                              <div className="grid grid-cols-3 gap-2 text-sm">
+                                <div className="text-center"><div className="font-semibold text-blue-600">{totals.upsize.candidates || 0}</div><div className="text-xs text-gray-500">Opportunities</div></div>
+                                <div className="text-center"><div className="font-semibold text-orange-600">{totals.upsize.offered}</div><div className="text-xs text-gray-500">Offered</div></div>
+                                <div className="text-center"><div className="font-semibold text-green-600">{totals.upsize.sold}</div><div className="text-xs text-gray-500">Conversions</div></div>
+                              </div>
+                            </div>
+                          )}
+                          {(totals.addon.candidates || totals.addon.offered || totals.addon.sold) > 0 && (
+                            <div className="bg-white p-4 rounded-lg border border-gray-200">
+                              <div className="flex items-center space-x-2 mb-3">
+                                <IconShoppingCart className="h-4 w-4 text-purple-600" />
+                                <h4 className="font-semibold text-gray-900">Add-ons</h4>
+                              </div>
+                              <div className="grid grid-cols-3 gap-2 text-sm">
+                                <div className="text-center"><div className="font-semibold text-blue-600">{totals.addon.candidates || 0}</div><div className="text-xs text-gray-500">Opportunities</div></div>
+                                <div className="text-center"><div className="font-semibold text-orange-600">{totals.addon.offered}</div><div className="text-xs text-gray-500">Offered</div></div>
+                                <div className="text-center"><div className="font-semibold text-green-600">{totals.addon.sold}</div><div className="text-xs text-gray-500">Conversions</div></div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      {/* Pagination controls */}
+      <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-gray-50">
+        <div className="text-sm text-gray-600">Page {currentPage} of {totalPages}</div>
+        <div className="space-x-2">
+          <button
+            className="px-3 py-1 text-sm rounded border border-gray-300 disabled:opacity-50"
+            disabled={currentPage === 1}
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+          >
+            Previous
+          </button>
+          <button
+            className="px-3 py-1 text-sm rounded border border-gray-300 disabled:opacity-50"
+            disabled={currentPage === totalPages}
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Component for displaying per-item size breakdown
 const ItemSizeBreakdown = ({ itemId, itemName, sizes }: { itemId: string, itemName: string, sizes: Record<string, SizeMetrics> }) => {
   const sizeEntries = Object.entries(sizes);
@@ -618,24 +767,27 @@ const ItemSizeBreakdown = ({ itemId, itemName, sizes }: { itemId: string, itemNa
       base: acc.upsell.base + metrics.upsell_base,
       candidates: acc.upsell.candidates + metrics.upsell_candidates,
       offered: acc.upsell.offered + metrics.upsell_offered,
-      success: acc.upsell.success + metrics.upsell_success
+      success: acc.upsell.success + metrics.upsell_success,
+      base_sold: acc.upsell.base_sold + metrics.upsell_base_sold
     },
     upsize: {
       base: acc.upsize.base + metrics.upsize_base,
       candidates: acc.upsize.candidates + metrics.upsize_candidates,
       offered: acc.upsize.offered + metrics.upsize_offered,
-      success: acc.upsize.success + metrics.upsize_success
+      success: acc.upsize.success + metrics.upsize_success,
+      base_sold: acc.upsize.base_sold + metrics.upsize_base_sold
     },
     addon: {
       base: acc.addon.base + metrics.addon_base,
       candidates: acc.addon.candidates + metrics.addon_candidates,
       offered: acc.addon.offered + metrics.addon_offered,
-      success: acc.addon.success + metrics.addon_success
+      success: acc.addon.success + metrics.addon_success,
+      base_sold: acc.addon.base_sold + metrics.addon_base_sold
     }
   }), {
-    upsell: { base: 0, candidates: 0, offered: 0, success: 0 },
-    upsize: { base: 0, candidates: 0, offered: 0, success: 0 },
-    addon: { base: 0, candidates: 0, offered: 0, success: 0 }
+    upsell: { base: 0, candidates: 0, offered: 0, success: 0, base_sold: 0 },
+    upsize: { base: 0, candidates: 0, offered: 0, success: 0, base_sold: 0 },
+    addon: { base: 0, candidates: 0, offered: 0, success: 0, base_sold: 0 }
   });
 
   const totalActivity = itemTotals.upsell.base + itemTotals.upsize.base + itemTotals.addon.base;
@@ -648,7 +800,7 @@ const ItemSizeBreakdown = ({ itemId, itemName, sizes }: { itemId: string, itemNa
     icon: Icon 
   }: { 
     title: string, 
-    data: { base: number, candidates: number, offered: number, success: number }, 
+    data: { base: number, candidates: number, offered: number, success: number, base_sold: number }, 
     color: string,
     icon: any 
   }) => {
@@ -671,12 +823,8 @@ const ItemSizeBreakdown = ({ itemId, itemName, sizes }: { itemId: string, itemNa
         
         <div className="grid grid-cols-4 gap-3">
           <div className="text-center">
-            <div className="text-2xl font-bold text-gray-900">{data.base}</div>
-            <div className="text-xs text-gray-500 uppercase tracking-wide">Base</div>
-          </div>
-          <div className="text-center">
             <div className="text-2xl font-bold text-blue-600">{data.candidates}</div>
-            <div className="text-xs text-gray-500 uppercase tracking-wide">Candidates</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wide">Opportunities</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-orange-600">{data.offered}</div>
@@ -686,13 +834,17 @@ const ItemSizeBreakdown = ({ itemId, itemName, sizes }: { itemId: string, itemNa
             <div className="text-2xl font-bold text-green-600">{data.success}</div>
             <div className="text-xs text-gray-500 uppercase tracking-wide">Success</div>
           </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-purple-600">{data.base_sold}</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wide">Base Sold</div>
+          </div>
         </div>
         
         {/* Progress bar */}
         <div className="mt-3">
           <div className="flex justify-between text-xs text-gray-500 mb-1">
             <span>Progress</span>
-            <span>{data.offered} of {data.candidates} offers made</span>
+            <span>{data.offered} of {data.candidates} opportunities</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div 
@@ -1017,7 +1169,18 @@ const AnalyticsReportContent = ({
               </div>
             
             <div className="space-y-8">
-              {/* Per-Item Performance Table */}
+              {/* Items Suggestively Sold Table (moved to top) */}
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-semibold text-gray-900">Items Suggestively Sold</h3>
+                  <div className="text-sm text-gray-500">
+                    Base items, offers made, and items sold through suggestive selling
+                          </div>
+                        </div>
+                <ItemsSuggestivelySoldTable items={itemsWithActivity} />
+                      </div>
+                      
+              {/* Per-Item Performance Table (moved below) */}
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-semibold text-gray-900">Item Performance</h3>
@@ -1168,10 +1331,10 @@ export default function AnalyticsReportPage() {
                 <h1 className="text-4xl font-bold text-gray-900 mb-2">Analytics Report</h1>
                 <div className="flex items-center space-x-3 text-gray-600">
                   <span className="text-lg font-medium">
-                    {format(new Date(data.run_date), "MMMM dd, yyyy")}
-                                </span>
+                    <p>October 6th, 2025</p>
+                                 </span>
                   <span className="text-gray-400">•</span>
-                  <span className="text-lg">{data.location_name}</span>
+                  <span className="text-lg">DQ Cary</span>
                               </div>
                               </div>
                               </div>

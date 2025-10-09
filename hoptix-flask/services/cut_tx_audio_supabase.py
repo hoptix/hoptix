@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Cut audio clips from a long WAV based on Supabase transactions,
-upload the main WAV to Google Drive, and upload individual clips with links to transactions.
+Cut audio clips from a long MP3 based on Supabase transactions,
+upload the main MP3 to Google Drive, and upload individual clips with links to transactions.
 
-- Downloads WAV from ~/Downloads folder
-- Uploads main WAV to Google Drive
+- Downloads MP3 from ~/Downloads folder
+- Uploads main MP3 to Google Drive
 - Computes recording T0 from anchor mapping
 - For each transaction: start_sec = (started_at - T0), end_sec = (ended_at - T0)
-- Cuts with ffmpeg into individual .wav clips
+- Cuts with ffmpeg into individual .mp3 clips
 - Uploads clips to Google Drive and updates transaction records
 
 Usage:
@@ -15,15 +15,16 @@ Usage:
   export SUPABASE_KEY="service_role_or_anon_key"
 
   python cut_tx_audio_supabase.py \
-      --wav-filename "long_audio.wav" \
+      --mp3-filename "long_audio.mp3" \
       --anchor-started-at "2025-10-01T10:29:27.559790+00:00" \
-      --anchor-wav "03:45:57" \
+      --anchor-mp3 "03:45:57" \
       --run-id UUID \
       [--limit 0]
 """
 
 import argparse
 import os
+import sys
 import subprocess
 import uuid
 import wave
@@ -32,6 +33,9 @@ import shutil
 from datetime import datetime, timezone, timedelta
 import dotenv
 
+# Add the parent directory to the path to import our modules
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from dateutil import parser as dtparser
 from supabase import create_client, Client
 from integrations.gdrive_client import GoogleDriveClient
@@ -39,25 +43,20 @@ from integrations.gdrive_client import GoogleDriveClient
 dotenv.load_dotenv()
 
 
-def ffprobe_duration_seconds(wav_path: str) -> float:
+def ffprobe_duration_seconds(audio_path: str) -> float:
+    """Get duration of audio file (MP3, WAV, etc.) using ffprobe"""
     out = subprocess.check_output([
         "ffprobe", "-v", "error",
         "-show_entries", "format=duration",
         "-of", "default=nw=1:nk=1",
-        wav_path
+        audio_path
     ])
     return float(out.decode().strip())
 
 
-def get_wav_duration_seconds(wav_path: str) -> float:
-    # Try stdlib wave for PCM; fall back to ffprobe for anything else.
-    try:
-        with wave.open(wav_path, "rb") as wf:
-            frames = wf.getnframes()
-            rate = wf.getframerate()
-        return frames / float(rate)
-    except wave.Error:
-        return ffprobe_duration_seconds(wav_path)
+def get_audio_duration_seconds(audio_path: str) -> float:
+    """Get duration of audio file (MP3, WAV, etc.) using ffprobe"""
+    return ffprobe_duration_seconds(audio_path)
 
 
 def iso_or_die(value: str) -> datetime:
@@ -75,19 +74,36 @@ def parse_hms(s: str) -> int:
     return int(h) * 3600 + int(m) * 60 + int(sec)
 
 
-def ffmpeg_cut(wav_path: str, out_path: str, start_sec: float, end_sec: float) -> None:
+def ffmpeg_cut(audio_path: str, out_path: str, start_sec: float, end_sec: float) -> None:
+    """Cut audio clip using ffmpeg (supports MP3, WAV, etc.)"""
     duration = max(0.0, end_sec - start_sec)
     if duration <= 0.0:
         return
-    cmd = [
-        "ffmpeg", "-y",
-        "-hide_banner", "-loglevel", "error",
-        "-ss", f"{start_sec:.3f}",
-        "-i", wav_path,
-        "-t", f"{duration:.3f}",
-        "-c", "copy",  # fast for WAV; switch to "pcm_s16le" if copy fails for your file
-        out_path,
-    ]
+    
+    # Determine output format based on file extension
+    if out_path.lower().endswith('.mp3'):
+        # For MP3 output, re-encode to ensure compatibility
+        cmd = [
+            "ffmpeg", "-y",
+            "-hide_banner", "-loglevel", "error",
+            "-ss", f"{start_sec:.3f}",
+            "-i", audio_path,
+            "-t", f"{duration:.3f}",
+            "-acodec", "mp3",
+            "-ab", "128k",
+            out_path,
+        ]
+    else:
+        # For other formats, use copy for speed
+        cmd = [
+            "ffmpeg", "-y",
+            "-hide_banner", "-loglevel", "error",
+            "-ss", f"{start_sec:.3f}",
+            "-i", audio_path,
+            "-t", f"{duration:.3f}",
+            "-c", "copy",
+            out_path,
+        ]
     subprocess.run(cmd, check=True)
 
 
@@ -111,11 +127,11 @@ def get_downloads_path():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--wav-filename", required=True, help="Filename of the WAV file in Downloads folder")
+    ap.add_argument("--mp3-filename", required=True, help="Filename of the MP3 file in Downloads folder")
     ap.add_argument("--anchor-started-at", required=True,
                     help="ISO8601 started_at of the ANCHOR row (e.g. 2025-10-01T10:29:27.559790+00:00)")
-    ap.add_argument("--anchor-wav", required=True,
-                    help='WAV time of that anchor in HH:MM:SS (e.g. "03:45:57")')
+    ap.add_argument("--anchor-mp3", required=True,
+                    help='MP3 time of that anchor in HH:MM:SS (e.g. "03:45:57")')
     ap.add_argument("--run-id", required=True, help="Run ID (UUID) to filter transactions")
     ap.add_argument("--limit", type=int, default=0, help="Optional: limit number of rows (0 = no limit)")
     args = ap.parse_args()
@@ -131,24 +147,24 @@ def main():
     except ValueError:
         raise ValueError("--run-id must be a valid UUID")
 
-    # Find WAV file in Downloads
+    # Find MP3 file in Downloads
     downloads_path = get_downloads_path()
-    wav_path = os.path.join(downloads_path, args.wav_filename)
+    mp3_path = os.path.join(downloads_path, args.mp3_filename)
     
-    if not os.path.exists(wav_path):
-        raise FileNotFoundError(f"WAV not found in Downloads: {wav_path}")
+    if not os.path.exists(mp3_path):
+        raise FileNotFoundError(f"MP3 not found in Downloads: {mp3_path}")
 
-    print(f"📁 Found WAV file: {wav_path}")
+    print(f"📁 Found MP3 file: {mp3_path}")
 
     # Compute T0 from anchor
     anchor_abs = iso_or_die(args.anchor_started_at)
-    anchor_wav_seconds = parse_hms(args.anchor_wav)
-    T0 = anchor_abs - timedelta(seconds=anchor_wav_seconds)
+    anchor_mp3_seconds = parse_hms(args.anchor_mp3)
+    T0 = anchor_abs - timedelta(seconds=anchor_mp3_seconds)
     print(f"🕐 Computed T0: {T0.isoformat()}")
 
-    # Determine WAV duration (for clamping)
-    wav_duration = get_wav_duration_seconds(wav_path)
-    print(f"⏱️ WAV duration: {wav_duration:.1f} seconds")
+    # Determine MP3 duration (for clamping)
+    mp3_duration = get_audio_duration_seconds(mp3_path)
+    print(f"⏱️ MP3 duration: {mp3_duration:.1f} seconds")
 
     # Supabase client
     supabase: Client = create_client(url, key)
@@ -199,7 +215,7 @@ def main():
             t_s = datetime(anchor_date.year, anchor_date.month, anchor_date.day, t_s.hour, t_s.minute, t_s.second, t_s.microsecond, tzinfo=timezone.utc)
             t_e = datetime(anchor_date.year, anchor_date.month, anchor_date.day, t_e.hour, t_e.minute, t_e.second, t_e.microsecond, tzinfo=timezone.utc)
 
-            # Map to WAV seconds via T0
+            # Map to MP3 seconds via T0
             raw_start = (t_s - T0).total_seconds()
             raw_end = (t_e - T0).total_seconds()
 
@@ -207,9 +223,9 @@ def main():
             if raw_end <= raw_start:
                 raw_end = raw_start + 1.0
 
-            # Clamp to [0, wav_duration]
-            start_sec = max(0.0, min(raw_start, wav_duration))
-            end_sec = max(0.0, min(raw_end, wav_duration))
+            # Clamp to [0, mp3_duration]
+            start_sec = max(0.0, min(raw_start, mp3_duration))
+            end_sec = max(0.0, min(raw_end, mp3_duration))
 
             # If clamping collapses the window, skip
             if end_sec - start_sec <= 0.01:
@@ -219,12 +235,12 @@ def main():
                 continue
 
             # Create clip in temp directory
-            out_name = f"tx_{tx_id}.wav"
+            out_name = f"tx_{tx_id}.mp3"
             out_path = os.path.join(temp_dir, out_name)
 
             try:
                 # Cut the clip
-                ffmpeg_cut(wav_path, out_path, start_sec, end_sec)
+                ffmpeg_cut(mp3_path, out_path, start_sec, end_sec)
                 print(f"✂️ Cut clip {tx_id} (start={start_sec:.3f}s, end={end_sec:.3f}s, dur={end_sec - start_sec:.3f}s)")
                 
                 # Upload clip to Google Drive

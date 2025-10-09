@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Process a WAV file from local downloads folder through the full pipeline
+Process a WAV or MP3 file from local downloads folder through the full pipeline
 Usage: python process_local_wav.py <filename> <org_id> <location_id> <date>
 Example: python process_local_wav.py "DQ Cary_20251002-20251002_1000.wav" org123 loc456 2025-01-02
+Example: python process_local_wav.py "audio_2025-10-06_10-00-02.mp3" org123 loc456 2025-01-02
 """
 
 import os
@@ -36,34 +37,50 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-def get_wav_duration_seconds(wav_path: str) -> float:
-    """Get WAV file duration in seconds using ffprobe"""
+def get_audio_duration_seconds(audio_path: str) -> float:
+    """Get audio file duration in seconds using ffprobe (supports WAV, MP3, etc.)"""
     try:
         out = subprocess.check_output([
             "ffprobe", "-v", "error",
             "-show_entries", "format=duration",
             "-of", "default=nw=1:nk=1",
-            wav_path
+            audio_path
         ])
         return float(out.decode().strip())
     except Exception as e:
-        logger.error(f"Failed to get WAV duration: {e}")
+        logger.error(f"Failed to get audio duration: {e}")
         return 0.0
 
-def ffmpeg_cut(wav_path: str, out_path: str, start_sec: float, end_sec: float) -> None:
-    """Cut audio clip using ffmpeg"""
+def ffmpeg_cut(audio_path: str, out_path: str, start_sec: float, end_sec: float) -> None:
+    """Cut audio clip using ffmpeg (supports WAV, MP3, etc.)"""
     duration = max(0.0, end_sec - start_sec)
     if duration <= 0.0:
         return
-    cmd = [
-        "ffmpeg", "-y",
-        "-hide_banner", "-loglevel", "error",
-        "-ss", f"{start_sec:.3f}",
-        "-i", wav_path,
-        "-t", f"{duration:.3f}",
-        "-c", "copy",  # fast for WAV
-        out_path,
-    ]
+    
+    # Determine output format based on input file
+    if audio_path.lower().endswith('.mp3'):
+        # For MP3 input, re-encode to ensure compatibility
+        cmd = [
+            "ffmpeg", "-y",
+            "-hide_banner", "-loglevel", "error",
+            "-ss", f"{start_sec:.3f}",
+            "-i", audio_path,
+            "-t", f"{duration:.3f}",
+            "-acodec", "mp3",
+            "-ab", "128k",
+            out_path,
+        ]
+    else:
+        # For WAV and other formats, use copy for speed
+        cmd = [
+            "ffmpeg", "-y",
+            "-hide_banner", "-loglevel", "error",
+            "-ss", f"{start_sec:.3f}",
+            "-i", audio_path,
+            "-t", f"{duration:.3f}",
+            "-c", "copy",
+            out_path,
+        ]
     subprocess.run(cmd, check=True)
 
 def upload_clip_to_gdrive(local_path: str, folder_name: str, filename: str) -> str:
@@ -78,7 +95,7 @@ def upload_clip_to_gdrive(local_path: str, folder_name: str, filename: str) -> s
         logger.error(f"Error uploading clip to Google Drive: {e}")
         return None
 
-def process_transaction_clips(run_id: str, original_wav_path: str, run_date: str, db) -> int:
+def process_transaction_clips(run_id: str, original_audio_path: str, run_date: str, db) -> int:
     """Process transaction audio clips and upload to Google Drive"""
     logger.info("🎵 Processing transaction audio clips...")
     
@@ -106,9 +123,9 @@ def process_transaction_clips(run_id: str, original_wav_path: str, run_date: str
         logger.info("No transactions found to process")
         return 0
     
-    # Get WAV duration for bounds checking
-    wav_duration = get_wav_duration_seconds(original_wav_path)
-    logger.info(f"⏱️ Original WAV duration: {wav_duration:.1f} seconds")
+    # Get audio duration for bounds checking
+    audio_duration = get_audio_duration_seconds(original_audio_path)
+    logger.info(f"⏱️ Original audio duration: {audio_duration:.1f} seconds")
     
     # Process clips in temporary directory
     clips_processed = 0
@@ -153,21 +170,21 @@ def process_transaction_clips(run_id: str, original_wav_path: str, run_date: str
                     logger.warning(f"⚠️ No video_id for transaction {tx_id}")
                     continue
                 
-                # Clamp to WAV bounds
-                start_sec = max(0.0, min(tx_start_sec, wav_duration))
-                end_sec = max(0.0, min(tx_end_sec, wav_duration))
+                # Clamp to audio bounds
+                start_sec = max(0.0, min(tx_start_sec, audio_duration))
+                end_sec = max(0.0, min(tx_end_sec, audio_duration))
                 
                 # Skip if duration is too short
                 if end_sec - start_sec < 0.5:
                     logger.warning(f"⚠️ Skipping {tx_id}: duration too short ({end_sec - start_sec:.3f}s)")
                     continue
                 
-                # Create clip filename
+                # Create clip filename (use .wav for consistency)
                 clip_filename = f"tx_{tx_id}.wav"
                 clip_path = os.path.join(temp_dir, clip_filename)
                 
                 # Cut the audio clip
-                ffmpeg_cut(original_wav_path, clip_path, start_sec, end_sec)
+                ffmpeg_cut(original_audio_path, clip_path, start_sec, end_sec)
                 logger.info(f"✂️ Cut clip {tx_id}: {start_sec:.3f}s - {end_sec:.3f}s ({end_sec - start_sec:.3f}s)")
                 
                 # Upload to Google Drive
@@ -191,8 +208,8 @@ def process_transaction_clips(run_id: str, original_wav_path: str, run_date: str
     logger.info(f"🎉 Processed {clips_processed} transaction audio clips")
     return clips_processed
 
-def find_wav_file(filename: str, downloads_path: str = None) -> str:
-    """Find the WAV file in downloads folder or specified path"""
+def find_audio_file(filename: str, downloads_path: str = None) -> str:
+    """Find the audio file (WAV or MP3) in downloads folder or specified path"""
     
     # Common downloads paths
     if downloads_path is None:
@@ -205,39 +222,43 @@ def find_wav_file(filename: str, downloads_path: str = None) -> str:
     else:
         possible_paths = [downloads_path]
     
+    # Supported audio extensions
+    audio_extensions = ['.wav', '.mp3']
+    
     # Try to find the file
     for path in possible_paths:
         if os.path.exists(path):
             full_path = os.path.join(path, filename)
             if os.path.exists(full_path):
-                logger.info(f"✅ Found WAV file: {full_path}")
+                logger.info(f"✅ Found audio file: {full_path}")
                 return full_path
                 
-            # Try with .wav extension if not provided
-            if not filename.lower().endswith('.wav'):
-                full_path = os.path.join(path, filename + '.wav')
-                if os.path.exists(full_path):
-                    logger.info(f"✅ Found WAV file: {full_path}")
-                    return full_path
+            # Try with audio extensions if not provided
+            if not any(filename.lower().endswith(ext) for ext in audio_extensions):
+                for ext in audio_extensions:
+                    full_path = os.path.join(path, filename + ext)
+                    if os.path.exists(full_path):
+                        logger.info(f"✅ Found audio file: {full_path}")
+                        return full_path
     
-    # If not found, list available WAV files
+    # If not found, list available audio files
     logger.error(f"❌ Could not find file: {filename}")
-    logger.info("🔍 Searching for available WAV files...")
+    logger.info("🔍 Searching for available audio files...")
     
     for path in possible_paths:
         if os.path.exists(path):
-            wav_files = [f for f in os.listdir(path) if f.lower().endswith('.wav')]
-            if wav_files:
-                logger.info(f"📁 WAV files in {path}:")
-                for wav_file in wav_files[:10]:  # Show first 10
-                    logger.info(f"   - {wav_file}")
-                if len(wav_files) > 10:
-                    logger.info(f"   ... and {len(wav_files) - 10} more")
+            audio_files = [f for f in os.listdir(path) if any(f.lower().endswith(ext) for ext in audio_extensions)]
+            if audio_files:
+                logger.info(f"📁 Audio files in {path}:")
+                for audio_file in audio_files[:10]:  # Show first 10
+                    logger.info(f"   - {audio_file}")
+                if len(audio_files) > 10:
+                    logger.info(f"   ... and {len(audio_files) - 10} more")
     
     return None
 
 def process_local_wav(filename: str, org_id: str, location_id: str, run_date: str, downloads_path: str = None):
-    """Process a WAV file from local downloads folder through the full pipeline"""
+    """Process a WAV or MP3 file from local downloads folder through the full pipeline"""
     
     # Load environment variables
     load_dotenv()
@@ -253,28 +274,28 @@ def process_local_wav(filename: str, org_id: str, location_id: str, run_date: st
         
         logger.info("✅ Services initialized successfully")
         
-        # Find the WAV file
-        logger.info(f"🔍 Looking for WAV file: {filename}")
-        wav_path = find_wav_file(filename, downloads_path)
+        # Find the audio file
+        logger.info(f"🔍 Looking for audio file: {filename}")
+        audio_path = find_audio_file(filename, downloads_path)
         
-        if not wav_path:
-            logger.error(f"❌ Could not find WAV file: {filename}")
+        if not audio_path:
+            logger.error(f"❌ Could not find audio file: {filename}")
             return None
         
         # Get file information
-        file_name = os.path.basename(wav_path)
-        file_size = os.path.getsize(wav_path)
+        file_name = os.path.basename(audio_path)
+        file_size = os.path.getsize(audio_path) 
         
         logger.info(f"📄 File name: {file_name}")
         logger.info(f"📊 File size: {file_size:,} bytes ({file_size / (1024*1024):.1f}MB)")
-        logger.info(f"📍 File path: {wav_path}")
+        logger.info(f"📍 File path: {audio_path}")
         
         # Check if file needs splitting
-        should_split, reason = wav_splitter.should_split_wav(wav_path)
+        should_split, reason = wav_splitter.should_split_wav(audio_path)
         logger.info(f"🔍 File analysis: {reason}")
         
         if should_split:
-            logger.info(f"🔪 Large WAV file detected, splitting into chunks...")
+            logger.info(f"🔪 Large audio file detected, splitting into chunks...")
             
             # Create run for the provided org and location
             logger.info("🔧 Creating run in database...")
@@ -294,7 +315,7 @@ def process_local_wav(filename: str, org_id: str, location_id: str, run_date: st
                 ended_at = started_at + timedelta(hours=24)
 
             #check if video record already exists 
-            video_result = db.client.table("videos").select("id").eq("run_id", run_id).eq("location_id", location_id).eq("camera_id", f"local-wav-{file_name[:8]}").limit(1).execute()
+            video_result = db.client.table("videos").select("id").eq("run_id", run_id).eq("location_id", location_id).eq("camera_id", f"local-audio-{file_name[:8]}").limit(1).execute()
             if video_result.data:
                 video_id = video_result.data[0]["id"]
             else:
@@ -304,17 +325,17 @@ def process_local_wav(filename: str, org_id: str, location_id: str, run_date: st
                 "id": video_id,
                 "run_id": run_id,
                 "location_id": location_id,
-                "camera_id": f"local-wav-{file_name[:8]}",
-                "s3_key": f"local/wav_processing/{video_id}/{file_name}",  # Use video_id UUID for uniqueness
+                "camera_id": f"local-audio-{file_name[:8]}",
+                "s3_key": f"local/audio_processing/{video_id}/{file_name}",  # Use video_id UUID for uniqueness
                 "started_at": started_at.isoformat(),
                 "ended_at": ended_at.isoformat(),
                 "status": "uploaded",
                 "meta": {
-                    "source": "local_wav_file",
-                    "local_file_path": wav_path,
+                    "source": "local_audio_file",
+                    "local_file_path": audio_path,
                     "file_name": file_name,
                     "file_size": file_size,
-                    "processing_type": "local_wav_processing",
+                    "processing_type": "local_audio_processing",
                     "organization_id": org_id  # Store org_id in meta instead
                 }
             }
@@ -323,12 +344,12 @@ def process_local_wav(filename: str, org_id: str, location_id: str, run_date: st
             db.client.table("videos").upsert(video_data, on_conflict="id").execute()
             logger.info(f"✅ Created video record with ID: {video_id}")
         
-            # Split the WAV file into chunks and create video records for each chunk
-            logger.info("🔪 Splitting WAV file into chunks...")
-            chunk_records = wav_splitter.process_large_wav_file(wav_path, video_data)
+            # Split the audio file into chunks and create video records for each chunk
+            logger.info("🔪 Splitting audio file into chunks...")
+            chunk_records = wav_splitter.process_large_wav_file(audio_path, video_data)
             
             if not chunk_records:
-                logger.error("❌ Failed to split WAV file")
+                logger.error("❌ Failed to split audio file")
                 return None
             
             logger.info(f"✅ Successfully split into {len(chunk_records)} chunks")
@@ -514,7 +535,7 @@ def process_local_wav(filename: str, org_id: str, location_id: str, run_date: st
             
             # PHASE 3: Process transaction audio clips and upload to Google Drive
             logger.info("🎵 PHASE 3: Processing transaction audio clips...")
-            clips_processed = process_transaction_clips(run_id, wav_path, run_date, db)
+            clips_processed = process_transaction_clips(run_id, audio_path, run_date, db)
             
             # PHASE 4: Clean up chunk files
             logger.info("🧹 PHASE 4: Cleaning up chunk files...")
@@ -539,7 +560,7 @@ def process_local_wav(filename: str, org_id: str, location_id: str, run_date: st
             
         else:
             # Process as single file (small enough)
-            logger.info("🎵 Processing as single WAV file...")
+            logger.info("🎵 Processing as single audio file...")
             
             # Create run for the provided org and location
             logger.info("🔧 Creating run in database...")
@@ -565,17 +586,17 @@ def process_local_wav(filename: str, org_id: str, location_id: str, run_date: st
                 "id": video_id,
                 "run_id": run_id,
                 "location_id": location_id,
-                "camera_id": f"local-wav-{file_name[:8]}",
-                "s3_key": f"local/wav_processing/{video_id}/{file_name}",  # Use video_id UUID for uniqueness
+                "camera_id": f"local-audio-{file_name[:8]}",
+                "s3_key": f"local/audio_processing/{video_id}/{file_name}",  # Use video_id UUID for uniqueness
                 "started_at": started_at.isoformat(),
                 "ended_at": ended_at.isoformat(),
                 "status": "uploaded",
                 "meta": {
-                    "source": "local_wav_file",
-                    "local_file_path": wav_path,
+                    "source": "local_audio_file",
+                    "local_file_path": audio_path,
                     "file_name": file_name,
                     "file_size": file_size,
-                    "processing_type": "local_wav_processing",
+                    "processing_type": "local_audio_processing",
                     "organization_id": org_id  # Store org_id in meta instead
                 }
             }
@@ -584,9 +605,9 @@ def process_local_wav(filename: str, org_id: str, location_id: str, run_date: st
             db.client.table("videos").upsert(video_data, on_conflict="id").execute()
             logger.info(f"✅ Created video record with ID: {video_id}")
             
-            # Process the WAV file
-            logger.info("🚀 Starting WAV processing pipeline...")
-            processing_service.process_wav_from_local_file(video_data, wav_path)
+            # Process the audio file
+            logger.info("🚀 Starting audio processing pipeline...")
+            processing_service.process_wav_from_local_file(video_data, audio_path)
             
             # Get results
             tx_result = db.client.table("transactions").select("id", count="exact").eq("video_id", video_id).execute()
@@ -599,7 +620,7 @@ def process_local_wav(filename: str, org_id: str, location_id: str, run_date: st
             
             # Process transaction audio clips
             logger.info("🎵 Processing transaction audio clips...")
-            clips_processed = process_transaction_clips(run_id, wav_path, run_date, db)
+            clips_processed = process_transaction_clips(run_id, audio_path, run_date, db)
             
             return {
                 "video_id": video_id,
@@ -621,16 +642,17 @@ def main():
     if len(sys.argv) < 5:
         print("Usage: python process_local_wav.py <filename> <org_id> <location_id> <date> [downloads_path]")
         print("Example: python process_local_wav.py \"DQ Cary_20251002-20251002_1000.wav\" org123 loc456 2025-01-02")
+        print("Example: python process_local_wav.py \"audio_2025-10-06_10-00-02.mp3\" org123 loc456 2025-01-02")
         print("")
         print("Arguments:")
-        print("  filename      - Name of the WAV file (with or without .wav extension)")
+        print("  filename      - Name of the audio file (WAV or MP3, with or without extension)")
         print("  org_id        - Organization ID")
         print("  location_id   - Location ID")
         print("  date          - Date in YYYY-MM-DD format")
         print("  downloads_path - Optional: specific path to look for the file")
         print("")
         print("The script will automatically:")
-        print("1. Find the WAV file in your Downloads folder")
+        print("1. Find the audio file (WAV or MP3) in your Downloads folder")
         print("2. Check if it needs to be split (large files)")
         print("3. Process it through the full pipeline")
         print("4. Cut transaction audio clips and upload to Google Drive")
@@ -643,7 +665,7 @@ def main():
     run_date = sys.argv[4]
     downloads_path = sys.argv[5] if len(sys.argv) > 5 else None
     
-    print(f"🚀 Processing local WAV file")
+    print(f"🚀 Processing local audio file")
     print(f"📄 File: {filename}")
     print(f"📅 Date: {run_date}")
     print(f"🏢 Org ID: {org_id}")

@@ -4,7 +4,7 @@ import { apiClient } from "@/lib/api-client"
 interface Run {
   id: string
   runId: string  // Add this field for the data table
-  date: string
+  run_date: string
   status: string
   created_at: string
   org_id: string
@@ -28,9 +28,9 @@ const fetchRuns = async (locationId?: string, limit?: number, includeAnalytics: 
   const runs = (data.runs || []).map((run: any) => ({
     ...run,
     runId: run.id,  // Map id to runId for the data table
-    date: run.run_date || run.date,  // Map run_date to date if needed
+    run_date: run.run_date,  // Keep run_date as run_date
   }))
-
+  
   return {
     runs,
     count: runs.length

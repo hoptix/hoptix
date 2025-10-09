@@ -2,18 +2,24 @@ import { useQuery } from "@tanstack/react-query"
 import { apiClient } from "@/lib/api-client"
 
 interface SizeMetrics {
-  upsell_base: number
-  upsell_candidates: number
-  upsell_offered: number
-  upsell_success: number
-  upsize_base: number
-  upsize_candidates: number
-  upsize_offered: number
-  upsize_success: number
-  addon_base: number
-  addon_candidates: number
-  addon_offered: number
-  addon_success: number
+  upsell_base: number;
+  upsell_candidates: number;
+  upsell_offered: number;
+  upsell_success: number;
+  upsell_base_sold: number;
+  upsell_base_offers: number;
+  upsize_base: number;
+  upsize_candidates: number;
+  upsize_offered: number;
+  upsize_success: number;
+  upsize_base_sold: number;
+  upsize_base_offers: number;
+  addon_base: number;
+  addon_candidates: number;
+  addon_offered: number;
+  addon_success: number;
+  addon_base_sold: number;
+  addon_base_offers: number;
 }
 
 interface ItemAnalytics {
