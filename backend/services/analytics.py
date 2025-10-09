@@ -214,7 +214,94 @@ class Analytics:
                         if transition_key in item_analytics[success_item_id]["transitions"]:
                             item_analytics[success_item_id]["transitions"][transition_key] += 1
                     break
-    
+
+    def _calculate_upsell_revenue(self):
+        """Calculate revenue from successful upsells using actual item prices"""
+        if self.worker_id:
+            result = db.view("graded_rows_filtered").select("upsell_success_items, upsell_base_sold_items").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
+        else:
+            result = db.view("graded_rows_filtered").select("upsell_success_items, upsell_base_sold_items").eq("run_id", self.run_id).execute()
+
+        # Get price data from items and meals tables
+        items_prices = db.get_items_prices(self.location_id)
+        meals_prices = db.get_meals_prices(self.location_id)
+
+        total_revenue = 0
+        for tx in result.data:
+            success_items = self._parse_json_array(tx.get("upsell_success_items", "0"))
+            base_sold_items = self._parse_json_array(tx.get("upsell_base_sold_items", "0"))
+
+            # Calculate revenue as price difference between upgraded item (meal) and base item
+            for success_item in success_items:
+                # Success items are typically meals, check meals first
+                success_price = meals_prices.get(success_item, items_prices.get(success_item, 0))
+
+                # Find corresponding base item - match by item_id (first part before underscore)
+                success_item_id = success_item.split("_")[0]
+                for base_item in base_sold_items:
+                    base_item_id = base_item.split("_")[0]
+                    if base_item_id == success_item_id:
+                        base_price = items_prices.get(base_item, 0)
+                        total_revenue += (success_price - base_price)
+                        break
+
+        return total_revenue
+
+    def _calculate_upsize_revenue(self):
+        """Calculate revenue from successful upsizes using size price differences"""
+        if self.worker_id:
+            result = db.view("graded_rows_filtered").select("upsize_success_items, upsize_base_sold_items").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
+        else:
+            result = db.view("graded_rows_filtered").select("upsize_success_items, upsize_base_sold_items").eq("run_id", self.run_id).execute()
+
+        # Get price data
+        items_prices = db.get_items_prices(self.location_id)
+        meals_prices = db.get_meals_prices(self.location_id)
+
+        total_revenue = 0
+        for tx in result.data:
+            success_items = self._parse_json_array(tx.get("upsize_success_items", "0"))
+            base_sold_items = self._parse_json_array(tx.get("upsize_base_sold_items", "0"))
+
+            # Calculate revenue as price difference between larger size and smaller size
+            for success_item in success_items:
+                # Check both meals and items for price
+                success_price = meals_prices.get(success_item, items_prices.get(success_item, 0))
+
+                # Find corresponding base item - same item_id, different size
+                success_item_id = success_item.split("_")[0]
+                for base_item in base_sold_items:
+                    base_item_id = base_item.split("_")[0]
+                    if base_item_id == success_item_id:
+                        base_price = meals_prices.get(base_item, items_prices.get(base_item, 0))
+                        total_revenue += (success_price - base_price)
+                        break
+
+        return total_revenue
+
+    def _calculate_addon_revenue(self):
+        """Calculate revenue from successful add-ons using addon prices"""
+        if self.worker_id:
+            result = db.view("graded_rows_filtered").select("addon_success_items").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
+        else:
+            result = db.view("graded_rows_filtered").select("addon_success_items").eq("run_id", self.run_id).execute()
+
+        # Get addon prices
+        addons_prices = db.get_addons_prices(self.location_id)
+
+        total_revenue = 0
+        for tx in result.data:
+            success_items = self._parse_json_array(tx.get("addon_success_items", "0"))
+
+            # Calculate total addon revenue
+            for addon_item in success_items:
+                # Extract just the item_id (before underscore)
+                addon_item_id = addon_item.split("_")[0]
+                addon_price = addons_prices.get(addon_item_id, 0)
+                total_revenue += addon_price
+
+        return total_revenue
+
     def generate_analytics_json(self):
         """Generate complete analytics JSON that fits the database schema"""
         # Calculate all metrics
@@ -231,21 +318,21 @@ class Analytics:
         upsell_offers = self.get_total_upsell_offers()
         upsell_successes = self.get_total_upsell_success()
         upsell_conversion_rate = upsell_successes / upsell_offers if upsell_offers > 0 else 0
-        upsell_revenue = 0  # TODO: Calculate based on item prices
-        
+        upsell_revenue = self._calculate_upsell_revenue()
+
         # Upsize metrics
         upsize_opportunities = self.get_total_upsize_opportunities()
         upsize_offers = self.get_total_upsize_offers()
         upsize_successes = self.get_total_upsize_success()
         upsize_conversion_rate = upsize_successes / upsize_offers if upsize_offers > 0 else 0
-        upsize_revenue = 0  # TODO: Calculate based on size upgrade prices
-        
+        upsize_revenue = self._calculate_upsize_revenue()
+
         # Addon metrics
         addon_opportunities = self.get_total_addon_opportunities()
         addon_offers = self.get_total_addon_offers()
         addon_successes = self.get_total_addon_success()
         addon_conversion_rate = addon_successes / addon_offers if addon_offers > 0 else 0
-        addon_revenue = 0  # TODO: Calculate based on addon prices
+        addon_revenue = self._calculate_addon_revenue()
         
         # Overall metrics
         total_opportunities = upsell_opportunities + upsize_opportunities + addon_opportunities

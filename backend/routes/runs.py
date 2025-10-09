@@ -1,8 +1,10 @@
-from flask import current_app, request, Blueprint, jsonify
+from flask import current_app, request, Blueprint, jsonify, g
 import logging
 from services.database import Supa
 from utils.helpers import convert_item_ids_to_names
 from services.items import ItemLookupService
+from services.auth_helpers import verify_run_ownership, verify_location_ownership, get_user_locations
+from middleware.auth import require_auth
 
 db = Supa()
 
@@ -12,10 +14,17 @@ runs_bp = Blueprint("runs", __name__)
 logger = logging.getLogger(__name__)
 
 @runs_bp.get("/runs")
-def get_all_runs(): 
+@require_auth
+def get_all_runs():
     try:
-        # Get all runs from the database
-        res = db.client.table("runs").select("*").execute()
+        # Get user's locations
+        user_location_ids = get_user_locations(g.user_id)
+
+        if not user_location_ids:
+            return jsonify({"runs": []}), 200
+
+        # Get runs for user's locations only
+        res = db.client.table("runs").select("*").in_("location_id", user_location_ids).execute()
         runs = res.data
 
         # Process each run to add analytics data
@@ -58,26 +67,21 @@ def get_all_runs():
 
 
 @runs_bp.get("/locations")
+@require_auth
 def get_all_locations():
-    """Get all locations with their organization details"""
-    
+    """Get all locations owned by the authenticated user"""
+
     try:
-        logger.info("Fetching locations (default: all; filter by owner if provided)...")
-        
-        owner_id = request.args.get("owner_id")
-        
-        # Build base query
-        query = db.client.table("locations").select("*")
-        if owner_id:
-            query = query.eq("owner_id", owner_id)
-        
-        locations_result = query.execute()
+        logger.info(f"Fetching locations for user {g.user_id}...")
+
+        # Get only the authenticated user's locations
+        locations_result = db.client.table("locations").select("*").eq("owner_id", g.user_id).execute()
         
         if not locations_result.data:
-            logger.info("No locations found")
+            logger.info("No locations found for this user")
             return {"locations": [], "count": 0}, 200
-        
-        logger.info(f"Found {len(locations_result.data)} locations" + (f" for owner {owner_id}" if owner_id else ""))
+
+        logger.info(f"Found {len(locations_result.data)} locations for user {g.user_id}")
         
         # Get all organizations to map org_id to org_name
         orgs_result = db.client.table("orgs").select("id, name").execute()
@@ -107,10 +111,16 @@ def get_all_locations():
         return {"error": f"Internal server error: {str(e)}"}, 500
 
 @runs_bp.get("/locations/<location_id>/runs")
+@require_auth
 def get_runs_by_location(location_id):
     """Get all runs for a specific location with analytics data"""
-    
+
     try:
+        # Verify user owns this location
+        if not verify_location_ownership(g.user_id, location_id):
+            return jsonify({
+                "error": "Access denied: You do not have permission to access this location"
+            }), 403
         # Get query parameters
         limit = int(request.args.get("limit", 50))
         limit = min(limit, 200)  # Cap at 200 for performance
@@ -174,18 +184,25 @@ def get_runs_by_location(location_id):
 
 
 @runs_bp.route('/runs/<run_id>/transactions', methods=['GET'])
+@require_auth
 def get_run_transactions(run_id: str):
     """
     Get raw transaction data for a specific run
-    
+
     Query Parameters:
         limit (int): Number of transactions to return (default: 50, max: 200)
         offset (int): Number of transactions to skip for pagination (default: 0)
-    
+
     Returns:
         JSON: Transaction data with pagination metadata
     """
     try:
+        # Verify user owns this run
+        if not verify_run_ownership(g.user_id, run_id):
+            return jsonify({
+                "success": False,
+                "error": "Access denied: You do not have permission to access this run"
+            }), 403
         # Get query parameters
         limit = min(int(request.args.get('limit', 50)), 200)  # Cap at 200
         offset = max(int(request.args.get('offset', 0)), 0)   # Ensure non-negative

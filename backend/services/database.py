@@ -169,3 +169,30 @@ class Supa:
     def get_location_from_run(self, run_id: str):
         result = self.client.table("runs").select("location_id").eq("id", run_id).execute()
         return result.data[0]["location_id"]
+
+    def get_items_prices(self, location_id: str):
+        """Get item prices as a dict mapping item_id_size to price"""
+        result = self.client.table("items").select("item_id, size_ids, price").eq("location_id", location_id).execute()
+        prices = {}
+        for item in result.data:
+            if item.get("size_ids"):
+                for size_id in item["size_ids"]:
+                    key = f"{item['item_id']}_{size_id}"
+                    prices[key] = float(item["price"]) if item.get("price") else 0.0
+        return prices
+
+    def get_meals_prices(self, location_id: str):
+        """Get meal prices as a dict mapping item_id_size to price"""
+        result = self.client.table("meals").select("item_id, size_ids, price").eq("location_id", location_id).execute()
+        prices = {}
+        for meal in result.data:
+            if meal.get("size_ids"):
+                for size_id in meal["size_ids"]:
+                    key = f"{meal['item_id']}_{size_id}"
+                    prices[key] = float(meal["price"]) if meal.get("price") else 0.0
+        return prices
+
+    def get_addons_prices(self, location_id: str):
+        """Get addon prices as a dict mapping item_id to price"""
+        result = self.client.table("add_ons").select("item_id, price").eq("location_id", location_id).execute()
+        return {str(item["item_id"]): float(item["price"]) if item.get("price") else 0.0 for item in result.data}

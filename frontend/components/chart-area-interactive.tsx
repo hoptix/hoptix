@@ -4,6 +4,7 @@ import * as React from "react"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useLocationAnalyticsOverTime } from "@/hooks/useLocationAnalyticsOverTime"
 import {
   Card,
   CardContent,
@@ -28,7 +29,8 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/components/ui/toggle-group"
-const chartData = [
+
+const chartDataOld = [
   { date: "2024-04-01", desktop: 222, mobile: 150 },
   { date: "2024-04-02", desktop: 97, mobile: 180 },
   { date: "2024-04-03", desktop: 167, mobile: 120 },
@@ -123,20 +125,28 @@ const chartData = [
 ]
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  revenue: {
+    label: "Revenue",
   },
-  desktop: {
-    label: "Desktop",
+  upsell_revenue: {
+    label: "Upsell",
     color: "hsl(var(--chart-1))",
   },
-  mobile: {
-    label: "Mobile",
+  upsize_revenue: {
+    label: "Upsize",
     color: "hsl(var(--chart-2))",
+  },
+  addon_revenue: {
+    label: "Add-ons",
+    color: "hsl(var(--chart-3))",
   },
 } satisfies ChartConfig
 
-export function ChartAreaInteractive() {
+interface ChartAreaInteractiveProps {
+  locationId?: string
+}
+
+export function ChartAreaInteractive({ locationId }: ChartAreaInteractiveProps) {
   const isMobile = useIsMobile()
   const [timeRange, setTimeRange] = React.useState("30d")
 
@@ -146,29 +156,79 @@ export function ChartAreaInteractive() {
     }
   }, [isMobile])
 
-  const filteredData = chartData.filter((item) => {
-    const date = new Date(item.date)
-    const referenceDate = new Date("2024-06-30")
-    let daysToSubtract = 90
-    if (timeRange === "30d") {
-      daysToSubtract = 30
-    } else if (timeRange === "7d") {
-      daysToSubtract = 7
-    }
-    const startDate = new Date(referenceDate)
-    startDate.setDate(startDate.getDate() - daysToSubtract)
-    return date >= startDate
+  // Convert time range to days
+  const getDaysFromTimeRange = (range: string) => {
+    if (range === "7d") return 7
+    if (range === "30d") return 30
+    if (range === "90d") return 90
+    return 30
+  }
+
+  // Fetch real data
+  const { data: chartData, isLoading } = useLocationAnalyticsOverTime({
+    locationId,
+    days: getDaysFromTimeRange(timeRange),
+    enabled: !!locationId
   })
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <Card className="@container/card">
+        <CardHeader className="relative">
+          <div className="h-6 bg-muted rounded w-48 mb-2 animate-pulse"></div>
+          <div className="h-4 bg-muted rounded w-64 animate-pulse"></div>
+        </CardHeader>
+        <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+          <div className="h-[250px] bg-muted rounded animate-pulse"></div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // Empty state (no location selected)
+  if (!locationId) {
+    return (
+      <Card className="@container/card">
+        <CardHeader>
+          <CardTitle>Revenue Over Time</CardTitle>
+          <CardDescription>Daily revenue breakdown</CardDescription>
+        </CardHeader>
+        <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+          <div className="h-[250px] flex items-center justify-center text-muted-foreground">
+            Select a location to view revenue analytics
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // No data state
+  if (!chartData || chartData.length === 0) {
+    return (
+      <Card className="@container/card">
+        <CardHeader>
+          <CardTitle>Revenue Over Time</CardTitle>
+          <CardDescription>Daily revenue breakdown</CardDescription>
+        </CardHeader>
+        <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+          <div className="h-[250px] flex items-center justify-center text-muted-foreground">
+            No analytics data available for the selected period
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <Card className="@container/card">
       <CardHeader className="relative">
-        <CardTitle>Total Visitors</CardTitle>
+        <CardTitle>Revenue Over Time</CardTitle>
         <CardDescription>
           <span className="@[540px]/card:block hidden">
-            Total for the last 3 months
+            Daily revenue from upsells, upsizes, and add-ons
           </span>
-          <span className="@[540px]/card:hidden">Last 3 months</span>
+          <span className="@[540px]/card:hidden">Daily revenue breakdown</span>
         </CardDescription>
         <div className="absolute right-4 top-4">
           <ToggleGroup
@@ -214,29 +274,41 @@ export function ChartAreaInteractive() {
           config={chartConfig}
           className="aspect-auto h-[250px] w-full"
         >
-          <AreaChart data={filteredData}>
+          <AreaChart data={chartData}>
             <defs>
-              <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fillUpsell" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-desktop)"
+                  stopColor="var(--color-upsell_revenue)"
                   stopOpacity={1.0}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-desktop)"
+                  stopColor="var(--color-upsell_revenue)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
-              <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fillUpsize" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-mobile)"
+                  stopColor="var(--color-upsize_revenue)"
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-mobile)"
+                  stopColor="var(--color-upsize_revenue)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+              <linearGradient id="fillAddon" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-addon_revenue)"
+                  stopOpacity={0.6}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-addon_revenue)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
@@ -264,24 +336,35 @@ export function ChartAreaInteractive() {
                     return new Date(value).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
+                      year: "numeric",
                     })
+                  }}
+                  formatter={(value) => {
+                    return `$${Number(value).toFixed(2)}`
                   }}
                   indicator="dot"
                 />
               }
             />
             <Area
-              dataKey="mobile"
+              dataKey="addon_revenue"
               type="natural"
-              fill="url(#fillMobile)"
-              stroke="var(--color-mobile)"
+              fill="url(#fillAddon)"
+              stroke="var(--color-addon_revenue)"
               stackId="a"
             />
             <Area
-              dataKey="desktop"
+              dataKey="upsize_revenue"
               type="natural"
-              fill="url(#fillDesktop)"
-              stroke="var(--color-desktop)"
+              fill="url(#fillUpsize)"
+              stroke="var(--color-upsize_revenue)"
+              stackId="a"
+            />
+            <Area
+              dataKey="upsell_revenue"
+              type="natural"
+              fill="url(#fillUpsell)"
+              stroke="var(--color-upsell_revenue)"
               stackId="a"
             />
           </AreaChart>

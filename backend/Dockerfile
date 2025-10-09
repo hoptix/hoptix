@@ -44,7 +44,9 @@
     COPY --from=builder /app/config.py /app/config.py
     COPY --from=builder /app/routes /app/routes
     COPY --from=builder /app/services /app/services
+    COPY --from=builder /app/middleware /app/middleware
     COPY --from=builder /app/pipeline /app/pipeline
+    COPY --from=builder /app/prompts /app/prompts
     COPY --from=builder /app/tests /app/tests
     COPY --from=builder /app/utils /app/utils
     COPY --from=builder /app/scripts /app/scripts
@@ -62,7 +64,10 @@
     # Set environment variables
     ENV PYTHONPATH=/app
     ENV PATH="/app/scripts:$PATH"
-    
+
+    # Expose port
+    EXPOSE 8000
+
     # Default command
     CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120", "--access-logfile", "-", "--error-logfile", "-", "--log-level", "info", "app:app"]
     

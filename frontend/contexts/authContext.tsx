@@ -7,18 +7,18 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import type { User, AuthState, LoginCredentials } from '@/types/auth'
-import { loginUser, refreshSession, AuthApiError } from '@/lib/auth-api'
+import { loginUser, refreshSession, logoutUser as logoutUserApi, AuthApiError } from '@/lib/auth-api'
 import {
   setRefreshToken,
   getRefreshToken,
   removeRefreshToken,
   getTimeUntilExpiry,
 } from '@/lib/token-storage'
-import { setAccessToken as setGlobalAccessToken } from '@/lib/api-client'
+import { setAccessToken as setGlobalAccessToken, getAccessToken } from '@/lib/api-client'
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
   refreshToken: () => Promise<void>
 }
 
@@ -134,7 +134,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   /**
    * Logout function
    */
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    // Get current tokens before clearing
+    const currentAccessToken = getAccessToken()
+    const currentRefreshToken = getRefreshToken()
+
+    // Attempt to logout on server (non-blocking)
+    // This will fail gracefully if tokens are invalid or server is unreachable
+    if (currentAccessToken && currentRefreshToken) {
+      await logoutUserApi(currentAccessToken, currentRefreshToken)
+    }
+
+    // Always clear tokens and state, even if logout API fails
     // Clear timeout
     if (refreshTimeoutRef.current) {
       clearTimeout(refreshTimeoutRef.current)
