@@ -126,7 +126,22 @@ class Supa:
 
     def upsert_grades(self, grades: list[dict]):
         """Upsert grades into database"""
-        self.client.table("grades").upsert(grades).execute()
+        self.client.table("grades").upsert(grades, on_conflict="transaction_id").execute()
+        if not grades:
+            return
+        
+        # Flatten the nested structure
+        flattened_grades = []
+        for grade in grades:
+            flattened = {
+                "transaction_id": grade.get("transaction_id"),
+                "transcript": grade.get("transcript"),
+                "gpt_price": grade.get("gpt_price"),
+                **grade.get("details", {})  # Spread the details into the main object
+            }
+            flattened_grades.append(flattened)
+        
+        self.client.table("grades").upsert(flattened_grades, on_conflict="transaction_id").execute()
     
     def get_audio_record(self, audio_id: str) -> Optional[dict]:
         """Get audio record by ID"""
@@ -144,6 +159,8 @@ class Supa:
             return []
 
         result = self.client.table("transactions").upsert(transactions).execute()
+        print(f"Inserted {len(result.data)} transactions")
+        print(f"Transactions: {result.data}")
         return result.data
 
     def get_meals(self, location_id: str):

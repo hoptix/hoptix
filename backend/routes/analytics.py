@@ -33,13 +33,18 @@ def get_run_analytics(run_id, worker_id=None):
             except:
                 detailed_analytics = {}
         
+        run = db.client.table("runs").select("run_date, location_id, org_id").eq("id", result.data["run_id"]).single().execute()
+        location_id = run.data["location_id"]
+        location_name = db.get_location_name(location_id)
+        org_name = db.get_org_name(location_id)
+        
         # Format the response
         analytics_data = {
             "run_id": result.data["run_id"],
-            "run_date": "2025-10-05",  # Placeholder since we're not joining with runs table
-            "location_id": "unknown",  # Placeholder since we're not joining with runs table
-            "location_name": "Unknown Location",  # Placeholder
-            "org_name": "Unknown Organization",  # Placeholder
+            "run_date": run.data["run_date"],  # Placeholder since we're not joining with runs table
+            "location_id": location_id,  # Placeholder since we're not joining with runs table
+            "location_name": location_name,  # Placeholder
+            "org_name": org_name,  # Placeholder
             "total_transactions": result.data["total_transactions"],
             "complete_transactions": result.data["complete_transactions"],
             "completion_rate": float(result.data["completion_rate"]),
@@ -110,13 +115,18 @@ def get_run_worker_analytics(run_id):
                 except json.JSONDecodeError:
                     detailed_analytics = {}
             
+            run = db.client.table("runs").select("run_date, location_id, org_id").eq("id", worker_data['run_id']).single().execute()
+            location_id = run.data["location_id"]
+            location_name = db.get_location_name(location_id)
+            org_name = db.get_org_name(location_id)
+            
             worker_analytics.append({
                 "worker_id": worker_data['worker_id'],
                 "run_id": worker_data['run_id'],
-                "run_date": "2025-10-05",  # Placeholder since we're not joining with runs table
-                "location_id": "unknown",  # Placeholder since we're not joining with runs table
-                "location_name": "Unknown Location",  # Placeholder
-                "org_name": "Unknown Organization",  # Placeholder
+                "run_date": run.data["run_date"],  # Placeholder since we're not joining with runs table
+                "location_id": location_id,  # Placeholder since we're not joining with runs table
+                "location_name": location_name,  # Placeholder
+                "org_name": org_name,  # Placeholder
                 "total_transactions": worker_data['total_transactions'],
                 "complete_transactions": worker_data['complete_transactions'],
                 "completion_rate": float(worker_data['completion_rate']),
@@ -182,16 +192,20 @@ def get_all_worker_analytics():
                 except json.JSONDecodeError:
                     detailed_analytics = {}
 
-                    
+            run = db.client.table("runs").select("run_date, location_id, org_id").eq("id", worker_data['run_id']).single().execute()
+            location_id = run.data["location_id"]
+            location_name = db.get_location_name(location_id)
+            org_name = db.get_org_name(location_id)
+            
             
             worker_analytics.append({
                 "id": f"{worker_data['run_id']}_{worker_data['worker_id']}",  # Unique ID for table
                 "run_id": worker_data['run_id'],
                 "worker_id": worker_data['worker_id'],
-                "run_date": "2025-10-05",  # Placeholder - we'll need to get this from runs table separately
-                "location_id": "unknown",  # Placeholder - we'll need to get this from runs table separately
-                "location_name": "Unknown Location",  # Placeholder
-                "org_name": "Unknown Organization",  # Placeholder
+                "run_date": run.data["run_date"],  # Placeholder - we'll need to get this from runs table separately
+                "location_id": location_id,  # Placeholder - we'll need to get this from runs table separately
+                "location_name": location_name,  # Placeholder
+                "org_name": org_name,  # Placeholder
                 "total_transactions": worker_data['total_transactions'],
                 "complete_transactions": worker_data['complete_transactions'],
                 "completion_rate": float(worker_data['completion_rate']),

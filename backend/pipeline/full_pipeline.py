@@ -14,6 +14,7 @@ from services.transactions import split_into_transactions
 from services.grader import grade_transactions
 from services.analytics import Analytics
 from services.clipper import clip_transactions
+from tests.generate_worker_report import generate_worker_report
 from utils.helpers import get_memory_usage, log_memory_usage
 
 db = Supa() 
@@ -47,18 +48,6 @@ def full_pipeline(location_id: str, date: str):
     
     # Get audio record for proper chunking
     audio_record = db.get_audio_record(audio_id)
-    if not audio_record:
-        # Create a basic audio record if none exists
-        audio_record = {
-            "id": audio_id,
-            "run_id": run_id,
-            "location_id": location_id,
-            "date": date,
-            "started_at": f"{date}T10:00:00Z",
-            "ended_at": f"{date}T18:00:00Z",
-            "link": gdrive_path,
-            "status": "processing"
-        }
     
     transcript_segments = transcribe_audio(audio_path, db=db, audio_record=audio_record)
     
@@ -72,7 +61,7 @@ def full_pipeline(location_id: str, date: str):
     print(f"📝 Split {len(transactions)} transactions")
 
     #4) Insert transactions into database 
-    log_memory_usage("Inserting transactions into database", 4, TOTAL_STEPS)
+    log_memory_usage(f"Inserting {len(transactions)} transactions into database", 4, TOTAL_STEPS)
     inserted_transactions = db.upsert_transactions(transactions)
 
     #5) Grade transactions 
@@ -87,6 +76,10 @@ def full_pipeline(location_id: str, date: str):
     log_memory_usage("Generating analytics report", 7, TOTAL_STEPS)
     analytics = Analytics(run_id)
     analytics.upload_to_db()
+
+    # Generate the worker reports
+    log_memory_usage("Generating worker reports", 7, TOTAL_STEPS)
+    generate_worker_report([run_id])
 
     #7) Write clips to google drive 
     log_memory_usage("Writing clips to google drive", 8, TOTAL_STEPS)

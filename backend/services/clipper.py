@@ -77,11 +77,11 @@ def get_downloads_path():
     downloads = os.path.join(home, "Downloads")
     return downloads
 
-def clip_transactions(run_id: str, audio_path: str, date: str, anchor_audio: str = "00:00:00", limit: int = 0):
+def clip_transactions(run_id: str, audio_path: str, date: str, anchor_audio: str = "00:00:00",  time_of_day_started_at: str = "10:00:00Z", limit: int = 0):
 
     print(f"📁 Found audio file: {audio_path}")
 
-    anchor_started_at = f"{date}T10:00:00Z"
+    anchor_started_at = f"{date}T{time_of_day_started_at}"
     print(f"🕐 Anchor started at: {anchor_started_at}")
     # Compute T0 from anchor
     anchor_abs = iso_or_die(anchor_started_at)

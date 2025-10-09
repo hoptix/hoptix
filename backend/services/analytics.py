@@ -70,7 +70,7 @@ class Analytics:
         else:
             result = db.view("graded_rows_filtered").select("num_upsize_opportunities").eq("run_id", self.run_id).execute()
         return sum(row["num_upsize_opportunities"] for row in result.data) if result.data else 0
-
+    
     def get_total_upsize_offers(self): 
         if self.worker_id:
             result = db.view("graded_rows_filtered").select("num_upsize_offers").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
@@ -166,7 +166,7 @@ class Analytics:
         self._count_items(addon_candidates, item_analytics, "addon_candidates")
         self._count_items(addon_offered, item_analytics, "addon_offered")
         self._count_items(addon_success, item_analytics, "addon_success")
-        self._count_items(addon_base_sold, item_analytics, "addon_base_sold")
+        self._count_items(addon_base_sold, item_analytics, "addon_base_sold_items")
         # Track size transitions
         self._track_transitions(upsize_base, upsize_success, item_analytics)
     
@@ -187,9 +187,9 @@ class Analytics:
             if item_id in item_analytics:
                 if size not in item_analytics[item_id]["sizes"]:
                     item_analytics[item_id]["sizes"][size] = {
-                        "upsell_base": 0, "upsell_candidates": 0, "upsell_offered": 0, "upsell_success": 0,
-                        "upsize_base": 0, "upsize_candidates": 0, "upsize_offered": 0, "upsize_success": 0,
-                        "addon_base": 0, "addon_candidates": 0, "addon_offered": 0, "addon_success": 0
+                        "upsell_base": 0, "upsell_candidates": 0, "upsell_offered": 0, "upsell_success": 0, "upsell_base_sold": 0,
+                        "upsize_base": 0, "upsize_candidates": 0, "upsize_offered": 0, "upsize_success": 0, "upsize_base_sold": 0,
+                        "addon_base": 0, "addon_candidates": 0, "addon_offered": 0, "addon_success": 0, "addon_base_sold_items": 0
                     }
                 item_analytics[item_id]["sizes"][size][metric_type] += 1
                 # Debug: print(f"Incremented {metric_type} for item {item_id}, size {size}. New count: {item_analytics[item_id]['sizes'][size][metric_type]}")

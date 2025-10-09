@@ -16,12 +16,8 @@ def get_all_workers():
     result = db.client.table("workers").select("*").execute()
     return result.data if result.data else []
 
-def generate_worker_report():
+def generate_worker_report(run_ids):
     """Generate comprehensive worker analytics report for all workers"""
-    
-    # Run details
-    run_ids = ["04756716-6564-4b2c-9396-4d72eab50af9"]
-    
     # All workers data
     workers = get_all_workers()
     print("=" * 80)
