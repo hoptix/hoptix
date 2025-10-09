@@ -82,36 +82,27 @@ def split_into_transactions(transcript_segments: List[Dict], run_id: str, audio_
     actual_audio_start = audio_started_at_iso
     print(f"Using database timestamp: {actual_audio_start}")
     
-    # Combine all segments into one complete transcript for transaction analysis
-    print(f"📝 Combining {len(transcript_segments)} chunks into complete transcript for transaction analysis")
+    # Process each chunk individually for transaction analysis
+    print(f"📝 Processing {len(transcript_segments)} chunks individually for transaction analysis")
     
-    # Combine all segments into one complete transcript, handling overlaps
-    combined_text = ""
-    total_start = float(transcript_segments[0]["start"])
-    total_end = float(transcript_segments[-1]["end"])
+    all_transactions = []
     
     for i, seg in enumerate(transcript_segments):
         if seg.get("text", "").strip():
-            # Add segment text
-            combined_text += seg["text"].strip() + "\n"
+            print(f"🎵 Processing chunk {i+1}/{len(transcript_segments)}: {len(seg['text'])} characters")
             
-            # Add overlap indicator if this segment has overlap
-            if i > 0:  # Not the first segment
-                combined_text += f"[OVERLAP: {seg.get('start', 0):.1f}s - {seg.get('end', 0):.1f}s]\n"
+            # Process this individual chunk for transactions
+            chunk_transactions = _process_segment(seg, run_id, actual_audio_start, audio_id)
+            
+            if chunk_transactions:
+                print(f"✅ Chunk {i+1} found {len(chunk_transactions)} transactions")
+                all_transactions.extend(chunk_transactions)
+            else:
+                print(f"📊 Chunk {i+1} found no transactions")
     
-    # Create one complete transcript segment
-    complete_transcript = {
-        "start": total_start,
-        "end": total_end,
-        "text": combined_text.strip()
-    }
+    print(f"📊 Total transactions found across all chunks: {len(all_transactions)}")
     
-    print(f"📊 Complete transcript: {len(combined_text)} characters, {total_end - total_start:.1f}s duration")
-    
-    # Process the complete transcript to identify actual transactions
-    results = _process_segment(complete_transcript, run_id, actual_audio_start, audio_id)
-    
-    return results
+    return all_transactions
 
 
 def _iso_from_start(base_iso: str, seconds_from_start: float) -> str:
