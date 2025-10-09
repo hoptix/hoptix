@@ -112,15 +112,20 @@ class AudioSplitter:
         base_filename = os.path.splitext(os.path.basename(audio_path))[0]
         
         for i in range(num_chunks):
-            # Calculate chunk boundaries in seconds
+            # Calculate chunk boundaries in seconds with overlap
             start_time = i * (chunk_duration_seconds - overlap_seconds)
             end_time = min(start_time + chunk_duration_seconds, duration_seconds)
             
             # Ensure we don't go beyond the file
             if start_time >= duration_seconds:
                 break
-                
-            logger.info(f"🎵 Creating chunk {i+1}/{num_chunks}: {start_time:.1f}s - {end_time:.1f}s")
+            
+            # For chunks after the first, add overlap at the beginning
+            if i > 0:
+                start_time = max(0, start_time - overlap_seconds)
+                logger.info(f"🎵 Creating chunk {i+1}/{num_chunks}: {start_time:.1f}s - {end_time:.1f}s (with {overlap_seconds}s overlap)")
+            else:
+                logger.info(f"🎵 Creating chunk {i+1}/{num_chunks}: {start_time:.1f}s - {end_time:.1f}s")
             
             # Create temporary file for this chunk
             with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_file:
@@ -141,7 +146,8 @@ class AudioSplitter:
                     start_time,
                     end_time,
                     chunk_path,
-                    chunk_size
+                    chunk_size,
+                    overlap_seconds if i > 0 else 0  # Pass overlap info
                 )
                 
                 chunk_audio_records.append(chunk_audio_record)
@@ -176,7 +182,7 @@ class AudioSplitter:
         subprocess.run(cmd, check=True, capture_output=True)
     
     def _create_chunk_audio_record(self, original_row: Dict, chunk_num: int, total_chunks: int, 
-                                 start_time: float, end_time: float, chunk_path: str, chunk_size: int) -> Dict:
+                                 start_time: float, end_time: float, chunk_path: str, chunk_size: int, overlap_seconds: float = 0) -> Dict:
         """Create an audio record for an audio chunk."""
         
         # Generate unique ID for this chunk
@@ -205,7 +211,9 @@ class AudioSplitter:
             "chunk_end_time": end_time,
             "chunk_duration": end_time - start_time,
             "local_chunk_path": chunk_path,
-            "chunk_size_bytes": chunk_size
+            "chunk_size_bytes": chunk_size,
+            "overlap_seconds": overlap_seconds,
+            "has_overlap": overlap_seconds > 0
         }
         
         # Create the audio record (matching audios table schema)

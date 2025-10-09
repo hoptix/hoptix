@@ -85,14 +85,19 @@ def split_into_transactions(transcript_segments: List[Dict], run_id: str, audio_
     # Combine all segments into one complete transcript for transaction analysis
     print(f"📝 Combining {len(transcript_segments)} chunks into complete transcript for transaction analysis")
     
-    # Combine all segments into one complete transcript
+    # Combine all segments into one complete transcript, handling overlaps
     combined_text = ""
     total_start = float(transcript_segments[0]["start"])
     total_end = float(transcript_segments[-1]["end"])
     
     for i, seg in enumerate(transcript_segments):
         if seg.get("text", "").strip():
+            # Add segment text
             combined_text += seg["text"].strip() + "\n"
+            
+            # Add overlap indicator if this segment has overlap
+            if i > 0:  # Not the first segment
+                combined_text += f"[OVERLAP: {seg.get('start', 0):.1f}s - {seg.get('end', 0):.1f}s]\n"
     
     # Create one complete transcript segment
     complete_transcript = {
