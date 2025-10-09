@@ -188,26 +188,29 @@ const ItemPerformanceTable = ({ items }: { items: [string, ItemAnalytics][] }) =
         candidates: acc.upsell.candidates + metrics.upsell_candidates,
         offered: acc.upsell.offered + metrics.upsell_offered,
         success: acc.upsell.success + metrics.upsell_success,
-        base_sold: acc.upsell.base_sold + metrics.upsell_base_sold
+        base_sold: acc.upsell.base_sold + metrics.upsell_base_sold,
+        base_offers: acc.upsell.base_offers + metrics.upsell_base_offers
       },
       upsize: {
         base: acc.upsize.base + metrics.upsize_base,
         candidates: acc.upsize.candidates + metrics.upsize_candidates,
         offered: acc.upsize.offered + metrics.upsize_offered,
         success: acc.upsize.success + metrics.upsize_success,
-        base_sold: acc.upsize.base_sold + metrics.upsize_base_sold
+        base_sold: acc.upsize.base_sold + metrics.upsize_base_sold,
+        base_offers: acc.upsize.base_offers + metrics.upsize_base_offers
       },
       addon: {
         base: acc.addon.base + metrics.addon_base,
         candidates: acc.addon.candidates + metrics.addon_candidates,
         offered: acc.addon.offered + metrics.addon_offered,
         success: acc.addon.success + metrics.addon_success,
-        base_sold: acc.addon.base_sold + metrics.addon_base_sold
+        base_sold: acc.addon.base_sold + metrics.addon_base_sold,
+        base_offers: acc.addon.base_offers + metrics.addon_base_offers
       }
     }), {
-      upsell: { base: 0, candidates: 0, offered: 0, success: 0, base_sold: 0 },
-      upsize: { base: 0, candidates: 0, offered: 0, success: 0, base_sold: 0 },
-      addon: { base: 0, candidates: 0, offered: 0, success: 0, base_sold: 0 }
+      upsell: { base: 0, candidates: 0, offered: 0, success: 0, base_sold: 0, base_offers: 0 },
+      upsize: { base: 0, candidates: 0, offered: 0, success: 0, base_sold: 0, base_offers: 0 },
+      addon: { base: 0, candidates: 0, offered: 0, success: 0, base_sold: 0, base_offers: 0 }
     });
   };
 
@@ -508,7 +511,7 @@ const ItemsSuggestivelySoldTable = ({ items }: { items: [string, ItemAnalytics][
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const [sortKey, setSortKey] = useState<
-    'name' | 'upsellOffered' | 'upsellSold' | 'upsizeOffered' | 'upsizeSold' | 'addonOffered' | 'addonSold'
+    'name' | 'upsellBase' | 'upsellOffered' | 'upsellSold' | 'upsizeBase' | 'upsizeOffered' | 'upsizeSold' | 'addonBase' | 'addonOffered' | 'addonSold'
   >('name');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [filterQuery, setFilterQuery] = useState<string>('');
