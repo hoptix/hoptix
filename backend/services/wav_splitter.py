@@ -193,11 +193,11 @@ class AudioSplitter:
         chunk_start = original_start + timedelta(seconds=start_time)
         chunk_end = original_start + timedelta(seconds=end_time)
         
-        # Create link for this chunk (make it unique)
+        # Create link for this chunk (make it unique using chunk_id)
         original_link = original_row.get("link", "")
         if original_link:
             base_link = os.path.splitext(original_link)[0]
-            chunk_link = f"{base_link}_chunk_{chunk_num:03d}.wav"
+            chunk_link = f"{base_link}_chunk_{chunk_id}.wav"
         else:
             chunk_link = f"audio_processing/{original_row['run_id']}/chunk_{chunk_id}.wav"
         
@@ -249,8 +249,8 @@ class AudioSplitter:
                 logger.warning("No chunk audio records to insert")
                 return []
             
-            # Insert all chunk records
-            result = self.db.client.table("audios").insert(chunk_audio_records).execute()
+            # Upsert all chunk records (handle duplicates gracefully)
+            result = self.db.client.table("audios").upsert(chunk_audio_records, on_conflict="id").execute()
             
             if result.data:
                 chunk_ids = [record["id"] for record in result.data]
