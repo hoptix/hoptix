@@ -218,7 +218,25 @@ def get_all_worker_analytics():
                 "data": [],
                 "message": "No worker analytics found"
             })
-        
+
+        # Fetch all runs at once to avoid N+1 queries
+        run_ids = [worker_data['run_id'] for worker_data in result.data]
+        runs_result = db.client.table("runs").select("id, run_date, location_id, org_id").in_("id", run_ids).execute()
+
+        # Create lookup dictionaries
+        runs_dict = {run['id']: run for run in runs_result.data}
+
+        # Get unique location_ids and org_ids
+        unique_location_ids = list(set(run['location_id'] for run in runs_result.data))
+        unique_org_ids = list(set(run['org_id'] for run in runs_result.data if run.get('org_id')))
+
+        # Fetch all locations and orgs at once
+        locations_result = db.client.table("locations").select("id, name").in_("id", unique_location_ids).execute()
+        locations_dict = {loc['id']: loc['name'] for loc in locations_result.data}
+
+        orgs_result = db.client.table("orgs").select("id, name").in_("id", unique_org_ids).execute()
+        orgs_dict = {org['id']: org['name'] for org in orgs_result.data}
+
         # Format the response for data table
         worker_analytics = []
         for worker_data in result.data:
@@ -231,20 +249,21 @@ def get_all_worker_analytics():
                 except json.JSONDecodeError:
                     detailed_analytics = {}
 
-            run = db.client.table("runs").select("run_date, location_id, org_id").eq("id", worker_data['run_id']).single().execute()
-            location_id = run.data["location_id"]
-            location_name = db.get_location_name(location_id)
-            org_name = db.get_org_name(location_id)
-            
-            
+            # Get run data from cache
+            run = runs_dict.get(worker_data['run_id'], {})
+            location_id = run.get('location_id', 'unknown')
+            location_name = locations_dict.get(location_id, 'Unknown Location')
+            org_id = run.get('org_id')
+            org_name = orgs_dict.get(org_id, 'Unknown Org') if org_id else 'Unknown Org'
+
             worker_analytics.append({
                 "id": f"{worker_data['run_id']}_{worker_data['worker_id']}",  # Unique ID for table
                 "run_id": worker_data['run_id'],
                 "worker_id": worker_data['worker_id'],
-                "run_date": run.data["run_date"],  # Placeholder - we'll need to get this from runs table separately
-                "location_id": location_id,  # Placeholder - we'll need to get this from runs table separately
-                "location_name": location_name,  # Placeholder
-                "org_name": org_name,  # Placeholder
+                "run_date": run.get("run_date", "Unknown"),
+                "location_id": location_id,
+                "location_name": location_name,
+                "org_name": org_name,
                 "total_transactions": worker_data['total_transactions'],
                 "complete_transactions": worker_data['complete_transactions'],
                 "completion_rate": float(worker_data['completion_rate']),
@@ -275,12 +294,12 @@ def get_all_worker_analytics():
                 "created_at": worker_data['created_at'],
                 "updated_at": worker_data['updated_at']
             })
-        
+
         return jsonify({
             "success": True,
             "data": worker_analytics
         })
-        
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

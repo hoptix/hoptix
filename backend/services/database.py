@@ -64,6 +64,29 @@ class Supa:
         res = self.client.table("locations").select("name").eq("id", location_id).execute()
         return res.data[0]["name"]
 
+    def get_org_name(self, location_id: str):
+        """Get organization name from location_id"""
+        # First get org_id from location
+        location_res = self.client.table("locations").select("org_id").eq("id", location_id).execute()
+        if not location_res.data:
+            return "Unknown Org"
+
+        org_id = location_res.data[0]["org_id"]
+
+        # Then get org name from orgs table
+        org_res = self.client.table("orgs").select("name").eq("id", org_id).execute()
+        if not org_res.data:
+            return "Unknown Org"
+
+        return org_res.data[0]["name"]
+
+    def get_org_name_by_id(self, org_id: str):
+        """Get organization name from org_id directly"""
+        org_res = self.client.table("orgs").select("name").eq("id", org_id).execute()
+        if not org_res.data:
+            return "Unknown Org"
+        return org_res.data[0]["name"]
+
     def set_audio_status(self, audio_id: str, status: str):
         self.client.table("audios").update({"status": status}).eq("id", audio_id).execute()
 
