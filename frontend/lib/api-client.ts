@@ -74,9 +74,9 @@ async function request<T>(
   // Prepare the request
   const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`
 
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...options.headers,
+    ...(options.headers as Record<string, string>),
   }
 
   // Attach access token if available

@@ -6,6 +6,7 @@ interface Run {
   id: string
   runId: string  // Add this field for the data table
   run_date: string
+  date: string  // Alias for run_date for compatibility
   status: string
   created_at: string
   org_id: string
@@ -30,6 +31,7 @@ const fetchRuns = async (locationId?: string, limit?: number, includeAnalytics: 
     ...run,
     runId: run.id,  // Map id to runId for the data table
     run_date: run.run_date,  // Keep run_date as run_date
+    date: run.run_date,  // Also map to date for component compatibility
   }))
   
   return {

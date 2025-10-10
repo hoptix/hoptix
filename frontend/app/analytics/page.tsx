@@ -4,6 +4,8 @@ import * as React from "react"
 import { useState, useEffect } from "react"
 import { RequireAuth } from "@/components/auth/RequireAuth"
 import { AppLayout } from "@/components/app-layout"
+import { AppSidebar } from "@/components/app-sidebar"
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { SiteHeader } from "@/components/site-header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,14 +15,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
-import { 
-  IconChartBar, 
-  IconLoader2, 
-  IconSearch, 
+import {
+  IconChartBar,
+  IconLoader2,
+  IconSearch,
   IconTrendingUp,
   IconUsers,
   IconShoppingCart,
-  IconDollarSign
+  IconCurrencyDollar
 } from "@tabler/icons-react"
 import { toast } from "sonner"
 import { 
@@ -318,7 +320,7 @@ export default function AnalyticsPage() {
                       title="Total Revenue"
                       value={formatCurrency(totalRevenue)}
                       subtitle="From upselling, upsizing & add-ons"
-                      icon={IconDollarSign}
+                      icon={IconCurrencyDollar}
                     />
                     <MetricCard
                       title="Completion Rate"

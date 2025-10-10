@@ -480,7 +480,7 @@ export function RunsTable({ locationId, limit = 50, showLocationInfo = false }: 
                 table.setPageSize(Number(value))
               }}
             >
-              <SelectTrigger size="sm" className="w-20" id="rows-per-page">
+              <SelectTrigger className="w-20 h-8" id="rows-per-page">
                 <SelectValue
                   placeholder={table.getState().pagination.pageSize}
                 />
