@@ -164,43 +164,61 @@ def transcribe_audio(audio_path: str, db=None, audio_record=None) -> List[Dict]:
     If the file is large, it will be split into physical chunks and processed independently.
     """
     print(f"🎬 Starting transcription for {audio_path}")
+    print(f"🔍 DEBUG: audio_path exists: {os.path.exists(audio_path)}")
+    print(f"🔍 DEBUG: db provided: {db is not None}")
+    print(f"🔍 DEBUG: audio_record provided: {audio_record is not None}")
+    
     initial_memory = get_memory_usage()
     print(f"📊 Initial memory usage: {initial_memory:.1f} MB")
     
     # Get total duration without loading audio
     duration = get_duration(audio_path)
     print(f"⏱️  Audio duration: {duration:.1f} seconds ({duration/60:.1f} minutes)")
+    print(f"🔍 DEBUG: Duration check - duration > 0: {duration > 0}")
     
     # Check if we need to split the file
     if db and audio_record:
         audio_splitter = AudioSplitter(db, settings)
         should_split, reason = audio_splitter.should_split_audio(audio_path)
         print(f"🔍 File analysis: {reason}")
+        print(f"🔍 DEBUG: should_split decision: {should_split}")
         
         if should_split:
             print(f"🔪 Large audio file detected, splitting into chunks...")
-            return transcribe_large_audio_file(audio_path, audio_record, audio_splitter)
+            result = transcribe_large_audio_file(audio_path, audio_record, audio_splitter)
+            print(f"🔍 DEBUG: transcribe_large_audio_file returned {len(result)} segments")
+            return result
     
     # Process as single file (small enough)
     print(f"🎵 Processing as single audio file...")
-    return transcribe_single_audio_file(audio_path)
+    result = transcribe_single_audio_file(audio_path)
+    print(f"🔍 DEBUG: transcribe_single_audio_file returned {len(result)} segments")
+    return result
 
 def transcribe_large_audio_file(audio_path: str, audio_record: Dict, audio_splitter: AudioSplitter) -> List[Dict]:
     """
     Handle large audio files by splitting them into chunks and processing each chunk.
     """
     print(f"🔪 Processing large audio file with chunking...")
+    print(f"🔍 DEBUG: audio_record keys: {list(audio_record.keys()) if audio_record else 'None'}")
+    print(f"🔍 DEBUG: audio_record id: {audio_record.get('id') if audio_record else 'None'}")
     
     # Split the audio file into chunks
     chunk_records = audio_splitter.process_large_audio_file(audio_path, audio_record)
+    print(f"🔍 DEBUG: audio_splitter.process_large_audio_file returned {len(chunk_records)} chunk records")
     
     if not chunk_records:
         print("❌ Failed to split audio file")
+        print(f"🔍 DEBUG: chunk_records is empty or None")
         return []
     
     print(f"✅ Successfully split into {len(chunk_records)} chunks")
+    for i, chunk in enumerate(chunk_records):
+        print(f"🔍 DEBUG: Chunk {i+1}: id={chunk.get('id')}, path={chunk.get('meta', {}).get('local_chunk_path')}")
     
     all_segments = []
+    successful_chunks = 0
+    failed_chunks = 0
     
     # Process chunks in parallel
     print(f"🚀 Processing {len(chunk_records)} chunks in parallel with {MAX_WORKERS} workers")
@@ -212,57 +230,101 @@ def transcribe_large_audio_file(audio_path: str, audio_record: Dict, audio_split
         chunk_start_time = chunk_record["meta"]["chunk_start_time"]
         
         print(f"🎵 Processing chunk {chunk_id}: {chunk_path}")
+        print(f"🔍 DEBUG: chunk_path exists: {os.path.exists(chunk_path)}")
+        print(f"🔍 DEBUG: chunk_start_time: {chunk_start_time}")
+        print(f"🔍 DEBUG: chunk_record meta: {chunk_record.get('meta', {})}")
         
         try:
             # Transcribe the chunk file
+            print(f"🔍 DEBUG: Calling transcribe_single_audio_file for chunk {chunk_id}")
             chunk_segments = transcribe_single_audio_file(chunk_path)
+            print(f"🔍 DEBUG: transcribe_single_audio_file returned {len(chunk_segments)} segments for chunk {chunk_id}")
+            
+            if chunk_segments:
+                for i, seg in enumerate(chunk_segments):
+                    print(f"🔍 DEBUG: Chunk {chunk_id} segment {i+1}: start={seg.get('start')}, end={seg.get('end')}, text_length={len(seg.get('text', ''))}")
             
             # Adjust timestamps to be relative to original file
             # Account for overlap by adjusting the start time
             overlap_seconds = chunk_record["meta"].get("overlap_seconds", 0)
             adjusted_start_time = chunk_start_time - overlap_seconds
+            print(f"🔍 DEBUG: overlap_seconds: {overlap_seconds}, adjusted_start_time: {adjusted_start_time}")
             
             for segment in chunk_segments:
+                original_start = segment["start"]
+                original_end = segment["end"]
                 segment["start"] += adjusted_start_time
                 segment["end"] += adjusted_start_time
+                print(f"🔍 DEBUG: Adjusted segment timing: {original_start}-{original_end} -> {segment['start']}-{segment['end']}")
             
             print(f"✅ Chunk {chunk_id} completed: {len(chunk_segments)} segments")
             return chunk_segments
             
         except Exception as e:
             print(f"❌ Error processing chunk {chunk_id}: {e}")
+            print(f"🔍 DEBUG: Exception type: {type(e).__name__}")
+            import traceback
+            print(f"🔍 DEBUG: Full traceback:")
+            traceback.print_exc()
             return []
     
     # Process chunks in parallel
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         # Submit all chunk processing tasks
+        print(f"🔍 DEBUG: Submitting {len(chunk_records)} chunk processing tasks")
         future_to_chunk = {
             executor.submit(process_chunk_file, chunk_record): chunk_record
             for chunk_record in chunk_records
         }
+        print(f"🔍 DEBUG: All {len(future_to_chunk)} tasks submitted to executor")
         
         # Collect results as they complete
+        completed_count = 0
         for future in as_completed(future_to_chunk):
             chunk_record = future_to_chunk[future]
+            completed_count += 1
+            chunk_id = chunk_record["id"]
+            print(f"🔍 DEBUG: Processing result {completed_count}/{len(chunk_records)} for chunk {chunk_id}")
+            
             try:
                 chunk_segments = future.result()
-                all_segments.extend(chunk_segments)
+                print(f"🔍 DEBUG: Chunk {chunk_id} result: {len(chunk_segments)} segments")
+                
+                if chunk_segments:
+                    all_segments.extend(chunk_segments)
+                    successful_chunks += 1
+                    print(f"🔍 DEBUG: Added {len(chunk_segments)} segments from chunk {chunk_id}. Total segments: {len(all_segments)}")
+                else:
+                    failed_chunks += 1
+                    print(f"🔍 DEBUG: Chunk {chunk_id} returned 0 segments - marked as failed")
                 
                 # Periodic memory cleanup
                 if len(all_segments) % CLEANUP_FREQUENCY == 0:
                     gc.collect()
+                    print(f"🔍 DEBUG: Performed garbage collection at {len(all_segments)} segments")
                     
             except Exception as e:
-                print(f"❌ Chunk processing failed: {e}")
+                failed_chunks += 1
+                print(f"❌ Chunk processing failed for chunk {chunk_id}: {e}")
+                print(f"🔍 DEBUG: Exception type: {type(e).__name__}")
+                import traceback
+                print(f"🔍 DEBUG: Full traceback:")
+                traceback.print_exc()
                 continue
     
     # Clean up chunk files
+    print(f"🔍 DEBUG: Cleaning up {len(chunk_records)} chunk files")
     audio_splitter.cleanup_chunk_files(chunk_records)
     
     final_memory = get_memory_usage()
     print(f"\n🎉 Completed chunked transcription!")
     print(f"📊 Final memory usage: {final_memory:.1f} MB")
     print(f"📝 Total segments transcribed: {len(all_segments)}")
+    print(f"🔍 DEBUG: Chunk processing summary:")
+    print(f"🔍 DEBUG: - Successful chunks: {successful_chunks}")
+    print(f"🔍 DEBUG: - Failed chunks: {failed_chunks}")
+    print(f"🔍 DEBUG: - Total chunks processed: {successful_chunks + failed_chunks}")
+    print(f"🔍 DEBUG: - Success rate: {(successful_chunks / (successful_chunks + failed_chunks) * 100):.1f}%" if (successful_chunks + failed_chunks) > 0 else "N/A")
     
     return all_segments
 
@@ -271,14 +333,19 @@ def transcribe_single_audio_file(audio_path: str) -> List[Dict]:
     Transcribe a single audio file directly without further chunking.
     """
     print(f"🎵 Transcribing single audio file: {os.path.basename(audio_path)}")
+    print(f"🔍 DEBUG: audio_path exists: {os.path.exists(audio_path)}")
+    print(f"🔍 DEBUG: audio_path size: {os.path.getsize(audio_path) if os.path.exists(audio_path) else 'N/A'} bytes")
     
     # Get duration
     duration = get_duration(audio_path)
     print(f"   ⏱️  Audio duration: {duration:.1f} seconds")
+    print(f"🔍 DEBUG: duration > 0: {duration > 0}")
     
     # Transcribe the entire file directly
     try:
+        print(f"🔍 DEBUG: Opening file for ASR: {audio_path}")
         with open(audio_path, "rb") as af:
+            print(f"🔍 DEBUG: Calling OpenAI ASR with model: {ASR_MODEL}")
             txt = client.audio.transcriptions.create(
                 model=ASR_MODEL,
                 file=af,
@@ -288,18 +355,26 @@ def transcribe_single_audio_file(audio_path: str) -> List[Dict]:
             )
             text = str(txt).strip()
             print(f"   ✅ File transcribed: {len(text)} characters")
+            print(f"🔍 DEBUG: First 200 chars of transcription: {text[:200]}...")
     except Exception as ex:
         print(f"   ❌ ASR error: {ex}")
+        print(f"🔍 DEBUG: ASR exception type: {type(ex).__name__}")
+        import traceback
+        print(f"🔍 DEBUG: ASR full traceback:")
+        traceback.print_exc()
         text = ""
     
     if text:
         # Return as a single segment covering the entire duration
-        return [{
+        segment = {
             "start": 0.0,
             "end": duration,
             "text": text
-        }]
+        }
+        print(f"🔍 DEBUG: Created single segment: start={segment['start']}, end={segment['end']}, text_length={len(text)}")
+        return [segment]
     else:
+        print(f"🔍 DEBUG: No text transcribed, returning empty list")
         return []
 
 def validate_timing_accuracy(segments: List[Dict], total_duration: float):

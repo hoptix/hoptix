@@ -39,27 +39,40 @@ class AudioSplitter:
         Returns:
             Tuple[bool, str]: (should_split, reason)
         """
+        print(f"🔍 DEBUG: should_split_audio called for: {audio_path}")
+        print(f"🔍 DEBUG: File exists: {os.path.exists(audio_path)}")
+        
         if not os.path.exists(audio_path):
+            print(f"🔍 DEBUG: File does not exist, returning False")
             return False, "File does not exist"
             
         # Check file size
         file_size_mb = os.path.getsize(audio_path) / (1024 * 1024)
+        print(f"🔍 DEBUG: File size: {file_size_mb:.1f}MB, limit: {self.max_file_size_mb}MB")
+        
         if file_size_mb > self.max_file_size_mb:
+            print(f"🔍 DEBUG: File size exceeds limit, should split")
             return True, f"File size ({file_size_mb:.1f}MB) exceeds limit ({self.max_file_size_mb}MB)"
             
         # Check duration using ffprobe (works for both WAV and MP3)
         try:
             duration_seconds = self._get_audio_duration(audio_path)
             duration_minutes = duration_seconds / 60.0
+            print(f"🔍 DEBUG: Duration: {duration_minutes:.1f}min, limit: {self.max_duration_minutes}min")
             
             if duration_minutes > self.max_duration_minutes:
+                print(f"🔍 DEBUG: Duration exceeds limit, should split")
                 return True, f"Duration ({duration_minutes:.1f}min) exceeds limit ({self.max_duration_minutes}min)"
                 
         except Exception as e:
             logger.warning(f"Could not determine duration for {audio_path}: {e}")
+            print(f"🔍 DEBUG: Duration check failed: {e}")
             # If we can't determine duration, split based on size only
-            return file_size_mb > self.max_file_size_mb, f"Could not determine duration, splitting based on size"
+            should_split = file_size_mb > self.max_file_size_mb
+            print(f"🔍 DEBUG: Fallback to size-based decision: {should_split}")
+            return should_split, f"Could not determine duration, splitting based on size"
             
+        print(f"🔍 DEBUG: File is within limits, no splitting needed")
         return False, "File is within size and duration limits"
     
     def _get_audio_duration(self, audio_path: str) -> float:
@@ -89,21 +102,27 @@ class AudioSplitter:
             List[Dict]: List of new audio records for each chunk
         """
         logger.info(f"🔪 Starting audio file splitting for: {os.path.basename(audio_path)}")
+        print(f"🔍 DEBUG: split_audio_file called with audio_path: {audio_path}")
+        print(f"🔍 DEBUG: original_audio_row keys: {list(original_audio_row.keys()) if original_audio_row else 'None'}")
         
         # Get file info using ffprobe (works for any audio format)
         try:
             duration_seconds = self._get_audio_duration(audio_path)
             logger.info(f"📊 Original file: {duration_seconds:.1f}s duration")
+            print(f"🔍 DEBUG: Audio duration: {duration_seconds:.1f} seconds")
         except Exception as e:
             logger.error(f"❌ Failed to analyze audio file {audio_path}: {e}")
+            print(f"🔍 DEBUG: Duration analysis failed: {e}")
             raise
             
         # Calculate chunk parameters
         chunk_duration_seconds = self.chunk_duration_minutes * 60
         overlap_seconds = self.overlap_seconds
+        print(f"🔍 DEBUG: chunk_duration_seconds: {chunk_duration_seconds}, overlap_seconds: {overlap_seconds}")
         
         # Calculate number of chunks needed
         num_chunks = int(np.ceil(duration_seconds / (chunk_duration_seconds - overlap_seconds)))
+        print(f"🔍 DEBUG: Calculated num_chunks: {num_chunks}")
         
         logger.info(f"📏 Splitting into {num_chunks} chunks of ~{self.chunk_duration_minutes}min each")
         
@@ -112,33 +131,43 @@ class AudioSplitter:
         base_filename = os.path.splitext(os.path.basename(audio_path))[0]
         
         for i in range(num_chunks):
+            print(f"🔍 DEBUG: Processing chunk {i+1}/{num_chunks}")
+            
             # Calculate chunk boundaries in seconds with overlap
             start_time = i * (chunk_duration_seconds - overlap_seconds)
             end_time = min(start_time + chunk_duration_seconds, duration_seconds)
+            print(f"🔍 DEBUG: Initial boundaries: {start_time:.1f}s - {end_time:.1f}s")
             
             # Ensure we don't go beyond the file
             if start_time >= duration_seconds:
+                print(f"🔍 DEBUG: Start time {start_time} >= duration {duration_seconds}, breaking")
                 break
             
             # For chunks after the first, add overlap at the beginning
             if i > 0:
                 start_time = max(0, start_time - overlap_seconds)
                 logger.info(f"🎵 Creating chunk {i+1}/{num_chunks}: {start_time:.1f}s - {end_time:.1f}s (with {overlap_seconds}s overlap)")
+                print(f"🔍 DEBUG: Adjusted start_time with overlap: {start_time:.1f}s")
             else:
                 logger.info(f"🎵 Creating chunk {i+1}/{num_chunks}: {start_time:.1f}s - {end_time:.1f}s")
+                print(f"🔍 DEBUG: First chunk, no overlap adjustment")
             
             # Create temporary file for this chunk
             with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_file:
                 chunk_path = tmp_file.name
+                print(f"🔍 DEBUG: Created temp file: {chunk_path}")
                 
             try:
                 # Extract chunk using ffmpeg (converts to WAV for consistency)
+                print(f"🔍 DEBUG: Calling _extract_chunk_with_ffmpeg")
                 self._extract_chunk_with_ffmpeg(audio_path, chunk_path, start_time, end_time)
                 chunk_size = os.path.getsize(chunk_path)
+                print(f"🔍 DEBUG: Chunk file created, size: {chunk_size:,} bytes")
                 
                 logger.info(f"💾 Chunk {i+1} saved: {chunk_path} ({chunk_size:,} bytes)")
                 
                 # Create audio record for this chunk
+                print(f"🔍 DEBUG: Creating audio record for chunk {i+1}")
                 chunk_audio_record = self._create_chunk_audio_record(
                     original_audio_row, 
                     i + 1, 
@@ -149,16 +178,20 @@ class AudioSplitter:
                     chunk_size,
                     overlap_seconds if i > 0 else 0  # Pass overlap info
                 )
+                print(f"🔍 DEBUG: Created audio record with id: {chunk_audio_record.get('id')}")
                 
                 chunk_audio_records.append(chunk_audio_record)
+                print(f"🔍 DEBUG: Added chunk record to list. Total records: {len(chunk_audio_records)}")
                 
             except Exception as e:
                 logger.error(f"❌ Failed to create chunk {i+1}: {e}")
+                print(f"🔍 DEBUG: Chunk creation failed: {type(e).__name__}: {e}")
                 import traceback
                 traceback.print_exc()
                 # Clean up failed chunk file
                 if os.path.exists(chunk_path):
                     os.remove(chunk_path)
+                    print(f"🔍 DEBUG: Cleaned up failed chunk file: {chunk_path}")
                 continue
             
         logger.info(f"✅ Successfully created {len(chunk_audio_records)} audio chunks")
