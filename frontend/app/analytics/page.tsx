@@ -3,9 +3,6 @@
 import * as React from "react"
 import { useState, useEffect } from "react"
 import { RequireAuth } from "@/components/auth/RequireAuth"
-import { AppLayout } from "@/components/app-layout"
-import { AppSidebar } from "@/components/app-sidebar"
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { SiteHeader } from "@/components/site-header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -212,12 +209,9 @@ export default function AnalyticsPage() {
 
   return (
     <RequireAuth>
-      <SidebarProvider>
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-6 p-4 lg:p-6">
+      <SiteHeader />
+      <div className="flex flex-1 flex-col">
+        <div className="@container/main flex flex-1 flex-col gap-6 p-4 lg:p-6">
             
             {/* Header */}
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -526,10 +520,8 @@ export default function AnalyticsPage() {
                 )}
               </div>
             )}
-          </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
     </RequireAuth>
   )
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { Providers } from '@/components/providers'
+import { GlobalLayout } from '@/components/global-layout'
 
 export const metadata: Metadata = {
   title: 'Analytics Dashboard',
@@ -16,7 +17,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Providers>
-          {children}
+          <GlobalLayout>
+            {children}
+          </GlobalLayout>
         </Providers>
       </body>
     </html>

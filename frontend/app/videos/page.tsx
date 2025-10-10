@@ -24,7 +24,8 @@ import {
 } from '@tabler/icons-react'
 import { format } from 'date-fns'
 import { RequireAuth } from '@/components/auth/RequireAuth'
-import { AppLayout } from '@/components/app-layout'
+import { SidebarTrigger } from '@/components/ui/sidebar'
+import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -636,7 +637,13 @@ export default function VideosPage() {
 
   return (
     <RequireAuth>
-      <AppLayout>
+      <header className="flex h-16 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-16">
+        <div className="flex items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <h1 className="text-base font-medium">Videos</h1>
+        </div>
+      </header>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="max-w-6xl mx-auto w-full">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -1263,7 +1270,7 @@ export default function VideosPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </AppLayout>
+    
     </RequireAuth>
   )
 }

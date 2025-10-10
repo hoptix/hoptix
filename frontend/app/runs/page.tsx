@@ -1,7 +1,6 @@
 "use client"
 
 import { RequireAuth } from "@/components/auth/RequireAuth"
-import { AppLayout } from "@/components/app-layout"
 import { RunsTable } from "@/components/runs-table"
 import { SiteHeader } from "@/components/site-header"
 import { useState } from "react"
@@ -18,7 +17,7 @@ export default function RunsPage() {
 
   return (
     <RequireAuth>
-      <AppLayout>
+      
         <SiteHeader
           title="Runs Management"
           showLocationDropdown={true}
@@ -92,7 +91,7 @@ export default function RunsPage() {
             </div>
           </div>
         </div>
-      </AppLayout>
+      
     </RequireAuth>
   )
 }
