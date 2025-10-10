@@ -14,7 +14,7 @@ from services.transactions import split_into_transactions
 from services.grader import grade_transactions
 from services.analytics import Analytics
 from services.clipper import clip_transactions
-from tests.generate_worker_report import generate_worker_report
+from services.worker_report import generate_worker_report
 from utils.helpers import get_memory_usage, log_memory_usage
 
 db = Supa() 

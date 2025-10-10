@@ -152,13 +152,6 @@ def generate_worker_report(run_ids):
                     print("   (This might be expected if the run_analytics_worker table doesn't exist yet)")
                 print()
                 
-                # Save detailed JSON to file
-                output_file = f"worker_analytics_report_{worker_id}_{run_id}.json"
-                with open(output_file, 'w') as f:
-                    json.dump(analytics_data, f, indent=2)
-                print(f"💾 Detailed analytics saved to: {output_file}")
-                print()
-                
             except Exception as e:
                 print(f"❌ Error generating report for {worker_display}: {e}")
                 import traceback
