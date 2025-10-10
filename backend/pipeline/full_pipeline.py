@@ -77,10 +77,6 @@ def full_pipeline(location_id: str, date: str):
     analytics = Analytics(run_id)
     analytics.upload_to_db()
 
-    # Generate the worker reports
-    log_memory_usage("Generating worker reports", 7, TOTAL_STEPS)
-    generate_worker_report([run_id])
-
     #7) Write clips to google drive 
     log_memory_usage("Writing clips to google drive", 8, TOTAL_STEPS)
     clip_transactions(run_id, audio_path, date)
