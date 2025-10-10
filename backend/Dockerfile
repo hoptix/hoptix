@@ -42,6 +42,7 @@
     # Copy application files from builder stage
     COPY --from=builder /app/app.py /app/app.py
     COPY --from=builder /app/config.py /app/config.py
+    COPY --from=builder /app/gunicorn.conf.py /app/gunicorn.conf.py
     COPY --from=builder /app/routes /app/routes
     COPY --from=builder /app/services /app/services
     COPY --from=builder /app/middleware /app/middleware
@@ -60,12 +61,16 @@
     
     
     USER appuser
-    
+
     # Set environment variables
     ENV PYTHONPATH=/app
     ENV PATH="/app/scripts:$PATH"
+    ENV FLASK_ENV=production
 
     # Expose port
     EXPOSE 8080
-    
-    
+
+    # Production-ready entrypoint using Gunicorn
+    # Configuration is managed in gunicorn.conf.py
+    # This allows easy tuning via environment variables without rebuilding the image
+    CMD ["gunicorn", "--config", "gunicorn.conf.py", "app:app"]

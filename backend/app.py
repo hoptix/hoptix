@@ -4,6 +4,7 @@ from routes.analytics import analytics_bp
 from routes.runs import runs_bp
 import logging
 import sys
+import os
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -34,4 +35,13 @@ def health():
     return {"status": "healthy", "service": "hoptix-backend"}
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8080)
+    # Development server configuration
+    # In production, use Gunicorn instead (see Dockerfile CMD)
+    port = int(os.environ.get("PORT", 8080))
+    debug = os.environ.get("FLASK_ENV", "development") == "development"
+
+    app.run(
+        host='0.0.0.0',  # CRITICAL: Bind to all interfaces for container accessibility
+        port=port,
+        debug=debug
+    )
