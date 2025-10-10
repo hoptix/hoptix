@@ -43,6 +43,7 @@
     COPY --from=builder /app/app.py /app/app.py
     COPY --from=builder /app/config.py /app/config.py
     COPY --from=builder /app/gunicorn.conf.py /app/gunicorn.conf.py
+    COPY --from=builder /app/start.sh /app/start.sh
     COPY --from=builder /app/routes /app/routes
     COPY --from=builder /app/services /app/services
     COPY --from=builder /app/middleware /app/middleware
@@ -51,9 +52,9 @@
     COPY --from=builder /app/tests /app/tests
     COPY --from=builder /app/utils /app/utils
     COPY --from=builder /app/scripts /app/scripts
-    
+
     # Ensure the scripts are executable
-    RUN chmod +x /app/scripts/*.py
+    RUN chmod +x /app/scripts/*.py /app/start.sh
     
     # Create a non-root user
     RUN useradd -m -s /bin/bash appuser && \
