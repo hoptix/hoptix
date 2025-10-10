@@ -48,8 +48,11 @@ def full_pipeline(location_id: str, date: str):
     
     # Get audio record for proper chunking
     audio_record = db.get_audio_record(audio_id)
+    print(f"🔍 DEBUG: Retrieved audio_record: {audio_record}")
+    print(f"🔍 DEBUG: audio_record keys: {list(audio_record.keys()) if audio_record else 'None'}")
     
     transcript_segments = transcribe_audio(audio_path, db=db, audio_record=audio_record)
+    print(f"🔍 DEBUG: transcribe_audio returned {len(transcript_segments)} segments")
     
     # Force garbage collection after transcription
     gc.collect()
@@ -57,7 +60,9 @@ def full_pipeline(location_id: str, date: str):
 
     #3) Split audio into transactions 
     log_memory_usage("Splitting audio into transactions", 3, TOTAL_STEPS)
+    print(f"🔍 DEBUG: About to call split_into_transactions with {len(transcript_segments)} segments")
     transactions = split_into_transactions(transcript_segments, run_id, date=date, audio_id=audio_id)
+    print(f"🔍 DEBUG: split_into_transactions returned {len(transactions)} transactions")
     print(f"📝 Split {len(transactions)} transactions")
 
     #4) Insert transactions into database 
