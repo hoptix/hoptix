@@ -66,9 +66,6 @@
     ENV PATH="/app/scripts:$PATH"
 
     # Expose port
-    EXPOSE 8000
-
-    # Default command
-    CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120", "--access-logfile", "-", "--error-logfile", "-", "--log-level", "info", "app:app"]
+    EXPOSE 8080
     
     

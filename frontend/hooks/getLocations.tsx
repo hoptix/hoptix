@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { apiClient } from "@/lib/api-client"
+import { useAuth } from "@/contexts/AuthContext"
 
 interface Location {
   id: string
@@ -21,11 +22,14 @@ const fetchLocations = async (): Promise<LocationsResponse> => {
 }
 
 export function useGetLocations() {
+  const { user } = useAuth()
+
   return useQuery({
-    queryKey: ['locations'],
+    queryKey: ['locations', user?.id], // Include user ID in cache key
     queryFn: fetchLocations,
-    staleTime: 10 * 60 * 1000, // 10 minutes - locations don't change often
+    staleTime: 5 * 60 * 1000, // Reduced to 5 minutes for more responsive updates
     refetchOnWindowFocus: false,
+    enabled: !!user, // Only fetch when user is authenticated
   })
 }
 

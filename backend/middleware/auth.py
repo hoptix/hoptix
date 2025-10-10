@@ -9,8 +9,12 @@ import logging
 from functools import wraps
 from flask import request, jsonify, g
 import requests
+from services.database import Supa
 
 logger = logging.getLogger(__name__)
+
+# Initialize database connection
+db = Supa()
 
 # Auth service URL from environment
 AUTH_SERVICE_URL = os.getenv('AUTH_SERVICE_URL', 'http://127.0.0.1:8081')
@@ -91,9 +95,26 @@ def verify_token(token):
             logger.error(f"No user_id found in token response. Data: {data}")
             raise AuthError('Token missing user identification', 401)
 
+        # Check if user is admin from public.users table
+        is_admin = False
+        try:
+            logger.info(f"Checking admin status for user {user_id} from public.users table")
+            admin_result = db.client.table("users").select("is_admin").eq("id", user_id).single().execute()
+            logger.info(f"Admin query result: {admin_result.data}")
+            if admin_result.data and admin_result.data.get("is_admin"):
+                is_admin = True
+                logger.info(f"✓ User {user_id} IS AN ADMIN")
+            else:
+                logger.info(f"✗ User {user_id} is NOT an admin (data: {admin_result.data})")
+        except Exception as e:
+            # Default to non-admin if query fails or user not found
+            logger.warning(f"Failed to check admin status for user {user_id}: {e}")
+            is_admin = False
+
         logger.info(f"Token verified successfully for user {user_id}")
         return {
             'user_id': user_id,
+            'is_admin': is_admin,
             'claims': data
         }
 
@@ -120,9 +141,12 @@ def require_auth(f):
             token = extract_token_from_header()
             token_data = verify_token(token)
 
-            # Attach user_id to Flask request context
+            # Attach user_id and is_admin to Flask request context
             g.user_id = token_data['user_id']
+            g.is_admin = token_data.get('is_admin', False)
             g.token_claims = token_data['claims']
+
+            logger.info(f"Auth context set: user_id={g.user_id}, is_admin={g.is_admin}")
 
             # Call the actual route function
             return f(*args, **kwargs)

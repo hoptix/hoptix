@@ -69,14 +69,19 @@ def get_all_runs():
 @runs_bp.get("/locations")
 @require_auth
 def get_all_locations():
-    """Get all locations owned by the authenticated user"""
+    """Get all locations owned by the authenticated user (or all locations if admin)"""
 
     try:
-        logger.info(f"Fetching locations for user {g.user_id}...")
+        logger.info(f"Fetching locations for user {g.user_id} (is_admin={g.is_admin})...")
 
-        # Get only the authenticated user's locations
-        locations_result = db.client.table("locations").select("*").eq("owner_id", g.user_id).execute()
-        
+        # Admin users get all locations, regular users get only their own
+        if g.is_admin:
+            logger.info(f"Admin user {g.user_id} - fetching all locations")
+            locations_result = db.client.table("locations").select("*").execute()
+        else:
+            logger.info(f"Regular user {g.user_id} - fetching owned locations only")
+            locations_result = db.client.table("locations").select("*").eq("owner_id", g.user_id).execute()
+
         if not locations_result.data:
             logger.info("No locations found for this user")
             return {"locations": [], "count": 0}, 200

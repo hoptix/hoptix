@@ -10,9 +10,11 @@ import {
   IconChevronsRight,
   IconDotsVertical,
   IconLayoutColumns,
-  IconPlus,
   IconLoader,
   IconRefresh,
+  IconChartBar,
+  IconDownload,
+  IconX,
 } from "@tabler/icons-react"
 import {
   ColumnDef,
@@ -29,13 +31,13 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table"
-import { format } from "date-fns"
 import { z } from "zod"
 
 import { useGetRuns } from "@/hooks/getRuns"
 import { useGetAllWorkerAnalytics } from "@/hooks/getRunAnalytics"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
@@ -71,14 +73,16 @@ import {
 import { DataTableExport } from "@/components/export-data-table"
 import { useRouter } from "next/navigation"
 
-// Define the schema for runs data with analytics
+// ============================================================================
+// Type Definitions
+// ============================================================================
+
 export const runsDataSchema = z.object({
   id: z.string(),
   runId: z.string(),
   date: z.string(),
   status: z.string(),
   created_at: z.string(),
-  // Analytics data (will be fetched separately)
   totalTransactions: z.number().default(0),
   successfulUpsells: z.number().default(0),
   successfulUpsizes: z.number().default(0),
@@ -86,6 +90,30 @@ export const runsDataSchema = z.object({
 })
 
 type RunsData = z.infer<typeof runsDataSchema>
+
+// ============================================================================
+// Constants
+// ============================================================================
+
+const WORKER_NAME_MAP: Record<string, string> = {
+  "234ad11f-ceb8-4aea-b77d-2bf814fbcc70": "Sharon",
+  "48f43602-ae51-4104-ab64-780d8f475bba": "Emily B",
+  "639effce-e0dc-4283-bd6e-fa4dfd5910b8": "Adrijana",
+  "7716dd87-ad7e-4419-830c-2161fe7db19b": "Latasha",
+  "80b84d5e-59e2-4e3d-af7e-78f2544cbb23": "Jamarie Moore",
+  "946c2ae8-5fe2-4d39-ae2f-286be9d09d7d": "Jalissa",
+  "9bd60a00-4611-46f9-8285-bb329d871775": "Mario",
+  "a52f9c84-9556-4171-b6f3-c149837cd54a": "Malaika",
+  "a8b39309-16f9-4d52-b542-e3f8e1033a02": "Kayla",
+  "ea6bc885-4e3c-423f-a333-5223624b90d1": "Cayden",
+  "ffec99f2-ec72-401a-b799-ecc41724b6b1": "Jacob"
+}
+
+const PAGE_SIZES = [10, 20, 30, 40, 50]
+
+// ============================================================================
+// Utility Functions
+// ============================================================================
 
 const getStatusBadgeVariant = (status: string) => {
   switch (status.toLowerCase()) {
@@ -119,7 +147,25 @@ const getStatusColor = (status: string) => {
   }
 }
 
-const columns: ColumnDef<RunsData>[] = [
+const processRunsData = (runs: any[]): RunsData[] => {
+  return runs.map((run) => ({
+    id: run.id,
+    runId: run.runId,
+    date: run.date,
+    status: run.status,
+    created_at: run.created_at,
+    totalTransactions: run.total_transcriptions || 0,
+    successfulUpsells: run.successful_upsells || 0,
+    successfulUpsizes: run.successful_upsizes || 0,
+    totalRevenue: run.total_revenue || 0,
+  }))
+}
+
+// ============================================================================
+// Column Definitions
+// ============================================================================
+
+const createRunsColumns = (): ColumnDef<RunsData>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -173,7 +219,7 @@ const columns: ColumnDef<RunsData>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => (
-      <Badge 
+      <Badge
         variant={getStatusBadgeVariant(row.original.status)}
         className={`capitalize ${getStatusColor(row.original.status)}`}
       >
@@ -227,7 +273,7 @@ const columns: ColumnDef<RunsData>[] = [
             className="data-[state=open]:bg-muted text-muted-foreground flex size-8 dropdown-trigger"
             size="icon"
           >
-            <IconDotsVertical />
+            <IconDotsVertical className="h-4 w-4" />
             <span className="sr-only">Open menu</span>
           </Button>
         </DropdownMenuTrigger>
@@ -248,23 +294,7 @@ const columns: ColumnDef<RunsData>[] = [
   },
 ]
 
-// Worker name mapping
-const workerNameMap: Record<string, string> = {
-  "234ad11f-ceb8-4aea-b77d-2bf814fbcc70": "Sharon",
-  "48f43602-ae51-4104-ab64-780d8f475bba": "Emily B",
-  "639effce-e0dc-4283-bd6e-fa4dfd5910b8": "Adrijana",
-  "7716dd87-ad7e-4419-830c-2161fe7db19b": "Latasha",
-  "80b84d5e-59e2-4e3d-af7e-78f2544cbb23": "Jamarie Moore",
-  "946c2ae8-5fe2-4d39-ae2f-286be9d09d7d": "Jalissa",
-  "9bd60a00-4611-46f9-8285-bb329d871775": "Mario",
-  "a52f9c84-9556-4171-b6f3-c149837cd54a": "Malaika",
-  "a8b39309-16f9-4d52-b542-e3f8e1033a02": "Kayla",
-  "ea6bc885-4e3c-423f-a333-5223624b90d1": "Cayden",
-  "ffec99f2-ec72-401a-b799-ecc41724b6b1": "Jacob"
-}
-
-// Operator-specific columns for the "By Operator" tab
-const operatorColumns: ColumnDef<any>[] = [
+const createOperatorColumns = (): ColumnDef<any>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -318,7 +348,7 @@ const operatorColumns: ColumnDef<any>[] = [
     header: "Operator",
     cell: ({ row }) => (
       <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-        {workerNameMap[row.original.worker_id] || row.original.worker_id}
+        {WORKER_NAME_MAP[row.original.worker_id] || row.original.worker_id}
       </Badge>
     ),
   },
@@ -368,7 +398,7 @@ const operatorColumns: ColumnDef<any>[] = [
             className="data-[state=open]:bg-muted text-muted-foreground flex size-8 dropdown-trigger"
             size="icon"
           >
-            <IconDotsVertical />
+            <IconDotsVertical className="h-4 w-4" />
             <span className="sr-only">Open menu</span>
           </Button>
         </DropdownMenuTrigger>
@@ -389,17 +419,18 @@ const operatorColumns: ColumnDef<any>[] = [
   },
 ]
 
-function SimpleRow({ 
-  row, 
-  index, 
-  isPending,
-  onRowClick 
-}: { 
+// ============================================================================
+// Subcomponents
+// ============================================================================
+
+interface TableRowProps {
   row: Row<any>
   index: number
   isPending: boolean
   onRowClick: (runId: string, runDate: string) => void
-}) {
+}
+
+function TableRowComponent({ row, index, isPending, onRowClick }: TableRowProps) {
   const handleRowClick = (e: React.MouseEvent) => {
     // Don't trigger row click if clicking on action buttons or checkboxes
     if ((e.target as HTMLElement).closest('.dropdown-trigger, input[type="checkbox"]')) {
@@ -412,7 +443,7 @@ function SimpleRow({
   }
 
   return (
-    <TableRow 
+    <TableRow
       data-state={row.getIsSelected() && "selected"}
       className={`transition-all duration-300 ease-in-out cursor-pointer hover:bg-muted/50 ${
         isPending ? 'scale-[0.98]' : 'scale-100'
@@ -424,7 +455,7 @@ function SimpleRow({
       onClick={handleRowClick}
     >
       {row.getVisibleCells().map((cell) => (
-        <TableCell 
+        <TableCell
           key={cell.id}
           className="transition-all duration-200 ease-in-out"
         >
@@ -435,66 +466,148 @@ function SimpleRow({
   )
 }
 
+interface PaginationControlsProps {
+  table: any
+  showSelection?: boolean
+}
+
+function PaginationControls({ table, showSelection = true }: PaginationControlsProps) {
+  return (
+    <div className="flex items-center justify-between">
+      {showSelection && (
+        <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div>
+      )}
+      <div className={`flex w-full items-center gap-8 ${showSelection ? 'lg:w-fit' : ''}`}>
+        <div className="hidden items-center gap-2 lg:flex">
+          <Label htmlFor="rows-per-page" className="text-sm font-medium">
+            Rows per page
+          </Label>
+          <Select
+            value={`${table.getState().pagination.pageSize}`}
+            onValueChange={(value) => {
+              table.setPageSize(Number(value))
+            }}
+          >
+            <SelectTrigger className="w-20" id="rows-per-page">
+              <SelectValue placeholder={table.getState().pagination.pageSize} />
+            </SelectTrigger>
+            <SelectContent side="top">
+              {PAGE_SIZES.map((pageSize) => (
+                <SelectItem key={pageSize} value={`${pageSize}`}>
+                  {pageSize}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex w-fit items-center justify-center text-sm font-medium">
+          Page {table.getState().pagination.pageIndex + 1} of{" "}
+          {table.getPageCount()}
+        </div>
+        <div className="ml-auto flex items-center gap-2 lg:ml-0">
+          <Button
+            variant="outline"
+            className="hidden h-8 w-8 p-0 lg:flex"
+            onClick={() => table.setPageIndex(0)}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <span className="sr-only">Go to first page</span>
+            <IconChevronsLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            className="size-8"
+            size="icon"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <span className="sr-only">Go to previous page</span>
+            <IconChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            className="size-8"
+            size="icon"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            <span className="sr-only">Go to next page</span>
+            <IconChevronRight className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            className="hidden size-8 lg:flex"
+            size="icon"
+            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+            disabled={!table.getCanNextPage()}
+          >
+            <span className="sr-only">Go to last page</span>
+            <IconChevronsRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ============================================================================
+// Main Component
+// ============================================================================
+
 interface RunsDataTableProps {
   locationId?: string
   limit?: number
+  className?: string
 }
 
-// Function to process runs data with analytics
-const processRunsData = (runs: any[]): RunsData[] => {
-  return runs.map((run) => ({
-    id: run.id,
-    runId: run.runId,
-    date: run.date,
-    status: run.status,
-    created_at: run.created_at,
-    totalTransactions: run.total_transcriptions || 0,
-    successfulUpsells: run.successful_upsells || 0,
-    successfulUpsizes: run.successful_upsizes || 0,
-    totalRevenue: run.total_revenue || 0,
-  }))
-}
+export function RunsDataTable({ locationId, limit = 50, className }: RunsDataTableProps) {
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
 
-export function RunsDataTable({ locationId, limit = 50 }: RunsDataTableProps) {
+  // State Management
+  const [activeTab, setActiveTab] = React.useState<string>('runs')
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0,
-    pageSize: 10,
-  })
+  const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 })
   const [globalFilter, setGlobalFilter] = React.useState("")
+
+  // Filters
+  const [selectedOperatorId, setSelectedOperatorId] = React.useState<string>("")
   const [startDateTime, setStartDateTime] = React.useState<string>("")
   const [endDateTime, setEndDateTime] = React.useState<string>("")
-  const [selectedOperatorId, setSelectedOperatorId] = React.useState<string>("")
-  const [isPending, startTransition] = useTransition()
+
+  // Data state
   const [runsData, setRunsData] = React.useState<RunsData[]>([])
   const [workerData, setWorkerData] = React.useState<any[]>([])
-  const router = useRouter()
-  const [activeTab, setActiveTab] = React.useState<string>('runs')
 
-  // Fetch runs data using the hook
-  const { 
-    data: runsResponse, 
-    isLoading, 
-    isError, 
-    error, 
+  // Column definitions (memoized)
+  const runsColumns = React.useMemo(() => createRunsColumns(), [])
+  const operatorColumns = React.useMemo(() => createOperatorColumns(), [])
+
+  // Data fetching
+  const {
+    data: runsResponse,
+    isLoading,
+    isError,
+    error,
     refetch,
-    isRefetching 
+    isRefetching
   } = useGetRuns(locationId, { limit })
 
-  // Fetch worker analytics data
-  const { 
-    data: workerResponse, 
-    isLoading: isLoadingWorkers, 
-    isError: isErrorWorkers, 
-    error: errorWorkers, 
+  const {
+    data: workerResponse,
+    isLoading: isLoadingWorkers,
+    isError: isErrorWorkers,
     refetch: refetchWorkers,
-    isRefetching: isRefetchingWorkers 
+    isRefetching: isRefetchingWorkers
   } = useGetAllWorkerAnalytics()
 
-  // Process runs data with analytics when it changes
+  // Process data when it changes
   React.useEffect(() => {
     if (runsResponse?.runs) {
       const processedData = processRunsData(runsResponse.runs)
@@ -502,17 +615,20 @@ export function RunsDataTable({ locationId, limit = 50 }: RunsDataTableProps) {
     }
   }, [runsResponse])
 
-  // Process worker analytics data when it changes
   React.useEffect(() => {
     if (workerResponse?.success && workerResponse.data) {
       setWorkerData(workerResponse.data)
     }
   }, [workerResponse])
 
-  // Filter data based on global filter
+  // Check if any filters are active (operator filter only relevant for by-operator tab)
+  const hasActiveFilters = activeTab === 'by-operator'
+    ? (!!selectedOperatorId || !!startDateTime || !!endDateTime)
+    : (!!startDateTime || !!endDateTime)
+
+  // Filter runs data
   const filteredData = React.useMemo(() => {
     const gf = globalFilter.toLowerCase()
-    const hasRange = !!startDateTime || !!endDateTime
     const start = startDateTime ? new Date(startDateTime) : null
     const end = endDateTime ? new Date(endDateTime) : null
 
@@ -523,7 +639,7 @@ export function RunsDataTable({ locationId, limit = 50 }: RunsDataTableProps) {
           run.date.toLowerCase().includes(gf)
         : true
 
-      if (!hasRange) return matchesGlobal
+      if (!start && !end) return matchesGlobal
 
       const runDate = new Date(run.date)
       if (start && runDate < start) return false
@@ -532,24 +648,27 @@ export function RunsDataTable({ locationId, limit = 50 }: RunsDataTableProps) {
     })
   }, [runsData, globalFilter, startDateTime, endDateTime])
 
-  // Filter worker data based on global filter
+  // Filter worker data
   const filteredWorkerData = React.useMemo(() => {
     const gf = globalFilter.toLowerCase()
-    const byText = (w: any) =>
-      !gf ||
-      w.run_id.toLowerCase().includes(gf) ||
-      w.worker_id.toLowerCase().includes(gf) ||
-      w.run_date.toLowerCase().includes(gf) ||
-      (workerNameMap[w.worker_id] && workerNameMap[w.worker_id].toLowerCase().includes(gf))
 
-    const byOperator = (w: any) => !selectedOperatorId || w.worker_id === selectedOperatorId
+    return workerData.filter((w) => {
+      const matchesText = !gf ||
+        w.run_id.toLowerCase().includes(gf) ||
+        w.worker_id.toLowerCase().includes(gf) ||
+        w.run_date.toLowerCase().includes(gf) ||
+        (WORKER_NAME_MAP[w.worker_id]?.toLowerCase().includes(gf))
 
-    return workerData.filter((w) => byText(w) && byOperator(w))
+      const matchesOperator = !selectedOperatorId || w.worker_id === selectedOperatorId
+
+      return matchesText && matchesOperator
+    })
   }, [workerData, globalFilter, selectedOperatorId])
 
-  const table = useReactTable({
+  // Table instances
+  const runsTable = useReactTable({
     data: filteredData,
-    columns,
+    columns: runsColumns,
     state: {
       sorting,
       columnVisibility,
@@ -574,7 +693,6 @@ export function RunsDataTable({ locationId, limit = 50 }: RunsDataTableProps) {
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
 
-  // Operator table for the "By Operator" tab
   const operatorTable = useReactTable({
     data: filteredWorkerData,
     columns: operatorColumns,
@@ -602,6 +720,7 @@ export function RunsDataTable({ locationId, limit = 50 }: RunsDataTableProps) {
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
 
+  // Event handlers
   const handleRefresh = () => {
     startTransition(() => {
       refetch()
@@ -609,15 +728,25 @@ export function RunsDataTable({ locationId, limit = 50 }: RunsDataTableProps) {
     })
   }
 
+  const handleClearFilters = () => {
+    setSelectedOperatorId("")
+    setStartDateTime("")
+    setEndDateTime("")
+  }
+
   const handleRowClick = (runId: string, runDate: string) => {
     router.push(`/reports/${runId}`)
   }
 
+  // Get the active table based on current tab
+  const activeTable = activeTab === 'runs' ? runsTable : operatorTable
+
+  // Error state
   if (isError) {
     return (
-      <div className="px-4 lg:px-6">
-        <div className="flex flex-col items-center justify-center p-8 text-center border rounded-lg">
-          <div className="text-red-600 mb-2">Error loading runs</div>
+      <Card className={className}>
+        <CardContent className="flex flex-col items-center justify-center p-8 text-center">
+          <div className="text-red-600 mb-2 text-lg font-medium">Error loading runs</div>
           <div className="text-sm text-muted-foreground mb-4">
             {error?.message || 'Failed to fetch runs data'}
           </div>
@@ -625,100 +754,56 @@ export function RunsDataTable({ locationId, limit = 50 }: RunsDataTableProps) {
             <IconRefresh className="mr-2 h-4 w-4" />
             Try Again
           </Button>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     )
   }
 
   return (
-    <div className="px-4 lg:px-6">
-      <Tabs defaultValue="runs" value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="flex items-center justify-between mb-4">
+    <Card className={className}>
+      {/* Header Section */}
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-base font-medium">Performance Data</h3>
-            <p className="text-muted-foreground text-sm">
+            <CardTitle className="flex items-center gap-2">
+              <IconChartBar className="h-5 w-5 text-muted-foreground" />
+              Performance Data
+            </CardTitle>
+            <CardDescription>
               {isLoading ? 'Loading...' : `${runsData.length} runs found`}
               {!isLoading && runsData.length > 0 && (
-                <span className="ml-2">• Click any row to view detailed analytics</span>
+                <span className="ml-1">• Click any row to view detailed analytics</span>
               )}
-            </p>
+            </CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <Button 
-              onClick={handleRefresh} 
-              variant="outline" 
+            <Button
+              onClick={handleRefresh}
+              variant="outline"
               size="sm"
               disabled={isLoading || isRefetching || isLoadingWorkers || isRefetchingWorkers}
             >
-              {isLoading || isRefetching || isLoadingWorkers || isRefetchingWorkers ? (
+              {(isRefetching || isRefetchingWorkers) ? (
                 <IconLoader className="mr-2 h-4 w-4 animate-spin" />
               ) : (
                 <IconRefresh className="mr-2 h-4 w-4" />
               )}
-              <span className="hidden lg:inline">Refresh</span>
+              Refresh
             </Button>
-            <div className="hidden md:flex items-center gap-2">
-              <Label className="text-xs text-muted-foreground">Operator</Label>
-              <Select value={selectedOperatorId || 'all'} onValueChange={(v) => setSelectedOperatorId(v === 'all' ? '' : v)}>
-                <SelectTrigger className="h-8 w-56">
-                  <SelectValue placeholder="All operators" />
-                </SelectTrigger>
-                <SelectContent side="top">
-                  <SelectItem value="all">All operators</SelectItem>
-                  {Object.entries(workerNameMap).map(([id, name]) => (
-                    <SelectItem key={id} value={id}>{name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {selectedOperatorId && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedOperatorId("")}
-                >
-                  Clear
-                </Button>
-              )}
-            </div>
-            <div className="hidden md:flex items-center gap-2">
-              <Label className="text-xs text-muted-foreground">From</Label>
-              <Input
-                type="datetime-local"
-                value={startDateTime}
-                onChange={(e) => setStartDateTime(e.target.value)}
-                className="h-8 w-56"
-              />
-              <Label className="text-xs text-muted-foreground">To</Label>
-              <Input
-                type="datetime-local"
-                value={endDateTime}
-                onChange={(e) => setEndDateTime(e.target.value)}
-                className="h-8 w-56"
-              />
-              {(startDateTime || endDateTime) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => { setStartDateTime(""); setEndDateTime("") }}
-                >
-                  Clear
-                </Button>
-              )}
-            </div>
-            <DataTableExport 
-              data={activeTab === 'by-operator' ? filteredWorkerData : filteredData} 
-              filename={`${activeTab === 'by-operator' ? 'operator-analytics' : 'runs-data'}-${new Date().toISOString().split('T')[0]}`} 
+            <DataTableExport
+              data={activeTab === 'by-operator' ? filteredWorkerData : filteredData}
+              filename={`${activeTab === 'by-operator' ? 'operator-analytics' : 'runs-data'}-${new Date().toISOString().split('T')[0]}`}
             />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm">
-                  <IconLayoutColumns />
-                  <span className="hidden lg:inline">Columns</span>
-                  <IconChevronDown />
+                  <IconLayoutColumns className="mr-2 h-4 w-4" />
+                  Columns
+                  <IconChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                {table
+                {activeTable
                   .getAllColumns()
                   .filter(
                     (column) =>
@@ -743,217 +828,109 @@ export function RunsDataTable({ locationId, limit = 50 }: RunsDataTableProps) {
             </DropdownMenu>
           </div>
         </div>
+      </CardHeader>
 
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="runs">Runs</TabsTrigger>
-          <TabsTrigger value="by-operator">By Operator</TabsTrigger>
-        </TabsList>
+      {/* Tabs Section */}
+      <Tabs defaultValue="runs" value={activeTab} onValueChange={setActiveTab} className="w-full">
+        {/* Tab Navigation */}
+        <div className="border-b px-6">
+          <TabsList className="h-10 bg-transparent p-0 border-b-0">
+            <TabsTrigger
+              value="runs"
+              className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-10"
+            >
+              Runs
+            </TabsTrigger>
+            <TabsTrigger
+              value="by-operator"
+              className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-10"
+            >
+              By Operator
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-        <TabsContent value="runs" className="space-y-4">
-          {/* Search, mobile operator and mobile date range */}
-          <div className="flex items-center gap-4 flex-wrap">
-            <Input
-              placeholder="Search runs..."
-              value={globalFilter}
-              onChange={(e) => setGlobalFilter(e.target.value)}
-              className="max-w-sm"
-            />
-            <div className="flex md:hidden items-center gap-2 w-full">
-              <Select value={selectedOperatorId || 'all'} onValueChange={(v) => setSelectedOperatorId(v === 'all' ? '' : v)}>
-                <SelectTrigger className="h-8 w-full">
-                  <SelectValue placeholder="All operators" />
-                </SelectTrigger>
-                <SelectContent side="top">
-                  <SelectItem value="all">All operators</SelectItem>
-                  {Object.entries(workerNameMap).map(([id, name]) => (
-                    <SelectItem key={id} value={id}>{name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex md:hidden items-center gap-2 w-full">
+        {/* Filter Bar */}
+        <div className="border-b bg-muted/30 px-6 py-4">
+          <div className="flex flex-wrap items-center gap-4">
+            {/* Operator Filter - Only show for By Operator tab */}
+            {activeTab === 'by-operator' && (
+              <div className="flex items-center gap-2">
+                <Label className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                  Operator
+                </Label>
+                <Select
+                  value={selectedOperatorId || 'all'}
+                  onValueChange={(v) => setSelectedOperatorId(v === 'all' ? '' : v)}
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="All operators" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All operators</SelectItem>
+                    {Object.entries(WORKER_NAME_MAP).map(([id, name]) => (
+                      <SelectItem key={id} value={id}>{name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {/* Date Range Filter - Always visible */}
+            <div className="flex items-center gap-2">
+              <Label className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                From
+              </Label>
               <Input
                 type="datetime-local"
                 value={startDateTime}
                 onChange={(e) => setStartDateTime(e.target.value)}
-                className="h-8 flex-1"
+                className="w-[200px]"
               />
+              <Label className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                To
+              </Label>
               <Input
                 type="datetime-local"
                 value={endDateTime}
                 onChange={(e) => setEndDateTime(e.target.value)}
-                className="h-8 flex-1"
+                className="w-[200px]"
               />
-              {(startDateTime || endDateTime) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => { setStartDateTime(""); setEndDateTime("") }}
-                >
-                  Clear
-                </Button>
-              )}
             </div>
-          </div>
 
-          {/* Table */}
-          <div className={`overflow-hidden rounded-lg border transition-all duration-300 ease-in-out ${
-            isPending || isLoading ? 'shadow-sm' : 'shadow-md'
-          }`}>
-            <Table>
-              <TableHeader className="bg-muted sticky top-0 z-10">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead key={header.id} colSpan={header.colSpan}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </TableHead>
-                      )
-                    })}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody className={`transition-opacity duration-300 ${isPending || isLoading ? 'opacity-50' : 'opacity-100'}`}>
-                {isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                      <div className="flex items-center justify-center gap-2">
-                        <IconLoader className="h-4 w-4 animate-spin" />
-                        Loading runs...
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ) : table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row, index) => (
-                    <SimpleRow 
-                      key={row.id} 
-                      row={row} 
-                      index={index}
-                      isPending={isPending || isRefetching}
-                      onRowClick={handleRowClick}
-                    />
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      No runs found.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+            {/* Clear Filters Button */}
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleClearFilters}
+                className="h-8"
+              >
+                <IconX className="mr-2 h-4 w-4" />
+                Clear Filters
+              </Button>
+            )}
           </div>
+        </div>
 
-          {/* Pagination */}
-          <div className="flex items-center justify-between">
-            <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
-              {table.getFilteredSelectedRowModel().rows.length} of{" "}
-              {table.getFilteredRowModel().rows.length} row(s) selected.
-            </div>
-            <div className="flex w-full items-center gap-8 lg:w-fit">
-              <div className="hidden items-center gap-2 lg:flex">
-                <Label htmlFor="rows-per-page" className="text-sm font-medium">
-                  Rows per page
-                </Label>
-                <Select
-                  value={`${table.getState().pagination.pageSize}`}
-                  onValueChange={(value) => {
-                    table.setPageSize(Number(value))
-                  }}
-                >
-                  <SelectTrigger className="w-20" id="rows-per-page">
-                    <SelectValue
-                      placeholder={table.getState().pagination.pageSize}
-                    />
-                  </SelectTrigger>
-                  <SelectContent side="top">
-                    {[10, 20, 30, 40, 50].map((pageSize) => (
-                      <SelectItem key={pageSize} value={`${pageSize}`}>
-                        {pageSize}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex w-fit items-center justify-center text-sm font-medium">
-                Page {table.getState().pagination.pageIndex + 1} of{" "}
-                {table.getPageCount()}
-              </div>
-              <div className="ml-auto flex items-center gap-2 lg:ml-0">
-                <Button
-                  variant="outline"
-                  className="hidden h-8 w-8 p-0 lg:flex"
-                  onClick={() => table.setPageIndex(0)}
-                  disabled={!table.getCanPreviousPage()}
-                >
-                  <span className="sr-only">Go to first page</span>
-                  <IconChevronsLeft />
-                </Button>
-                <Button
-                  variant="outline"
-                  className="size-8"
-                  size="icon"
-                  onClick={() => table.previousPage()}
-                  disabled={!table.getCanPreviousPage()}
-                >
-                  <span className="sr-only">Go to previous page</span>
-                  <IconChevronLeft />
-                </Button>
-                <Button
-                  variant="outline"
-                  className="size-8"
-                  size="icon"
-                  onClick={() => table.nextPage()}
-                  disabled={!table.getCanNextPage()}
-                >
-                  <span className="sr-only">Go to next page</span>
-                  <IconChevronRight />
-                </Button>
-                <Button
-                  variant="outline"
-                  className="hidden size-8 lg:flex"
-                  size="icon"
-                  onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                  disabled={!table.getCanNextPage()}
-                >
-                  <span className="sr-only">Go to last page</span>
-                  <IconChevronsRight />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="by-operator" className="space-y-4">
-          {/* Search */}
-          <div className="flex items-center gap-4">
+        {/* Content Area */}
+        <CardContent className="p-6">
+          <TabsContent value="runs" className="space-y-4 m-0">
+            {/* Search Input */}
             <Input
               placeholder="Search runs..."
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
               className="max-w-sm"
             />
-          </div>
 
-          {/* Operator Table */}
-          <div className={`overflow-hidden rounded-lg border transition-all duration-300 ease-in-out ${
-            isPending || isLoading ? 'shadow-sm' : 'shadow-md'
-          }`}>
-            <Table>
-              <TableHeader className="bg-muted sticky top-0 z-10">
-                {operatorTable.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
+            {/* Table */}
+            <div className="overflow-hidden rounded-lg border">
+              <Table>
+                <TableHeader className="bg-muted/50">
+                  {runsTable.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
                         <TableHead key={header.id} colSpan={header.colSpan}>
                           {header.isPlaceholder
                             ? null
@@ -962,125 +939,109 @@ export function RunsDataTable({ locationId, limit = 50 }: RunsDataTableProps) {
                                 header.getContext()
                               )}
                         </TableHead>
-                      )
-                    })}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody className={`transition-opacity duration-300 ${isPending || isLoadingWorkers ? 'opacity-50' : 'opacity-100'}`}>
-                {isLoadingWorkers ? (
-                  <TableRow>
-                    <TableCell colSpan={operatorColumns.length} className="h-24 text-center">
-                      <div className="flex items-center justify-center gap-2">
-                        <IconLoader className="h-4 w-4 animate-spin" />
-                        Loading worker analytics...
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ) : operatorTable.getRowModel().rows?.length ? (
-                  operatorTable.getRowModel().rows.map((row, index) => (
-                    <SimpleRow 
-                      key={row.id} 
-                      row={row} 
-                      index={index}
-                      isPending={isPending || isRefetchingWorkers}
-                      onRowClick={handleRowClick}
-                    />
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={operatorColumns.length}
-                      className="h-24 text-center"
-                    >
-                      No runs found.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={runsColumns.length} className="h-24 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <IconLoader className="h-4 w-4 animate-spin" />
+                          Loading runs...
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : runsTable.getRowModel().rows?.length ? (
+                    runsTable.getRowModel().rows.map((row, index) => (
+                      <TableRowComponent
+                        key={row.id}
+                        row={row}
+                        index={index}
+                        isPending={isPending || isRefetching}
+                        onRowClick={handleRowClick}
+                      />
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={runsColumns.length} className="h-24 text-center">
+                        No runs found.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
 
-          {/* Pagination */}
-          <div className="flex items-center justify-between">
-            <div className="text-muted-foreground hidden flex-1 text-sm lg:flex">
-              {operatorTable.getFilteredSelectedRowModel().rows.length} of{" "}
-              {operatorTable.getFilteredRowModel().rows.length} row(s) selected.
+            {/* Pagination */}
+            <PaginationControls table={runsTable} />
+          </TabsContent>
+
+          <TabsContent value="by-operator" className="space-y-4 m-0">
+            {/* Search Input */}
+            <Input
+              placeholder="Search by operator, run ID, or date..."
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              className="max-w-sm"
+            />
+
+            {/* Table */}
+            <div className="overflow-hidden rounded-lg border">
+              <Table>
+                <TableHeader className="bg-muted/50">
+                  {operatorTable.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <TableHead key={header.id} colSpan={header.colSpan}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+                <TableBody>
+                  {isLoadingWorkers ? (
+                    <TableRow>
+                      <TableCell colSpan={operatorColumns.length} className="h-24 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <IconLoader className="h-4 w-4 animate-spin" />
+                          Loading operator analytics...
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : operatorTable.getRowModel().rows?.length ? (
+                    operatorTable.getRowModel().rows.map((row, index) => (
+                      <TableRowComponent
+                        key={row.id}
+                        row={row}
+                        index={index}
+                        isPending={isPending || isRefetchingWorkers}
+                        onRowClick={handleRowClick}
+                      />
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={operatorColumns.length} className="h-24 text-center">
+                        No operator data found.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
             </div>
-            <div className="flex w-full items-center gap-8 lg:w-fit">
-              <div className="hidden items-center gap-2 lg:flex">
-                <Label htmlFor="rows-per-page-2" className="text-sm font-medium">
-                  Rows per page
-                </Label>
-                <Select
-                  value={`${operatorTable.getState().pagination.pageSize}`}
-                  onValueChange={(value) => {
-                    operatorTable.setPageSize(Number(value))
-                  }}
-                >
-                  <SelectTrigger className="w-20" id="rows-per-page-2">
-                    <SelectValue
-                      placeholder={operatorTable.getState().pagination.pageSize}
-                    />
-                  </SelectTrigger>
-                  <SelectContent side="top">
-                    {[10, 20, 30, 40, 50].map((pageSize) => (
-                      <SelectItem key={pageSize} value={`${pageSize}`}>
-                        {pageSize}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex w-fit items-center justify-center text-sm font-medium">
-                Page {operatorTable.getState().pagination.pageIndex + 1} of{" "}
-                {operatorTable.getPageCount()}
-              </div>
-              <div className="ml-auto flex items-center gap-2 lg:ml-0">
-                <Button
-                  variant="outline"
-                  className="hidden h-8 w-8 p-0 lg:flex"
-                  onClick={() => operatorTable.setPageIndex(0)}
-                  disabled={!operatorTable.getCanPreviousPage()}
-                >
-                  <span className="sr-only">Go to first page</span>
-                  <IconChevronsLeft />
-                </Button>
-                <Button
-                  variant="outline"
-                  className="size-8"
-                  size="icon"
-                  onClick={() => operatorTable.previousPage()}
-                  disabled={!operatorTable.getCanPreviousPage()}
-                >
-                  <span className="sr-only">Go to previous page</span>
-                  <IconChevronLeft />
-                </Button>
-                <Button
-                  variant="outline"
-                  className="size-8"
-                  size="icon"
-                  onClick={() => operatorTable.nextPage()}
-                  disabled={!operatorTable.getCanNextPage()}
-                >
-                  <span className="sr-only">Go to next page</span>
-                  <IconChevronRight />
-                </Button>
-                <Button
-                  variant="outline"
-                  className="hidden size-8 lg:flex"
-                  size="icon"
-                  onClick={() => operatorTable.setPageIndex(operatorTable.getPageCount() - 1)}
-                  disabled={!operatorTable.getCanNextPage()}
-                >
-                  <span className="sr-only">Go to last page</span>
-                  <IconChevronsRight />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </TabsContent>
+
+            {/* Pagination */}
+            <PaginationControls table={operatorTable} />
+          </TabsContent>
+        </CardContent>
       </Tabs>
-    </div>
+    </Card>
   )
 }

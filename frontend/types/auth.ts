@@ -5,6 +5,7 @@
 export interface User {
   id: string
   email: string
+  is_admin?: boolean
 }
 
 export interface AuthTokens {
@@ -27,12 +28,14 @@ export interface LoginResponse {
   access_token: string
   refresh_token: string
   user: User
+  is_admin?: boolean
 }
 
 export interface RefreshResponse {
   access_token: string
   refresh_token: string
   user: User
+  is_admin?: boolean
 }
 
 export interface AuthError {

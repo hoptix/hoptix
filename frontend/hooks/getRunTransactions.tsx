@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { apiClient } from "@/lib/api-client"
+import { useAuth } from "@/contexts/AuthContext"
 
 export interface Transaction {
   transaction_id: string;
@@ -164,21 +165,22 @@ const fetchRunTransactions = async (
 };
 
 export function useGetRunTransactions(
-  runId: string, 
-  options?: { 
-    limit?: number; 
-    offset?: number; 
+  runId: string,
+  options?: {
+    limit?: number;
+    offset?: number;
     enabled?: boolean;
   }
 ) {
+  const { user } = useAuth()
   const limit = options?.limit || 50;
   const offset = options?.offset || 0;
   const enabled = options?.enabled !== undefined ? options.enabled : true;
 
   return useQuery({
-    queryKey: ['run-transactions', runId, limit, offset],
+    queryKey: ['run-transactions', user?.id, runId, limit, offset],
     queryFn: () => fetchRunTransactions(runId, limit, offset),
-    enabled: !!runId && enabled,
+    enabled: !!runId && !!user && enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
   });

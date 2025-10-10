@@ -340,7 +340,10 @@ def get_location_analytics_over_time(location_id):
         # Query run_analytics_with_details for time-series data
         result = db.client.table("run_analytics_with_details").select(
             "run_date, upsell_revenue, upsize_revenue, addon_revenue, total_revenue, "
-            "total_opportunities, total_offers, total_successes"
+            "total_opportunities, total_offers, total_successes, "
+            "upsell_opportunities, upsell_offers, upsell_successes, "
+            "upsize_opportunities, upsize_offers, upsize_successes, "
+            "addon_opportunities, addon_offers, addon_successes"
         ).eq("location_id", location_id).gte("run_date", start_date.isoformat()).lte(
             "run_date", end_date.isoformat()
         ).order("run_date", desc=False).execute()
@@ -358,7 +361,16 @@ def get_location_analytics_over_time(location_id):
                     "total_revenue": 0.0,
                     "total_opportunities": 0,
                     "total_offers": 0,
-                    "total_successes": 0
+                    "total_successes": 0,
+                    "upsell_opportunities": 0,
+                    "upsell_offers": 0,
+                    "upsell_successes": 0,
+                    "upsize_opportunities": 0,
+                    "upsize_offers": 0,
+                    "upsize_successes": 0,
+                    "addon_opportunities": 0,
+                    "addon_offers": 0,
+                    "addon_successes": 0
                 }
 
             daily_metrics[date]["upsell_revenue"] += float(row["upsell_revenue"] or 0)
@@ -368,15 +380,49 @@ def get_location_analytics_over_time(location_id):
             daily_metrics[date]["total_opportunities"] += row["total_opportunities"] or 0
             daily_metrics[date]["total_offers"] += row["total_offers"] or 0
             daily_metrics[date]["total_successes"] += row["total_successes"] or 0
+            daily_metrics[date]["upsell_opportunities"] += row["upsell_opportunities"] or 0
+            daily_metrics[date]["upsell_offers"] += row["upsell_offers"] or 0
+            daily_metrics[date]["upsell_successes"] += row["upsell_successes"] or 0
+            daily_metrics[date]["upsize_opportunities"] += row["upsize_opportunities"] or 0
+            daily_metrics[date]["upsize_offers"] += row["upsize_offers"] or 0
+            daily_metrics[date]["upsize_successes"] += row["upsize_successes"] or 0
+            daily_metrics[date]["addon_opportunities"] += row["addon_opportunities"] or 0
+            daily_metrics[date]["addon_offers"] += row["addon_offers"] or 0
+            daily_metrics[date]["addon_successes"] += row["addon_successes"] or 0
 
-        # Calculate conversion rates
+        # Calculate conversion rates for overall and per-category
         for date, metrics in daily_metrics.items():
+            # Overall conversion rate
             if metrics["total_offers"] > 0:
-                metrics["conversion_rate"] = round(
+                metrics["overall_conversion_rate"] = round(
                     (metrics["total_successes"] / metrics["total_offers"]) * 100, 1
                 )
             else:
-                metrics["conversion_rate"] = 0.0
+                metrics["overall_conversion_rate"] = 0.0
+
+            # Upsell conversion rate
+            if metrics["upsell_offers"] > 0:
+                metrics["upsell_conversion_rate"] = round(
+                    (metrics["upsell_successes"] / metrics["upsell_offers"]) * 100, 1
+                )
+            else:
+                metrics["upsell_conversion_rate"] = 0.0
+
+            # Upsize conversion rate
+            if metrics["upsize_offers"] > 0:
+                metrics["upsize_conversion_rate"] = round(
+                    (metrics["upsize_successes"] / metrics["upsize_offers"]) * 100, 1
+                )
+            else:
+                metrics["upsize_conversion_rate"] = 0.0
+
+            # Addon conversion rate
+            if metrics["addon_offers"] > 0:
+                metrics["addon_conversion_rate"] = round(
+                    (metrics["addon_successes"] / metrics["addon_offers"]) * 100, 1
+                )
+            else:
+                metrics["addon_conversion_rate"] = 0.0
 
         # Convert to array sorted by date
         data_array = sorted(daily_metrics.values(), key=lambda x: x["date"])

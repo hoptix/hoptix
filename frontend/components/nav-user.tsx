@@ -3,6 +3,7 @@
 import {
   LogOutIcon,
   MoreVerticalIcon,
+  ShieldCheck,
 } from "lucide-react"
 
 import {
@@ -10,6 +11,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,7 +55,15 @@ export function NavUser() {
                 <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.email.split('@')[0]}</span>
+                <div className="flex items-center gap-2">
+                  <span className="truncate font-medium">{user.email.split('@')[0]}</span>
+                  {user.is_admin && (
+                    <Badge variant="default" className="h-5 px-1.5 text-[10px]">
+                      <ShieldCheck className="h-3 w-3 mr-0.5" />
+                      Admin
+                    </Badge>
+                  )}
+                </div>
                 <span className="truncate text-xs text-muted-foreground">
                   {user.email}
                 </span>
@@ -73,7 +83,15 @@ export function NavUser() {
                   <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.email.split('@')[0]}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="truncate font-medium">{user.email.split('@')[0]}</span>
+                    {user.is_admin && (
+                      <Badge variant="default" className="h-5 px-1.5 text-[10px]">
+                        <ShieldCheck className="h-3 w-3 mr-0.5" />
+                        Admin
+                      </Badge>
+                    )}
+                  </div>
                   <span className="truncate text-xs text-muted-foreground">
                     {user.email}
                   </span>

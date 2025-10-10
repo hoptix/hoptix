@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { apiClient } from "@/lib/api-client"
+import { useAuth } from "@/contexts/AuthContext"
 
 interface Run {
   id: string
@@ -38,11 +39,14 @@ const fetchRuns = async (locationId?: string, limit?: number, includeAnalytics: 
 }
 
 export function useGetRuns(locationId?: string, options?: { limit?: number }) {
+  const { user } = useAuth()
+
   return useQuery({
-    queryKey: ['runs', locationId ?? 'all', options?.limit],
+    queryKey: ['runs', user?.id, locationId ?? 'all', options?.limit],
     queryFn: () => fetchRuns(locationId, options?.limit),
     // Enabled by default (fetch all runs) and refetch when a location is selected
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
+    enabled: !!user,
   })
 }

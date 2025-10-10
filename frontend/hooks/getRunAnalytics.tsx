@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { apiClient } from "@/lib/api-client"
+import { useAuth } from "@/contexts/AuthContext"
 
 interface SizeMetrics {
   upsell_base: number;
@@ -97,10 +98,12 @@ const fetchRunAnalytics = async (runId: string): Promise<{ success: boolean; dat
 }
 
 export function useGetRunAnalytics(runId: string, enabled: boolean = true) {
+  const { user } = useAuth()
+
   return useQuery({
-    queryKey: ['run-analytics', runId],
+    queryKey: ['run-analytics', user?.id, runId],
     queryFn: () => fetchRunAnalytics(runId),
-    enabled: !!runId && enabled,
+    enabled: !!runId && !!user && enabled,
     staleTime: 10 * 60 * 1000, // 10 minutes - analytics don't change often
     refetchOnWindowFocus: false,
   })
@@ -113,12 +116,14 @@ interface WorkerAnalytics extends RunAnalytics {
 
 // Hook to fetch worker analytics for a run
 export function useGetWorkerAnalytics(runId: string) {
+  const { user } = useAuth()
+
   return useQuery({
-    queryKey: ['workerAnalytics', runId],
+    queryKey: ['workerAnalytics', user?.id, runId],
     queryFn: async (): Promise<{ success: boolean; data: WorkerAnalytics[] }> => {
       return apiClient.get<{ success: boolean; data: WorkerAnalytics[] }>(`/api/analytics/run/${runId}/workers`)
     },
-    enabled: !!runId,
+    enabled: !!runId && !!user,
     staleTime: 10 * 60 * 1000, // 10 minutes
     refetchOnWindowFocus: false,
   })
@@ -126,11 +131,14 @@ export function useGetWorkerAnalytics(runId: string) {
 
 // Hook to fetch all worker analytics for the data table
 export function useGetAllWorkerAnalytics() {
+  const { user } = useAuth()
+
   return useQuery({
-    queryKey: ['allWorkerAnalytics'],
+    queryKey: ['allWorkerAnalytics', user?.id],
     queryFn: async (): Promise<{ success: boolean; data: WorkerAnalytics[] }> => {
       return apiClient.get<{ success: boolean; data: WorkerAnalytics[] }>('/api/analytics/workers')
     },
+    enabled: !!user,
     staleTime: 10 * 60 * 1000, // 10 minutes
     refetchOnWindowFocus: false,
   })

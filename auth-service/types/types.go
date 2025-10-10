@@ -21,6 +21,7 @@ type User struct {
 	UserMetadata       map[string]interface{} `json:"user_metadata"`
 	AppMetadata        map[string]interface{} `json:"app_metadata"`
 	Identities         []Identity             `json:"identities"`
+	IsAdmin            bool                   `json:"is_admin,omitempty"`
 }
 
 type Identity struct {
@@ -118,6 +119,7 @@ type AuthResponse struct {
 	ExpiresAt    int64  `json:"expires_at"`
 	RefreshToken string `json:"refresh_token"`
 	User         *User  `json:"user"`
+	IsAdmin      bool   `json:"is_admin,omitempty"`
 }
 
 type GenerateLinkResponse struct {
@@ -145,24 +147,3 @@ type ReauthRequest struct {
 }
 
 // Admin login types
-type LoginAdminRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type AdminUserDetails struct {
-	ID        string    `json:"id"`
-	Email     string    `json:"email"`
-	IsAdmin   bool      `json:"is_admin"`
-	CreatedAt time.Time `json:"created_at"`
-}
-
-type LoginAdminResponse struct {
-	AccessToken  string            `json:"access_token"`
-	TokenType    string            `json:"token_type"`
-	ExpiresIn    int               `json:"expires_in"`
-	ExpiresAt    int64             `json:"expires_at"`
-	RefreshToken string            `json:"refresh_token"`
-	User         *User             `json:"user"`
-	AdminDetails *AdminUserDetails `json:"admin_details"`
-}

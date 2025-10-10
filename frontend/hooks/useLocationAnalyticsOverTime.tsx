@@ -1,26 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { apiClient } from '@/lib/api-client'
-
-interface DailyMetrics {
-  date: string
-  upsell_revenue: number
-  upsize_revenue: number
-  addon_revenue: number
-  total_revenue: number
-  total_opportunities: number
-  total_offers: number
-  total_successes: number
-  conversion_rate: number
-}
-
-interface AnalyticsOverTimeResponse {
-  period: {
-    start_date: string
-    end_date: string
-    days: number
-  }
-  data: DailyMetrics[]
-}
+import type { DailyMetrics, AnalyticsOverTimeResponse } from '@/types/analytics'
 
 interface UseLocationAnalyticsOverTimeParams {
   locationId?: string
@@ -52,7 +32,7 @@ export function useLocationAnalyticsOverTime({
       const queryString = params.toString()
       const url = `/api/analytics/location/${locationId}/over_time${queryString ? `?${queryString}` : ''}`
 
-      const response = await apiClient.get<{ success: boolean; data: DailyMetrics[] }>(url)
+      const response = await apiClient.get<AnalyticsOverTimeResponse>(url)
       return response.data
     },
     enabled: enabled && !!locationId,

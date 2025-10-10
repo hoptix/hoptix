@@ -6,6 +6,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
 import type { User, AuthState, LoginCredentials } from '@/types/auth'
 import { loginUser, refreshSession, logoutUser as logoutUserApi, AuthApiError } from '@/lib/auth-api'
 import {
@@ -29,6 +30,7 @@ const REFRESH_BUFFER_MS = 5 * 60 * 1000
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [user, setUser] = useState<User | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -117,6 +119,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Schedule token refresh
       scheduleTokenRefresh(response.access_token)
 
+      // Clear all cached queries to ensure fresh data with new user's token
+      queryClient.clear()
+
       // Navigate to dashboard
       router.push('/dashboard')
     } catch (error) {
@@ -129,7 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Re-throw for UI to handle
       throw error
     }
-  }, [router, scheduleTokenRefresh])
+  }, [router, scheduleTokenRefresh, queryClient])
 
   /**
    * Logout function
@@ -159,9 +164,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setGlobalAccessToken(null)
     removeRefreshToken()
 
+    // CRITICAL: Clear all cached query data
+    // This ensures the next user gets fresh data
+    queryClient.clear()
+
+    // CRITICAL: Clear all localStorage data
+    // This prevents preference leakage between users (privacy + UX)
+    // Examples: chart preferences, user settings, etc.
+    if (typeof window !== 'undefined') {
+      localStorage.clear()
+    }
+
     // Redirect to login
     router.push('/login')
-  }, [router])
+  }, [router, queryClient])
 
   /**
    * Exposed refresh function

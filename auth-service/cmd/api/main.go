@@ -84,7 +84,6 @@ func setupPublicRoutes(router *mux.Router, authHandler *handlers.AuthHandler, oa
 	router.HandleFunc("/settings", authHandler.HandleSettings).Methods("GET")
 	router.HandleFunc("/signup", authHandler.HandleSignup).Methods("POST")
 	router.HandleFunc("/token", authHandler.HandleToken).Methods("POST")
-	router.HandleFunc("/login-admin", authHandler.HandleLoginAdmin).Methods("POST")
 	router.HandleFunc("/verify", authHandler.HandleVerify).Methods("GET", "POST")
 	router.HandleFunc("/resend", authHandler.HandleResend).Methods("POST")
 	router.HandleFunc("/recover", authHandler.HandleRecover).Methods("POST")
