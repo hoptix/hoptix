@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { apiClient } from "@/lib/api-client"
-import { useAuth } from "@/contexts/AuthContext"
+import { useAuth } from "@/contexts/authContext"
 
 export interface Transaction {
   transaction_id: string;

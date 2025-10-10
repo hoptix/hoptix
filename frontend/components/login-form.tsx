@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useAuth } from "@/contexts/AuthContext"
+import { useAuth } from "@/contexts/authContext"
 import { AuthApiError } from "@/lib/auth-api"
 
 export function LoginForm({

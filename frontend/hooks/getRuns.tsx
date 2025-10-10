@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { apiClient } from "@/lib/api-client"
-import { useAuth } from "@/contexts/AuthContext"
+import { useAuth } from "@/contexts/authContext"
 
 interface Run {
   id: string
