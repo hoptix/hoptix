@@ -12,6 +12,7 @@ import psutil
 import gc
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
+import soundfile as sf
 
 settings = Settings()
 
@@ -330,52 +331,104 @@ def transcribe_large_audio_file(audio_path: str, audio_record: Dict, audio_split
 
 def transcribe_single_audio_file(audio_path: str) -> List[Dict]:
     """
-    Transcribe a single audio file directly without further chunking.
+    Transcribe a single audio file using soundfile-based approach for better reliability.
     """
     print(f"🎵 Transcribing single audio file: {os.path.basename(audio_path)}")
     print(f"🔍 DEBUG: audio_path exists: {os.path.exists(audio_path)}")
     print(f"🔍 DEBUG: audio_path size: {os.path.getsize(audio_path) if os.path.exists(audio_path) else 'N/A'} bytes")
     
-    # Get duration
-    duration = get_duration(audio_path)
-    print(f"   ⏱️  Audio duration: {duration:.1f} seconds")
-    print(f"🔍 DEBUG: duration > 0: {duration > 0}")
-    
-    # Transcribe the entire file directly
+    # Get file info using soundfile (more memory efficient)
     try:
-        print(f"🔍 DEBUG: Opening file for ASR: {audio_path}")
-        with open(audio_path, "rb") as af:
-            print(f"🔍 DEBUG: Calling OpenAI ASR with model: {ASR_MODEL}")
-            txt = client.audio.transcriptions.create(
-                model=ASR_MODEL,
-                file=af,
-                response_format="text",
-                temperature=0.001,
-                prompt="Label each line as Operator: or Customer: where possible."
-            )
-            text = str(txt).strip()
-            print(f"   ✅ File transcribed: {len(text)} characters")
-            print(f"🔍 DEBUG: First 200 chars of transcription: {text[:200]}...")
-    except Exception as ex:
-        print(f"   ❌ ASR error: {ex}")
-        print(f"🔍 DEBUG: ASR exception type: {type(ex).__name__}")
-        import traceback
-        print(f"🔍 DEBUG: ASR full traceback:")
-        traceback.print_exc()
-        text = ""
-    
-    if text:
-        # Return as a single segment covering the entire duration
-        segment = {
-            "start": 0.0,
-            "end": duration,
-            "text": text
-        }
-        print(f"🔍 DEBUG: Created single segment: start={segment['start']}, end={segment['end']}, text_length={len(text)}")
-        return [segment]
-    else:
-        print(f"🔍 DEBUG: No text transcribed, returning empty list")
+        with sf.SoundFile(audio_path) as f:
+            sr = f.samplerate
+            frames = f.frames
+            duration = frames / float(sr)
+            channels = f.channels
+            
+        print(f"📊 Audio Info: {duration:.1f}s, {sr}Hz, {channels} channels, {frames:,} frames")
+        print(f"🔍 DEBUG: duration > 0: {duration > 0}")
+    except Exception as e:
+        print(f"❌ Failed to read audio file info: {e}")
         return []
+    
+    # For large files, use segmentation approach to avoid memory issues
+    max_seg_s = 1200.0  # 20 minutes max per segment
+    
+    # Create segments based on duration rather than loading entire file
+    if duration <= max_seg_s:
+        # File is small enough to process as one segment
+        final_spans = [(0.0, duration)]
+        print(f"📏 File is small enough ({duration:.1f}s), processing as single segment")
+    else:
+        # Split into 20-minute chunks with small overlap
+        overlap_s = 5.0  # 5 second overlap
+        final_spans = []
+        current_start = 0.0
+        
+        while current_start < duration:
+            current_end = min(current_start + max_seg_s, duration)
+            final_spans.append((current_start, current_end))
+            current_start = current_end - overlap_s
+            
+        print(f"📏 File split into {len(final_spans)} segments of ~{max_seg_s/60:.1f}min each")
+
+    # Transcribe each segment using memory-efficient approach
+    print(f"🧩 Processing {len(final_spans)} audio segments for ASR")
+    audio_dir = "extracted_audio"
+    os.makedirs(audio_dir, exist_ok=True)
+    base = os.path.splitext(os.path.basename(audio_path))[0]
+
+    segments = []
+    for i, (b, e) in enumerate(final_spans, start=1):
+        print(f"🎵 Processing segment {i}/{len(final_spans)}: {b:.1f}s - {e:.1f}s")
+        
+        # Extract segment using soundfile (memory efficient)
+        seg_path = os.path.join(audio_dir, f"{base}_seg_{i:03d}_{int(b)}s-{int(e)}s.wav")
+        
+        try:
+            # Use soundfile to extract just this segment
+            with sf.SoundFile(audio_path) as f:
+                # Seek to start position
+                f.seek(int(b * sr))
+                # Read only the frames we need
+                frames_to_read = int((e - b) * sr)
+                seg_data = f.read(frames_to_read)
+                
+            # Write segment to file
+            sf.write(seg_path, seg_data, sr)
+            
+            # Transcribe the segment
+            with open(seg_path, "rb") as af:
+                print(f"🔍 DEBUG: Calling OpenAI ASR with model: {ASR_MODEL}")
+                txt = client.audio.transcriptions.create(
+                    model=ASR_MODEL,
+                    file=af,
+                    response_format="text",
+                    temperature=0.001,
+                    prompt="Label each line as Operator: or Customer: where possible."
+                )
+            text = str(txt).strip()
+            print(f"✅ ASR {i}/{len(final_spans)}: {len(text)} chars")
+            print(f"🔍 DEBUG: First 200 chars of transcription: {text[:200]}...")
+            
+            # Clean up segment file immediately to save disk space
+            os.remove(seg_path)
+            
+        except Exception as asr_err:
+            print(f"❌ ASR failed for segment {i}: {asr_err}")
+            print(f"🔍 DEBUG: ASR exception type: {type(asr_err).__name__}")
+            import traceback
+            print(f"🔍 DEBUG: ASR full traceback:")
+            traceback.print_exc()
+            text = ""
+            # Clean up failed segment file
+            if os.path.exists(seg_path):
+                os.remove(seg_path)
+                
+        segments.append({"start": float(b), "end": float(e), "text": text})
+
+    print(f"✅ Transcription completed: {len(segments)} segments generated")
+    return segments
 
 def validate_timing_accuracy(segments: List[Dict], total_duration: float):
     """Validate that segment timings are accurate and don't exceed file duration"""
