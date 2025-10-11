@@ -22,8 +22,8 @@ class Settings:
 
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
     ASR_MODEL: str = os.getenv("ASR_MODEL", "gpt-4o-transcribe")
-    STEP1_MODEL: str = os.getenv("STEP1_MODEL", "o3")
-    STEP2_MODEL: str = os.getenv("STEP2_MODEL", "o3")
+    STEP1_MODEL: str = os.getenv("STEP1_MODEL", "gpt-5-nano")
+    STEP2_MODEL: str = os.getenv("STEP2_MODEL", "gpt-5-nano")
 
     # where to load menu/prompts jsons from (local files). All optional.
     PROMPTS_DIR: str = os.getenv("PROMPTS_DIR", "./prompts")
