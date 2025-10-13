@@ -26,10 +26,19 @@ class AudioSplitter:
         self.db = db
         self.settings = settings
         
+        # Import chunked processing configuration
+        try:
+            from config.chunked_processing import CHUNK_SIZE_SECONDS
+            self.chunk_duration_minutes = CHUNK_SIZE_SECONDS / 60.0  # Convert seconds to minutes
+            print(f"🔍 DEBUG: Using configured chunk size: {CHUNK_SIZE_SECONDS}s ({self.chunk_duration_minutes:.1f}min)")
+        except ImportError:
+            # Fallback to smaller chunks for deployment safety
+            self.chunk_duration_minutes = 5  # 5 minutes per chunk (reduced from 10)
+            print(f"🔍 DEBUG: Using fallback chunk size: 5 minutes")
+        
         # Configuration for splitting
         self.max_file_size_mb = 50  # Split files larger than 50MB
         self.max_duration_minutes = 30  # Split files longer than 30 minutes
-        self.chunk_duration_minutes = 10  # Each chunk should be ~10 minutes
         self.overlap_seconds = 5  # 5 second overlap between chunks to avoid cutting mid-sentence
         
     def should_split_audio(self, audio_path: str) -> Tuple[bool, str]:

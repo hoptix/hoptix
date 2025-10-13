@@ -28,18 +28,20 @@ try:
         MAX_MEMORY_MB, CLEANUP_FREQUENCY, VERBOSE_LOGGING, MEMORY_MONITORING,
         PARALLEL_CHUNKS, MAX_WORKERS, USE_HOPTIX_SPAN_PIPELINE
     )
+    print(f"🔍 DEBUG: Loaded chunked processing config - CHUNK_SIZE_SECONDS: {CHUNK_SIZE_SECONDS}")
 except ImportError:
-    # Fallback configuration if config file doesn't exist
-    CHUNK_SIZE_SECONDS = 600  # 10 minutes per chunk
+    # Fallback configuration if config file doesn't exist - use deployment-safe values
+    CHUNK_SIZE_SECONDS = 300  # 5 minutes per chunk (reduced for deployment safety)
     SILENCE_THRESHOLD = -40  # dB threshold for silence detection
     MIN_ACTIVE_DURATION = 5.0  # Minimum duration for active segments
-    MAX_MEMORY_MB = 1000  # Maximum memory usage before forcing cleanup
-    CLEANUP_FREQUENCY = 5  # Force garbage collection every N chunks
+    MAX_MEMORY_MB = 500  # Reduced memory limit for deployment environments
+    CLEANUP_FREQUENCY = 3  # More frequent cleanup
     VERBOSE_LOGGING = True
     MEMORY_MONITORING = True
     PARALLEL_CHUNKS = True  # Enable parallel processing
-    MAX_WORKERS = 1  # Number of parallel workers
+    MAX_WORKERS = 2  # Limited parallel workers
     USE_HOPTIX_SPAN_PIPELINE = False
+    print(f"🔍 DEBUG: Using fallback config - CHUNK_SIZE_SECONDS: {CHUNK_SIZE_SECONDS}")
 
 # ----- Hoptix-style helpers -----
 @contextlib.contextmanager
@@ -327,6 +329,19 @@ def transcribe_audio(audio_path: str, db=None, audio_record=None) -> List[Dict]:
     
     # Check if we need to split the file
     if db and audio_record:
+        # For very large files (>8 hours), force Hoptix span pipeline to avoid memory issues
+        if duration > 28800:  # 8 hours = 28800 seconds
+            print(f"⚠️ Very large file detected ({duration/3600:.1f} hours), forcing Hoptix span pipeline")
+            print(f"🔍 DEBUG: Duration exceeds 8 hours, using span-based processing")
+            ext = os.path.splitext(audio_path)[1].lower()
+            video_exts = {".mp4", ".avi", ".mkv", ".mov"}
+            if ext in video_exts:
+                print("🎯 Using Hoptix span pipeline for VIDEO (large file)")
+                return transcribe_video_hoptix(audio_path)
+            else:
+                print("🎯 Using Hoptix span pipeline for AUDIO (large file)")
+                return transcribe_audio_hoptix_spans(audio_path)
+        
         audio_splitter = AudioSplitter(db, settings)
         should_split, reason = audio_splitter.should_split_audio(audio_path)
         print(f"🔍 File analysis: {reason}")
@@ -352,6 +367,10 @@ def transcribe_large_audio_file(audio_path: str, audio_record: Dict, audio_split
     print(f"🔍 DEBUG: audio_record keys: {list(audio_record.keys()) if audio_record else 'None'}")
     print(f"🔍 DEBUG: audio_record id: {audio_record.get('id') if audio_record else 'None'}")
     
+    # Check memory before starting
+    initial_memory = get_memory_usage()
+    print(f"🔍 DEBUG: Initial memory before chunking: {initial_memory:.1f} MB")
+    
     # Split the audio file into chunks
     chunk_records = audio_splitter.process_large_audio_file(audio_path, audio_record)
     print(f"🔍 DEBUG: audio_splitter.process_large_audio_file returned {len(chunk_records)} chunk records")
@@ -362,6 +381,15 @@ def transcribe_large_audio_file(audio_path: str, audio_record: Dict, audio_split
         return []
     
     print(f"✅ Successfully split into {len(chunk_records)} chunks")
+    
+    # Check if we have too many chunks (circuit breaker)
+    max_chunks_for_deployment = 50  # Limit chunks for deployment environments
+    if len(chunk_records) > max_chunks_for_deployment:
+        print(f"⚠️ Too many chunks ({len(chunk_records)}) for deployment environment")
+        print(f"🔍 DEBUG: Limiting to first {max_chunks_for_deployment} chunks to prevent memory exhaustion")
+        chunk_records = chunk_records[:max_chunks_for_deployment]
+        print(f"🔍 DEBUG: Reduced to {len(chunk_records)} chunks")
+    
     for i, chunk in enumerate(chunk_records):
         print(f"🔍 DEBUG: Chunk {i+1}: id={chunk.get('id')}, path={chunk.get('meta', {}).get('local_chunk_path')}")
     
