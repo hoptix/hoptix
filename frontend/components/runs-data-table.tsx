@@ -760,7 +760,7 @@ export function RunsDataTable({ locationId, limit = 50, className }: RunsDataTab
   }
 
   return (
-    <Card className={className}>
+    <Card className={`${className} overflow-hidden`}>
       {/* Header Section */}
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
@@ -851,11 +851,11 @@ export function RunsDataTable({ locationId, limit = 50, className }: RunsDataTab
         </div>
 
         {/* Filter Bar */}
-        <div className="border-b bg-muted/30 px-6 py-4">
-          <div className="flex flex-wrap items-center gap-4">
+        <div className="border-b bg-muted/30 px-6 py-4 overflow-x-auto">
+          <div className="flex flex-wrap items-center gap-4 min-w-fit">
             {/* Operator Filter - Only show for By Operator tab */}
             {activeTab === 'by-operator' && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                 <Label className="text-sm font-medium text-muted-foreground whitespace-nowrap">
                   Operator
                 </Label>
@@ -863,7 +863,7 @@ export function RunsDataTable({ locationId, limit = 50, className }: RunsDataTab
                   value={selectedOperatorId || 'all'}
                   onValueChange={(v) => setSelectedOperatorId(v === 'all' ? '' : v)}
                 >
-                  <SelectTrigger className="w-[200px]">
+                  <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="All operators" />
                   </SelectTrigger>
                   <SelectContent>
@@ -877,7 +877,7 @@ export function RunsDataTable({ locationId, limit = 50, className }: RunsDataTab
             )}
 
             {/* Date Range Filter - Always visible */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <Label className="text-sm font-medium text-muted-foreground whitespace-nowrap">
                 From
               </Label>
@@ -885,7 +885,7 @@ export function RunsDataTable({ locationId, limit = 50, className }: RunsDataTab
                 type="datetime-local"
                 value={startDateTime}
                 onChange={(e) => setStartDateTime(e.target.value)}
-                className="w-[200px]"
+                className="w-[180px]"
               />
               <Label className="text-sm font-medium text-muted-foreground whitespace-nowrap">
                 To
@@ -894,7 +894,7 @@ export function RunsDataTable({ locationId, limit = 50, className }: RunsDataTab
                 type="datetime-local"
                 value={endDateTime}
                 onChange={(e) => setEndDateTime(e.target.value)}
-                className="w-[200px]"
+                className="w-[180px]"
               />
             </div>
 
@@ -925,7 +925,7 @@ export function RunsDataTable({ locationId, limit = 50, className }: RunsDataTab
             />
 
             {/* Table */}
-            <div className="overflow-hidden rounded-lg border">
+            <div className="overflow-x-auto rounded-lg border">
               <Table>
                 <TableHeader className="bg-muted/50">
                   {runsTable.getHeaderGroups().map((headerGroup) => (
@@ -988,7 +988,7 @@ export function RunsDataTable({ locationId, limit = 50, className }: RunsDataTab
             />
 
             {/* Table */}
-            <div className="overflow-hidden rounded-lg border">
+            <div className="overflow-x-auto rounded-lg border">
               <Table>
                 <TableHeader className="bg-muted/50">
                   {operatorTable.getHeaderGroups().map((headerGroup) => (

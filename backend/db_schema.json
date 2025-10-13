@@ -580,6 +580,21 @@
     "data_type": "jsonb"
   },
   {
+    "table_name": "grades",
+    "column_name": "num_upsell_base_offered",
+    "data_type": "integer"
+  },
+  {
+    "table_name": "grades",
+    "column_name": "num_upsize_base_offered",
+    "data_type": "integer"
+  },
+  {
+    "table_name": "grades",
+    "column_name": "num_addon_base_offered",
+    "data_type": "integer"
+  },
+  {
     "table_name": "items",
     "column_name": "item_id",
     "data_type": "integer"
@@ -1418,5 +1433,10 @@
     "table_name": "workers",
     "column_name": "active",
     "data_type": "boolean"
+  },
+  {
+    "table_name": "workers",
+    "column_name": "monthly_feedback",
+    "data_type": "text"
   }
 ]

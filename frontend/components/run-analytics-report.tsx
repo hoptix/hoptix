@@ -217,7 +217,7 @@ const SizeTransitionCard = ({ itemId, itemName, transitions }: { itemId: string,
 
 const ItemSizeBreakdown = ({ itemId, itemName, sizes }: { itemId: string, itemName: string, sizes: Record<string, SizeMetrics> }) => {
   const sizeEntries = Object.entries(sizes);
-  
+
   if (sizeEntries.length === 0) {
     return null; // Don't show items with no size data
   }
@@ -225,7 +225,7 @@ const ItemSizeBreakdown = ({ itemId, itemName, sizes }: { itemId: string, itemNa
   const getSizeName = (sizeKey: string) => {
     const sizeMap: Record<string, string> = {
       "0": "One Size",
-      "1": "Small", 
+      "1": "Small",
       "2": "Medium",
       "3": "Large"
     };
@@ -243,13 +243,13 @@ const ItemSizeBreakdown = ({ itemId, itemName, sizes }: { itemId: string, itemNa
           {sizeEntries.map(([sizeKey, metrics]) => {
             const sizeName = getSizeName(sizeKey);
             const totalActivity = metrics.upsell_base + metrics.upsize_base + metrics.addon_base;
-            
+
             if (totalActivity === 0) return null; // Skip sizes with no activity
-            
+
             return (
               <div key={sizeKey} className="border rounded-lg p-4">
                 <h4 className="font-semibold mb-3 text-gray-900">{sizeName}</h4>
-                
+
                 {/* Upselling */}
                 {(metrics.upsell_base > 0 || metrics.upsell_offered > 0 || metrics.upsell_success > 0) && (
                   <div className="mb-3">

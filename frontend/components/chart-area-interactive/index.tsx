@@ -434,8 +434,8 @@ export function ChartAreaInteractive({ locationId }: ChartAreaInteractiveProps) 
   }
 
   return (
-    <Card className="@container/card">
-      <CardHeader className="relative">
+    <Card className="@container/card overflow-hidden">
+      <CardHeader className="relative overflow-hidden">
         <div className="flex items-start justify-between gap-4">
           <div>
             <CardTitle>{metricLabel} Over Time</CardTitle>

@@ -17,9 +17,9 @@ export function ChartFilters({
   isMobile = false,
 }: Omit<ChartFilterProps, "timeRange" | "onTimeRangeChange">) {
   return (
-    <div className="flex flex-col gap-3 p-4 bg-muted/30 rounded-lg border">
+    <div className="flex flex-col gap-3 p-4 bg-muted/30 rounded-lg border overflow-x-auto">
       {/* First row: Metric Type */}
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4 min-w-fit">
         <MetricTypeSelector
           value={metricType}
           onValueChange={onMetricTypeChange}
@@ -29,7 +29,7 @@ export function ChartFilters({
       <Separator className="my-1" />
 
       {/* Second row: Category Filter and View Mode */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 min-w-fit">
         <CategoryFilter
           selectedCategories={selectedCategories}
           onCategoriesChange={onCategoriesChange}

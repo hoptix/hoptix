@@ -634,9 +634,9 @@ export function TopTransactionsHighlight({ locationId, date, className }: TopTra
         </div>
       </CardHeader>
 
-      <CardContent className="py-6">
-        <div className="w-full">
-          <div className="flex overflow-x-auto overflow-y-visible scroll-smooth snap-x snap-mandatory gap-4 py-1 scrollbar-hide">
+      <CardContent className="py-6 overflow-hidden">
+        <div className="w-full min-w-0">
+          <div className="flex overflow-x-auto overflow-y-visible scroll-smooth snap-x snap-mandatory gap-4 py-1 pb-2">
             {transactions.map((transaction, index) => (
               <TransactionCard
                 key={transaction.transaction_id}
@@ -655,16 +655,6 @@ export function TopTransactionsHighlight({ locationId, date, className }: TopTra
           </div>
         )}
       </CardContent>
-
-      <style jsx global>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
     </Card>
   )
 }

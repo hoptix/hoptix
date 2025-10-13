@@ -48,9 +48,9 @@ export function LocationDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="outline" 
-          className={`justify-between min-w-[200px] ${className}`}
+        <Button
+          variant="outline"
+          className={`justify-between min-w-[180px] max-w-[300px] ${className}`}
           disabled={isLoading}
         >
           <div className="flex items-center">

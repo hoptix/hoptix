@@ -6,7 +6,7 @@ import {
   LayoutDashboard,
   Video,
   UtensilsCrossed,
-  CircleDot,
+  TrendingUp,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -41,7 +41,7 @@ const navMain = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -50,8 +50,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <Link href="/dashboard">
-                <CircleDot className="!size-5" />
-                <span className="text-base font-semibold">Analytics</span>
+                <TrendingUp className="!size-5" />
+                <span className="text-base font-semibold">IntelUpsell</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
