@@ -229,28 +229,48 @@ class Supa:
         """Get item prices as a dict mapping item_id_size to price"""
         result = self.client.table("items").select("item_id, size_ids, price").eq("location_id", location_id).execute()
         prices = {}
+        print(f"🔍 DEBUG: get_items_prices for location {location_id}: {len(result.data)} items found")
         for item in result.data:
             if item.get("size_ids"):
                 for size_id in item["size_ids"]:
                     key = f"{item['item_id']}_{size_id}"
-                    prices[key] = float(item["price"]) if item.get("price") else 0.0
+                    price = float(item["price"]) if item.get("price") else 0.0
+                    prices[key] = price
+                    print(f"🔍 DEBUG: Item {key} has price {price}")
+            else:
+                print(f"🔍 DEBUG: Item {item['item_id']} has no size_ids")
+        print(f"🔍 DEBUG: Total items prices: {len(prices)}")
         return prices
 
     def get_meals_prices(self, location_id: str):
         """Get meal prices as a dict mapping item_id_size to price"""
         result = self.client.table("meals").select("item_id, size_ids, price").eq("location_id", location_id).execute()
         prices = {}
+        print(f"🔍 DEBUG: get_meals_prices for location {location_id}: {len(result.data)} meals found")
         for meal in result.data:
             if meal.get("size_ids"):
                 for size_id in meal["size_ids"]:
                     key = f"{meal['item_id']}_{size_id}"
-                    prices[key] = float(meal["price"]) if meal.get("price") else 0.0
+                    price = float(meal["price"]) if meal.get("price") else 0.0
+                    prices[key] = price
+                    print(f"🔍 DEBUG: Meal {key} has price {price}")
+            else:
+                print(f"🔍 DEBUG: Meal {meal['item_id']} has no size_ids")
+        print(f"🔍 DEBUG: Total meals prices: {len(prices)}")
         return prices
 
     def get_addons_prices(self, location_id: str):
         """Get addon prices as a dict mapping item_id to price"""
         result = self.client.table("add_ons").select("item_id, price").eq("location_id", location_id).execute()
-        return {str(item["item_id"]): float(item["price"]) if item.get("price") else 0.0 for item in result.data}
+        prices = {}
+        print(f"🔍 DEBUG: get_addons_prices for location {location_id}: {len(result.data)} addons found")
+        for item in result.data:
+            item_id = str(item["item_id"])
+            price = float(item["price"]) if item.get("price") else 0.0
+            prices[item_id] = price
+            print(f"🔍 DEBUG: Addon {item_id} has price {price}")
+        print(f"🔍 DEBUG: Total addon prices: {len(prices)}")
+        return prices
 
     def get_operator_feedback_raw(self, operator_id: str, run_id: str = None, days: int = 30, limit: int = 50) -> list[dict]:
         """Get operator feedback from the database"""
@@ -265,7 +285,6 @@ class Supa:
             return result.data if result.data else []
 
         elif run_id:
-
             result = self.client.table("graded_rows_filtered").select("transaction_id, feedback").eq("run_id", run_id).gte("begin_time", time_filter).limit(limit).execute()
             return result.data if result.data else []
 

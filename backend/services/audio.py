@@ -39,7 +39,7 @@ class AudioTransactionProcessor:
             import logging
             logging.getLogger("moviepy").setLevel(logging.ERROR)
             
-            audio_clip = AudioFileClip(audio_path, verbose=False, logger=None)
+            audio_clip = AudioFileClip(audio_path)
             duration = audio_clip.duration
             sr = audio_clip.fps
             print(f'📊 Audio loaded: {duration:.1f}s duration, {sr}Hz sample rate')
