@@ -36,7 +36,7 @@ except ImportError:
     VERBOSE_LOGGING = True
     MEMORY_MONITORING = True
     PARALLEL_CHUNKS = True  # Enable parallel processing
-    MAX_WORKERS = 2  # Number of parallel workers
+    MAX_WORKERS = 1  # Number of parallel workers
 
 def get_memory_usage():
     """Get current memory usage in MB"""
@@ -221,8 +221,11 @@ def transcribe_large_audio_file(audio_path: str, audio_record: Dict, audio_split
     successful_chunks = 0
     failed_chunks = 0
     
-    # Process chunks in parallel
-    print(f"🚀 Processing {len(chunk_records)} chunks in parallel with {MAX_WORKERS} workers")
+    # Process chunks in parallel or sequentially based on configuration
+    if PARALLEL_CHUNKS:
+        print(f"🚀 Processing {len(chunk_records)} chunks in parallel with {MAX_WORKERS} workers")
+    else:
+        print(f"🚀 Processing {len(chunk_records)} chunks sequentially (memory-optimized)")
     
     def process_chunk_file(chunk_record):
         """Process a single chunk file"""
@@ -269,26 +272,73 @@ def transcribe_large_audio_file(audio_path: str, audio_record: Dict, audio_split
             traceback.print_exc()
             return []
     
-    # Process chunks in parallel
-    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        # Submit all chunk processing tasks
-        print(f"🔍 DEBUG: Submitting {len(chunk_records)} chunk processing tasks")
-        future_to_chunk = {
-            executor.submit(process_chunk_file, chunk_record): chunk_record
-            for chunk_record in chunk_records
-        }
-        print(f"🔍 DEBUG: All {len(future_to_chunk)} tasks submitted to executor")
-        
-        # Collect results as they complete
-        completed_count = 0
-        for future in as_completed(future_to_chunk):
-            chunk_record = future_to_chunk[future]
-            completed_count += 1
+    if PARALLEL_CHUNKS:
+        # Process chunks in parallel
+        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+            # Submit all chunk processing tasks
+            print(f"🔍 DEBUG: Submitting {len(chunk_records)} chunk processing tasks")
+            future_to_chunk = {
+                executor.submit(process_chunk_file, chunk_record): chunk_record
+                for chunk_record in chunk_records
+            }
+            print(f"🔍 DEBUG: All {len(future_to_chunk)} tasks submitted to executor")
+            
+            # Collect results as they complete
+            completed_count = 0
+            for future in as_completed(future_to_chunk):
+                chunk_record = future_to_chunk[future]
+                completed_count += 1
+                chunk_id = chunk_record["id"]
+                print(f"🔍 DEBUG: Processing result {completed_count}/{len(chunk_records)} for chunk {chunk_id}")
+                
+                try:
+                    chunk_segments = future.result()
+                    print(f"🔍 DEBUG: Chunk {chunk_id} result: {len(chunk_segments)} segments")
+                    
+                    if chunk_segments:
+                        all_segments.extend(chunk_segments)
+                        successful_chunks += 1
+                        print(f"🔍 DEBUG: Added {len(chunk_segments)} segments from chunk {chunk_id}. Total segments: {len(all_segments)}")
+                    else:
+                        failed_chunks += 1
+                        print(f"🔍 DEBUG: Chunk {chunk_id} returned 0 segments - marked as failed")
+                    
+                    # Periodic memory cleanup
+                    if len(all_segments) % CLEANUP_FREQUENCY == 0:
+                        gc.collect()
+                        if MEMORY_MONITORING:
+                            current_memory = get_memory_usage()
+                            print(f"📊 Memory usage after cleanup: {current_memory:.1f} MB")
+                        print(f"🔍 DEBUG: Performed garbage collection at {len(all_segments)} segments")
+                        
+                except Exception as e:
+                    failed_chunks += 1
+                    print(f"❌ Chunk processing failed for chunk {chunk_id}: {e}")
+                    print(f"🔍 DEBUG: Exception type: {type(e).__name__}")
+                    import traceback
+                    print(f"🔍 DEBUG: Full traceback:")
+                    traceback.print_exc()
+                    continue
+    else:
+        # Process chunks sequentially (memory-optimized)
+        for i, chunk_record in enumerate(chunk_records, 1):
             chunk_id = chunk_record["id"]
-            print(f"🔍 DEBUG: Processing result {completed_count}/{len(chunk_records)} for chunk {chunk_id}")
+            print(f"🔍 DEBUG: Processing chunk {i}/{len(chunk_records)}: {chunk_id}")
+            
+            # Monitor memory before each chunk
+            if MEMORY_MONITORING:
+                current_memory = get_memory_usage()
+                print(f"📊 Memory usage before chunk {i}: {current_memory:.1f} MB")
+                
+                # Force cleanup if memory usage is too high
+                if current_memory > MAX_MEMORY_MB:
+                    print(f"⚠️ Memory usage ({current_memory:.1f} MB) exceeds limit ({MAX_MEMORY_MB} MB), forcing cleanup...")
+                    gc.collect()
+                    memory_after = get_memory_usage()
+                    print(f"📊 Memory usage after forced cleanup: {memory_after:.1f} MB")
             
             try:
-                chunk_segments = future.result()
+                chunk_segments = process_chunk_file(chunk_record)
                 print(f"🔍 DEBUG: Chunk {chunk_id} result: {len(chunk_segments)} segments")
                 
                 if chunk_segments:
@@ -299,14 +349,12 @@ def transcribe_large_audio_file(audio_path: str, audio_record: Dict, audio_split
                     failed_chunks += 1
                     print(f"🔍 DEBUG: Chunk {chunk_id} returned 0 segments - marked as failed")
                 
-                # Periodic memory cleanup
-                if len(all_segments) % CLEANUP_FREQUENCY == 0:
-                    gc.collect()
-                    if MEMORY_MONITORING:
-                        current_memory = get_memory_usage()
-                        print(f"📊 Memory usage after cleanup: {current_memory:.1f} MB")
-                    print(f"🔍 DEBUG: Performed garbage collection at {len(all_segments)} segments")
-                    
+                # Force cleanup after each chunk in sequential mode
+                gc.collect()
+                if MEMORY_MONITORING:
+                    memory_after = get_memory_usage()
+                    print(f"📊 Memory usage after chunk {i}: {memory_after:.1f} MB")
+                
             except Exception as e:
                 failed_chunks += 1
                 print(f"❌ Chunk processing failed for chunk {chunk_id}: {e}")
@@ -355,13 +403,13 @@ def transcribe_single_audio_file(audio_path: str) -> List[Dict]:
         return []
     
     # For large files, use segmentation approach to avoid memory issues
-    max_seg_s = 600.0  # 10 minutes max per segment (reduced from 20 minutes)
+    max_seg_s = 300.0  # 5 minutes max per segment (reduced from 10 minutes)
     
     # Create segments based on duration rather than loading entire file
     if duration <= max_seg_s:
         # File is small enough to process as one segment
         final_spans = [(0.0, duration)]
-        print(f"📏 File is small enough ({duration:.1f}s), processing as single segment")
+        print(f"📏 File is small enough ({duration:.1}s), processing as single segment")
     else:
         # Split into 20-minute chunks with small overlap
         overlap_s = 5.0  # 5 second overlap
@@ -385,10 +433,17 @@ def transcribe_single_audio_file(audio_path: str) -> List[Dict]:
     for i, (b, e) in enumerate(final_spans, start=1):
         print(f"🎵 Processing segment {i}/{len(final_spans)}: {b:.1f}s - {e:.1f}s")
         
-        # Monitor memory usage
+        # Monitor memory usage and force cleanup if needed
         if MEMORY_MONITORING:
             current_memory = get_memory_usage()
             print(f"📊 Memory usage before segment {i}: {current_memory:.1f} MB")
+            
+            # Force cleanup if memory usage is too high
+            if current_memory > MAX_MEMORY_MB:
+                print(f"⚠️ Memory usage ({current_memory:.1f} MB) exceeds limit ({MAX_MEMORY_MB} MB), forcing cleanup...")
+                gc.collect()
+                memory_after = get_memory_usage()
+                print(f"📊 Memory usage after forced cleanup: {memory_after:.1f} MB")
         
         # Extract segment using soundfile (memory efficient)
         seg_path = os.path.join(audio_dir, f"{base}_seg_{i:03d}_{int(b)}s-{int(e)}s.wav")

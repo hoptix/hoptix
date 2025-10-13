@@ -29,7 +29,7 @@ class AudioSplitter:
         # Configuration for splitting
         self.max_file_size_mb = 50  # Split files larger than 50MB
         self.max_duration_minutes = 30  # Split files longer than 30 minutes
-        self.chunk_duration_minutes = 30  # Each chunk should be ~30 minutes
+        self.chunk_duration_minutes = 10  # Each chunk should be ~10 minutes
         self.overlap_seconds = 5  # 5 second overlap between chunks to avoid cutting mid-sentence
         
     def should_split_audio(self, audio_path: str) -> Tuple[bool, str]:
