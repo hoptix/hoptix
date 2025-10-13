@@ -216,35 +216,32 @@ class Analytics:
                     break
 
     def _calculate_upsell_revenue(self):
-        """Calculate revenue from successful upsells using actual item prices"""
+        """Calculate revenue from successful upsells - just sum the prices of success items"""
         if self.worker_id:
-            result = db.view("graded_rows_filtered").select("upsell_success_items, upsell_base_sold_items").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
+            result = db.view("graded_rows_filtered").select("upsell_success_items").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
         else:
-            result = db.view("graded_rows_filtered").select("upsell_success_items, upsell_base_sold_items").eq("run_id", self.run_id).execute()
+            result = db.view("graded_rows_filtered").select("upsell_success_items").eq("run_id", self.run_id).execute()
 
         # Get price data from items and meals tables
         items_prices = db.get_items_prices(self.location_id)
         meals_prices = db.get_meals_prices(self.location_id)
 
         total_revenue = 0
+        print(f"🔍 DEBUG: Calculating upsell revenue for {len(result.data)} transactions")
+        print(f"🔍 DEBUG: Items prices: {len(items_prices)} items, Meals prices: {len(meals_prices)} meals")
+        
         for tx in result.data:
             success_items = self._parse_json_array(tx.get("upsell_success_items", "0"))
-            base_sold_items = self._parse_json_array(tx.get("upsell_base_sold_items", "0"))
+            print(f"🔍 DEBUG: Transaction has {len(success_items)} success items")
 
-            # Calculate revenue as price difference between upgraded item (meal) and base item
+            # Calculate revenue as sum of prices of successfully upsold items
             for success_item in success_items:
-                # Success items are typically meals, check meals first
+                # Check both meals and items for price
                 success_price = meals_prices.get(success_item, items_prices.get(success_item, 0))
+                print(f"🔍 DEBUG: Success item {success_item} has price {success_price}")
+                total_revenue += success_price
 
-                # Find corresponding base item - match by item_id (first part before underscore)
-                success_item_id = success_item.split("_")[0]
-                for base_item in base_sold_items:
-                    base_item_id = base_item.split("_")[0]
-                    if base_item_id == success_item_id:
-                        base_price = items_prices.get(base_item, 0)
-                        total_revenue += (success_price - base_price)
-                        break
-
+        print(f"🔍 DEBUG: Total upsell revenue: {total_revenue}")
         return total_revenue
 
     def _calculate_upsize_revenue(self):
@@ -259,14 +256,19 @@ class Analytics:
         meals_prices = db.get_meals_prices(self.location_id)
 
         total_revenue = 0
+        print(f"🔍 DEBUG: Calculating upsize revenue for {len(result.data)} transactions")
+        
         for tx in result.data:
             success_items = self._parse_json_array(tx.get("upsize_success_items", "0"))
             base_sold_items = self._parse_json_array(tx.get("upsize_base_sold_items", "0"))
+            
+            print(f"🔍 DEBUG: Upsize transaction has {len(success_items)} success items, {len(base_sold_items)} base items")
 
             # Calculate revenue as price difference between larger size and smaller size
             for success_item in success_items:
                 # Check both meals and items for price
                 success_price = meals_prices.get(success_item, items_prices.get(success_item, 0))
+                print(f"🔍 DEBUG: Upsize success item {success_item} has price {success_price}")
 
                 # Find corresponding base item - same item_id, different size
                 success_item_id = success_item.split("_")[0]
@@ -274,32 +276,47 @@ class Analytics:
                     base_item_id = base_item.split("_")[0]
                     if base_item_id == success_item_id:
                         base_price = meals_prices.get(base_item, items_prices.get(base_item, 0))
-                        total_revenue += (success_price - base_price)
+                        revenue_diff = success_price - base_price
+                        print(f"🔍 DEBUG: Upsize base item {base_item} has price {base_price}, revenue diff: {revenue_diff}")
+                        total_revenue += revenue_diff
                         break
 
+        print(f"🔍 DEBUG: Total upsize revenue: {total_revenue}")
         return total_revenue
 
     def _calculate_addon_revenue(self):
-        """Calculate revenue from successful add-ons using addon prices"""
+        """Calculate revenue from successful add-ons - just sum the prices of success items"""
         if self.worker_id:
             result = db.view("graded_rows_filtered").select("addon_success_items").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
         else:
             result = db.view("graded_rows_filtered").select("addon_success_items").eq("run_id", self.run_id).execute()
 
-        # Get addon prices
+        # Get price data from items, meals, and add_ons tables
+        items_prices = db.get_items_prices(self.location_id)
+        meals_prices = db.get_meals_prices(self.location_id)
         addons_prices = db.get_addons_prices(self.location_id)
 
         total_revenue = 0
+        print(f"🔍 DEBUG: Calculating addon revenue for {len(result.data)} transactions")
+        print(f"🔍 DEBUG: Items prices: {len(items_prices)} items, Meals prices: {len(meals_prices)} meals, Addons prices: {len(addons_prices)} addons")
+        
         for tx in result.data:
             success_items = self._parse_json_array(tx.get("addon_success_items", "0"))
+            print(f"🔍 DEBUG: Addon transaction has {len(success_items)} success items")
 
-            # Calculate total addon revenue
-            for addon_item in success_items:
-                # Extract just the item_id (before underscore)
-                addon_item_id = addon_item.split("_")[0]
-                addon_price = addons_prices.get(addon_item_id, 0)
-                total_revenue += addon_price
+            # Calculate revenue as sum of prices of successfully added items
+            for success_item in success_items:
+                # Check meals, items, and addons for price
+                success_price = meals_prices.get(success_item, items_prices.get(success_item, addons_prices.get(success_item, 0)))
+                print(f"🔍 DEBUG: Addon success item {success_item} has price {success_price}")
+                if success_price == 0:
+                    print(f"🔍 DEBUG: WARNING - {success_item} not found in any price table!")
+                    print(f"🔍 DEBUG: Available in meals: {success_item in meals_prices}")
+                    print(f"🔍 DEBUG: Available in items: {success_item in items_prices}")
+                    print(f"🔍 DEBUG: Available in addons: {success_item in addons_prices}")
+                total_revenue += success_price
 
+        print(f"🔍 DEBUG: Total addon revenue: {total_revenue}")
         return total_revenue
 
     def generate_analytics_json(self):

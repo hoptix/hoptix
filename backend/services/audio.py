@@ -35,13 +35,18 @@ class AudioTransactionProcessor:
         # Load audio file using AudioFileClip (streaming, memory efficient)
         print('📊 Loading audio file with AudioFileClip...')
         try:
+            # Disable MoviePy logging to avoid stdout issues
+            import logging
+            logging.getLogger("moviepy").setLevel(logging.ERROR)
+            
             audio_clip = AudioFileClip(audio_path)
             duration = audio_clip.duration
             sr = audio_clip.fps
             print(f'📊 Audio loaded: {duration:.1f}s duration, {sr}Hz sample rate')
         except Exception as e:
-            print(f'❌ Failed to load audio file: {e}')
-            return [], [], [], [], []
+            print(f'❌ Failed to load audio file with AudioFileClip: {e}')
+            print('🔄 Falling back to soundfile approach...')
+            return self._fallback_processing(audio_path, location_id, output_dir)
         
         # Detect transaction boundaries using streaming approach
         print('🔍 Detecting transaction boundaries using streaming silence detection...')
@@ -120,8 +125,14 @@ class AudioTransactionProcessor:
                 chunk_end_time = min(current_time + chunk_duration, duration)
                 chunk = audio_clip.subclip(current_time, chunk_end_time)
                 
-                # Get audio data for this chunk
-                chunk_data = chunk.to_soundarray()
+                # Get audio data for this chunk (with error handling)
+                try:
+                    chunk_data = chunk.to_soundarray()
+                except Exception as e:
+                    print(f'⚠️ Error getting audio data for chunk {current_time:.1f}s: {e}')
+                    chunk.close()
+                    current_time += chunk_duration
+                    continue
                 
                 # Process chunk for silence detection
                 chunk_begin, chunk_end, new_state = self._process_chunk_for_silence_streaming(
