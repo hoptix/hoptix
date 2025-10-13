@@ -24,18 +24,6 @@ def transcribe_audio_clip(audio_clip_path: str, begin_time: float, end_time: flo
         """
         print(f"Transcribing audio clip {index}: {os.path.basename(audio_clip_path)}")
 
-        # Verify audio clip exists
-        if not os.path.exists(audio_clip_path):
-            print(f"❌ Audio clip not found: {audio_clip_path}")
-            return {
-                'index': index,
-                'transcript': "",
-                'audio_price': 0.0,
-                'begin_time': begin_time,
-                'end_time': end_time,
-                'error': f"Audio clip not found: {audio_clip_path}"
-            }
-
         try:
             # Get audio duration for cost calculation
             with sf.SoundFile(audio_clip_path) as f:
@@ -60,8 +48,8 @@ def transcribe_audio_clip(audio_clip_path: str, begin_time: float, end_time: flo
                 'index': index,
                 'transcript': str(transcript),
                 'audio_price': audio_price,
-                'begin_time': begin_time,
-                'end_time': end_time,
+                'started_at': begin_time,
+                'ended_at': end_time,
                 'audio_duration': audio_duration,
                 'clip_path': audio_clip_path
             }
@@ -72,7 +60,7 @@ def transcribe_audio_clip(audio_clip_path: str, begin_time: float, end_time: flo
                 'index': index,
                 'transcript': "",
                 'audio_price': 0.0,
-                'begin_time': begin_time,
+                'started_at': begin_time,
                 'end_time': end_time,
                 'error': str(e)
             }

@@ -34,8 +34,7 @@
     # Install runtime system dependencies
     RUN apt-get update && apt-get install -y \
         ffmpeg \
-        && rm -rf /var/lib/apt/lists/* \
-        && ffmpeg -version
+        && rm -rf /var/lib/apt/lists/*
     
     # Copy the Python environment from builder stage
     COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
@@ -55,12 +54,13 @@
     COPY --from=builder /app/utils /app/utils
     COPY --from=builder /app/scripts /app/scripts
 
+    # Ensure the scripts are executable
+    RUN chmod +x /app/scripts/*.py /app/start.sh
+    
     # Create a non-root user
     RUN useradd -m -s /bin/bash appuser && \
         chown -R appuser:appuser /app
-
-    # Ensure the scripts are executable
-    RUN chmod +x /app/scripts/*.py /app/start.sh
+    
     
     USER appuser
 
@@ -68,8 +68,6 @@
     ENV PYTHONPATH=/app
     ENV PATH="/app/scripts:$PATH"
     ENV FLASK_ENV=production
-    ENV IMAGEMAGICK_BINARY=/usr/bin/ffmpeg
-    ENV FFMPEG_BINARY=/usr/bin/ffmpeg
 
     # Expose port
     EXPOSE 8080
