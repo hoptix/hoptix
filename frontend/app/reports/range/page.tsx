@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { Suspense } from "react"
 import { format } from "date-fns"
 import { useRouter, useSearchParams } from "next/navigation"
 import { RequireAuth } from "@/components/auth/RequireAuth"
@@ -653,7 +654,7 @@ const AnalyticsReportContent = ({
   );
 };
 
-export default function RangeAnalyticsReportPage() {
+function RangeAnalyticsReportContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isMainReportExpanded, setIsMainReportExpanded] = useState(true)
@@ -926,5 +927,21 @@ export default function RangeAnalyticsReportPage() {
       </div>
     </div>
     </RequireAuth>
+  )
+}
+
+export default function RangeAnalyticsReportPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <IconLoader className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <h2 className="text-xl font-semibold">Loading Range Analytics...</h2>
+          <p className="text-gray-600">Please wait while we load the page.</p>
+        </div>
+      </div>
+    }>
+      <RangeAnalyticsReportContent />
+    </Suspense>
   )
 }
