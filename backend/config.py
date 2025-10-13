@@ -216,13 +216,13 @@ class Prompts:
         """
 
     AI_FEEDBACK_PROMPT = """
-    You are analyzing transaction-level feedback for a single operator.
+    You are analyzing transaction-level feedback for a single operator or run.
 
     Each feedback entry below includes:
     - a unique transaction_id
     - the raw text feedback from an AI quality review system
 
-    Your task is to summarize the operator's performance across all feedback items.
+    Your task is to summarize the run's performance across all feedback items.
 
     Follow these instructions carefully:
 

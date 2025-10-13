@@ -94,6 +94,16 @@ class Supa:
             self.client.table("audios").update({"status": "processing"}).eq("id", audio_id).execute()
 
     def set_audio_link(self, audio_id: str, gdrive_path: str):
+        """Safely set the audio link, avoiding unique-constraint violations.
+
+        If another row already has this link, we do not overwrite and simply keep
+        the existing value to avoid 23505 conflicts.
+        """
+        # If this exact link already exists on some row, avoid violating unique constraint
+        existing = self.client.table("audios").select("id").eq("link", gdrive_path).limit(1).execute()
+        if existing.data and existing.data[0]["id"] != audio_id:
+            # Another record already owns this link; skip update for this audio_id
+            return
         self.client.table("audios").update({"link": gdrive_path}).eq("id", audio_id).execute()
 
     def set_pipeline_to_complete(self, run_id: str, audio_id: str):
@@ -117,6 +127,11 @@ class Supa:
         started_at_ts = f"{date}T{started_at}Z"
         ended_at_ts = f"{date}T{ended_at}Z"
         
+        # If a record already exists with this link, return it instead of inserting
+        existing_link = self.client.table("audios").select("id").eq("link", gdrive_path).limit(1).execute()
+        if existing_link.data:
+            return existing_link.data[0]["id"]
+
         res = self.client.table("audios").insert({
             "location_id": location_id,
             "run_id": run_id,
@@ -237,13 +252,24 @@ class Supa:
         result = self.client.table("add_ons").select("item_id, price").eq("location_id", location_id).execute()
         return {str(item["item_id"]): float(item["price"]) if item.get("price") else 0.0 for item in result.data}
 
-    def get_operator_feedback_raw(self, operator_id: str) -> list[dict]:
+    def get_operator_feedback_raw(self, operator_id: str, run_id: str = None, days: int = 30, limit: int = 50) -> list[dict]:
         """Get operator feedback from the database"""
+        time_filter = (datetime.now() - timedelta(days=days)).isoformat()
 
-        one_month_ago = (datetime.now() - timedelta(days=30)).isoformat()
-        
-        result = self.client.table("graded_rows_filtered").select("transaction_id, feedback").eq("worker_id", operator_id).gte("begin_time", one_month_ago).limit(50).execute()
-        return result.data if result.data else []
+        if run_id and operator_id:
+            result = self.client.table("graded_rows_filtered").select("transaction_id, feedback").eq("worker_id", operator_id).eq("run_id", run_id).gte("begin_time", time_filter).limit(limit).execute()
+            return result.data if result.data else []
+
+        elif operator_id:
+            result = self.client.table("graded_rows_filtered").select("transaction_id, feedback").eq("worker_id", operator_id).gte("begin_time", time_filter).limit(limit).execute()
+            return result.data if result.data else []
+
+        elif run_id:
+
+            result = self.client.table("graded_rows_filtered").select("transaction_id, feedback").eq("run_id", run_id).gte("begin_time", time_filter).limit(limit).execute()
+            return result.data if result.data else []
+
+        return []
 
     def insert_operator_feedback(self, operator_id: str, feedback: str):
         """Insert operator feedback into the database"""
