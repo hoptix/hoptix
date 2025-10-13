@@ -29,7 +29,7 @@ class AudioSplitter:
         # Configuration for splitting
         self.max_file_size_mb = 50  # Split files larger than 50MB
         self.max_duration_minutes = 30  # Split files longer than 30 minutes
-        self.chunk_duration_minutes = 20  # Each chunk should be ~20 minutes
+        self.chunk_duration_minutes = 10  # Each chunk should be ~10 minutes
         self.overlap_seconds = 5  # 5 second overlap between chunks to avoid cutting mid-sentence
         
     def should_split_audio(self, audio_path: str) -> Tuple[bool, str]:
@@ -121,7 +121,8 @@ class AudioSplitter:
         print(f"🔍 DEBUG: chunk_duration_seconds: {chunk_duration_seconds}, overlap_seconds: {overlap_seconds}")
         
         # Calculate number of chunks needed
-        num_chunks = int(np.ceil(duration_seconds / (chunk_duration_seconds - overlap_seconds)))
+        # Use the actual chunk duration for calculation, not subtracting overlap
+        num_chunks = int(np.ceil(duration_seconds / chunk_duration_seconds))
         print(f"🔍 DEBUG: Calculated num_chunks: {num_chunks}")
         
         logger.info(f"📏 Splitting into {num_chunks} chunks of ~{self.chunk_duration_minutes}min each")
@@ -134,7 +135,7 @@ class AudioSplitter:
             print(f"🔍 DEBUG: Processing chunk {i+1}/{num_chunks}")
             
             # Calculate chunk boundaries in seconds with overlap
-            start_time = i * (chunk_duration_seconds - overlap_seconds)
+            start_time = i * chunk_duration_seconds
             end_time = min(start_time + chunk_duration_seconds, duration_seconds)
             print(f"🔍 DEBUG: Initial boundaries: {start_time:.1f}s - {end_time:.1f}s")
             

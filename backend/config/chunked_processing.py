@@ -13,8 +13,8 @@ MAX_MEMORY_MB = 1000  # Maximum memory usage before forcing cleanup
 CLEANUP_FREQUENCY = 5  # Force garbage collection every N chunks
 
 # Performance tuning
-PARALLEL_CHUNKS = True  # Set to True to process chunks in parallel (uses more memory)
-MAX_WORKERS = 10  # Number of parallel workers if PARALLEL_CHUNKS is True
+PARALLEL_CHUNKS = False  # Set to False to process chunks sequentially (saves memory)
+MAX_WORKERS = 1  # Number of parallel workers if PARALLEL_CHUNKS is True
 
 # Audio processing
 SAMPLE_RATE = 16000  # Target sample rate for processing
@@ -30,3 +30,7 @@ RETRY_DELAY = 5  # Delay between retries in seconds
 VERBOSE_LOGGING = True  # Enable detailed logging
 MEMORY_MONITORING = True  # Enable memory usage monitoring
 PROGRESS_REPORTING = True  # Enable progress reporting
+
+# Feature toggles
+# Use the hoptix-style span segmentation pipeline (15s spans, per-span ASR)
+USE_HOPTIX_SPAN_PIPELINE = True
