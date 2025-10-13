@@ -15,6 +15,7 @@ import {
   IconChartBar,
   IconDownload,
   IconX,
+  IconFileAnalytics,
 } from "@tabler/icons-react"
 import {
   ColumnDef,
@@ -35,6 +36,7 @@ import { z } from "zod"
 
 import { useGetRuns } from "@/hooks/getRuns"
 import { useGetAllWorkerAnalytics } from "@/hooks/getRunAnalytics"
+import { useFormattedDashboardFilters } from "@/contexts/DashboardFilterContext"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -83,6 +85,7 @@ export const runsDataSchema = z.object({
   date: z.string(),
   status: z.string(),
   created_at: z.string(),
+  location_id: z.string().optional(),
   totalTransactions: z.number().default(0),
   successfulUpsells: z.number().default(0),
   successfulUpsizes: z.number().default(0),
@@ -154,6 +157,7 @@ const processRunsData = (runs: any[]): RunsData[] => {
     date: run.date,
     status: run.status,
     created_at: run.created_at,
+    location_id: run.location_id,
     totalTransactions: run.total_transcriptions || 0,
     successfulUpsells: run.successful_upsells || 0,
     successfulUpsizes: run.successful_upsizes || 0,
@@ -567,6 +571,9 @@ export function RunsDataTable({ locationId, limit = 50, className }: RunsDataTab
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
+  // Get global filters from dashboard context
+  const { locationIds, startDate, endDate } = useFormattedDashboardFilters()
+
   // State Management
   const [activeTab, setActiveTab] = React.useState<string>('runs')
   const [rowSelection, setRowSelection] = React.useState({})
@@ -578,8 +585,6 @@ export function RunsDataTable({ locationId, limit = 50, className }: RunsDataTab
 
   // Filters
   const [selectedOperatorId, setSelectedOperatorId] = React.useState<string>("")
-  const [startDateTime, setStartDateTime] = React.useState<string>("")
-  const [endDateTime, setEndDateTime] = React.useState<string>("")
 
   // Data state
   const [runsData, setRunsData] = React.useState<RunsData[]>([])
@@ -623,47 +628,61 @@ export function RunsDataTable({ locationId, limit = 50, className }: RunsDataTab
 
   // Check if any filters are active (operator filter only relevant for by-operator tab)
   const hasActiveFilters = activeTab === 'by-operator'
-    ? (!!selectedOperatorId || !!startDateTime || !!endDateTime)
-    : (!!startDateTime || !!endDateTime)
+    ? !!selectedOperatorId
+    : false  // Date and location filters are global, not clearable from here
 
-  // Filter runs data
+  // Filter runs data using global filters
   const filteredData = React.useMemo(() => {
     const gf = globalFilter.toLowerCase()
-    const start = startDateTime ? new Date(startDateTime) : null
-    const end = endDateTime ? new Date(endDateTime) : null
+    const start = startDate ? new Date(startDate) : null
+    const end = endDate ? new Date(endDate) : null
 
     return runsData.filter((run) => {
+      // Text search filter
       const matchesGlobal = gf
         ? run.runId.toLowerCase().includes(gf) ||
           run.status.toLowerCase().includes(gf) ||
           run.date.toLowerCase().includes(gf)
         : true
 
-      if (!start && !end) return matchesGlobal
+      // Location filter - if locationIds specified, only show runs from those locations
+      const matchesLocation = locationIds.length === 0 || (run.location_id && locationIds.includes(run.location_id))
 
+      // Date range filter
       const runDate = new Date(run.date)
-      if (start && runDate < start) return false
-      if (end && runDate > end) return false
-      return matchesGlobal
-    })
-  }, [runsData, globalFilter, startDateTime, endDateTime])
+      const matchesDateRange = (!start || runDate >= start) && (!end || runDate <= end)
 
-  // Filter worker data
+      return matchesGlobal && matchesLocation && matchesDateRange
+    })
+  }, [runsData, globalFilter, locationIds, startDate, endDate])
+
+  // Filter worker data using global filters
   const filteredWorkerData = React.useMemo(() => {
     const gf = globalFilter.toLowerCase()
+    const start = startDate ? new Date(startDate) : null
+    const end = endDate ? new Date(endDate) : null
 
     return workerData.filter((w) => {
+      // Text search filter
       const matchesText = !gf ||
         w.run_id.toLowerCase().includes(gf) ||
         w.worker_id.toLowerCase().includes(gf) ||
         w.run_date.toLowerCase().includes(gf) ||
         (WORKER_NAME_MAP[w.worker_id]?.toLowerCase().includes(gf))
 
+      // Operator filter (local to this tab)
       const matchesOperator = !selectedOperatorId || w.worker_id === selectedOperatorId
 
-      return matchesText && matchesOperator
+      // Location filter - if locationIds specified, only show workers from those locations
+      const matchesLocation = locationIds.length === 0 || locationIds.includes(w.location_id)
+
+      // Date range filter
+      const workerDate = new Date(w.run_date)
+      const matchesDateRange = (!start || workerDate >= start) && (!end || workerDate <= end)
+
+      return matchesText && matchesOperator && matchesLocation && matchesDateRange
     })
-  }, [workerData, globalFilter, selectedOperatorId])
+  }, [workerData, globalFilter, selectedOperatorId, locationIds, startDate, endDate])
 
   // Table instances
   const runsTable = useReactTable({
@@ -730,13 +749,36 @@ export function RunsDataTable({ locationId, limit = 50, className }: RunsDataTab
 
   const handleClearFilters = () => {
     setSelectedOperatorId("")
-    setStartDateTime("")
-    setEndDateTime("")
+    // Note: Date and location filters are cleared from the global header
   }
 
   const handleRowClick = (runId: string, runDate: string) => {
     router.push(`/reports/${runId}`)
   }
+
+  const handleGenerateRangeReport = () => {
+    // Build query parameters for the range report
+    const params = new URLSearchParams()
+
+    // Add location_ids[]
+    locationIds.forEach(id => {
+      params.append('location_ids[]', id)
+    })
+
+    // Add date range
+    if (startDate) {
+      params.append('start_date', startDate)
+    }
+    if (endDate) {
+      params.append('end_date', endDate)
+    }
+
+    // Navigate to range reports page
+    router.push(`/reports/range?${params.toString()}`)
+  }
+
+  // Check if range report can be generated (need locations and date range)
+  const canGenerateRangeReport = locationIds.length > 0 && startDate && endDate
 
   // Get the active table based on current tab
   const activeTable = activeTab === 'runs' ? runsTable : operatorTable
@@ -789,6 +831,16 @@ export function RunsDataTable({ locationId, limit = 50, className }: RunsDataTab
                 <IconRefresh className="mr-2 h-4 w-4" />
               )}
               Refresh
+            </Button>
+            <Button
+              onClick={handleGenerateRangeReport}
+              variant="default"
+              size="sm"
+              disabled={!canGenerateRangeReport}
+              title={canGenerateRangeReport ? "Generate consolidated report for selected date range" : "Select locations and date range to generate report"}
+            >
+              <IconFileAnalytics className="mr-2 h-4 w-4" />
+              Generate Report
             </Button>
             <DataTableExport
               data={activeTab === 'by-operator' ? filteredWorkerData : filteredData}
@@ -876,27 +928,28 @@ export function RunsDataTable({ locationId, limit = 50, className }: RunsDataTab
               </div>
             )}
 
-            {/* Date Range Filter - Always visible */}
-            <div className="flex items-center gap-2 shrink-0">
-              <Label className="text-sm font-medium text-muted-foreground whitespace-nowrap">
-                From
-              </Label>
-              <Input
-                type="datetime-local"
-                value={startDateTime}
-                onChange={(e) => setStartDateTime(e.target.value)}
-                className="w-[180px]"
-              />
-              <Label className="text-sm font-medium text-muted-foreground whitespace-nowrap">
-                To
-              </Label>
-              <Input
-                type="datetime-local"
-                value={endDateTime}
-                onChange={(e) => setEndDateTime(e.target.value)}
-                className="w-[180px]"
-              />
-            </div>
+            {/* Show active filter info */}
+            {(locationIds.length > 0 || startDate || endDate) && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>Filtered by:</span>
+                {locationIds.length > 0 && (
+                  <Badge variant="secondary" className="text-xs">
+                    {locationIds.length} {locationIds.length === 1 ? 'location' : 'locations'}
+                  </Badge>
+                )}
+                {(startDate || endDate) && (
+                  <Badge variant="secondary" className="text-xs">
+                    {startDate && endDate
+                      ? `${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}`
+                      : startDate
+                        ? `From ${new Date(startDate).toLocaleDateString()}`
+                        : `Until ${new Date(endDate!).toLocaleDateString()}`
+                    }
+                  </Badge>
+                )}
+                <span className="text-xs text-muted-foreground">(Use header filters to adjust)</span>
+              </div>
+            )}
 
             {/* Clear Filters Button */}
             {hasActiveFilters && (
@@ -907,7 +960,7 @@ export function RunsDataTable({ locationId, limit = 50, className }: RunsDataTab
                 className="h-8"
               >
                 <IconX className="mr-2 h-4 w-4" />
-                Clear Filters
+                Clear Operator Filter
               </Button>
             )}
           </div>

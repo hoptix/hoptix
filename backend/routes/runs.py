@@ -27,16 +27,26 @@ def get_all_runs():
         res = db.client.table("runs").select("*").in_("location_id", user_location_ids).execute()
         runs = res.data
 
-        # Process each run to add analytics data
-        for run in runs: 
+        if not runs:
+            return jsonify({"runs": []}), 200
+
+        # OPTIMIZATION: Batch fetch all analytics data at once to avoid N+1 queries
+        run_ids = [run["id"] for run in runs]
+        analytics_result = db.client.table("run_analytics").select("*").in_("run_id", run_ids).execute()
+
+        # Create a lookup dictionary for O(1) access: {run_id: analytics_data}
+        analytics_dict = {}
+        if analytics_result.data:
+            for analytics in analytics_result.data:
+                analytics_dict[analytics["run_id"]] = analytics
+
+        # Process each run to add analytics data using the lookup dictionary
+        for run in runs:
             try:
-                # Get analytics data for this run
-                run_analytics = db.client.table("run_analytics").select("*").eq("run_id", run["id"]).execute()
-                
-                if run_analytics.data and len(run_analytics.data) > 0:
-                    analytics = run_analytics.data[0]
-                    
-                    # Add analytics fields to the run object (using dictionary assignment, not append)
+                analytics = analytics_dict.get(run["id"])
+
+                if analytics:
+                    # Add analytics fields to the run object
                     run["total_transcriptions"] = analytics.get("total_transactions", 0)
                     run["successful_upsells"] = analytics.get("upsell_successes", 0)
                     run["successful_upsizes"] = analytics.get("upsize_successes", 0)
@@ -47,7 +57,7 @@ def get_all_runs():
                     run["successful_upsells"] = 0
                     run["successful_upsizes"] = 0
                     run["total_revenue"] = 0.0
-                    
+
             except Exception as e:
                 logger.error(f"Error processing analytics for run {run.get('id', 'unknown')}: {str(e)}")
                 # Set defaults if analytics processing fails
@@ -58,9 +68,9 @@ def get_all_runs():
 
         # Filter out runs with 0 transactions
         filtered_runs = [run for run in runs if run.get("total_transcriptions", 0) > 0]
-        
+
         return jsonify({"runs": filtered_runs}), 200
-        
+
     except Exception as e:
         logger.error(f"Error fetching runs: {str(e)}", exc_info=True)
         return jsonify({"error": f"Internal server error: {str(e)}"}), 500

@@ -115,13 +115,14 @@ interface WorkerAnalytics extends RunAnalytics {
 }
 
 // Hook to fetch worker analytics for a run
-export function useGetWorkerAnalytics(runId: string) {
+export function useGetWorkerAnalytics(runId: string, workerId?: string) {
   const { user } = useAuth()
 
   return useQuery({
-    queryKey: ['workerAnalytics', user?.id, runId],
+    queryKey: ['workerAnalytics', user?.id, runId, workerId],
     queryFn: async (): Promise<{ success: boolean; data: WorkerAnalytics[] }> => {
-      return apiClient.get<{ success: boolean; data: WorkerAnalytics[] }>(`/api/analytics/run/${runId}/workers`)
+      const params = workerId ? `?worker_id=${workerId}` : ''
+      return apiClient.get<{ success: boolean; data: WorkerAnalytics[] }>(`/api/analytics/run/${runId}/workers${params}`)
     },
     enabled: !!runId && !!user,
     staleTime: 10 * 60 * 1000, // 10 minutes
@@ -144,4 +145,49 @@ export function useGetAllWorkerAnalytics() {
   })
 }
 
-export type { RunAnalytics, OperatorMetrics, ItemAnalytics, SizeMetrics, DetailedAnalytics, WorkerAnalytics }
+// Range Analytics Response (same structure as RunAnalytics but for a date range)
+interface RangeAnalyticsResponse {
+  success: boolean
+  data: {
+    analytics: RunAnalytics
+    worker_analytics: WorkerAnalytics[]
+  }
+}
+
+// Hook to fetch analytics for a custom date range across multiple locations
+export function useGetRangeAnalytics(
+  locationIds: string[],
+  startDate: string | null,
+  endDate: string | null,
+  enabled: boolean = true
+) {
+  const { user } = useAuth()
+
+  return useQuery({
+    queryKey: ['range-analytics', user?.id, locationIds, startDate, endDate],
+    queryFn: async (): Promise<RangeAnalyticsResponse> => {
+      // Build query parameters
+      const params = new URLSearchParams()
+
+      // Add location_ids[] as multiple params
+      locationIds.forEach(id => {
+        params.append('location_ids[]', id)
+      })
+
+      // Add date range if provided
+      if (startDate) {
+        params.append('start_date', startDate)
+      }
+      if (endDate) {
+        params.append('end_date', endDate)
+      }
+
+      return apiClient.get<RangeAnalyticsResponse>(`/api/analytics/range-report?${params.toString()}`)
+    },
+    enabled: !!user && enabled && locationIds.length > 0 && !!startDate && !!endDate,
+    staleTime: 5 * 60 * 1000, // 5 minutes - range analytics may change more frequently
+    refetchOnWindowFocus: false,
+  })
+}
+
+export type { RunAnalytics, OperatorMetrics, ItemAnalytics, SizeMetrics, DetailedAnalytics, WorkerAnalytics, RangeAnalyticsResponse }

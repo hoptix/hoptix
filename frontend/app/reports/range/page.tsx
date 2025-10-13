@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import { format } from "date-fns"
-import { useParams, useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { RequireAuth } from "@/components/auth/RequireAuth"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import {
   IconTrendingUp,
   IconTrendingDown,
@@ -22,23 +22,26 @@ import {
   IconEye,
   IconChevronDown,
   IconChevronRight,
+  IconCalendar,
+  IconMapPin,
 } from "@tabler/icons-react"
 
-import { useGetRunAnalytics, useGetWorkerAnalytics, type RunAnalytics, type OperatorMetrics, type ItemAnalytics, type SizeMetrics, type DetailedAnalytics, type WorkerAnalytics } from "@/hooks/getRunAnalytics"
+import { useGetRangeAnalytics, type RunAnalytics, type OperatorMetrics, type ItemAnalytics, type SizeMetrics, type DetailedAnalytics, type WorkerAnalytics } from "@/hooks/getRunAnalytics"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import { useGetLocations } from "@/hooks/getLocations"
 
-const MetricCard = ({ 
-  title, 
-  value, 
-  subtitle, 
-  icon: Icon, 
-  trend, 
+const MetricCard = ({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  trend,
   trendValue,
-  color = "neutral" 
+  color = "neutral"
 }: {
   title: string
   value: string | number
@@ -51,7 +54,7 @@ const MetricCard = ({
   const colorClasses = {
     neutral: "bg-white border-gray-200 hover:border-gray-300",
     success: "bg-white border-green-200 hover:border-green-300",
-    danger: "bg-white border-red-200 hover:border-red-300", 
+    danger: "bg-white border-red-200 hover:border-red-300",
     primary: "bg-white border-blue-200 hover:border-blue-300"
   }
 
@@ -81,8 +84,8 @@ const MetricCard = ({
           </div>
           {trend && trendValue && (
             <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-sm font-medium ${
-              trend === "up" ? "bg-green-100 text-green-700" : 
-              trend === "down" ? "bg-red-100 text-red-700" : 
+              trend === "up" ? "bg-green-100 text-green-700" :
+              trend === "down" ? "bg-red-100 text-red-700" :
               "bg-gray-100 text-gray-700"
             }`}>
               <TrendIcon className="h-4 w-4" />
@@ -98,7 +101,7 @@ const MetricCard = ({
 // Component for displaying size transition data
 const SizeTransitionCard = ({ itemId, itemName, transitions }: { itemId: string, itemName: string, transitions: ItemAnalytics['transitions'] }) => {
   const totalTransitions = transitions["1_to_2"] + transitions["1_to_3"] + transitions["2_to_3"];
-  
+
   if (totalTransitions === 0) {
     return null; // Don't show items with no transitions
   }
@@ -131,10 +134,10 @@ const SizeTransitionCard = ({ itemId, itemName, transitions }: { itemId: string,
             const percentage = totalTransitions > 0 ? (value / totalTransitions * 100) : 0;
             const colorClasses = {
               blue: "bg-blue-50 border-blue-200 text-blue-700",
-              green: "bg-green-50 border-green-200 text-green-700", 
+              green: "bg-green-50 border-green-200 text-green-700",
               purple: "bg-purple-50 border-purple-200 text-purple-700"
             };
-            
+
             return (
               <div key={key} className={`p-4 rounded-lg border ${colorClasses[color as keyof typeof colorClasses]}`}>
                 <div className="flex items-center justify-between mb-2">
@@ -142,9 +145,9 @@ const SizeTransitionCard = ({ itemId, itemName, transitions }: { itemId: string,
                   <div className="text-2xl font-bold">{value}</div>
                 </div>
                 <div className="w-full bg-white/50 rounded-full h-2">
-                  <div 
+                  <div
                     className={`h-2 rounded-full transition-all duration-300 ${
-                      color === 'blue' ? 'bg-blue-500' : 
+                      color === 'blue' ? 'bg-blue-500' :
                       color === 'green' ? 'bg-green-500' : 'bg-purple-500'
                     }`}
                     style={{ width: `${percentage}%` }}
@@ -401,14 +404,14 @@ const ItemsSuggestivelySoldTable = ({ items }: { items: [string, ItemAnalytics][
 };
 
 // Reusable Analytics Report Component
-const AnalyticsReportContent = ({ 
-  data, 
-  title, 
-  subtitle 
-}: { 
-  data: RunAnalytics | WorkerAnalytics, 
-  title: string, 
-  subtitle?: string 
+const AnalyticsReportContent = ({
+  data,
+  title,
+  subtitle
+}: {
+  data: RunAnalytics | WorkerAnalytics,
+  title: string,
+  subtitle?: string
 }) => {
   return (
         <div className="space-y-8">
@@ -486,7 +489,7 @@ const AnalyticsReportContent = ({
                           ? 'bg-green-100 text-green-800 hover:bg-green-200'
                           : 'bg-red-100 text-red-800 hover:bg-red-200'
                       }`}>
-                        {data.upsell_offers > 0 
+                        {data.upsell_offers > 0
                           ? `${((data.upsell_successes / data.upsell_offers) * 100).toFixed(1)}%`
                           : '0%'
                         }
@@ -529,7 +532,7 @@ const AnalyticsReportContent = ({
                           ? 'bg-green-100 text-green-800 hover:bg-green-200'
                           : 'bg-red-100 text-red-800 hover:bg-red-200'
                       }`}>
-                        {data.upsize_offers > 0 
+                        {data.upsize_offers > 0
                           ? `${((data.upsize_successes / data.upsize_offers) * 100).toFixed(1)}%`
                           : '0%'
                         }
@@ -572,7 +575,7 @@ const AnalyticsReportContent = ({
                           ? 'bg-green-100 text-green-800 hover:bg-green-200'
                           : 'bg-red-100 text-red-800 hover:bg-red-200'
                       }`}>
-                        {data.addon_offers > 0 
+                        {data.addon_offers > 0
                           ? `${((data.addon_successes / data.addon_offers) * 100).toFixed(1)}%`
                           : '0%'
                         }
@@ -650,12 +653,19 @@ const AnalyticsReportContent = ({
   );
 };
 
-export default function AnalyticsReportPage() {
-  const params = useParams()
+export default function RangeAnalyticsReportPage() {
   const router = useRouter()
-  const runId = params.runId as string
+  const searchParams = useSearchParams()
   const [isMainReportExpanded, setIsMainReportExpanded] = useState(true)
   const [expandedWorkers, setExpandedWorkers] = useState<Set<string>>(new Set())
+
+  // Get query parameters
+  const locationIdsParam = searchParams.getAll('location_ids[]')
+  const startDate = searchParams.get('start_date')
+  const endDate = searchParams.get('end_date')
+
+  // Get locations data for display names
+  const { data: locationsData } = useGetLocations()
 
   // Worker ID to name mapping
   const workerNameMap: Record<string, string> = {
@@ -672,21 +682,32 @@ export default function AnalyticsReportPage() {
     "ffec99f2-ec72-401a-b799-ecc41724b6b1": "Jacob"
   }
 
-  // Get operator from URL search params
-  const [searchParams] = React.useState(() => {
-    if (typeof window !== 'undefined') {
-      return new URLSearchParams(window.location.search)
+  // Get location names for display
+  const selectedLocationNames = useMemo(() => {
+    if (!locationsData?.locations || locationIdsParam.length === 0) return [];
+    return locationsData.locations
+      .filter(loc => locationIdsParam.includes(loc.id))
+      .map(loc => loc.display_name);
+  }, [locationsData, locationIdsParam]);
+
+  // Format date range for display
+  const dateRangeDisplay = useMemo(() => {
+    if (!startDate || !endDate) return "No date range selected";
+    try {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      return `${format(start, 'MMM d, yyyy')} - ${format(end, 'MMM d, yyyy')}`;
+    } catch (error) {
+      return `${startDate} - ${endDate}`;
     }
-    return new URLSearchParams()
-  })
-  const selectedOperator = searchParams.get('operator')
+  }, [startDate, endDate]);
 
-  const { data: analyticsResponse, isLoading, isError, error } = useGetRunAnalytics(runId, !selectedOperator)
-  const { data: workerAnalytics, isLoading: isLoadingWorkers, isError: isErrorWorkers } = useGetWorkerAnalytics(runId, selectedOperator || undefined)
-
-  const handleViewTransactions = () => {
-    router.push(`/reports/${runId}/transactions`)
-  }
+  const { data: rangeAnalyticsResponse, isLoading, isError, error } = useGetRangeAnalytics(
+    locationIdsParam,
+    startDate,
+    endDate,
+    true
+  )
 
   const handleGoBack = () => {
     router.back()
@@ -711,8 +732,8 @@ export default function AnalyticsReportPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <IconLoader className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <h2 className="text-xl font-semibold">Loading Analytics...</h2>
-          <p className="text-muted-foreground">Please wait while we fetch the run data.</p>
+          <h2 className="text-xl font-semibold">Loading Range Analytics...</h2>
+          <p className="text-muted-foreground">Please wait while we aggregate data across multiple runs.</p>
                               </div>
                               </div>
     )
@@ -724,7 +745,7 @@ export default function AnalyticsReportPage() {
         <div className="text-center">
           <IconAlertCircle className="h-8 w-8 text-red-600 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-red-600">Error Loading Analytics</h2>
-          <p className="text-muted-foreground">{error?.message || 'Failed to load analytics data'}</p>
+          <p className="text-muted-foreground">{error?.message || 'Failed to load range analytics data'}</p>
           <Button onClick={handleGoBack} className="mt-4">
             <IconArrowLeft className="h-4 w-4 mr-2" />
             Go Back
@@ -734,13 +755,13 @@ export default function AnalyticsReportPage() {
     )
   }
 
-  if (!analyticsResponse?.success || !analyticsResponse?.data) {
+  if (!rangeAnalyticsResponse?.success || !rangeAnalyticsResponse?.data) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <IconAlertCircle className="h-8 w-8 text-yellow-600 mx-auto mb-4" />
           <h2 className="text-xl font-semibold">No Data Available</h2>
-          <p className="text-muted-foreground">No analytics data found for this run.</p>
+          <p className="text-muted-foreground">No analytics data found for this date range and locations.</p>
           <Button onClick={handleGoBack} className="mt-4">
             <IconArrowLeft className="h-4 w-4 mr-2" />
             Go Back
@@ -750,7 +771,8 @@ export default function AnalyticsReportPage() {
     )
   }
 
-  const data = analyticsResponse.data
+  const data = rangeAnalyticsResponse.data.analytics
+  const workerAnalyticsData = rangeAnalyticsResponse.data.worker_analytics || []
 
   return (
     <RequireAuth>
@@ -758,7 +780,7 @@ export default function AnalyticsReportPage() {
         <div className="flex items-center gap-2 px-4">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
-          <h1 className="text-base font-medium">Analytics Report</h1>
+          <h1 className="text-base font-medium">Range Analytics Report</h1>
         </div>
       </header>
       <div className="min-h-screen bg-gray-50">
@@ -772,21 +794,31 @@ export default function AnalyticsReportPage() {
                 Back
               </Button>
               <div className="border-l border-gray-300 pl-6">
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">Analytics Report</h1>
-                <div className="flex items-center space-x-3 text-gray-600">
-                  <span className="text-lg font-medium">
-                    <p>October 6th, 2025</p>
-                                 </span>
-                  <span className="text-gray-400">•</span>
-                  <span className="text-lg">DQ Cary</span>
+                <h1 className="text-4xl font-bold text-gray-900 mb-2">Range Analytics Report</h1>
+                <div className="flex flex-col space-y-2 text-gray-600">
+                  <div className="flex items-center space-x-2">
+                    <IconCalendar className="h-5 w-5" />
+                    <span className="text-lg font-medium">{dateRangeDisplay}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <IconMapPin className="h-5 w-5" />
+                    <span className="text-sm">
+                      {selectedLocationNames.length > 0
+                        ? selectedLocationNames.length === 1
+                          ? selectedLocationNames[0]
+                          : `${selectedLocationNames.length} locations`
+                        : 'All locations'}
+                    </span>
+                  </div>
+                  {selectedLocationNames.length > 1 && (
+                    <div className="text-xs text-gray-500 ml-7">
+                      {selectedLocationNames.join(', ')}
+                    </div>
+                  )}
                               </div>
                               </div>
                               </div>
             <div className="flex items-center space-x-3">
-              <Button variant="outline" onClick={handleViewTransactions} className="border-gray-300 hover:border-gray-400">
-                <IconEye className="h-4 w-4 mr-2" />
-                View Raw Transactions
-              </Button>
               <Button variant="outline" onClick={() => window.print()} className="border-gray-300 hover:border-gray-400">
                 <IconPrinter className="h-4 w-4 mr-2" />
                 Print Report
@@ -796,155 +828,97 @@ export default function AnalyticsReportPage() {
                         </div>
 
         <div className="space-y-8">
-          {/* Main Report Section - Collapsible (hidden when viewing specific operator) */}
-          {!selectedOperator && (
-            <section>
-              <div className="mb-6">
-                <button
-                  onClick={toggleMainReport}
-                  className="flex items-center space-x-3 text-left w-full hover:bg-gray-50 p-4 rounded-lg transition-colors"
-                >
-                  {isMainReportExpanded ? (
-                    <IconChevronDown className="h-5 w-5 text-gray-600" />
-                  ) : (
-                    <IconChevronRight className="h-5 w-5 text-gray-600" />
-                  )}
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-1">Overall Run Analytics</h2>
-                    <p className="text-gray-600">Complete performance overview for all operators</p>
-                      </div>
-                </button>
+          {/* Main Report Section - Collapsible */}
+          <section>
+            <div className="mb-6">
+              <button
+                onClick={toggleMainReport}
+                className="flex items-center space-x-3 text-left w-full hover:bg-gray-50 p-4 rounded-lg transition-colors"
+              >
+                {isMainReportExpanded ? (
+                  <IconChevronDown className="h-5 w-5 text-gray-600" />
+                ) : (
+                  <IconChevronRight className="h-5 w-5 text-gray-600" />
+                )}
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-1">Overall Range Analytics</h2>
+                  <p className="text-gray-600">Aggregated performance overview across all runs in the selected date range</p>
                     </div>
-              
-              {isMainReportExpanded && (
-                <AnalyticsReportContent
-                  data={data}
-                  title="Overall Performance"
-                  subtitle="Combined analytics from all operators"
-                />
-              )}
-            </section>
-          )}
+              </button>
+                  </div>
+
+            {isMainReportExpanded && (
+              <AnalyticsReportContent
+                data={data}
+                title="Overall Performance"
+                subtitle={`Combined analytics from ${data.total_transactions} transactions across the selected date range`}
+              />
+            )}
+          </section>
 
           {/* Worker Analytics Section */}
-          {workerAnalytics?.success && workerAnalytics.data.length > 0 && (
+          {workerAnalyticsData.length > 0 && (
             <section>
               <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  {selectedOperator ? `Operator Report: ${workerNameMap[selectedOperator] || selectedOperator}` : "Individual Operator Reports"}
-                </h2>
-                <p className="text-gray-600">
-                  {selectedOperator ? "Performance breakdown for the selected operator" : "Performance breakdown by individual operators"}
-                </p>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Individual Operator Reports</h2>
+                <p className="text-gray-600">Performance breakdown by individual operators across the date range</p>
               </div>
-              
+
               <div className="space-y-6">
-                {workerAnalytics.data
-                  .filter(workerData => (!selectedOperator || workerData.worker_id === selectedOperator) && workerData.total_transactions > 0)
+                {workerAnalyticsData
+                  .filter(workerData => workerData.total_transactions > 0)
                   .sort((a, b) => b.total_transactions - a.total_transactions)
                   .map((workerData) => {
-                    const isExpanded = selectedOperator ? true : expandedWorkers.has(workerData.worker_id);
-                    
+                    const isExpanded = expandedWorkers.has(workerData.worker_id);
+
                     return (
                       <Card key={workerData.worker_id} className="bg-white border border-gray-200 shadow-sm">
-                        {!selectedOperator && (
-                          <CardHeader>
-                            <button
-                              onClick={() => toggleWorker(workerData.worker_id)}
-                              className="flex items-center justify-between w-full text-left hover:bg-gray-50 p-2 rounded-lg transition-colors"
-                            >
-                      <div className="flex items-center space-x-3">
-                                {isExpanded ? (
-                                  <IconChevronDown className="h-5 w-5 text-gray-600" />
-                                ) : (
-                                  <IconChevronRight className="h-5 w-5 text-gray-600" />
-                                )}
-                      <div className="flex items-center space-x-3">
-                                  <div className="p-2 bg-blue-100 rounded-lg">
-                                    <IconUsers className="h-5 w-5 text-blue-600" />
-                        </div>
-                                  <div>
-                                    <h3 className="text-lg font-semibold text-gray-900">
-                                      Operator: {workerNameMap[workerData.worker_id] || workerData.worker_id}
-                                    </h3>
-                                    <p className="text-sm text-gray-600">
-                                      {workerData.total_transactions} transactions • {workerData.total_offers} offers • {workerData.total_successes} successes
-                                    </p>
+                        <CardHeader>
+                          <button
+                            onClick={() => toggleWorker(workerData.worker_id)}
+                            className="flex items-center justify-between w-full text-left hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                          >
+                    <div className="flex items-center space-x-3">
+                              {isExpanded ? (
+                                <IconChevronDown className="h-5 w-5 text-gray-600" />
+                              ) : (
+                                <IconChevronRight className="h-5 w-5 text-gray-600" />
+                              )}
+                    <div className="flex items-center space-x-3">
+                                <div className="p-2 bg-blue-100 rounded-lg">
+                                  <IconUsers className="h-5 w-5 text-blue-600" />
                       </div>
-                                  </div>
+                                <div>
+                                  <h3 className="text-lg font-semibold text-gray-900">
+                                    Operator: {workerNameMap[workerData.worker_id] || workerData.worker_id}
+                                  </h3>
+                                  <p className="text-sm text-gray-600">
+                                    {workerData.total_transactions} transactions • {workerData.total_offers} offers • {workerData.total_successes} successes
+                                  </p>
+                    </div>
                                 </div>
-                              <div className="text-right">
-                                <div className="text-lg font-bold text-gray-900">
-                                  {((workerData.total_successes / Math.max(workerData.total_offers, 1)) * 100).toFixed(1)}%
-                                  </div>
-                                <div className="text-sm text-gray-600">Success Rate</div>
-                                  </div>
-                            </button>
-                          </CardHeader>
-                        )}
-                        
-                        {selectedOperator && (
-                          <CardHeader>
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-blue-100 rounded-lg">
-                                <IconUsers className="h-5 w-5 text-blue-600" />
-                        </div>
-                              <div>
-                                <h3 className="text-lg font-semibold text-gray-900">
-                                  Operator: {workerNameMap[workerData.worker_id] || workerData.worker_id}
-                                </h3>
-                                <p className="text-sm text-gray-600">
-                                  {workerData.total_transactions} transactions • {workerData.total_offers} offers • {workerData.total_successes} successes
-                                </p>
-                      </div>
-                                  </div>
+                              </div>
                             <div className="text-right">
                               <div className="text-lg font-bold text-gray-900">
                                 {((workerData.total_successes / Math.max(workerData.total_offers, 1)) * 100).toFixed(1)}%
                                 </div>
                               <div className="text-sm text-gray-600">Success Rate</div>
-                                  </div>
-                          </CardHeader>
-                        )}
-                        
+                                </div>
+                          </button>
+                        </CardHeader>
+
                         {isExpanded && (
-                          <CardContent className={selectedOperator ? "pt-0" : "pt-0"}>
+                          <CardContent className="pt-0">
                             <AnalyticsReportContent
                               data={workerData}
                               title={`Operator Performance: ${workerNameMap[workerData.worker_id] || workerData.worker_id}`}
-                              subtitle="Individual operator analytics and performance metrics"
+                              subtitle="Individual operator analytics across the date range"
                             />
-                    </CardContent>
+                  </CardContent>
                         )}
-                  </Card>
+                </Card>
                     );
                   })}
-              </div>
-            </section>
-          )}
-
-          {/* Loading state for worker analytics */}
-          {isLoadingWorkers && (
-            <section>
-              <div className="flex items-center justify-center py-8">
-                <div className="text-center">
-                  <IconLoader className="h-8 w-8 animate-spin mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold">Loading Operator Reports...</h3>
-                  <p className="text-muted-foreground">Fetching individual operator analytics</p>
-                        </div>
-                      </div>
-            </section>
-          )}
-
-          {/* Error state for worker analytics */}
-          {isErrorWorkers && (
-            <section>
-              <div className="flex items-center justify-center py-8">
-                <div className="text-center">
-                  <IconAlertCircle className="h-8 w-8 text-yellow-600 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-yellow-600">No Operator Data Available</h3>
-                  <p className="text-muted-foreground">Individual operator reports are not available for this run</p>
-                </div>
               </div>
             </section>
           )}

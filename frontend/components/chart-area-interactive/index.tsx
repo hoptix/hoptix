@@ -4,7 +4,8 @@ import * as React from "react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { useLocationAnalyticsOverTime } from "@/hooks/useLocationAnalyticsOverTime"
+import { useMultiLocationAnalyticsOverTime } from "@/hooks/useMultiLocationAnalyticsOverTime"
+import { useFormattedDashboardFilters } from "@/contexts/DashboardFilterContext"
 import {
   Card,
   CardContent,
@@ -32,17 +33,14 @@ import { ChartFilters } from "./ChartFilters"
 import { useChartDataTransform } from "./useChartDataTransform"
 import type { MetricType, CategoryType, ViewMode } from "@/types/analytics"
 
-interface ChartAreaInteractiveProps {
-  locationId?: string
-}
-
 const STORAGE_KEY = "chart-area-interactive-prefs"
 
-export function ChartAreaInteractive({ locationId }: ChartAreaInteractiveProps) {
+export function ChartAreaInteractive() {
   const isMobile = useIsMobile()
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const { locationIds, startDate, endDate } = useFormattedDashboardFilters()
 
   // Initialize state from URL params or localStorage
   const [timeRange, setTimeRange] = React.useState(() => {
@@ -119,13 +117,13 @@ export function ChartAreaInteractive({ locationId }: ChartAreaInteractiveProps) 
       if (saved) {
         try {
           const prefs = JSON.parse(saved)
-          return prefs.viewMode || "stacked"
+          return prefs.viewMode || "individual"
         } catch {
           // Fall through to default
         }
       }
     }
-    return "stacked"
+    return "individual"
   })
 
   // Auto-adjust time range on mobile
@@ -149,9 +147,9 @@ export function ChartAreaInteractive({ locationId }: ChartAreaInteractiveProps) 
       localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs))
     }
 
-    // Only update URL params when a location is selected
+    // Only update URL params when locations are selected
     // This prevents polluting the URL before the user has made a meaningful selection
-    if (locationId) {
+    if (locationIds.length > 0) {
       const params = new URLSearchParams(searchParams.toString())
       params.set("metric", metricType)
       params.set("categories", Array.from(selectedCategories).join(","))
@@ -166,9 +164,9 @@ export function ChartAreaInteractive({ locationId }: ChartAreaInteractiveProps) 
         router.replace(pathname, { scroll: false })
       }
     }
-  }, [timeRange, metricType, selectedCategories, viewMode, pathname, router, searchParams, locationId])
+  }, [timeRange, metricType, selectedCategories, viewMode, pathname, router, searchParams, locationIds])
 
-  // Convert time range to days
+  // Convert time range to days (only used if date range from context is not available)
   const getDaysFromTimeRange = (range: string) => {
     if (range === "7d") return 7
     if (range === "30d") return 30
@@ -176,11 +174,13 @@ export function ChartAreaInteractive({ locationId }: ChartAreaInteractiveProps) 
     return 30
   }
 
-  // Fetch real data
-  const { data: chartData, isLoading } = useLocationAnalyticsOverTime({
-    locationId,
-    days: getDaysFromTimeRange(timeRange),
-    enabled: !!locationId,
+  // Fetch real data using filters from context
+  const { data: chartData, isLoading } = useMultiLocationAnalyticsOverTime({
+    locationIds,
+    startDate: startDate || undefined,
+    endDate: endDate || undefined,
+    days: (!startDate && !endDate) ? getDaysFromTimeRange(timeRange) : undefined,
+    enabled: locationIds.length > 0,
   })
 
   // Transform data for chart
@@ -395,8 +395,8 @@ export function ChartAreaInteractive({ locationId }: ChartAreaInteractiveProps) 
     )
   }
 
-  // Empty state (no location selected)
-  if (!locationId) {
+  // Empty state (no locations selected)
+  if (locationIds.length === 0) {
     return (
       <Card className="@container/card">
         <CardHeader>
@@ -407,7 +407,7 @@ export function ChartAreaInteractive({ locationId }: ChartAreaInteractiveProps) 
         </CardHeader>
         <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
           <div className="h-[320px] flex items-center justify-center text-muted-foreground">
-            Select a location to view analytics
+            Select locations to view analytics
           </div>
         </CardContent>
       </Card>

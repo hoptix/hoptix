@@ -3,28 +3,26 @@
 import { ChartAreaInteractive } from "@/components/chart-area-interactive"
 import { RunsDataTable } from "@/components/runs-data-table"
 import { SectionCards } from "@/components/section-cards"
-import { TopTransactionsHighlight } from "@/components/top-transactions-highlight"
+import { OperatorPerformanceSection } from "@/components/operator-performance-section"
 import { SiteHeader } from "@/components/site-header"
 import { RequireAuth } from "@/components/auth/RequireAuth"
-import { useState } from "react"
-import type { Location } from "@/hooks/getLocations"
+import { DashboardFilterProvider, useDashboardFilters, useFormattedDashboardFilters } from "@/contexts/DashboardFilterContext"
 import { useDashboardAnalytics } from "@/hooks/useDashboardAnalytics"
 
-export default function Page() {
-  const [selectedLocationId, setSelectedLocationId] = useState<string>("")
+function DashboardContent() {
+  const { filters } = useDashboardFilters()
+  const { locationIds, startDate, endDate } = useFormattedDashboardFilters()
 
-  const handleLocationChange = (locationId: string, location: Location) => {
-    setSelectedLocationId(locationId)
-  }
-
-  // Fetch dashboard analytics for selected location
+  // Fetch dashboard analytics for selected locations
   const { data: analyticsData, isLoading: isLoadingAnalytics } = useDashboardAnalytics({
-    locationId: selectedLocationId,
+    locationIds: locationIds,
+    startDate: startDate || undefined,
+    endDate: endDate || undefined,
     comparePrevious: true,
-    enabled: !!selectedLocationId
+    enabled: locationIds.length > 0
   })
 
-  // Default metrics when no location is selected
+  // Default metrics when no data
   const defaultMetrics = {
     operator_revenue: 0,
     offer_rate: 0,
@@ -33,44 +31,42 @@ export default function Page() {
   }
 
   return (
-    <RequireAuth>
+    <>
       <SiteHeader
         title="Dashboard"
         showLocationDropdown={true}
-        selectedLocationId={selectedLocationId}
-        onLocationChange={handleLocationChange}
+        showDateRangePicker={true}
       />
       <div className="flex flex-1 flex-col min-w-0 overflow-x-hidden">
         <div className="@container/main flex flex-1 flex-col gap-2 min-w-0 overflow-x-hidden">
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 min-w-0 max-w-[1920px] mx-auto w-full overflow-x-hidden">
-            {selectedLocationId ? (
-              <SectionCards
-                metrics={analyticsData?.metrics || defaultMetrics}
-                trends={analyticsData?.trends}
-                isLoading={isLoadingAnalytics}
-              />
-            ) : (
-              <div className="px-4 lg:px-6 text-center py-8 text-muted-foreground">
-                Please select a location to view dashboard analytics
-              </div>
-            )}
+            <SectionCards
+              metrics={analyticsData?.metrics || defaultMetrics}
+              trends={analyticsData?.trends}
+              isLoading={isLoadingAnalytics}
+            />
             <div className="px-4 lg:px-6 min-w-0">
-              <ChartAreaInteractive locationId={selectedLocationId} />
+              <ChartAreaInteractive />
             </div>
-            {selectedLocationId && (
-              <div className="px-4 lg:px-6 min-w-0">
-                <TopTransactionsHighlight
-                  locationId={selectedLocationId}
-                  className="mb-6"
-                />
-              </div>
-            )}
             <div className="px-4 lg:px-6 min-w-0">
-              <RunsDataTable locationId={selectedLocationId || undefined} />
+              <OperatorPerformanceSection className="mb-6" />
+            </div>
+            <div className="px-4 lg:px-6 min-w-0">
+              <RunsDataTable />
             </div>
           </div>
         </div>
       </div>
+    </>
+  )
+}
+
+export default function Page() {
+  return (
+    <RequireAuth>
+      <DashboardFilterProvider>
+        <DashboardContent />
+      </DashboardFilterProvider>
     </RequireAuth>
   )
 }

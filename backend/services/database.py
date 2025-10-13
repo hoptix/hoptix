@@ -251,7 +251,7 @@ class Supa:
             "monthly_feedback": feedback
         }).eq("id", operator_id).execute()
     
-    def get_operator_monthly_feedback(self, operator_id: str, feedback: str):
+    def get_operator_monthly_feedback(self, operator_id: str):
         """Get operator monthly feedback from the database"""
         result = self.client.table("workers").select("monthly_feedback").eq("id", operator_id).execute()
         return result.data[0]["monthly_feedback"] if result.data else None

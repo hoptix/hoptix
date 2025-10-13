@@ -3,6 +3,7 @@
 import { RequireAuth } from "@/components/auth/RequireAuth"
 import { RunsTable } from "@/components/runs-table"
 import { SiteHeader } from "@/components/site-header"
+import { LocationDropdown } from "@/components/location-dropdown"
 import { useState } from "react"
 import type { Location } from "@/hooks/getLocations"
 
@@ -17,16 +18,22 @@ export default function RunsPage() {
 
   return (
     <RequireAuth>
-      
+
         <SiteHeader
           title="Runs Management"
-          showLocationDropdown={true}
-          selectedLocationId={selectedLocationId}
-          onLocationChange={handleLocationChange}
         />
         <div className="flex flex-1 flex-col max-w-[1920px] mx-auto w-full">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+
+              {/* Location Selector */}
+              <div className="px-4 lg:px-6">
+                <LocationDropdown
+                  selectedLocationId={selectedLocationId}
+                  onLocationChange={handleLocationChange}
+                  className="w-full md:w-auto"
+                />
+              </div>
 
               {/* Info Banner */}
               {selectedLocation ? (

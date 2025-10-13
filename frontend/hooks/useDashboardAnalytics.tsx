@@ -19,6 +19,7 @@ interface DashboardPeriod {
   start_date: string
   end_date: string
   days: number
+  location_count?: number
 }
 
 interface DashboardAnalyticsResponse {
@@ -39,6 +40,7 @@ interface DashboardAnalyticsResponse {
 
 interface UseDashboardAnalyticsParams {
   locationId?: string
+  locationIds?: string[]
   startDate?: string
   endDate?: string
   comparePrevious?: boolean
@@ -47,30 +49,63 @@ interface UseDashboardAnalyticsParams {
 
 export function useDashboardAnalytics({
   locationId,
+  locationIds,
   startDate,
   endDate,
   comparePrevious = true,
   enabled = true
 }: UseDashboardAnalyticsParams) {
+  // Determine if we should use multi-location endpoint
+  const useMultiLocation = locationIds && locationIds.length > 0
+  const useSingleLocation = locationId && !useMultiLocation
+
   return useQuery<DashboardAnalyticsResponse>({
-    queryKey: ['dashboardAnalytics', locationId, startDate, endDate, comparePrevious],
+    queryKey: ['dashboardAnalytics', locationId, locationIds, startDate, endDate, comparePrevious],
     queryFn: async () => {
-      if (!locationId) {
-        throw new Error('Location ID is required')
+      if (!useSingleLocation && !useMultiLocation) {
+        // Return empty data when no locations selected
+        return {
+          period: { start_date: '', end_date: '', days: 0, location_count: 0 },
+          metrics: {
+            operator_revenue: 0,
+            offer_rate: 0,
+            conversion_rate: 0,
+            items_converted: 0
+          },
+          raw_data: {
+            total_opportunities: 0,
+            total_offers: 0,
+            total_successes: 0
+          }
+        }
       }
 
       const params = new URLSearchParams()
+
+      if (useMultiLocation) {
+        // Use multi-location endpoint
+        locationIds!.forEach(id => params.append('location_ids[]', id))
+      }
+
       if (startDate) params.append('start_date', startDate)
       if (endDate) params.append('end_date', endDate)
       params.append('compare_previous', comparePrevious.toString())
 
       const queryString = params.toString()
-      const url = `/api/analytics/location/${locationId}/dashboard${queryString ? `?${queryString}` : ''}`
+
+      let url: string
+      if (useMultiLocation) {
+        // Use new multi-location endpoint
+        url = `/api/analytics/dashboard${queryString ? `?${queryString}` : ''}`
+      } else {
+        // Use single location endpoint for backward compatibility
+        url = `/api/analytics/location/${locationId}/dashboard${queryString ? `?${queryString}` : ''}`
+      }
 
       const response = await apiClient.get<{ success: boolean; data: DashboardAnalyticsResponse }>(url)
       return response.data
     },
-    enabled: enabled && !!locationId,
+    enabled: enabled && (!!useSingleLocation || !!useMultiLocation),
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes
   })

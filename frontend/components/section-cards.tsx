@@ -44,18 +44,27 @@ export function SectionCards({ metrics, trends, isLoading = false }: SectionCard
     )
   }
 
-  const formatCurrency = (value: number) => {
+  const formatCurrency = (value: number | undefined) => {
+    if (value === undefined || value === null || isNaN(value)) {
+      return '0.00'
+    }
     return value.toLocaleString('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     })
   }
 
-  const formatPercent = (value: number) => {
+  const formatPercent = (value: number | undefined) => {
+    if (value === undefined || value === null || isNaN(value)) {
+      return '0.0'
+    }
     return value.toFixed(1)
   }
 
-  const formatNumber = (value: number) => {
+  const formatNumber = (value: number | undefined) => {
+    if (value === undefined || value === null || isNaN(value)) {
+      return '0'
+    }
     return value.toLocaleString()
   }
 
