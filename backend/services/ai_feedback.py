@@ -10,11 +10,12 @@ client = OpenAI(api_key=settings.OPENAI_API_KEY)
 db = Supa() 
 
 
-def get_ai_feedback(operator_id):
+def get_ai_feedback(run_id=None, operator_id=None):
+
     print(f"🔍 Getting feedback for operator {operator_id}...")
     
     #get the operator feedback from the database for the past month
-    operator_feedback = db.get_operator_feedback_raw(operator_id)
+    operator_feedback = db.get_operator_feedback_raw(run_id, operator_id)
     print(f"📊 Found {len(operator_feedback)} feedback records")
     
     if not operator_feedback:
