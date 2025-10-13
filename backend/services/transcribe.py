@@ -376,7 +376,7 @@ def transcribe_large_audio_file(audio_path: str, audio_record: Dict, audio_split
         print(f"🚀 Processing {len(chunk_records)} chunks sequentially (memory-optimized)")
     
     def process_chunk_file(chunk_record):
-        """Process a single chunk file"""
+        """Process a single chunk file with improved error handling and cleanup"""
         chunk_id = chunk_record["id"]
         chunk_path = chunk_record["meta"]["local_chunk_path"]
         chunk_start_time = chunk_record["meta"]["chunk_start_time"]
@@ -387,6 +387,19 @@ def transcribe_large_audio_file(audio_path: str, audio_record: Dict, audio_split
         print(f"🔍 DEBUG: chunk_record meta: {chunk_record.get('meta', {})}")
         
         try:
+            # Check if chunk file exists and is readable
+            if not os.path.exists(chunk_path):
+                print(f"❌ Chunk file not found: {chunk_path}")
+                return []
+            
+            # Check file size to ensure it's not corrupted
+            file_size = os.path.getsize(chunk_path)
+            if file_size == 0:
+                print(f"❌ Chunk file is empty: {chunk_path}")
+                return []
+            
+            print(f"🔍 DEBUG: Chunk file size: {file_size:,} bytes")
+            
             # Transcribe the chunk file
             print(f"🔍 DEBUG: Calling transcribe_single_audio_file for chunk {chunk_id}")
             chunk_segments = transcribe_single_audio_file(chunk_path)
@@ -419,9 +432,21 @@ def transcribe_large_audio_file(audio_path: str, audio_record: Dict, audio_split
             print(f"🔍 DEBUG: Full traceback:")
             traceback.print_exc()
             return []
+        finally:
+            # Always attempt to clean up the chunk file immediately after processing
+            try:
+                if os.path.exists(chunk_path):
+                    os.remove(chunk_path)
+                    print(f"🗑️ Cleaned up chunk file: {chunk_path}")
+            except Exception as cleanup_error:
+                print(f"⚠️ Failed to clean up chunk file {chunk_path}: {cleanup_error}")
     
     if PARALLEL_CHUNKS:
-        # Process chunks in parallel
+        # Process chunks in parallel with timeout
+        import time
+        start_time = time.time()
+        max_processing_time = 3600  # 1 hour timeout for processing all chunks
+        
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             # Submit all chunk processing tasks
             print(f"🔍 DEBUG: Submitting {len(chunk_records)} chunk processing tasks")
@@ -431,16 +456,25 @@ def transcribe_large_audio_file(audio_path: str, audio_record: Dict, audio_split
             }
             print(f"🔍 DEBUG: All {len(future_to_chunk)} tasks submitted to executor")
             
-            # Collect results as they complete
+            # Collect results as they complete with timeout
             completed_count = 0
-            for future in as_completed(future_to_chunk):
+            for future in as_completed(future_to_chunk, timeout=max_processing_time):
+                # Check if we're approaching timeout
+                elapsed_time = time.time() - start_time
+                if elapsed_time > max_processing_time * 0.9:  # 90% of timeout
+                    print(f"⚠️ Approaching timeout ({elapsed_time:.1f}s), canceling remaining tasks...")
+                    for remaining_future in future_to_chunk:
+                        if not remaining_future.done():
+                            remaining_future.cancel()
+                    break
+                
                 chunk_record = future_to_chunk[future]
                 completed_count += 1
                 chunk_id = chunk_record["id"]
-                print(f"🔍 DEBUG: Processing result {completed_count}/{len(chunk_records)} for chunk {chunk_id}")
+                print(f"🔍 DEBUG: Processing result {completed_count}/{len(chunk_records)} for chunk {chunk_id} (elapsed: {elapsed_time:.1f}s)")
                 
                 try:
-                    chunk_segments = future.result()
+                    chunk_segments = future.result(timeout=300)  # 5 minute timeout per chunk
                     print(f"🔍 DEBUG: Chunk {chunk_id} result: {len(chunk_segments)} segments")
                     
                     if chunk_segments:
@@ -452,12 +486,12 @@ def transcribe_large_audio_file(audio_path: str, audio_record: Dict, audio_split
                         print(f"🔍 DEBUG: Chunk {chunk_id} returned 0 segments - marked as failed")
                     
                     # Periodic memory cleanup
-                    if len(all_segments) % CLEANUP_FREQUENCY == 0:
+                    if completed_count % CLEANUP_FREQUENCY == 0:
                         gc.collect()
                         if MEMORY_MONITORING:
                             current_memory = get_memory_usage()
                             print(f"📊 Memory usage after cleanup: {current_memory:.1f} MB")
-                        print(f"🔍 DEBUG: Performed garbage collection at {len(all_segments)} segments")
+                        print(f"🔍 DEBUG: Performed garbage collection at {completed_count} chunks")
                         
                 except Exception as e:
                     failed_chunks += 1
@@ -468,10 +502,21 @@ def transcribe_large_audio_file(audio_path: str, audio_record: Dict, audio_split
                     traceback.print_exc()
                     continue
     else:
-        # Process chunks sequentially (memory-optimized)
+        # Process chunks sequentially (memory-optimized) with timeout
+        import time
+        start_time = time.time()
+        max_processing_time = 3600  # 1 hour timeout for processing all chunks
+        
         for i, chunk_record in enumerate(chunk_records, 1):
+            # Check timeout before processing each chunk
+            elapsed_time = time.time() - start_time
+            if elapsed_time > max_processing_time:
+                print(f"⚠️ Timeout reached ({elapsed_time:.1f}s), stopping chunk processing")
+                print(f"🔍 DEBUG: Processed {i-1}/{len(chunk_records)} chunks before timeout")
+                break
+            
             chunk_id = chunk_record["id"]
-            print(f"🔍 DEBUG: Processing chunk {i}/{len(chunk_records)}: {chunk_id}")
+            print(f"🔍 DEBUG: Processing chunk {i}/{len(chunk_records)}: {chunk_id} (elapsed: {elapsed_time:.1f}s)")
             
             # Monitor memory before each chunk
             if MEMORY_MONITORING:
@@ -517,14 +562,27 @@ def transcribe_large_audio_file(audio_path: str, audio_record: Dict, audio_split
     audio_splitter.cleanup_chunk_files(chunk_records)
     
     final_memory = get_memory_usage()
+    total_chunks_processed = successful_chunks + failed_chunks
+    success_rate = (successful_chunks / total_chunks_processed * 100) if total_chunks_processed > 0 else 0
+    
     print(f"\n🎉 Completed chunked transcription!")
     print(f"📊 Final memory usage: {final_memory:.1f} MB")
     print(f"📝 Total segments transcribed: {len(all_segments)}")
     print(f"🔍 DEBUG: Chunk processing summary:")
     print(f"🔍 DEBUG: - Successful chunks: {successful_chunks}")
     print(f"🔍 DEBUG: - Failed chunks: {failed_chunks}")
-    print(f"🔍 DEBUG: - Total chunks processed: {successful_chunks + failed_chunks}")
-    print(f"🔍 DEBUG: - Success rate: {(successful_chunks / (successful_chunks + failed_chunks) * 100):.1f}%" if (successful_chunks + failed_chunks) > 0 else "N/A")
+    print(f"🔍 DEBUG: - Total chunks processed: {total_chunks_processed}")
+    print(f"🔍 DEBUG: - Success rate: {success_rate:.1f}%")
+    
+    # Check if we have a reasonable success rate
+    if success_rate < 50 and total_chunks_processed > 10:
+        print(f"⚠️ Low success rate ({success_rate:.1f}%), but returning partial results")
+        print(f"🔍 DEBUG: Consider investigating failed chunks or reducing chunk size")
+    elif len(all_segments) == 0:
+        print(f"❌ No segments were successfully transcribed")
+        print(f"🔍 DEBUG: All chunks failed - check audio file format and ASR service")
+    else:
+        print(f"✅ Transcription completed successfully with {success_rate:.1f}% success rate")
     
     return all_segments
 
