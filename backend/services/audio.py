@@ -3,6 +3,7 @@ import numpy as np
 import soundfile as sf
 from datetime import datetime
 from typing import List, Tuple
+from moviepy.editor import AudioFileClip
 
 class AudioTransactionProcessor:
     """Process audio files to extract individual transactions using silence detection"""
@@ -31,20 +32,20 @@ class AudioTransactionProcessor:
         # Create output directory
         os.makedirs(output_dir, exist_ok=True)
         
-        # Get audio file info without loading entire file
-        print('📊 Getting audio file info...')
+        # Load audio file using AudioFileClip (streaming, memory efficient)
+        print('📊 Loading audio file with AudioFileClip...')
         try:
-            with sf.SoundFile(audio_path) as f:
-                duration = f.frames / f.samplerate
-                sr = f.samplerate
-                print(f'📊 Audio info: {duration:.1f}s duration, {sr}Hz sample rate')
+            audio_clip = AudioFileClip(audio_path)
+            duration = audio_clip.duration
+            sr = audio_clip.fps
+            print(f'📊 Audio loaded: {duration:.1f}s duration, {sr}Hz sample rate')
         except Exception as e:
-            print(f'❌ Failed to get audio file info: {e}')
+            print(f'❌ Failed to load audio file: {e}')
             return [], [], [], [], []
         
-        # Detect transaction boundaries using chunked processing (memory efficient)
-        print('🔍 Detecting transaction boundaries using chunked silence detection...')
-        trans_begin, trans_end = self._detect_transaction_boundaries_chunked(audio_path, sr, duration)
+        # Detect transaction boundaries using streaming approach
+        print('🔍 Detecting transaction boundaries using streaming silence detection...')
+        trans_begin, trans_end = self._detect_transaction_boundaries_streaming(audio_clip, sr)
         
         print(f'✅ Found {len(trans_begin)} transactions')
         print(f'🔍 Begin times: {trans_begin}')
@@ -76,8 +77,8 @@ class AudioTransactionProcessor:
                 )
                 clip_path = os.path.join(output_dir, clip_filename)
                 
-                # Extract audio segment
-                self._extract_audio_segment(audio_path, clip_path, begin_time, end_time, sr)
+                # Extract audio segment using AudioFileClip
+                self._extract_audio_segment_streaming(audio_clip, clip_path, begin_time, end_time)
                 
                 # Verify clip was created successfully
                 if os.path.exists(clip_path) and os.path.getsize(clip_path) > 0:
@@ -91,65 +92,56 @@ class AudioTransactionProcessor:
                 print(f'❌ Error creating audio clip {i+1}: {e}')
                 audio_clip_paths.append("")
         
+        # Clean up main audio clip to free memory
+        audio_clip.close()
+        
         print(f'🎉 Audio processing completed: {len([p for p in audio_clip_paths if p])} clips created')
         return audio_clip_paths, trans_begin, trans_end, trans_reg_begin, trans_reg_end
     
-    def _detect_transaction_boundaries_chunked(self, audio_path: str, sr: int, duration: float) -> Tuple[List[float], List[float]]:
+    def _detect_transaction_boundaries_streaming(self, audio_clip: AudioFileClip, sr: int) -> Tuple[List[float], List[float]]:
         """
-        Detect transaction boundaries using chunked silence detection (memory efficient)
-        Processes audio in small chunks instead of loading entire file
+        Detect transaction boundaries using AudioFileClip streaming (memory efficient)
+        Uses the same approach as the original video processing
         """
         trans_begin = []
         trans_end = []
         
+        duration = audio_clip.duration
+        print(f'🔍 Processing audio with {self.SILENCE_INTERVAL}s silence intervals')
+        
         # Process in chunks to avoid memory issues
         chunk_duration = 60  # Process 1 minute at a time
-        chunk_samples = int(chunk_duration * sr)
-        interval_samples = int(self.SILENCE_INTERVAL * sr)
-        
-        print(f'🔍 Processing audio in {chunk_duration}s chunks with {self.SILENCE_INTERVAL}s silence intervals')
-        
-        prev_state = 0  # 0 = silence, 1 = active
         current_time = 0.0
+        prev_state = 0  # 0 = silence, 1 = active
         
         try:
-            with sf.SoundFile(audio_path) as f:
-                while current_time < duration:
-                    # Read chunk
-                    chunk_start_sample = int(current_time * sr)
-                    f.seek(chunk_start_sample)
-                    
-                    # Read up to chunk_samples, but not beyond file end
-                    remaining_samples = int((duration - current_time) * sr)
-                    samples_to_read = min(chunk_samples, remaining_samples)
-                    
-                    if samples_to_read <= 0:
-                        break
-                    
-                    chunk_data = f.read(samples_to_read)
-                    
-                    # Process this chunk for silence detection
-                    chunk_begin, chunk_end = self._process_chunk_for_silence(
-                        chunk_data, current_time, interval_samples, sr, prev_state
-                    )
-                    
-                    # Update transaction boundaries
-                    if chunk_begin:
-                        trans_begin.extend(chunk_begin)
-                    if chunk_end:
-                        trans_end.extend(chunk_end)
-                    
-                    # Update state for next chunk
-                    if chunk_data.size > 0:
-                        # Check if chunk ends in silence or activity
-                        last_interval_start = max(0, len(chunk_data) - interval_samples)
-                        last_interval_avg = float(np.average(chunk_data[last_interval_start:]))
-                        prev_state = 0 if last_interval_avg == 0.0 else 1
-                    
-                    current_time += chunk_duration
-                    
+            while current_time < duration:
+                # Extract 1-minute chunk
+                chunk_end_time = min(current_time + chunk_duration, duration)
+                chunk = audio_clip.subclip(current_time, chunk_end_time)
+                
+                # Get audio data for this chunk
+                chunk_data = chunk.to_soundarray()
+                
+                # Process chunk for silence detection
+                chunk_begin, chunk_end, new_state = self._process_chunk_for_silence_streaming(
+                    chunk_data, current_time, sr, prev_state
+                )
+                
+                # Update transaction boundaries
+                trans_begin.extend(chunk_begin)
+                trans_end.extend(chunk_end)
+                
+                # Update state for next chunk
+                prev_state = new_state
+                
+                # Clean up chunk to free memory
+                chunk.close()
+                
+                current_time += chunk_duration
+                
         except Exception as e:
-            print(f'❌ Error in chunked silence detection: {e}')
+            print(f'❌ Error in streaming silence detection: {e}')
             return [], []
         
         # Handle case where audio ends during active period
@@ -158,35 +150,39 @@ class AudioTransactionProcessor:
         
         return trans_begin, trans_end
     
-    def _process_chunk_for_silence(self, chunk_data: np.ndarray, chunk_start_time: float, 
-                                 interval_samples: int, sr: int, prev_state: int) -> Tuple[List[float], List[float]]:
+    def _process_chunk_for_silence_streaming(self, chunk_data: np.ndarray, chunk_start_time: float, 
+                                           sr: int, prev_state: int) -> Tuple[List[float], List[float], int]:
         """
-        Process a single chunk for silence detection
+        Process a single chunk for silence detection using streaming approach
         """
         chunk_begin = []
         chunk_end = []
         
+        interval_samples = int(self.SILENCE_INTERVAL * sr)
+        
         if len(chunk_data) < interval_samples:
-            return chunk_begin, chunk_end
+            return chunk_begin, chunk_end, prev_state
         
         index = 0
+        current_state = prev_state
+        
         while index + interval_samples < len(chunk_data):
             # Check if this interval is silent
             interval_avg = float(np.average(chunk_data[index:index + interval_samples]))
             current_time = chunk_start_time + (index / sr)
             
             if interval_avg == 0.0:  # Silent period
-                if prev_state == 1:  # Transition from active to silence
+                if current_state == 1:  # Transition from active to silence
                     chunk_end.append(current_time)
-                    prev_state = 0
+                    current_state = 0
             else:  # Active period
-                if prev_state == 0:  # Transition from silence to active
+                if current_state == 0:  # Transition from silence to active
                     chunk_begin.append(current_time)
-                    prev_state = 1
+                    current_state = 1
             
             index += interval_samples
         
-        return chunk_begin, chunk_end
+        return chunk_begin, chunk_end, current_state
     
     def _convert_timestamp_to_hhmmss(self, seconds: float, audio_path: str) -> str:
         """
@@ -276,22 +272,20 @@ class AudioTransactionProcessor:
             # Fallback naming
             return f"{location_id}_clip_{index:03d}.mp3"
     
-    def _extract_audio_segment(self, input_path: str, output_path: str, 
-                             start_time: float, end_time: float, sample_rate: int):
+    def _extract_audio_segment_streaming(self, audio_clip: AudioFileClip, output_path: str, 
+                                       start_time: float, end_time: float):
         """
-        Extract audio segment using soundfile (memory efficient)
+        Extract audio segment using AudioFileClip (streaming, memory efficient)
         """
         try:
-            # Use soundfile to extract just this segment
-            with sf.SoundFile(input_path) as f:
-                # Seek to start position
-                f.seek(int(start_time * sample_rate))
-                # Read only the frames we need
-                frames_to_read = int((end_time - start_time) * sample_rate)
-                seg_data = f.read(frames_to_read)
+            # Extract subclip using AudioFileClip (same as original video processing)
+            subclip = audio_clip.subclip(start_time, end_time)
             
-            # Write segment to file
-            sf.write(output_path, seg_data, sample_rate)
+            # Write to file
+            subclip.write_audiofile(output_path, verbose=False, logger=None)
+            
+            # Clean up subclip to free memory
+            subclip.close()
             
         except Exception as e:
             print(f'❌ Error extracting audio segment: {e}')
