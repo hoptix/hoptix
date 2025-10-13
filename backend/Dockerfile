@@ -34,7 +34,8 @@
     # Install runtime system dependencies
     RUN apt-get update && apt-get install -y \
         ffmpeg \
-        && rm -rf /var/lib/apt/lists/*
+        && rm -rf /var/lib/apt/lists/* \
+        && ffmpeg -version
     
     # Copy the Python environment from builder stage
     COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
@@ -68,6 +69,8 @@
     ENV PYTHONPATH=/app
     ENV PATH="/app/scripts:$PATH"
     ENV FLASK_ENV=production
+    ENV IMAGEMAGICK_BINARY=/usr/bin/ffmpeg
+    ENV FFMPEG_BINARY=/usr/bin/ffmpeg
 
     # Expose port
     EXPOSE 8080
