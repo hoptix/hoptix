@@ -2,19 +2,16 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import psutil
 import gc
 from datetime import datetime
 
 from services.database import Supa
-
 from services.media import get_audio_from_location_and_date
-from services.transcribe import transcribe_audio
-from services.transactions import split_into_transactions
+from services.audio import AudioTransactionProcessor
+from services.transcribe import transcribe_audio_clip
 from services.grader import grade_transactions
 from services.analytics import Analytics
 from services.clipper import clip_transactions
-from services.worker_report import generate_worker_report
 from utils.helpers import get_memory_usage, log_memory_usage
 
 db = Supa() 
@@ -43,27 +40,52 @@ def full_pipeline(location_id: str, date: str):
     else: 
         return f"No audio found for {location_name} on {date}"
         
-    # 2) Transcribe audio to text (now using proper file chunking)
-    log_memory_usage("Transcribing audio to text (chunked)", 2, TOTAL_STEPS)
+    # 2) Create audio clips and transcribe
+    log_memory_usage("Creating audio clips and transcribing", 2, TOTAL_STEPS)
     
-    # Get audio record for proper chunking
-    audio_record = db.get_audio_record(audio_id)
-    print(f"🔍 DEBUG: Retrieved audio_record: {audio_record}")
-    print(f"🔍 DEBUG: audio_record keys: {list(audio_record.keys()) if audio_record else 'None'}")
+    # Create audio clips using silence detection
+    audio_processor = AudioTransactionProcessor()
+    clip_paths, begin_times, end_times, reg_begin_times, reg_end_times = audio_processor.create_audio_subclips(
+        audio_path, location_id
+    )
     
-    transcript_segments = transcribe_audio(audio_path, db=db, audio_record=audio_record)
-    print(f"🔍 DEBUG: transcribe_audio returned {len(transcript_segments)} segments")
+    print(f"✅ Created {len([p for p in clip_paths if p])} audio clips")
+    
+    # Transcribe each audio clip
+    transcript_segments = []
+    for i, (clip_path, begin_time, end_time) in enumerate(zip(clip_paths, begin_times, end_times)):
+        if clip_path:  # Skip failed clips
+            result = transcribe_audio_clip(clip_path, begin_time, end_time, i)
+            if 'error' not in result:
+                transcript_segments.append({
+                    'start': begin_time,
+                    'end': end_time,
+                    'text': result['transcript']
+                })
+            else:
+                print(f"❌ Failed to transcribe clip {i}: {result['error']}")
+    
+    print(f"✅ Transcribed {len(transcript_segments)} audio clips")
     
     # Force garbage collection after transcription
     gc.collect()
     log_memory_usage("Transcription completed, memory cleaned", 2, TOTAL_STEPS)
 
-    #3) Split audio into transactions 
-    log_memory_usage("Splitting audio into transactions", 3, TOTAL_STEPS)
-    print(f"🔍 DEBUG: About to call split_into_transactions with {len(transcript_segments)} segments")
-    transactions = split_into_transactions(transcript_segments, run_id, date=date, audio_id=audio_id)
-    print(f"🔍 DEBUG: split_into_transactions returned {len(transactions)} transactions")
-    print(f"📝 Split {len(transactions)} transactions")
+    #3) Create transactions from transcript segments
+    log_memory_usage("Creating transactions from transcript segments", 3, TOTAL_STEPS)
+    transactions = []
+    for i, segment in enumerate(transcript_segments):
+        transaction = {
+            'run_id': run_id,
+            'audio_id': audio_id,
+            'start_time': segment['start'],
+            'end_time': segment['end'],
+            'transcript': segment['text'],
+            'created_at': datetime.now().isoformat()
+        }
+        transactions.append(transaction)
+    
+    print(f"📝 Created {len(transactions)} transactions")
 
     #4) Insert transactions into database 
     log_memory_usage(f"Inserting {len(transactions)} transactions into database", 4, TOTAL_STEPS)
