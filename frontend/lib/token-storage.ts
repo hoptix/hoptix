@@ -3,7 +3,7 @@
  * and decoding JWTs for expiry information
  */
 
-const REFRESH_TOKEN_KEY = 'hoptix_refresh_token'
+const REFRESH_TOKEN_KEY = 'intelupsell_refresh_token'
 
 /**
  * Save refresh token to sessionStorage
