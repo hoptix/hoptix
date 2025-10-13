@@ -36,7 +36,7 @@ except ImportError:
     VERBOSE_LOGGING = True
     MEMORY_MONITORING = True
     PARALLEL_CHUNKS = True  # Enable parallel processing
-    MAX_WORKERS = 10  # Number of parallel workers
+    MAX_WORKERS = 2  # Number of parallel workers
 
 def get_memory_usage():
     """Get current memory usage in MB"""
@@ -302,6 +302,9 @@ def transcribe_large_audio_file(audio_path: str, audio_record: Dict, audio_split
                 # Periodic memory cleanup
                 if len(all_segments) % CLEANUP_FREQUENCY == 0:
                     gc.collect()
+                    if MEMORY_MONITORING:
+                        current_memory = get_memory_usage()
+                        print(f"📊 Memory usage after cleanup: {current_memory:.1f} MB")
                     print(f"🔍 DEBUG: Performed garbage collection at {len(all_segments)} segments")
                     
             except Exception as e:
@@ -352,7 +355,7 @@ def transcribe_single_audio_file(audio_path: str) -> List[Dict]:
         return []
     
     # For large files, use segmentation approach to avoid memory issues
-    max_seg_s = 1200.0  # 20 minutes max per segment
+    max_seg_s = 600.0  # 10 minutes max per segment (reduced from 20 minutes)
     
     # Create segments based on duration rather than loading entire file
     if duration <= max_seg_s:
@@ -381,6 +384,11 @@ def transcribe_single_audio_file(audio_path: str) -> List[Dict]:
     segments = []
     for i, (b, e) in enumerate(final_spans, start=1):
         print(f"🎵 Processing segment {i}/{len(final_spans)}: {b:.1f}s - {e:.1f}s")
+        
+        # Monitor memory usage
+        if MEMORY_MONITORING:
+            current_memory = get_memory_usage()
+            print(f"📊 Memory usage before segment {i}: {current_memory:.1f} MB")
         
         # Extract segment using soundfile (memory efficient)
         seg_path = os.path.join(audio_dir, f"{base}_seg_{i:03d}_{int(b)}s-{int(e)}s.wav")
@@ -413,6 +421,13 @@ def transcribe_single_audio_file(audio_path: str) -> List[Dict]:
             
             # Clean up segment file immediately to save disk space
             os.remove(seg_path)
+            
+            # Force garbage collection after each segment to free memory
+            if i % CLEANUP_FREQUENCY == 0:
+                gc.collect()
+                if MEMORY_MONITORING:
+                    memory_after = get_memory_usage()
+                    print(f"📊 Memory usage after cleanup: {memory_after:.1f} MB")
             
         except Exception as asr_err:
             print(f"❌ ASR failed for segment {i}: {asr_err}")

@@ -2,7 +2,7 @@
 from supabase import create_client, Client
 from typing import Any, Optional
 from config import Settings
-
+from datetime import datetime, timedelta
 
 class Supa:
 
@@ -236,3 +236,22 @@ class Supa:
         """Get addon prices as a dict mapping item_id to price"""
         result = self.client.table("add_ons").select("item_id, price").eq("location_id", location_id).execute()
         return {str(item["item_id"]): float(item["price"]) if item.get("price") else 0.0 for item in result.data}
+
+    def get_operator_feedback_raw(self, operator_id: str) -> list[dict]:
+        """Get operator feedback from the database"""
+
+        one_month_ago = (datetime.now() - timedelta(days=30)).isoformat()
+        
+        result = self.client.table("graded_rows_filtered").select("transaction_id, feedback").eq("worker_id", operator_id).gte("begin_time", one_month_ago).limit(50).execute()
+        return result.data if result.data else []
+
+    def insert_operator_feedback(self, operator_id: str, feedback: str):
+        """Insert operator feedback into the database"""
+        self.client.table("workers").update({
+            "monthly_feedback": feedback
+        }).eq("id", operator_id).execute()
+    
+    def get_operator_monthly_feedback(self, operator_id: str, feedback: str):
+        """Get operator monthly feedback from the database"""
+        result = self.client.table("workers").select("monthly_feedback").eq("id", operator_id).execute()
+        return result.data[0]["monthly_feedback"] if result.data else None
