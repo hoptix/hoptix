@@ -55,13 +55,12 @@
     COPY --from=builder /app/utils /app/utils
     COPY --from=builder /app/scripts /app/scripts
 
-    # Ensure the scripts are executable
-    RUN chmod +x /app/scripts/*.py /app/start.sh
-    
     # Create a non-root user
     RUN useradd -m -s /bin/bash appuser && \
         chown -R appuser:appuser /app
-    
+
+    # Ensure the scripts are executable
+    RUN chmod +x /app/scripts/*.py /app/start.sh
     
     USER appuser
 

@@ -50,7 +50,7 @@ class AudioTransactionProcessor:
         
         # Detect transaction boundaries using streaming approach
         print('🔍 Detecting transaction boundaries using streaming silence detection...')
-        trans_begin, trans_end = self._detect_transaction_boundaries_streaming(audio_clip, sr)
+        trans_begin, trans_end = self._detect_transaction_boundaries_streaming(audio_clip, sr, audio_path, location_id, output_dir)
         
         print(f'✅ Found {len(trans_begin)} transactions')
         print(f'🔍 Begin times: {trans_begin}')
@@ -103,7 +103,7 @@ class AudioTransactionProcessor:
         print(f'🎉 Audio processing completed: {len([p for p in audio_clip_paths if p])} clips created')
         return audio_clip_paths, trans_begin, trans_end, trans_reg_begin, trans_reg_end
     
-    def _detect_transaction_boundaries_streaming(self, audio_clip: AudioFileClip, sr: int) -> Tuple[List[float], List[float]]:
+    def _detect_transaction_boundaries_streaming(self, audio_clip: AudioFileClip, sr: int, audio_path: str, location_id: str, output_dir: str) -> Tuple[List[float], List[float]]:
         """
         Detect transaction boundaries using AudioFileClip streaming (memory efficient)
         Uses the same approach as the original video processing
@@ -131,6 +131,11 @@ class AudioTransactionProcessor:
                 except Exception as e:
                     print(f'⚠️ Error getting audio data for chunk {current_time:.1f}s: {e}')
                     chunk.close()
+                    # If we get stdout errors, fall back to soundfile approach
+                    if "'NoneType' object has no attribute 'stdout'" in str(e):
+                        print('🔄 Detected stdout error, falling back to soundfile approach...')
+                        audio_clip.close()
+                        return self._fallback_processing(audio_path, location_id, output_dir)
                     current_time += chunk_duration
                     continue
                 
@@ -300,4 +305,145 @@ class AudioTransactionProcessor:
             
         except Exception as e:
             print(f'❌ Error extracting audio segment: {e}')
+            raise e
+    
+    def _fallback_processing(self, audio_path: str, location_id: str, output_dir: str) -> Tuple[List[str], List[float], List[float], List[str], List[str]]:
+        """
+        Fallback processing using soundfile when AudioFileClip fails
+        """
+        print('🔄 Using fallback soundfile processing...')
+        
+        try:
+            with sf.SoundFile(audio_path) as f:
+                duration = f.frames / f.samplerate
+                sr = f.samplerate
+                print(f'📊 Audio info: {duration:.1f}s duration, {sr}Hz sample rate')
+        except Exception as e:
+            print(f'❌ Failed to get audio file info: {e}')
+            return [], [], [], [], []
+        
+        print('🔍 Using simple silence detection...')
+        trans_begin, trans_end = self._simple_silence_detection(audio_path, sr, duration)
+        
+        if not trans_begin:
+            print('⚠️ No transactions detected in audio file')
+            return [], [], [], [], []
+        
+        if len(trans_begin) != len(trans_end):
+            trans_end.append(duration)
+        
+        trans_reg_begin = [self._convert_timestamp_to_hhmmss(t, audio_path) for t in trans_begin]
+        trans_reg_end = [self._convert_timestamp_to_hhmmss(t, audio_path) for t in trans_end]
+        
+        audio_clip_paths = []
+        for i, (begin_time, end_time) in enumerate(zip(trans_begin, trans_end)):
+            try:
+                clip_filename = self._generate_clip_filename(location_id, audio_path, trans_reg_begin[i], i)
+                clip_path = os.path.join(output_dir, clip_filename)
+                
+                self._extract_audio_segment_soundfile(audio_path, clip_path, begin_time, end_time, sr)
+                
+                if os.path.exists(clip_path) and os.path.getsize(clip_path) > 0:
+                    audio_clip_paths.append(clip_path)
+                    print(f'✅ Created audio clip {i+1}/{len(trans_begin)}: {clip_filename}')
+                else:
+                    print(f'❌ Failed to create audio clip {i+1}: {clip_filename}')
+                    audio_clip_paths.append("")
+                    
+            except Exception as e:
+                print(f'❌ Error creating audio clip {i+1}: {e}')
+                audio_clip_paths.append("")
+        
+        print(f'🎉 Fallback processing completed: {len([p for p in audio_clip_paths if p])} clips created')
+        return audio_clip_paths, trans_begin, trans_end, trans_reg_begin, trans_reg_end
+    
+    def _simple_silence_detection(self, audio_path: str, sr: int, duration: float) -> Tuple[List[float], List[float]]:
+        """
+        Simple silence detection using soundfile (fallback method)
+        """
+        trans_begin = []
+        trans_end = []
+        
+        chunk_duration = 300  # 5 minutes
+        current_time = 0.0
+        prev_state = 0
+        
+        try:
+            with sf.SoundFile(audio_path) as f:
+                while current_time < duration:
+                    chunk_start_sample = int(current_time * sr)
+                    f.seek(chunk_start_sample)
+                    
+                    remaining_samples = int((duration - current_time) * sr)
+                    samples_to_read = min(int(chunk_duration * sr), remaining_samples)
+                    
+                    if samples_to_read <= 0:
+                        break
+                    
+                    chunk_data = f.read(samples_to_read)
+                    
+                    chunk_begin, chunk_end, new_state = self._detect_silence_in_chunk(
+                        chunk_data, current_time, sr, prev_state
+                    )
+                    
+                    trans_begin.extend(chunk_begin)
+                    trans_end.extend(chunk_end)
+                    prev_state = new_state
+                    
+                    current_time += chunk_duration
+                    
+        except Exception as e:
+            print(f'❌ Error in simple silence detection: {e}')
+            return [], []
+        
+        return trans_begin, trans_end
+    
+    def _detect_silence_in_chunk(self, chunk_data: np.ndarray, chunk_start_time: float, 
+                               sr: int, prev_state: int) -> Tuple[List[float], List[float], int]:
+        """
+        Detect silence in a chunk of audio data
+        """
+        chunk_begin = []
+        chunk_end = []
+        
+        interval_samples = int(self.SILENCE_INTERVAL * sr)
+        
+        if len(chunk_data) < interval_samples:
+            return chunk_begin, chunk_end, prev_state
+        
+        index = 0
+        current_state = prev_state
+        
+        while index + interval_samples < len(chunk_data):
+            interval_avg = float(np.average(chunk_data[index:index + interval_samples]))
+            current_time = chunk_start_time + (index / sr)
+            
+            if interval_avg == 0.0:  # Silent period
+                if current_state == 1:  # Transition from active to silence
+                    chunk_end.append(current_time)
+                    current_state = 0
+            else:  # Active period
+                if current_state == 0:  # Transition from silence to active
+                    chunk_begin.append(current_time)
+                    current_state = 1
+            
+            index += interval_samples
+        
+        return chunk_begin, chunk_end, current_state
+    
+    def _extract_audio_segment_soundfile(self, input_path: str, output_path: str, 
+                                       start_time: float, end_time: float, sample_rate: int):
+        """
+        Extract audio segment using soundfile (fallback method)
+        """
+        try:
+            with sf.SoundFile(input_path) as f:
+                f.seek(int(start_time * sample_rate))
+                frames_to_read = int((end_time - start_time) * sample_rate)
+                seg_data = f.read(frames_to_read)
+            
+            sf.write(output_path, seg_data, sample_rate)
+            
+        except Exception as e:
+            print(f'❌ Error extracting audio segment with soundfile: {e}')
             raise e
