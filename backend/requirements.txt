@@ -16,7 +16,6 @@ supabase==2.7.4
 # OpenAI API
 openai>=1.26.0
 
-ffmpeg==6.0.2
 moviepy==1.0.3
 numpy>=1.22,<2.0
 
