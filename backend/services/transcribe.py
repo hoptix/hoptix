@@ -1,5 +1,6 @@
 from services.converter import get_duration
 from services.wav_splitter import AudioSplitter
+from services.audio_processor import transcribe_audio_file
 import os
 import numpy as np
 from typing import List, Dict, Tuple
@@ -161,10 +162,37 @@ def clip_audio_with_ffmpeg(input_path: str, output_path: str, start_time: float,
 # ---------- 1) TRANSCRIBE (using proper file chunking) ----------
 def transcribe_audio(audio_path: str, db=None, audio_record=None) -> List[Dict]:
     """
-    Transcribe audio using proper file chunking approach.
-    If the file is large, it will be split into physical chunks and processed independently.
+    Transcribe audio using hoptix-flask segmentation approach.
+    This is the proven method that successfully processed 11 parallel 1.2GB AVI files.
     """
     print(f"🎬 Starting transcription for {audio_path}")
+    print(f"🔍 DEBUG: audio_path exists: {os.path.exists(audio_path)}")
+    print(f"🔍 DEBUG: db provided: {db is not None}")
+    print(f"🔍 DEBUG: audio_record provided: {audio_record is not None}")
+    
+    initial_memory = get_memory_usage()
+    print(f"📊 Initial memory usage: {initial_memory:.1f} MB")
+    
+    # Get total duration without loading audio
+    duration = get_duration(audio_path)
+    print(f"⏱️  Audio duration: {duration:.1f} seconds ({duration/60:.1f} minutes)")
+    print(f"🔍 DEBUG: Duration check - duration > 0: {duration > 0}")
+    
+    # Use hoptix-flask approach for all files (proven to work with large files)
+    print(f"🎵 Using hoptix-flask segmentation approach...")
+    result = transcribe_audio_file(audio_path)
+    print(f"🔍 DEBUG: transcribe_audio_file returned {len(result)} segments")
+    
+    final_memory = get_memory_usage()
+    print(f"📊 Final memory usage: {final_memory:.1f} MB")
+    
+    return result
+
+def transcribe_audio_legacy(audio_path: str, db=None, audio_record=None) -> List[Dict]:
+    """
+    Legacy transcription using chunking approach (kept for fallback).
+    """
+    print(f"🎬 Starting legacy transcription for {audio_path}")
     print(f"🔍 DEBUG: audio_path exists: {os.path.exists(audio_path)}")
     print(f"🔍 DEBUG: db provided: {db is not None}")
     print(f"🔍 DEBUG: audio_record provided: {audio_record is not None}")
