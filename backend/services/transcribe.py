@@ -1,9 +1,10 @@
 from services.converter import get_duration
 from services.wav_splitter import AudioSplitter
-from services.audio_processor import transcribe_audio_file
 import os
 import numpy as np
 from typing import List, Dict, Tuple
+import contextlib
+from moviepy.editor import VideoFileClip
 import librosa
 import subprocess
 from openai import OpenAI
@@ -25,7 +26,7 @@ try:
     from config.chunked_processing import (
         CHUNK_SIZE_SECONDS, SILENCE_THRESHOLD, MIN_ACTIVE_DURATION,
         MAX_MEMORY_MB, CLEANUP_FREQUENCY, VERBOSE_LOGGING, MEMORY_MONITORING,
-        PARALLEL_CHUNKS, MAX_WORKERS
+        PARALLEL_CHUNKS, MAX_WORKERS, USE_HOPTIX_SPAN_PIPELINE
     )
 except ImportError:
     # Fallback configuration if config file doesn't exist
@@ -38,6 +39,140 @@ except ImportError:
     MEMORY_MONITORING = True
     PARALLEL_CHUNKS = True  # Enable parallel processing
     MAX_WORKERS = 1  # Number of parallel workers
+    USE_HOPTIX_SPAN_PIPELINE = False
+
+# ----- Hoptix-style helpers -----
+@contextlib.contextmanager
+def _tmp_audio_from_video(video_path: str):
+    audio_dir = "extracted_audio"
+    os.makedirs(audio_dir, exist_ok=True)
+    video_basename = os.path.splitext(os.path.basename(video_path))[0]
+    out = os.path.join(audio_dir, f"{video_basename}_full_audio.mp3")
+
+    clip = VideoFileClip(video_path)
+    if clip.audio is None:
+        clip.close()
+        raise RuntimeError("No audio track in video")
+
+    print(f"🎵 Extracting full audio to: {out}")
+    clip.audio.write_audiofile(out, verbose=False, logger=None)
+    duration = float(clip.duration or 0.0)
+    clip.close()
+
+    print(f"✅ Full audio saved: {out} (duration: {duration:.1f}s)")
+    try:
+        yield out, duration
+    finally:
+        print(f"💾 Audio file preserved: {out}")
+
+def _segment_active_spans(y: np.ndarray, sr: int, window_s: float = 15.0) -> List[tuple[float,float]]:
+    interval = int(sr * window_s)
+    idx, removed, prev_active = 0, 0, 0
+    begins, ends = [], []
+    y_list = y.tolist()
+    while idx + interval < len(y_list) and idx >= 0:
+        chunk_avg = float(np.average(y_list[idx: idx + interval]))
+        if chunk_avg == 0.0:
+            if prev_active == 1:
+                ends.append((idx + removed)/sr)
+                prev_active = 0
+            del y_list[idx: idx+interval]
+            removed += interval
+        else:
+            if prev_active == 0:
+                begins.append((idx + removed)/sr)
+                prev_active = 1
+            idx += interval
+    if len(begins) != len(ends):
+        ends.append((len(y_list)+removed)/sr)
+    return list(zip(begins, ends))
+
+def transcribe_video_hoptix(local_path: str) -> List[Dict]:
+    segs: List[Dict] = []
+    audio_dir = "extracted_audio"
+    os.makedirs(audio_dir, exist_ok=True)
+    video_basename = os.path.splitext(os.path.basename(local_path))[0]
+
+    with _tmp_audio_from_video(local_path) as (audio_path, duration):
+        y, sr = librosa.load(audio_path, sr=None)
+        spans = _segment_active_spans(y, sr, 15.0) or [(0.0, duration)]
+        print(f"🎬 Processing {len(spans)} audio segments for {video_basename}")
+
+        for i, (b, e) in enumerate(spans):
+            segment_audio = os.path.join(
+                audio_dir,
+                f"{video_basename}_segment_{i+1:03d}_{int(b)}s-{int(e)}s.mp3"
+            )
+            end_time = min(int(e+1), duration)
+            clip = VideoFileClip(local_path).subclip(int(b), end_time)
+            print(f"🎵 Saving segment {i+1}/{len(spans)}: {segment_audio}")
+            clip.audio.write_audiofile(segment_audio, verbose=False, logger=None)
+            clip.close()
+
+            with open(segment_audio, "rb") as af:
+                try:
+                    txt = client.audio.transcriptions.create(
+                        model=ASR_MODEL,
+                        file=af,
+                        response_format="text",
+                        temperature=0.001,
+                        prompt="Label each line as Operator: or Customer: where possible."
+                    )
+                    text = str(txt)
+                    print(f"✅ Segment {i+1} transcribed: {len(text)} characters")
+                except Exception as ex:
+                    print(f"❌ ASR error for segment {i+1}: {ex}")
+                    text = ""
+
+            print(f"💾 Segment audio preserved: {segment_audio}")
+            segs.append({"start": float(b), "end": float(e), "text": text})
+
+    print(f"🎉 Completed transcription: {len(segs)} segments saved")
+    return segs
+
+def transcribe_audio_hoptix_spans(audio_path: str) -> List[Dict]:
+    segs: List[Dict] = []
+    audio_dir = "extracted_audio"
+    os.makedirs(audio_dir, exist_ok=True)
+    base = os.path.splitext(os.path.basename(audio_path))[0]
+
+    y, sr = librosa.load(audio_path, sr=None, mono=True)
+    duration = len(y) / float(sr)
+    spans = _segment_active_spans(y, sr, 15.0) or [(0.0, duration)]
+    print(f"🎬 Processing {len(spans)} audio segments for {base}")
+
+    for i, (b, e) in enumerate(spans, start=1):
+        seg_path = os.path.join(audio_dir, f"{base}_segment_{i+1:03d}_{int(b)}s-{int(e)}s.wav")
+        try:
+            with sf.SoundFile(audio_path) as f:
+                f.seek(int(b * sr))
+                frames_to_read = int((e - b) * sr)
+                seg_data = f.read(frames_to_read)
+            sf.write(seg_path, seg_data, sr)
+
+            with open(seg_path, "rb") as af:
+                try:
+                    txt = client.audio.transcriptions.create(
+                        model=ASR_MODEL,
+                        file=af,
+                        response_format="text",
+                        temperature=0.001,
+                        prompt="Label each line as Operator: or Customer: where possible."
+                    )
+                    text = str(txt)
+                    print(f"✅ Segment {i}/{len(spans)} transcribed: {len(text)} characters")
+                except Exception as ex:
+                    print(f"❌ ASR error for segment {i}: {ex}")
+                    text = ""
+        finally:
+            # Preserve files to match hoptix behavior; toggle to remove if desired
+            print(f"💾 Segment audio preserved: {seg_path}")
+            # os.remove(seg_path)
+
+        segs.append({"start": float(b), "end": float(e), "text": text})
+
+    print(f"🎉 Completed transcription: {len(segs)} segments saved")
+    return segs
 
 def get_memory_usage():
     """Get current memory usage in MB"""
@@ -162,41 +297,26 @@ def clip_audio_with_ffmpeg(input_path: str, output_path: str, start_time: float,
 # ---------- 1) TRANSCRIBE (using proper file chunking) ----------
 def transcribe_audio(audio_path: str, db=None, audio_record=None) -> List[Dict]:
     """
-    Transcribe audio using hoptix-flask segmentation approach.
-    This is the proven method that successfully processed 11 parallel 1.2GB AVI files.
+    Transcribe audio using one of two approaches:
+    - Hoptix span pipeline (15s spans, per-span ASR) when USE_HOPTIX_SPAN_PIPELINE is True
+    - Existing chunk-splitting pipeline otherwise
     """
     print(f"🎬 Starting transcription for {audio_path}")
     print(f"🔍 DEBUG: audio_path exists: {os.path.exists(audio_path)}")
     print(f"🔍 DEBUG: db provided: {db is not None}")
     print(f"🔍 DEBUG: audio_record provided: {audio_record is not None}")
     
-    initial_memory = get_memory_usage()
-    print(f"📊 Initial memory usage: {initial_memory:.1f} MB")
-    
-    # Get total duration without loading audio
-    duration = get_duration(audio_path)
-    print(f"⏱️  Audio duration: {duration:.1f} seconds ({duration/60:.1f} minutes)")
-    print(f"🔍 DEBUG: Duration check - duration > 0: {duration > 0}")
-    
-    # Use hoptix-flask approach for all files (proven to work with large files)
-    print(f"🎵 Using hoptix-flask segmentation approach...")
-    result = transcribe_audio_file(audio_path)
-    print(f"🔍 DEBUG: transcribe_audio_file returned {len(result)} segments")
-    
-    final_memory = get_memory_usage()
-    print(f"📊 Final memory usage: {final_memory:.1f} MB")
-    
-    return result
+    # Hoptix-style span pipeline toggle
+    if 'USE_HOPTIX_SPAN_PIPELINE' in globals() and USE_HOPTIX_SPAN_PIPELINE:
+        ext = os.path.splitext(audio_path)[1].lower()
+        video_exts = {".mp4", ".avi", ".mkv", ".mov"}
+        if ext in video_exts:
+            print("🎯 Using Hoptix span pipeline for VIDEO")
+            return transcribe_video_hoptix(audio_path)
+        else:
+            print("🎯 Using Hoptix span pipeline for AUDIO")
+            return transcribe_audio_hoptix_spans(audio_path)
 
-def transcribe_audio_legacy(audio_path: str, db=None, audio_record=None) -> List[Dict]:
-    """
-    Legacy transcription using chunking approach (kept for fallback).
-    """
-    print(f"🎬 Starting legacy transcription for {audio_path}")
-    print(f"🔍 DEBUG: audio_path exists: {os.path.exists(audio_path)}")
-    print(f"🔍 DEBUG: db provided: {db is not None}")
-    print(f"🔍 DEBUG: audio_record provided: {audio_record is not None}")
-    
     initial_memory = get_memory_usage()
     print(f"📊 Initial memory usage: {initial_memory:.1f} MB")
     

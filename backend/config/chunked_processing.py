@@ -30,3 +30,7 @@ RETRY_DELAY = 5  # Delay between retries in seconds
 VERBOSE_LOGGING = True  # Enable detailed logging
 MEMORY_MONITORING = True  # Enable memory usage monitoring
 PROGRESS_REPORTING = True  # Enable progress reporting
+
+# Feature toggles
+# Use the hoptix-style span segmentation pipeline (15s spans, per-span ASR)
+USE_HOPTIX_SPAN_PIPELINE = True
