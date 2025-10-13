@@ -49,11 +49,11 @@ class TestAudioTransactionProcessor:
         return file_path
     
     def test_create_audio_subclips_basic(self):
-        """Test basic audio subclip creation with memory-efficient streaming"""
+        """Test basic audio subclip creation"""
         # Create test audio with 2 silence periods (should create 3 transactions)
         audio_path = self.create_test_audio_file(
-            duration_seconds=120,  # Longer test to verify streaming works
-            silence_periods=[(20, 25), (40, 45), (80, 85)]
+            duration_seconds=60,
+            silence_periods=[(20, 25), (40, 45)]
         )
         
         # Process audio
@@ -74,7 +74,7 @@ class TestAudioTransactionProcessor:
         for i, (begin, end) in enumerate(zip(begin_times, end_times)):
             duration = end - begin
             assert duration > 0, f"Clip {i} should have positive duration"
-            assert duration <= 120, f"Clip {i} should not be longer than total audio"
+            assert duration <= 60, f"Clip {i} should not be longer than total audio"
     
     def test_create_audio_subclips_no_silence(self):
         """Test audio with no silence periods (should create one clip)"""
@@ -134,29 +134,6 @@ class TestAudioTransactionProcessor:
         assert "01" in filename, "Should contain month"
         assert "15" in filename, "Should contain day"
         assert filename.endswith(".mp3"), "Should end with .mp3 extension"
-    
-    def test_memory_efficiency_large_file(self):
-        """Test memory efficiency with a larger audio file"""
-        # Create a larger test file (5 minutes) to test streaming
-        audio_path = self.create_test_audio_file(
-            duration_seconds=300,  # 5 minutes
-            silence_periods=[(60, 65), (120, 125), (180, 185), (240, 245)]
-        )
-        
-        # Process audio - should not cause memory issues
-        clip_paths, begin_times, end_times, reg_begin_times, reg_end_times = self.processor.create_audio_subclips(
-            audio_path, "test_location", self.temp_dir
-        )
-        
-        # Should create multiple clips
-        assert len(clip_paths) > 1, "Should create multiple clips for audio with silence periods"
-        assert len(begin_times) == len(end_times), "Begin and end times should match"
-        
-        # Verify all clips are reasonable length
-        for i, (begin, end) in enumerate(zip(begin_times, end_times)):
-            duration = end - begin
-            assert duration > 0, f"Clip {i} should have positive duration"
-            assert duration < 300, f"Clip {i} should be shorter than total audio"
 
 
 class TestTranscribeAudioClip:

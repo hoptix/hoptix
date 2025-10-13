@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import librosa
 import soundfile as sf
 from datetime import datetime
 from typing import List, Tuple
@@ -32,19 +31,20 @@ class AudioTransactionProcessor:
         # Create output directory
         os.makedirs(output_dir, exist_ok=True)
         
-        # Load audio file
-        print('📊 Loading audio file...')
+        # Get audio file info without loading entire file
+        print('📊 Getting audio file info...')
         try:
-            y, sr = librosa.load(audio_path, sr=None)
-            duration = len(y) / float(sr)
-            print(f'📊 Audio loaded: {duration:.1f}s duration, {sr}Hz sample rate')
+            with sf.SoundFile(audio_path) as f:
+                duration = f.frames / f.samplerate
+                sr = f.samplerate
+                print(f'📊 Audio info: {duration:.1f}s duration, {sr}Hz sample rate')
         except Exception as e:
-            print(f'❌ Failed to load audio file: {e}')
+            print(f'❌ Failed to get audio file info: {e}')
             return [], [], [], [], []
         
-        # Detect transaction boundaries using silence detection
-        print('🔍 Detecting transaction boundaries using silence detection...')
-        trans_begin, trans_end = self._detect_transaction_boundaries(y, sr)
+        # Detect transaction boundaries using chunked processing (memory efficient)
+        print('🔍 Detecting transaction boundaries using chunked silence detection...')
+        trans_begin, trans_end = self._detect_transaction_boundaries_chunked(audio_path, sr, duration)
         
         print(f'✅ Found {len(trans_begin)} transactions')
         print(f'🔍 Begin times: {trans_begin}')
@@ -94,47 +94,99 @@ class AudioTransactionProcessor:
         print(f'🎉 Audio processing completed: {len([p for p in audio_clip_paths if p])} clips created')
         return audio_clip_paths, trans_begin, trans_end, trans_reg_begin, trans_reg_end
     
-    def _detect_transaction_boundaries(self, y: np.ndarray, sr: int) -> Tuple[List[float], List[float]]:
+    def _detect_transaction_boundaries_chunked(self, audio_path: str, sr: int, duration: float) -> Tuple[List[float], List[float]]:
         """
-        Detect transaction boundaries using silence detection
-        Adapted from the original silence detection logic
+        Detect transaction boundaries using chunked silence detection (memory efficient)
+        Processes audio in small chunks instead of loading entire file
         """
         trans_begin = []
         trans_end = []
         
-        # Convert to list for processing (like original code)
-        y_copy = y.tolist().copy()
-        removed = 0
-        interval = sr * self.SILENCE_INTERVAL
-        index = 0
-        prev = 0
+        # Process in chunks to avoid memory issues
+        chunk_duration = 60  # Process 1 minute at a time
+        chunk_samples = int(chunk_duration * sr)
+        interval_samples = int(self.SILENCE_INTERVAL * sr)
         
-        print(f'🔍 Processing audio with {self.SILENCE_INTERVAL}s silence intervals')
+        print(f'🔍 Processing audio in {chunk_duration}s chunks with {self.SILENCE_INTERVAL}s silence intervals')
         
-        while index + interval < len(y_copy):
-            # Check if this interval is silent (average amplitude near zero)
-            chunk_avg = float(np.average(y_copy[index : index + interval]))
-            
-            if chunk_avg == 0.0:  # Silent period detected
-                if prev == 1:  # We were in an active period, now entering silence
-                    trans_end.append((index + removed) / sr)
-                    prev = 0
-                # Remove silent period
-                del y_copy[index : index + interval]
-                removed += interval
-            else:  # Active period detected
-                if prev == 0:  # We were in silence, now entering active period
-                    trans_begin.append((index + removed) / sr)
-                    prev = 1
-                index += interval
+        prev_state = 0  # 0 = silence, 1 = active
+        current_time = 0.0
+        
+        try:
+            with sf.SoundFile(audio_path) as f:
+                while current_time < duration:
+                    # Read chunk
+                    chunk_start_sample = int(current_time * sr)
+                    f.seek(chunk_start_sample)
+                    
+                    # Read up to chunk_samples, but not beyond file end
+                    remaining_samples = int((duration - current_time) * sr)
+                    samples_to_read = min(chunk_samples, remaining_samples)
+                    
+                    if samples_to_read <= 0:
+                        break
+                    
+                    chunk_data = f.read(samples_to_read)
+                    
+                    # Process this chunk for silence detection
+                    chunk_begin, chunk_end = self._process_chunk_for_silence(
+                        chunk_data, current_time, interval_samples, sr, prev_state
+                    )
+                    
+                    # Update transaction boundaries
+                    if chunk_begin:
+                        trans_begin.extend(chunk_begin)
+                    if chunk_end:
+                        trans_end.extend(chunk_end)
+                    
+                    # Update state for next chunk
+                    if chunk_data.size > 0:
+                        # Check if chunk ends in silence or activity
+                        last_interval_start = max(0, len(chunk_data) - interval_samples)
+                        last_interval_avg = float(np.average(chunk_data[last_interval_start:]))
+                        prev_state = 0 if last_interval_avg == 0.0 else 1
+                    
+                    current_time += chunk_duration
+                    
+        except Exception as e:
+            print(f'❌ Error in chunked silence detection: {e}')
+            return [], []
         
         # Handle case where audio ends during active period
         if len(trans_begin) != len(trans_end):
-            # Add final end time
-            final_time = (len(y_copy) + removed) / sr
-            trans_end.append(final_time)
+            trans_end.append(duration)
         
         return trans_begin, trans_end
+    
+    def _process_chunk_for_silence(self, chunk_data: np.ndarray, chunk_start_time: float, 
+                                 interval_samples: int, sr: int, prev_state: int) -> Tuple[List[float], List[float]]:
+        """
+        Process a single chunk for silence detection
+        """
+        chunk_begin = []
+        chunk_end = []
+        
+        if len(chunk_data) < interval_samples:
+            return chunk_begin, chunk_end
+        
+        index = 0
+        while index + interval_samples < len(chunk_data):
+            # Check if this interval is silent
+            interval_avg = float(np.average(chunk_data[index:index + interval_samples]))
+            current_time = chunk_start_time + (index / sr)
+            
+            if interval_avg == 0.0:  # Silent period
+                if prev_state == 1:  # Transition from active to silence
+                    chunk_end.append(current_time)
+                    prev_state = 0
+            else:  # Active period
+                if prev_state == 0:  # Transition from silence to active
+                    chunk_begin.append(current_time)
+                    prev_state = 1
+            
+            index += interval_samples
+        
+        return chunk_begin, chunk_end
     
     def _convert_timestamp_to_hhmmss(self, seconds: float, audio_path: str) -> str:
         """
