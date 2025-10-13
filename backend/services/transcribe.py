@@ -2,11 +2,13 @@ import os
 import soundfile as sf
 from typing import Dict, Any
 from openai import OpenAI
-from config import ASR_MODEL
+from config import Settings
+
+ASR_MODEL = Settings.ASR_MODEL
 
 client = OpenAI()
 
-def transcribe_audio_clip(self, audio_clip_path: str, begin_time: float, end_time: float,
+def transcribe_audio_clip(audio_clip_path: str, begin_time: float, end_time: float,
                          index: int) -> Dict[str, Any]:
         """
         Transcribe a single audio clip (from audio.py processing)
