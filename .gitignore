@@ -62,3 +62,4 @@ __pycache__/
 extracted_audio/
 *.wav
 *.mp3
+.DS_Store
