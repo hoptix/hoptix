@@ -11,7 +11,7 @@ class AudioTransactionProcessor:
     def __init__(self):
         # Audio processing constants
         self.AUDIO_SAMPLE_RATE = 44100
-        self.SILENCE_INTERVAL = 15  # seconds
+        self.SILENCE_INTERVAL = 7  # seconds - much shorter for drive-thru transactions
         self.TIMESTAMP_FORMAT = "%Y%m%d%H%M%S"
         
     def create_audio_subclips(self, audio_path: str, location_id: str, 
@@ -211,11 +211,26 @@ class AudioTransactionProcessor:
             filename = os.path.basename(audio_path)
             
             # Try to extract timestamp from filename
-            # Assuming format like: location_YYYYMMDDHHMMSS.mp3
+            # Format: audio_YYYY-MM-DD_HH-MM-SS.mp3
             if '_' in filename:
-                timestamp_part = filename.split('_')[-1].split('.')[0]
-                if len(timestamp_part) >= 14:  # YYYYMMDDHHMMSS
-                    dt = datetime.strptime(timestamp_part[:14], self.TIMESTAMP_FORMAT)
+                parts = filename.split('_')
+                if len(parts) >= 3:  # audio_YYYY-MM-DD_HH-MM-SS.mp3
+                    date_part = parts[1]  # YYYY-MM-DD
+                    time_part = parts[2].split('.')[0]  # HH-MM-SS
+                    try:
+                        # Parse date and time
+                        date_obj = datetime.strptime(date_part, "%Y-%m-%d")
+                        time_parts = time_part.split('-')
+                        if len(time_parts) == 3:
+                            hour = int(time_parts[0])
+                            minute = int(time_parts[1])
+                            second = int(time_parts[2])
+                            dt = date_obj.replace(hour=hour, minute=minute, second=second)
+                        else:
+                            dt = date_obj
+                    except:
+                        # Fallback to current time
+                        dt = datetime.now()
                 else:
                     # Fallback to current time
                     dt = datetime.now()
@@ -258,14 +273,23 @@ class AudioTransactionProcessor:
         """
         try:
             # Extract date from audio filename
+            # Format: audio_YYYY-MM-DD_HH-MM-SS.mp3
             filename = os.path.basename(audio_path)
             if '_' in filename:
-                timestamp_part = filename.split('_')[-1].split('.')[0]
-                if len(timestamp_part) >= 8:  # At least YYYYMMDD
-                    dt = datetime.strptime(timestamp_part[:8], "%Y%m%d")
-                    year = dt.year
-                    month = dt.month
-                    day = dt.day
+                parts = filename.split('_')
+                if len(parts) >= 2:  # audio_YYYY-MM-DD_HH-MM-SS.mp3
+                    date_part = parts[1]  # YYYY-MM-DD
+                    try:
+                        dt = datetime.strptime(date_part, "%Y-%m-%d")
+                        year = dt.year
+                        month = dt.month
+                        day = dt.day
+                    except:
+                        # Fallback to current date
+                        now = datetime.now()
+                        year = now.year
+                        month = now.month
+                        day = now.day
                 else:
                     # Fallback to current date
                     now = datetime.now()
