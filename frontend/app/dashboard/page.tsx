@@ -31,15 +31,15 @@ function DashboardContent() {
   }
 
   return (
-    <>
+    <div className="flex flex-col h-screen overflow-hidden">
       <SiteHeader
         title="Dashboard"
         showLocationDropdown={true}
         showDateRangePicker={true}
       />
-      <div className="flex flex-1 flex-col min-w-0 overflow-x-hidden">
-        <div className="@container/main flex flex-1 flex-col gap-2 min-w-0 overflow-x-hidden">
-          <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 min-w-0 max-w-[1920px] mx-auto w-full overflow-x-hidden">
+      <div className="flex-1 overflow-y-auto min-w-0">
+        <div className="@container/main flex flex-col gap-2 min-w-0">
+          <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 min-w-0 max-w-[1920px] mx-auto w-full">
             <SectionCards
               metrics={analyticsData?.metrics || defaultMetrics}
               trends={analyticsData?.trends}
@@ -57,7 +57,7 @@ function DashboardContent() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

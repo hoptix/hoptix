@@ -18,17 +18,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group"
 import { ChartFilters } from "./ChartFilters"
 import { useChartDataTransform } from "./useChartDataTransform"
 import type { MetricType, CategoryType, ViewMode } from "@/types/analytics"
@@ -42,25 +31,7 @@ export function ChartAreaInteractive() {
   const searchParams = useSearchParams()
   const { locationIds, startDate, endDate } = useFormattedDashboardFilters()
 
-  // Initialize state from URL params or localStorage
-  const [timeRange, setTimeRange] = React.useState(() => {
-    const urlRange = searchParams.get("range")
-    if (urlRange && ["7d", "30d", "90d"].includes(urlRange)) {
-      return urlRange
-    }
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved) {
-        try {
-          const prefs = JSON.parse(saved)
-          return prefs.timeRange || (isMobile ? "7d" : "30d")
-        } catch {
-          // Fall through to default
-        }
-      }
-    }
-    return isMobile ? "7d" : "30d"
-  })
+  // Local time range state removed - using global date filter from context
 
   const [metricType, setMetricType] = React.useState<MetricType>(() => {
     const urlMetric = searchParams.get("metric")
@@ -126,17 +97,9 @@ export function ChartAreaInteractive() {
     return "individual"
   })
 
-  // Auto-adjust time range on mobile
-  React.useEffect(() => {
-    if (isMobile && timeRange !== "7d") {
-      setTimeRange("7d")
-    }
-  }, [isMobile, timeRange])
-
-  // Persist preferences to localStorage and URL
+  // Persist preferences to localStorage and URL (excluding timeRange - using global date filter)
   React.useEffect(() => {
     const prefs = {
-      timeRange,
       metricType,
       selectedCategories: Array.from(selectedCategories),
       viewMode,
@@ -154,7 +117,6 @@ export function ChartAreaInteractive() {
       params.set("metric", metricType)
       params.set("categories", Array.from(selectedCategories).join(","))
       params.set("view", viewMode)
-      params.set("range", timeRange)
 
       const newUrl = `${pathname}?${params.toString()}`
       router.replace(newUrl, { scroll: false })
@@ -164,22 +126,13 @@ export function ChartAreaInteractive() {
         router.replace(pathname, { scroll: false })
       }
     }
-  }, [timeRange, metricType, selectedCategories, viewMode, pathname, router, searchParams, locationIds])
+  }, [metricType, selectedCategories, viewMode, pathname, router, searchParams, locationIds])
 
-  // Convert time range to days (only used if date range from context is not available)
-  const getDaysFromTimeRange = (range: string) => {
-    if (range === "7d") return 7
-    if (range === "30d") return 30
-    if (range === "90d") return 90
-    return 30
-  }
-
-  // Fetch real data using filters from context
+  // Fetch real data using global date filters from context
   const { data: chartData, isLoading } = useMultiLocationAnalyticsOverTime({
     locationIds,
     startDate: startDate || undefined,
     endDate: endDate || undefined,
-    days: (!startDate && !endDate) ? getDaysFromTimeRange(timeRange) : undefined,
     enabled: locationIds.length > 0,
   })
 
@@ -436,57 +389,13 @@ export function ChartAreaInteractive() {
   return (
     <Card className="@container/card overflow-hidden">
       <CardHeader className="relative overflow-hidden">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <CardTitle>{metricLabel} Over Time</CardTitle>
-            <CardDescription>
-              <span className="@[540px]/card:block hidden">
-                Daily {metricLabel.toLowerCase()} from upsells, upsizes, and add-ons
-              </span>
-              <span className="@[540px]/card:hidden">Daily breakdown</span>
-            </CardDescription>
-          </div>
-
-          {/* Time Range Selector */}
-          <div className="shrink-0">
-            <ToggleGroup
-              type="single"
-              value={timeRange}
-              onValueChange={(value) => value && setTimeRange(value)}
-              variant="outline"
-              className="@[767px]/card:flex hidden"
-            >
-              <ToggleGroupItem value="90d" className="h-8 px-2.5" aria-label="Last 3 months">
-                Last 3 months
-              </ToggleGroupItem>
-              <ToggleGroupItem value="30d" className="h-8 px-2.5" aria-label="Last 30 days">
-                Last 30 days
-              </ToggleGroupItem>
-              <ToggleGroupItem value="7d" className="h-8 px-2.5" aria-label="Last 7 days">
-                Last 7 days
-              </ToggleGroupItem>
-            </ToggleGroup>
-            <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger
-                className="@[767px]/card:hidden flex w-40"
-                aria-label="Select time range"
-              >
-                <SelectValue placeholder="Last 3 months" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                <SelectItem value="90d" className="rounded-lg">
-                  Last 3 months
-                </SelectItem>
-                <SelectItem value="30d" className="rounded-lg">
-                  Last 30 days
-                </SelectItem>
-                <SelectItem value="7d" className="rounded-lg">
-                  Last 7 days
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+        <CardTitle>{metricLabel} Over Time</CardTitle>
+        <CardDescription>
+          <span className="@[540px]/card:block hidden">
+            Daily {metricLabel.toLowerCase()} from upsells, upsizes, and add-ons
+          </span>
+          <span className="@[540px]/card:hidden">Daily breakdown</span>
+        </CardDescription>
       </CardHeader>
 
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6 space-y-4">
