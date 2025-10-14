@@ -45,8 +45,13 @@ def full_pipeline(location_id: str, date: str):
     
     # Create audio clips using silence detection
     audio_processor = AudioTransactionProcessor()
+
+    
+    # Extract original filename from gdrive_path for timestamp conversion
+    original_filename = os.path.basename(gdrive_path) if gdrive_path else None
+    
     clip_paths, begin_times, end_times, reg_begin_times, reg_end_times = audio_processor.create_audio_subclips(
-        audio_path, location_id
+        audio_path, location_id, "extracted_audio", original_filename
     )
     
     print(f"✅ Created {len([p for p in clip_paths if p])} audio clips")

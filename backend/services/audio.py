@@ -15,7 +15,7 @@ class AudioTransactionProcessor:
         self.TIMESTAMP_FORMAT = "%Y%m%d%H%M%S"
         
     def create_audio_subclips(self, audio_path: str, location_id: str, 
-                            output_dir: str = "extracted_audio") -> Tuple[List[str], List[float], List[float], List[str], List[str]]:
+                            output_dir: str = "extracted_audio", original_filename: str = None) -> Tuple[List[str], List[float], List[float], List[str], List[str]]:
         """
         Create audio subclips from audio file using silence detection (adapted from create_subclips)
         
@@ -46,19 +46,21 @@ class AudioTransactionProcessor:
         except Exception as e:
             print(f'❌ Failed to load audio file with AudioFileClip: {e}')
             print('🔄 Falling back to soundfile approach...')
-            return self._fallback_processing(audio_path, location_id, output_dir)
+            return self._fallback_processing(audio_path, location_id, output_dir, original_filename)
         
         # Detect transaction boundaries using streaming approach
         print('🔍 Detecting transaction boundaries using streaming silence detection...')
         trans_begin, trans_end = self._detect_transaction_boundaries_streaming(audio_clip, sr, audio_path, location_id, output_dir)
         
+        # If streaming detection failed (empty results), fall back to soundfile approach
+        if not trans_begin:
+            print('⚠️ Streaming detection failed, falling back to soundfile approach...')
+            audio_clip.close()
+            return self._fallback_processing(audio_path, location_id, output_dir, original_filename)
+        
         print(f'✅ Found {len(trans_begin)} transactions')
         print(f'🔍 Begin times: {trans_begin}')
         print(f'🔍 End times: {trans_end}')
-        
-        if not trans_begin:
-            print('⚠️ No transactions detected in audio file')
-            return [], [], [], [], []
         
         # Ensure we have matching begin/end times
         if len(trans_begin) != len(trans_end):
@@ -131,11 +133,12 @@ class AudioTransactionProcessor:
                 except Exception as e:
                     print(f'⚠️ Error getting audio data for chunk {current_time:.1f}s: {e}')
                     chunk.close()
-                    # If we get stdout errors, fall back to soundfile approach
+                    # If we get stdout errors, we can't continue with streaming approach
                     if "'NoneType' object has no attribute 'stdout'" in str(e):
-                        print('🔄 Detected stdout error, falling back to soundfile approach...')
+                        print('🔄 Detected stdout error, cannot continue with streaming approach...')
                         audio_clip.close()
-                        return self._fallback_processing(audio_path, location_id, output_dir)
+                        # Return empty results to trigger fallback in main method
+                        return [], []
                     current_time += chunk_duration
                     continue
                 
@@ -209,14 +212,17 @@ class AudioTransactionProcessor:
             # Extract timestamp from filename (assuming format like original)
             # This might need adjustment based on your actual filename format
             filename = os.path.basename(audio_path)
+            print(f'🔍 DEBUG: Converting timestamp for filename: {filename}')
             
             # Try to extract timestamp from filename
             # Format: audio_YYYY-MM-DD_HH-MM-SS.mp3
             if '_' in filename:
                 parts = filename.split('_')
+                print(f'🔍 DEBUG: Filename parts: {parts}')
                 if len(parts) >= 3:  # audio_YYYY-MM-DD_HH-MM-SS.mp3
                     date_part = parts[1]  # YYYY-MM-DD
                     time_part = parts[2].split('.')[0]  # HH-MM-SS
+                    print(f'🔍 DEBUG: Date part: {date_part}, Time part: {time_part}')
                     try:
                         # Parse date and time
                         date_obj = datetime.strptime(date_part, "%Y-%m-%d")
@@ -226,15 +232,21 @@ class AudioTransactionProcessor:
                             minute = int(time_parts[1])
                             second = int(time_parts[2])
                             dt = date_obj.replace(hour=hour, minute=minute, second=second)
+                            print(f'🔍 DEBUG: Parsed datetime: {dt}')
                         else:
                             dt = date_obj
-                    except:
+                            print(f'🔍 DEBUG: Using date only: {dt}')
+                    except Exception as e:
+                        print(f'🔍 DEBUG: Error parsing datetime: {e}')
                         # Fallback to current time
                         dt = datetime.now()
+                        print(f'🔍 DEBUG: Using current time: {dt}')
                 else:
+                    print(f'🔍 DEBUG: Not enough parts, using current time')
                     # Fallback to current time
                     dt = datetime.now()
             else:
+                print(f'🔍 DEBUG: No underscore in filename, using current time')
                 # Fallback to current time
                 dt = datetime.now()
             
@@ -331,7 +343,7 @@ class AudioTransactionProcessor:
             print(f'❌ Error extracting audio segment: {e}')
             raise e
     
-    def _fallback_processing(self, audio_path: str, location_id: str, output_dir: str) -> Tuple[List[str], List[float], List[float], List[str], List[str]]:
+    def _fallback_processing(self, audio_path: str, location_id: str, output_dir: str, original_filename: str = None) -> Tuple[List[str], List[float], List[float], List[str], List[str]]:
         """
         Fallback processing using soundfile when AudioFileClip fails
         """
@@ -356,8 +368,11 @@ class AudioTransactionProcessor:
         if len(trans_begin) != len(trans_end):
             trans_end.append(duration)
         
-        trans_reg_begin = [self._convert_timestamp_to_hhmmss(t, audio_path) for t in trans_begin]
-        trans_reg_end = [self._convert_timestamp_to_hhmmss(t, audio_path) for t in trans_end]
+        # For timestamp conversion, use original filename if available, otherwise use audio_path
+        timestamp_audio_path = original_filename if original_filename else audio_path
+        
+        trans_reg_begin = [self._convert_timestamp_to_hhmmss(t, timestamp_audio_path) for t in trans_begin]
+        trans_reg_end = [self._convert_timestamp_to_hhmmss(t, timestamp_audio_path) for t in trans_end]
         
         audio_clip_paths = []
         for i, (begin_time, end_time) in enumerate(zip(trans_begin, trans_end)):
