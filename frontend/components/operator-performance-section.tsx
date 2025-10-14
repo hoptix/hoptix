@@ -5,7 +5,7 @@ import { ChevronDown, ChevronUp, TrendingUp, TrendingDown, Users, Target, Dollar
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Slider } from "@/components/ui/slider"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { useFormattedDashboardFilters } from "@/contexts/DashboardFilterContext"
@@ -157,8 +157,68 @@ function extractTransactionIds(feedback: MonthlyFeedback | null): string[] {
 
 export function OperatorPerformanceSection({ className }: OperatorPerformanceSectionProps) {
   const [operatorCount, setOperatorCount] = React.useState(5)
+  const [inputValue, setInputValue] = React.useState("5")
+  const [pendingValue, setPendingValue] = React.useState<number | null>(null)
   const [expandedOperators, setExpandedOperators] = React.useState<Set<string>>(new Set())
   const { locationIds, startDate, endDate } = useFormattedDashboardFilters()
+
+  // Debounce the operator count update (500ms delay)
+  React.useEffect(() => {
+    if (pendingValue === null) return
+
+    const timeoutId = setTimeout(() => {
+      setOperatorCount(pendingValue)
+      setPendingValue(null)
+    }, 500)
+
+    return () => clearTimeout(timeoutId)
+  }, [pendingValue])
+
+  // Handle input change with validation
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+
+    // Allow empty string for better UX while typing
+    if (value === '') {
+      setInputValue('')
+      return
+    }
+
+    // Only allow numbers
+    if (!/^\d+$/.test(value)) {
+      return
+    }
+
+    const numValue = parseInt(value, 10)
+
+    // Update input value immediately for responsive UI
+    setInputValue(value)
+
+    // Clamp value between 1 and 10 and set pending for debounced update
+    if (numValue >= 1 && numValue <= 10) {
+      setPendingValue(numValue)
+    }
+  }
+
+  // Handle blur to ensure valid value and immediately apply changes
+  const handleInputBlur = () => {
+    // Clear any pending debounced update
+    setPendingValue(null)
+
+    if (inputValue === '' || parseInt(inputValue, 10) < 1) {
+      setInputValue('1')
+      setOperatorCount(1)
+    } else if (parseInt(inputValue, 10) > 10) {
+      setInputValue('10')
+      setOperatorCount(10)
+    } else {
+      // If there's a valid pending value, apply it immediately on blur
+      const numValue = parseInt(inputValue, 10)
+      if (numValue !== operatorCount) {
+        setOperatorCount(numValue)
+      }
+    }
+  }
 
   // Fetch top operators data
   const { data: operators, isLoading: operatorsLoading } = useTopOperators({
@@ -234,31 +294,34 @@ export function OperatorPerformanceSection({ className }: OperatorPerformanceSec
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <Label htmlFor="operator-count" className="text-sm text-muted-foreground">
+            <Label htmlFor="operator-count" className="text-sm text-muted-foreground whitespace-nowrap">
               Show top
             </Label>
-            <div className="flex items-center gap-2">
-              <Slider
-                id="operator-count"
-                min={1}
-                max={10}
-                step={1}
-                value={[operatorCount]}
-                onValueChange={(value) => setOperatorCount(value[0])}
-                className="w-20"
-              />
-              <span className="text-sm font-medium w-8 text-center">{operatorCount}</span>
-            </div>
+            <Input
+              id="operator-count"
+              type="text"
+              inputMode="numeric"
+              value={inputValue}
+              onChange={handleInputChange}
+              onBlur={handleInputBlur}
+              className="h-9 w-16 text-center font-medium text-sm"
+              placeholder="5"
+              aria-label="Number of operators to show (1-10)"
+            />
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent>
         {!operators || operators.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             No operator data available for the selected period
           </div>
         ) : (
-          operators.map((operator) => {
+          <div
+            className="max-h-[600px] overflow-y-auto space-y-4 pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-muted-foreground/40"
+            style={{ scrollbarWidth: 'thin', scrollbarColor: 'hsl(var(--muted-foreground) / 0.2) transparent' }}
+          >
+            {operators.map((operator) => {
             const isExpanded = expandedOperators.has(operator.worker_id)
             const offerRateColor = getMetricColor(operator.metrics.offer_rate, 70)
             const conversionRateColor = getMetricColor(operator.metrics.conversion_rate, 50)
@@ -394,7 +457,8 @@ export function OperatorPerformanceSection({ className }: OperatorPerformanceSec
                 </div>
               </Collapsible>
             )
-          })
+          })}
+          </div>
         )}
       </CardContent>
     </Card>

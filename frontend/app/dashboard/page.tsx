@@ -31,27 +31,25 @@ function DashboardContent() {
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
-      <SiteHeader
-        title="Dashboard"
-        showLocationDropdown={true}
-        showDateRangePicker={true}
-      />
+    <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="sticky top-0 z-10 bg-background">
+        <SiteHeader
+          title="Dashboard"
+          showLocationDropdown={true}
+          showDateRangePicker={true}
+        />
+      </div>
       <div className="flex-1 overflow-y-auto min-w-0">
-        <div className="@container/main flex flex-col gap-2 min-w-0">
+        <div className="@container/main min-w-0">
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 min-w-0 max-w-[1920px] mx-auto w-full">
             <SectionCards
               metrics={analyticsData?.metrics || defaultMetrics}
               trends={analyticsData?.trends}
               isLoading={isLoadingAnalytics}
             />
-            <div className="px-4 lg:px-6 min-w-0">
+            <div className="px-4 lg:px-6 min-w-0 flex flex-col gap-4 md:gap-6">
               <ChartAreaInteractive />
-            </div>
-            <div className="px-4 lg:px-6 min-w-0">
-              <OperatorPerformanceSection className="mb-6" />
-            </div>
-            <div className="px-4 lg:px-6 min-w-0">
+              <OperatorPerformanceSection />
               <RunsDataTable />
             </div>
           </div>
