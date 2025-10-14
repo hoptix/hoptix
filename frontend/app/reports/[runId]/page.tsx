@@ -25,11 +25,12 @@ import {
 } from "@tabler/icons-react"
 
 import { useGetRunAnalytics, useGetWorkerAnalytics, type RunAnalytics, type OperatorMetrics, type ItemAnalytics, type SizeMetrics, type DetailedAnalytics, type WorkerAnalytics } from "@/hooks/getRunAnalytics"
+import { useRunAIFeedback } from "@/hooks/useRunAIFeedback"
+import { RunAIFeedbackDisplay } from "@/components/run-ai-feedback-display"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { SidebarTrigger } from "@/components/ui/sidebar"
 
 const MetricCard = ({ 
   title, 
@@ -683,6 +684,7 @@ export default function AnalyticsReportPage() {
 
   const { data: analyticsResponse, isLoading, isError, error } = useGetRunAnalytics(runId, !selectedOperator)
   const { data: workerAnalytics, isLoading: isLoadingWorkers, isError: isErrorWorkers } = useGetWorkerAnalytics(runId, selectedOperator || undefined)
+  const { data: aiFeedbackResponse, isLoading: isLoadingAIFeedback } = useRunAIFeedback(runId, { enabled: !selectedOperator })
 
   const handleViewTransactions = () => {
     router.push(`/reports/${runId}/transactions`)
@@ -756,8 +758,6 @@ export default function AnalyticsReportPage() {
     <RequireAuth>
       <header className="flex h-16 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-16">
         <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
           <h1 className="text-base font-medium">Analytics Report</h1>
         </div>
       </header>
@@ -823,6 +823,18 @@ export default function AnalyticsReportPage() {
                   subtitle="Combined analytics from all operators"
                 />
               )}
+            </section>
+          )}
+
+          {/* AI Feedback Section - Only show when viewing overall report */}
+          {!selectedOperator && (
+            <section>
+              <RunAIFeedbackDisplay
+                feedback={aiFeedbackResponse?.data?.feedback}
+                runId={runId}
+                runDate={data.run_date}
+                isLoading={isLoadingAIFeedback}
+              />
             </section>
           )}
 

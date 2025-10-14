@@ -32,8 +32,10 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { SidebarTrigger } from "@/components/ui/sidebar"
 import { useGetLocations } from "@/hooks/getLocations"
+import { IconInfoCircle } from "@tabler/icons-react"
+import { useRangeRunsAIFeedback } from "@/hooks/useRangeRunsAIFeedback"
+import { RangeRunsAIFeedbackDisplay } from "@/components/range-runs-ai-feedback-display"
 
 const MetricCard = ({
   title,
@@ -710,6 +712,13 @@ function RangeAnalyticsReportContent() {
     true
   )
 
+  // Get AI feedback for all runs in the range
+  const { data: rangeAIFeedbackResponse, isLoading: isLoadingRangeAIFeedback } = useRangeRunsAIFeedback(
+    locationIdsParam,
+    startDate,
+    endDate
+  )
+
   const handleGoBack = () => {
     router.back()
   }
@@ -779,8 +788,6 @@ function RangeAnalyticsReportContent() {
     <RequireAuth>
       <header className="flex h-16 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-16">
         <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
           <h1 className="text-base font-medium">Range Analytics Report</h1>
         </div>
       </header>
@@ -855,6 +862,14 @@ function RangeAnalyticsReportContent() {
                 subtitle={`Combined analytics from ${data.total_transactions} transactions across the selected date range`}
               />
             )}
+          </section>
+
+          {/* AI Feedback Section */}
+          <section>
+            <RangeRunsAIFeedbackDisplay
+              rangeData={rangeAIFeedbackResponse?.data || []}
+              isLoading={isLoadingRangeAIFeedback}
+            />
           </section>
 
           {/* Worker Analytics Section */}

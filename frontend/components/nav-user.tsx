@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import {
   LogOutIcon,
   MoreVerticalIcon,
@@ -27,10 +28,22 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/contexts/authContext"
+import { useSidebarLock } from "@/contexts/SidebarLockContext"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
   const { user, logout } = useAuth()
+  const { lockSidebar, unlockSidebar } = useSidebarLock()
+  const [isOpen, setIsOpen] = useState(false)
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open)
+    if (open) {
+      lockSidebar()
+    } else {
+      unlockSidebar()
+    }
+  }
 
   if (!user) {
     return null
@@ -45,7 +58,7 @@ export function NavUser() {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
+        <DropdownMenu open={isOpen} onOpenChange={handleOpenChange}>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"

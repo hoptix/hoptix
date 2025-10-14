@@ -4,6 +4,7 @@ from services.database import Supa
 from utils.helpers import convert_item_ids_to_names
 from services.items import ItemLookupService
 from services.auth_helpers import verify_run_ownership, verify_location_ownership, get_user_locations
+from services.ai_feedback import get_ai_feedback
 from middleware.auth import require_auth
 
 db = Supa()
@@ -304,4 +305,208 @@ def get_run_transactions(run_id: str):
         return jsonify({
             'success': False,
             'error': f'Internal server error: {str(e)}'
+        }), 500
+
+
+@runs_bp.route('/runs/<run_id>/ai-feedback', methods=['GET'])
+@require_auth
+def get_run_ai_feedback(run_id: str):
+    """
+    Get AI-generated feedback summary for a specific run
+
+    This endpoint aggregates all transaction-level feedback for the run
+    and uses AI to generate a consolidated summary with:
+    - Top recurring issues with evidence
+    - Top recurring strengths with evidence
+    - Recommended actions
+    - Overall rating
+
+    Returns:
+        JSON: AI feedback summary or None if no feedback available
+    """
+    try:
+        # Verify user owns this run
+        if not verify_run_ownership(g.user_id, run_id):
+            return jsonify({
+                "success": False,
+                "error": "Access denied: You do not have permission to access this run"
+            }), 403
+
+        logger.info(f"Generating AI feedback for run {run_id}")
+
+        # Generate AI feedback for the run
+        feedback_json = get_ai_feedback(run_id=run_id)
+
+        if feedback_json is None:
+            return jsonify({
+                "success": True,
+                "data": None,
+                "message": "No feedback data available for this run"
+            }), 200
+
+        # Parse the JSON string back to dict for response
+        import json
+        feedback_dict = json.loads(feedback_json)
+
+        return jsonify({
+            "success": True,
+            "data": {
+                "run_id": run_id,
+                "feedback": feedback_dict
+            }
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error generating AI feedback for run {run_id}: {str(e)}", exc_info=True)
+        return jsonify({
+            "success": False,
+            "error": f"Internal server error: {str(e)}"
+        }), 500
+
+
+@runs_bp.route('/runs/range-ai-feedback', methods=['GET'])
+@require_auth
+def get_range_ai_feedback():
+    """
+    Get AI-generated feedback for multiple runs in a date range
+
+    Query Parameters:
+        location_ids[] (list): Location IDs to filter by
+        start_date (str): Start date in YYYY-MM-DD format
+        end_date (str): End date in YYYY-MM-DD format
+
+    Returns:
+        JSON: List of AI feedback summaries for each run in the range
+    """
+    try:
+        from datetime import datetime
+        import json
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+
+        # Get query parameters
+        location_ids = request.args.getlist('location_ids[]')
+        start_date_str = request.args.get('start_date')
+        end_date_str = request.args.get('end_date')
+
+        # Validate required parameters
+        if not location_ids or not start_date_str or not end_date_str:
+            return jsonify({
+                "success": False,
+                "error": "location_ids[], start_date, and end_date are required"
+            }), 400
+
+        # Parse dates
+        try:
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            return jsonify({
+                "success": False,
+                "error": "Invalid date format. Use YYYY-MM-DD"
+            }), 400
+
+        # Verify user owns all requested locations
+        for location_id in location_ids:
+            if not verify_location_ownership(g.user_id, location_id):
+                return jsonify({
+                    "success": False,
+                    "error": f"Access denied: You do not have permission to access location {location_id}"
+                }), 403
+
+        # Get all runs in the date range for these locations
+        runs_query = db.client.table("runs").select("id, run_date, location_id").in_(
+            "location_id", location_ids
+        ).gte("run_date", start_date.isoformat()).lte("run_date", end_date.isoformat()).order("run_date", desc=False)
+
+        runs_result = runs_query.execute()
+
+        if not runs_result.data:
+            return jsonify({
+                "success": True,
+                "data": []
+            }), 200
+
+        # Extract run IDs
+        runs = runs_result.data
+        logger.info(f"Generating AI feedback for {len(runs)} runs in date range {start_date} to {end_date}")
+
+        # Function to generate feedback for a single run
+        def generate_feedback_for_run(run):
+            run_id = run['id']
+            try:
+                feedback_json = get_ai_feedback(run_id=run_id)
+
+                if feedback_json is None:
+                    return {
+                        "run_id": run_id,
+                        "run_date": run['run_date'],
+                        "location_id": run['location_id'],
+                        "feedback": None,
+                        "has_feedback": False
+                    }
+
+                feedback_dict = json.loads(feedback_json)
+                return {
+                    "run_id": run_id,
+                    "run_date": run['run_date'],
+                    "location_id": run['location_id'],
+                    "feedback": feedback_dict,
+                    "has_feedback": True
+                }
+            except Exception as e:
+                logger.error(f"Error generating feedback for run {run_id}: {str(e)}")
+                return {
+                    "run_id": run_id,
+                    "run_date": run['run_date'],
+                    "location_id": run['location_id'],
+                    "feedback": None,
+                    "has_feedback": False,
+                    "error": str(e)
+                }
+
+        # Generate feedback in parallel for better performance
+        # Limit to 5 concurrent requests to avoid overwhelming the OpenAI API
+        results = []
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            future_to_run = {executor.submit(generate_feedback_for_run, run): run for run in runs}
+
+            for future in as_completed(future_to_run):
+                try:
+                    result = future.result()
+                    results.append(result)
+                except Exception as e:
+                    run = future_to_run[future]
+                    logger.error(f"Unexpected error for run {run['id']}: {str(e)}")
+                    results.append({
+                        "run_id": run['id'],
+                        "run_date": run['run_date'],
+                        "location_id": run['location_id'],
+                        "feedback": None,
+                        "has_feedback": False,
+                        "error": str(e)
+                    })
+
+        # Sort results by run_date
+        results.sort(key=lambda x: x['run_date'])
+
+        # Count successful feedbacks
+        successful_count = sum(1 for r in results if r['has_feedback'])
+        logger.info(f"Successfully generated feedback for {successful_count}/{len(results)} runs")
+
+        return jsonify({
+            "success": True,
+            "data": results,
+            "meta": {
+                "total_runs": len(results),
+                "runs_with_feedback": successful_count,
+                "start_date": start_date.isoformat(),
+                "end_date": end_date.isoformat()
+            }
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error in get_range_ai_feedback: {str(e)}", exc_info=True)
+        return jsonify({
+            "success": False,
+            "error": f"Internal server error: {str(e)}"
         }), 500
