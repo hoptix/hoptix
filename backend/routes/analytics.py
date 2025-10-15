@@ -47,7 +47,7 @@ def get_run_analytics(run_id, worker_id=None):
         location_name = db.get_location_name(location_id)
         org_name = db.get_org_name(location_id)
         
-        # Format the response
+        # Format the response (updated to new schema without per-category revenues)
         analytics_data = {
             "run_id": result.data["run_id"],
             "run_date": run.data["run_date"],  # Placeholder since we're not joining with runs table
@@ -64,23 +64,21 @@ def get_run_analytics(run_id, worker_id=None):
             "upsell_offers": result.data["upsell_offers"],
             "upsell_successes": result.data["upsell_successes"],
             "upsell_conversion_rate": float(result.data["upsell_conversion_rate"]),
-            "upsell_revenue": float(result.data["upsell_revenue"]),
             "upsize_opportunities": result.data["upsize_opportunities"],
             "upsize_offers": result.data["upsize_offers"],
             "upsize_successes": result.data["upsize_successes"],
             "upsize_conversion_rate": float(result.data["upsize_conversion_rate"]),
-            "upsize_revenue": float(result.data["upsize_revenue"]),
             "addon_opportunities": result.data["addon_opportunities"],
             "addon_offers": result.data["addon_offers"],
             "addon_successes": result.data["addon_successes"],
             "addon_conversion_rate": float(result.data["addon_conversion_rate"]),
-            "addon_revenue": float(result.data["addon_revenue"]),
             "total_opportunities": result.data["total_opportunities"],
             "total_offers": result.data["total_offers"],
             "total_successes": result.data["total_successes"],
             "overall_conversion_rate": float(result.data["overall_conversion_rate"]),
             "total_revenue": float(result.data["total_revenue"]),
-            "detailed_analytics": result.data["detailed_analytics"]  # Keep as JSON string
+            "detailed_revenue": result.data.get("detailed_revenue"),  # JSON string/map per schema
+            "detailed_analytics": result.data.get("detailed_analytics")  # Keep as JSON string
         }
         
         # Add worker_id if provided

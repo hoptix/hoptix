@@ -6,7 +6,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from services.analytics import Analytics
 
 
-RUN_ID = "99816083-f6bd-48cf-9b4b-2a8df27c8ec4"
+RUN_ID = "9ba8c21f-3991-4aa9-8c56-c6d8374c72d3"
 analytics = Analytics(RUN_ID)
 
 # assert analytics.get_total_upsell_opportunities() == 135
@@ -20,8 +20,7 @@ analytics = Analytics(RUN_ID)
 # assert analytics.get_total_addon_success() == 2
 
 # Test item-level analytics
-item_analytics = analytics.get_item_analytics()
+item_analytics, revenue_map = analytics.get_item_analytics()
+
 
 analytics.upload_to_db()
-# Print sample item data
-# upload_to_db()

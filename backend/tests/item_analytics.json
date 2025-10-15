@@ -1,0 +1,1695 @@
+{
+  "12": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 11,
+      "offers": 1,
+      "conversions": 1,
+      "items_count": {
+        "14": {
+          "opportunities": 11,
+          "offers": 1,
+          "conversions": 1
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 16,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "9004": {
+          "opportunities": 16,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "49": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 37,
+      "offers": 1,
+      "conversions": 0,
+      "items_count": {
+        "51": {
+          "opportunities": 37,
+          "offers": 1,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 78,
+      "offers": 2,
+      "conversions": 1,
+      "items_count": {
+        "9007": {
+          "opportunities": 78,
+          "offers": 2,
+          "conversions": 1
+        }
+      }
+    }
+  },
+  "1": {
+    "upsell": {
+      "opportunities": 25,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "6": {
+          "opportunities": 10,
+          "offers": 0,
+          "conversions": 0
+        },
+        "5": {
+          "opportunities": 14,
+          "offers": 0,
+          "conversions": 0
+        },
+        "87": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 17,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "49": {
+          "opportunities": 9,
+          "offers": 0,
+          "conversions": 0
+        },
+        "3": {
+          "opportunities": 8,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 37,
+      "offers": 2,
+      "conversions": 0,
+      "items_count": {
+        "9001": {
+          "opportunities": 28,
+          "offers": 0,
+          "conversions": 0
+        },
+        "9009": {
+          "opportunities": 2,
+          "offers": 0,
+          "conversions": 0
+        },
+        "9002": {
+          "opportunities": 3,
+          "offers": 1,
+          "conversions": 0
+        },
+        "9003": {
+          "opportunities": 2,
+          "offers": 0,
+          "conversions": 0
+        },
+        "9007": {
+          "opportunities": 2,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "7": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 17,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "8": {
+          "opportunities": 17,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "5": {
+    "upsell": {
+      "opportunities": 3,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "1": {
+          "opportunities": 3,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "66": {
+    "upsell": {
+      "opportunities": 7,
+      "offers": 1,
+      "conversions": 1,
+      "items_count": {
+        "7": {
+          "opportunities": 2,
+          "offers": 0,
+          "conversions": 0
+        },
+        "55": {
+          "opportunities": 3,
+          "offers": 0,
+          "conversions": 0
+        },
+        "66": {
+          "opportunities": 1,
+          "offers": 1,
+          "conversions": 1
+        },
+        "6": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "98": {
+    "upsell": {
+      "opportunities": 16,
+      "offers": 13,
+      "conversions": 12,
+      "items_count": {
+        "7": {
+          "opportunities": 6,
+          "offers": 6,
+          "conversions": 6
+        },
+        "9008": {
+          "opportunities": 6,
+          "offers": 4,
+          "conversions": 4
+        },
+        "6": {
+          "opportunities": 4,
+          "offers": 3,
+          "conversions": 2
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 3,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "56": {
+          "opportunities": 2,
+          "offers": 0,
+          "conversions": 0
+        },
+        "8": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "55": {
+    "upsell": {
+      "opportunities": 6,
+      "offers": 1,
+      "conversions": 0,
+      "items_count": {
+        "9008": {
+          "opportunities": 6,
+          "offers": 1,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 25,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "56": {
+          "opportunities": 25,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "6": {
+    "upsell": {
+      "opportunities": 2,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "1": {
+          "opportunities": 2,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 6,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "8": {
+          "opportunities": 6,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "52": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 13,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "9007": {
+          "opportunities": 13,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "50": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 3,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "51": {
+          "opportunities": 3,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 41,
+      "offers": 2,
+      "conversions": 0,
+      "items_count": {
+        "9007": {
+          "opportunities": 41,
+          "offers": 2,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "9": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 12,
+      "offers": 1,
+      "conversions": 1,
+      "items_count": {
+        "11": {
+          "opportunities": 12,
+          "offers": 1,
+          "conversions": 1
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 21,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "9003": {
+          "opportunities": 21,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "105": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 1,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "106": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "99": {
+    "upsell": {
+      "opportunities": 7,
+      "offers": 6,
+      "conversions": 5,
+      "items_count": {
+        "6": {
+          "opportunities": 1,
+          "offers": 1,
+          "conversions": 1
+        },
+        "9008": {
+          "opportunities": 3,
+          "offers": 2,
+          "conversions": 1
+        },
+        "7": {
+          "opportunities": 3,
+          "offers": 3,
+          "conversions": 3
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 2,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "56": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        },
+        "8": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "51": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 10,
+      "offers": 1,
+      "conversions": 1,
+      "items_count": {
+        "9007": {
+          "opportunities": 10,
+          "offers": 1,
+          "conversions": 1
+        }
+      }
+    }
+  },
+  "95": {
+    "upsell": {
+      "opportunities": 2,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "55": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        },
+        "7": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "1016": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 2,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "61": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        },
+        "8": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "10": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 4,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "9003": {
+          "opportunities": 4,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "13": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 1,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "14": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 5,
+      "offers": 1,
+      "conversions": 0,
+      "items_count": {
+        "9004": {
+          "opportunities": 4,
+          "offers": 0,
+          "conversions": 0
+        },
+        "9003": {
+          "opportunities": 1,
+          "offers": 1,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "8": {
+    "upsell": {
+      "opportunities": 3,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "1": {
+          "opportunities": 3,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "24": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 2,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "9005": {
+          "opportunities": 2,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "85": {
+    "upsell": {
+      "opportunities": 2,
+      "offers": 2,
+      "conversions": 0,
+      "items_count": {
+        "55": {
+          "opportunities": 1,
+          "offers": 1,
+          "conversions": 0
+        },
+        "7": {
+          "opportunities": 1,
+          "offers": 1,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "4": {
+    "upsell": {
+      "opportunities": 1,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "5": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 2,
+      "offers": 1,
+      "conversions": 0,
+      "items_count": {
+        "3": {
+          "opportunities": 2,
+          "offers": 1,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 2,
+      "offers": 1,
+      "conversions": 1,
+      "items_count": {
+        "9001": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        },
+        "9002": {
+          "opportunities": 1,
+          "offers": 1,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "22": {
+    "upsell": {
+      "opportunities": 1,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "1": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 4,
+      "offers": 1,
+      "conversions": 0,
+      "items_count": {
+        "24": {
+          "opportunities": 4,
+          "offers": 1,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 7,
+      "offers": 1,
+      "conversions": 0,
+      "items_count": {
+        "9005": {
+          "opportunities": 6,
+          "offers": 0,
+          "conversions": 0
+        },
+        "9001": {
+          "opportunities": 1,
+          "offers": 1,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "63": {
+    "upsell": {
+      "opportunities": 4,
+      "offers": 1,
+      "conversions": 1,
+      "items_count": {
+        "55": {
+          "opportunities": 2,
+          "offers": 0,
+          "conversions": 0
+        },
+        "6": {
+          "opportunities": 2,
+          "offers": 1,
+          "conversions": 1
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "1012": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 2,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "56": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        },
+        "8": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "14": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 2,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "9004": {
+          "opportunities": 2,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "88": {
+    "upsell": {
+      "opportunities": 10,
+      "offers": 4,
+      "conversions": 1,
+      "items_count": {
+        "55": {
+          "opportunities": 6,
+          "offers": 2,
+          "conversions": 1
+        },
+        "6": {
+          "opportunities": 4,
+          "offers": 2,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "69": {
+    "upsell": {
+      "opportunities": 2,
+      "offers": 2,
+      "conversions": 0,
+      "items_count": {
+        "55": {
+          "opportunities": 1,
+          "offers": 1,
+          "conversions": 0
+        },
+        "7": {
+          "opportunities": 1,
+          "offers": 1,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "23": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 1,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "24": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 6,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "9005": {
+          "opportunities": 6,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "103": {
+    "upsell": {
+      "opportunities": 1,
+      "offers": 1,
+      "conversions": 1,
+      "items_count": {
+        "7": {
+          "opportunities": 1,
+          "offers": 1,
+          "conversions": 1
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 1,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "56": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "26": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 1,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "27": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 1,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "9007": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "79": {
+    "upsell": {
+      "opportunities": 10,
+      "offers": 2,
+      "conversions": 0,
+      "items_count": {
+        "55": {
+          "opportunities": 4,
+          "offers": 1,
+          "conversions": 0
+        },
+        "6": {
+          "opportunities": 3,
+          "offers": 0,
+          "conversions": 0
+        },
+        "7": {
+          "opportunities": 1,
+          "offers": 1,
+          "conversions": 0
+        },
+        "1016": {
+          "opportunities": 2,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "19": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 5,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "9003": {
+          "opportunities": 5,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "60": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 4,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "61": {
+          "opportunities": 4,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "1017": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 2,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "56": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        },
+        "8": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "1023": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 2,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "59": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        },
+        "8": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "87": {
+    "upsell": {
+      "opportunities": 12,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "55": {
+          "opportunities": 6,
+          "offers": 0,
+          "conversions": 0
+        },
+        "7": {
+          "opportunities": 5,
+          "offers": 0,
+          "conversions": 0
+        },
+        "6": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "1015": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 2,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "59": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        },
+        "8": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "1019": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 2,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "56": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        },
+        "8": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "56": {
+    "upsell": {
+      "opportunities": 2,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "9008": {
+          "opportunities": 2,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "31": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 1,
+      "offers": 1,
+      "conversions": 0,
+      "items_count": {
+        "33": {
+          "opportunities": 1,
+          "offers": 1,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "77": {
+    "upsell": {
+      "opportunities": 2,
+      "offers": 2,
+      "conversions": 0,
+      "items_count": {
+        "55": {
+          "opportunities": 1,
+          "offers": 1,
+          "conversions": 0
+        },
+        "7": {
+          "opportunities": 1,
+          "offers": 1,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "1018": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 2,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "56": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        },
+        "8": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "28": {
+    "upsell": {
+      "opportunities": 1,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "1": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 2,
+      "offers": 1,
+      "conversions": 0,
+      "items_count": {
+        "30": {
+          "opportunities": 2,
+          "offers": 1,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 1,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "9009": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "30": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 1,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "9009": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "58": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 1,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "59": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "18": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 2,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "9003": {
+          "opportunities": 2,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "2": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 1,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "9007": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    }
+  },
+  "102": {
+    "upsell": {
+      "opportunities": 1,
+      "offers": 1,
+      "conversions": 1,
+      "items_count": {
+        "7": {
+          "opportunities": 1,
+          "offers": 1,
+          "conversions": 0
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "1009": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 2,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "56": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        },
+        "8": {
+          "opportunities": 1,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "67": {
+    "upsell": {
+      "opportunities": 2,
+      "offers": 2,
+      "conversions": 2,
+      "items_count": {
+        "55": {
+          "opportunities": 1,
+          "offers": 1,
+          "conversions": 1
+        },
+        "7": {
+          "opportunities": 1,
+          "offers": 1,
+          "conversions": 1
+        }
+      }
+    },
+    "upsize": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  },
+  "47": {
+    "upsell": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    },
+    "upsize": {
+      "opportunities": 2,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {
+        "48": {
+          "opportunities": 2,
+          "offers": 0,
+          "conversions": 0
+        }
+      }
+    },
+    "addon": {
+      "opportunities": 0,
+      "offers": 0,
+      "conversions": 0,
+      "items_count": {}
+    }
+  }
+}

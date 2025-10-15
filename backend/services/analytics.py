@@ -1,6 +1,7 @@
 from services.database import Supa
 from datetime import datetime, timedelta
 import json
+import time
 
 db = Supa()
 
@@ -11,6 +12,8 @@ class Analytics:
         self.run_id = run_id
         self.worker_id = worker_id
         self.location_id = db.get_location_from_run(self.run_id)
+        self.item_performance = {}  # New structure for detailed item analytics
+        self.revenue_map = {} 
 
     def get_total_transactions(self):
         if self.worker_id:
@@ -108,224 +111,259 @@ class Analytics:
 
     def get_item_analytics(self):
         """Get item-level analytics with size tracking"""
-        items = db.get_items(self.location_id)
-        item_analytics = {}
+        print("🔍 DEBUG: Starting get_item_analytics...")
+        start_time = time.time()
         
-        # Initialize item structure
-        for item in items:
-            item_analytics[item["item_id"]] = {
-                "name": item["item_name"],
-                "sizes": {},
-                "transitions": {"1_to_2": 0, "1_to_3": 0, "2_to_3": 0}
-            }
+        # Check if we already have data to avoid reprocessing
+        if hasattr(self, 'item_performance') and self.item_performance and hasattr(self, 'revenue_map') and self.revenue_map:
+            print("🔍 DEBUG: Item analytics already processed, returning cached data")
+            return self.item_performance, self.revenue_map
+        
+        # Reset performance tracking
+        self.item_performance = {}
+        self.revenue_map = {}
         
         # Get transaction data
+        print("🔍 DEBUG: Getting transaction data from database...")
+        tx_start = time.time()
         if self.worker_id:
             transactions = db.view("graded_rows_filtered").select("*").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
         else:
             transactions = db.view("graded_rows_filtered").select("*").eq("run_id", self.run_id).execute()
+        print(f"🔍 DEBUG: Got {len(transactions.data)} transactions in {time.time() - tx_start:.2f}s")
         
-        for tx in transactions.data:
-            self._count_transaction_metrics(tx, item_analytics)
-        
-        return item_analytics
-    
-    def _count_transaction_metrics(self, tx, item_analytics):
-        """Count metrics for a single transaction"""
-        # Parse JSON arrays from transaction
-        upsell_main_items = self._parse_json_array(tx.get("upsell_main_items", "0"))
-        upsell_addon_items = self._parse_json_array(tx.get("upsell_addon_items", "0"))
-        upsell_offered_main = self._parse_json_array(tx.get("upsell_offered_main", "0"))
-        upsell_offered_addon = self._parse_json_array(tx.get("upsell_offered_addon", "0"))
-        upsell_success_main = self._parse_json_array(tx.get("upsell_success_main", "0"))
-        upsell_success_addon = self._parse_json_array(tx.get("upsell_success_addon", "0"))
-        
-        upsize_items = self._parse_json_array(tx.get("upsize_items", "0"))
-        upsize_offered = self._parse_json_array(tx.get("upsize_offered", "0"))
-        upsize_success = self._parse_json_array(tx.get("upsize_success", "0"))
-        # Debug: print("Upsize base", upsize_base, "Upsize offered", upsize_offered, "upsize candidates", upsize_candidates, "Upsize success", upsize_success)
-        
-        addon_main_items = self._parse_json_array(tx.get("addon_main_items", "0"))
-        addon_topping_items = self._parse_json_array(tx.get("addon_topping_items", "0"))
-        addon_offered_main = self._parse_json_array(tx.get("addon_offered_main", "0"))
-        addon_offered_topping = self._parse_json_array(tx.get("addon_offered_topping", "0"))
-        addon_success_main = self._parse_json_array(tx.get("addon_success_main", "0"))
-        addon_success_topping = self._parse_json_array(tx.get("addon_success_topping", "0"))
-        
-        # Count each metric type
-        self._count_items(upsell_main_items, item_analytics, "upsell_main")
-        self._count_items(upsell_addon_items, item_analytics, "upsell_addon")
-        self._count_items(upsell_offered_main, item_analytics, "upsell_offered_main")
-        self._count_items(upsell_offered_addon, item_analytics, "upsell_offered_addon")
-        self._count_items(upsell_success_main, item_analytics, "upsell_success_main")
-        self._count_items(upsell_success_addon, item_analytics, "upsell_success_addon")
-        self._count_items(upsize_offered, item_analytics, "upsize_offered")
-        self._count_items(upsize_items, item_analytics, "upsize_items")
-        self._count_items(upsize_success, item_analytics, "upsize_success")
-        self._count_items(addon_offered_main, item_analytics, "addon_offered_main")
-        self._count_items(addon_offered_topping, item_analytics, "addon_offered_topping")
-        self._count_items(addon_success_main, item_analytics, "addon_success_main")
-        self._count_items(addon_success_topping, item_analytics, "addon_success_topping")
-        self._count_items(addon_main_items, item_analytics, "addon_main")
-        self._count_items(addon_topping_items, item_analytics, "addon_topping")
-        self._count_items(addon_offered_main, item_analytics, "addon_offered_main")
-        self._count_items(addon_offered_topping, item_analytics, "addon_offered_topping")
-        self._count_items(addon_success_main, item_analytics, "addon_success_main")
-        self._count_items(addon_success_topping, item_analytics, "addon_success_topping")
-        # Track size transitions
-        self._track_transitions(upsize_items, upsize_success, item_analytics)
-    
-    def _parse_json_array(self, json_str):
-        """Parse JSON array string to list"""
-        if json_str == "0" or not json_str:
-            return []
-        try:
-            return json.loads(json_str) if isinstance(json_str, str) else json_str
-        except:
-            return []
-    
-    def _count_items(self, items, item_analytics, metric_type):
-        """Count items for a specific metric type"""
-        for item in items:
-            item_id = int(item.split("_")[0])  # Keep size as string
-            # Debug: print(f"Processing item {item} -> item_id: {item_id}, size: {size}, metric_type: {metric_type}")
-            if item_id in item_analytics:
-                item_analytics[item_id] = {
-                        "upsell_main": 0, "upsell_addon": 0, "upsell_offered_main": 0, "upsell_offered_addon": 0, "upsell_success_main": 0, "upsell_success_addon": 0,
-                        "upsize_items": 0, "upsize_offered": 0, "upsize_success": 0,
-                        "addon_main": 0, "addon_topping": 0, "addon_offered_main": 0, "addon_offered_topping": 0, "addon_success_main": 0, "addon_success_topping": 0
-                    }
-                item_analytics[item_id][metric_type] += 1
-                # Debug: print(f"Incremented {metric_type} for item {item_id}, size {size}. New count: {item_analytics[item_id]['sizes'][size][metric_type]}")
-            # else:
-                # Debug: print(f"Item ID {item_id} not found in item_analytics")
-    
-    def _track_transitions(self, upsize_base_items, upsize_success_items, item_analytics):
-        """Track size transitions for successful upsizes"""
-        for success_item in upsize_success_items:
-            success_item_id, success_size = success_item.split("_")
-            success_item_id = int(success_item_id)  # Convert to int for lookup
-            
-            # Find the corresponding base item for this success item
-            for base_item in upsize_base_items:
-                base_item_id, base_size = base_item.split("_")
-                base_item_id = int(base_item_id)  # Convert to int for lookup
-                
-                # If same item but different size, this is our transition
-                if base_item_id == success_item_id and base_size != success_size:
-                    if success_item_id in item_analytics:
-                        transition_key = f"{base_size}_to_{success_size}"
-                        if transition_key in item_analytics[success_item_id]["transitions"]:
-                            item_analytics[success_item_id]["transitions"][transition_key] += 1
-                    break
-
-    def _calculate_upsell_revenue(self):
-        """Calculate revenue from successful upsells - just sum the prices of success items"""
-        if self.worker_id:
-            result = db.view("graded_rows_filtered").select("upsell_success_items").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
-        else:
-            result = db.view("graded_rows_filtered").select("upsell_success_items").eq("run_id", self.run_id).execute()
-
-        # Get price data from items and meals tables
-        items_prices = db.get_items_prices(self.location_id)
-        meals_prices = db.get_meals_prices(self.location_id)
-
-        total_revenue = 0
-        print(f"🔍 DEBUG: Calculating upsell revenue for {len(result.data)} transactions")
-        print(f"🔍 DEBUG: Items prices: {len(items_prices)} items, Meals prices: {len(meals_prices)} meals")
-        
-        for tx in result.data:
-            success_items = self._parse_json_array(tx.get("upsell_success_items", "0"))
-            print(f"🔍 DEBUG: Transaction has {len(success_items)} success items")
-
-            # Calculate revenue as sum of prices of successfully upsold items
-            for success_item in success_items:
-                # Check both meals and items for price
-                success_price = meals_prices.get(success_item, items_prices.get(success_item, 0))
-                print(f"🔍 DEBUG: Success item {success_item} has price {success_price}")
-                total_revenue += success_price
-
-        print(f"🔍 DEBUG: Total upsell revenue: {total_revenue}")
-        return total_revenue
-
-    def _calculate_upsize_revenue(self):
-        """Calculate revenue from successful upsizes using size price differences"""
-        if self.worker_id:
-            result = db.view("graded_rows_filtered").select("upsize_success_items, upsize_base_sold_items").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
-        else:
-            result = db.view("graded_rows_filtered").select("upsize_success_items, upsize_base_sold_items").eq("run_id", self.run_id).execute()
-
-        # Get price data
-        items_prices = db.get_items_prices(self.location_id)
-        meals_prices = db.get_meals_prices(self.location_id)
-
-        total_revenue = 0
-        print(f"🔍 DEBUG: Calculating upsize revenue for {len(result.data)} transactions")
-        
-        for tx in result.data:
-            success_items = self._parse_json_array(tx.get("upsize_success_items", "0"))
-            base_sold_items = self._parse_json_array(tx.get("upsize_base_sold_items", "0"))
-            
-            print(f"🔍 DEBUG: Upsize transaction has {len(success_items)} success items, {len(base_sold_items)} base items")
-
-            # Calculate revenue as price difference between larger size and smaller size
-            for success_item in success_items:
-                # Check both meals and items for price
-                success_price = meals_prices.get(success_item, items_prices.get(success_item, 0))
-                print(f"🔍 DEBUG: Upsize success item {success_item} has price {success_price}")
-
-                # Find corresponding base item - same item_id, different size
-                success_item_id = success_item.split("_")[0]
-                for base_item in base_sold_items:
-                    base_item_id = base_item.split("_")[0]
-                    if base_item_id == success_item_id:
-                        base_price = meals_prices.get(base_item, items_prices.get(base_item, 0))
-                        revenue_diff = success_price - base_price
-                        print(f"🔍 DEBUG: Upsize base item {base_item} has price {base_price}, revenue diff: {revenue_diff}")
-                        total_revenue += revenue_diff
-                        break
-
-        print(f"🔍 DEBUG: Total upsize revenue: {total_revenue}")
-        return total_revenue
-
-    def _calculate_addon_revenue(self):
-        """Calculate revenue from successful add-ons - just sum the prices of success items"""
-        if self.worker_id:
-            result = db.view("graded_rows_filtered").select("addon_success_items").eq("run_id", self.run_id).eq("worker_id", self.worker_id).execute()
-        else:
-            result = db.view("graded_rows_filtered").select("addon_success_items").eq("run_id", self.run_id).execute()
-
-        # Get price data from items, meals, and add_ons tables
+        # Get price data once for all transactions
+        print("🔍 DEBUG: Getting price data once for all transactions...")
+        price_start = time.time()
         items_prices = db.get_items_prices(self.location_id)
         meals_prices = db.get_meals_prices(self.location_id)
         addons_prices = db.get_addons_prices(self.location_id)
-
-        total_revenue = 0
-        print(f"🔍 DEBUG: Calculating addon revenue for {len(result.data)} transactions")
-        print(f"🔍 DEBUG: Items prices: {len(items_prices)} items, Meals prices: {len(meals_prices)} meals, Addons prices: {len(addons_prices)} addons")
+        print(f"🔍 DEBUG: Got price data in {time.time() - price_start:.2f}s (items: {len(items_prices)}, meals: {len(meals_prices)}, addons: {len(addons_prices)})")
         
-        for tx in result.data:
-            success_items = self._parse_json_array(tx.get("addon_success_items", "0"))
-            print(f"🔍 DEBUG: Addon transaction has {len(success_items)} success items")
+        print("🔍 DEBUG: Processing transactions...")
+        process_start = time.time()
+        for i, tx in enumerate(transactions.data):
+            if i % 10 == 0:  # Log every 10 transactions
+                print(f"🔍 DEBUG: Processing transaction {i+1}/{len(transactions.data)}")
+            self._count_transaction_metrics(tx, items_prices, meals_prices, addons_prices)
+        print(f"🔍 DEBUG: Processed all transactions in {time.time() - process_start:.2f}s")
+        
+        total_time = time.time() - start_time
+        print(f"🔍 DEBUG: get_item_analytics completed in {total_time:.2f}s")
+        return self.item_performance, self.revenue_map
+        
+    
+    def _count_transaction_metrics(self, tx, items_prices, meals_prices, addons_prices):
+        """Count metrics for a single transaction using new relationship map format"""
+        # Parse the new relationship maps
+        upsell_opportunities = self._parse_json_map(tx.get("upsell_opportunities", "0"))
+        upsell_offers = self._parse_json_map(tx.get("upsell_offers", "0"))
+        upsell_successes = self._parse_json_map(tx.get("upsell_successes", "0"))
+        
+        upsize_opportunities = self._parse_json_map(tx.get("upsize_opportunities", "0"))
+        upsize_offers = self._parse_json_map(tx.get("upsize_offers", "0"))
+        upsize_successes = self._parse_json_map(tx.get("upsize_successes", "0"))
+        
+        addon_opportunities = self._parse_json_map(tx.get("addon_opportunities", "0"))
+        addon_offers = self._parse_json_map(tx.get("addon_offers", "0"))
+        addon_successes = self._parse_json_map(tx.get("addon_successes", "0"))
+        
+        # Process each category using the generic method
+        self._process_category_metrics(upsell_opportunities, upsell_offers, upsell_successes, "upsell", items_prices, meals_prices, addons_prices)
+        self._process_category_metrics(upsize_opportunities, upsize_offers, upsize_successes, "upsize", items_prices, meals_prices, addons_prices)
+        self._process_category_metrics(addon_opportunities, addon_offers, addon_successes, "addon", items_prices, meals_prices, addons_prices)
+        
 
-            # Calculate revenue as sum of prices of successfully added items
-            for success_item in success_items:
-                # Check meals, items, and addons for price
-                success_price = meals_prices.get(success_item, items_prices.get(success_item, addons_prices.get(success_item, 0)))
-                print(f"🔍 DEBUG: Addon success item {success_item} has price {success_price}")
-                if success_price == 0:
-                    print(f"🔍 DEBUG: WARNING - {success_item} not found in any price table!")
-                    print(f"🔍 DEBUG: Available in meals: {success_item in meals_prices}")
-                    print(f"🔍 DEBUG: Available in items: {success_item in items_prices}")
-                    print(f"🔍 DEBUG: Available in addons: {success_item in addons_prices}")
-                total_revenue += success_price
-
-        print(f"🔍 DEBUG: Total addon revenue: {total_revenue}")
-        return total_revenue
+    def _parse_json_map(self, json_str):
+        """Parse JSON map string to dictionary"""
+        if json_str == "0" or not json_str:
+            return {}
+        try:
+            return json.loads(json_str) if isinstance(json_str, str) else json_str
+        except:
+            return {}
+    
+    def _process_category_metrics(self, opportunities, offers, successes, category, items_prices, meals_prices, addons_prices):
+        """Generic method to process metrics for any category (upsell/upsize/addon)"""
+        
+        # Process opportunities
+        for main_item_id, target_items in opportunities.items():
+            if main_item_id not in self.item_performance:
+                self.item_performance[main_item_id] = {
+                    "upsell": {"opportunities": 0, "offers": 0, "conversions": 0, "items_count": {}},
+                    "upsize": {"opportunities": 0, "offers": 0, "conversions": 0, "items_count": {}},
+                    "addon": {"opportunities": 0, "offers": 0, "conversions": 0, "items_count": {}}
+                }
+            
+            # Count opportunities
+            self.item_performance[main_item_id][category]["opportunities"] += len(target_items)
+            
+            # Count individual target items
+            for target_item in target_items:
+                if target_item not in self.item_performance[main_item_id][category]["items_count"]:
+                    self.item_performance[main_item_id][category]["items_count"][target_item] = {
+                        "opportunities": 0, "offers": 0, "conversions": 0
+                    }
+                self.item_performance[main_item_id][category]["items_count"][target_item]["opportunities"] += 1
+        
+        # Process offers
+        for main_item_id, target_items in offers.items():
+            if main_item_id in self.item_performance:
+                self.item_performance[main_item_id][category]["offers"] += len(target_items)
+                for target_item in target_items:
+                    if target_item in self.item_performance[main_item_id][category]["items_count"]:
+                        self.item_performance[main_item_id][category]["items_count"][target_item]["offers"] += 1
+        
+        # Process successes and calculate revenue
+        for main_item_id, target_items in successes.items():
+            if main_item_id in self.item_performance:
+                self.item_performance[main_item_id][category]["conversions"] += len(target_items)
+                for target_item in target_items:
+                    if target_item in self.item_performance[main_item_id][category]["items_count"]:
+                        self.item_performance[main_item_id][category]["items_count"][target_item]["conversions"] += 1
+                        
+                        # Calculate revenue for this success
+                        revenue = self._calculate_item_revenue(
+                            main_item_id, target_item, category, 
+                            items_prices, meals_prices, addons_prices
+                        )
+                        
+                        # Add to revenue map
+                        if target_item not in self.revenue_map:
+                            self.revenue_map[target_item] = 0
+                        self.revenue_map[target_item] += revenue
+    
+    def _calculate_item_revenue(self, main_item_id, target_item, category, items_prices, meals_prices, addons_prices):
+        """Calculate revenue generated by a specific item conversion"""
+        if category == "upsell":
+            # For upsell, revenue is the full price of the target item
+            return meals_prices.get(target_item, items_prices.get(target_item, addons_prices.get(target_item, 0)))
+        
+        elif category == "upsize":
+            # For upsize, revenue is the price difference between target and original
+            target_price = meals_prices.get(target_item, items_prices.get(target_item, 0))
+            original_price = meals_prices.get(main_item_id, items_prices.get(main_item_id, 0))
+            return max(0, target_price - original_price)
+        
+        elif category == "addon":
+            # For addon, revenue is the full price of the topping/addon
+            return addons_prices.get(target_item, items_prices.get(target_item, meals_prices.get(target_item, 0)))
+        
+        return 0
+    
+    def get_revenue_by_item(self):
+        """Get total revenue generated by each item"""
+        return self.revenue_map
+    
+    def get_top_revenue_items(self, limit=10):
+        """Get the top revenue-generating items"""
+        sorted_items = sorted(self.revenue_map.items(), key=lambda x: x[1], reverse=True)
+        return sorted_items[:limit]
+    
+    def get_total_revenue(self):
+        """Get total revenue across all items"""
+        return sum(self.revenue_map.values())
+    
+    def get_item_performance_summary(self):
+        """Get summary of item performance across all categories"""
+        return self.item_performance
+    
+    def get_best_performing_combinations(self, category="upsell", min_offers=1):
+        """Get the best performing item combinations for a specific category"""
+        best_combinations = []
+        
+        for main_item, data in self.item_performance.items():
+            if category in data:
+                for target_item, counts in data[category]["items_count"].items():
+                    if counts["offers"] >= min_offers:
+                        conversion_rate = counts["conversions"] / counts["offers"]
+                        best_combinations.append({
+                            "main_item": main_item,
+                            "target_item": target_item,
+                            "conversion_rate": round(conversion_rate, 4),
+                            "total_conversions": counts["conversions"],
+                            "total_offers": counts["offers"],
+                            "total_opportunities": counts["opportunities"]
+                        })
+        
+        # Sort by conversion rate, then by total conversions
+        best_combinations.sort(key=lambda x: (x["conversion_rate"], x["total_conversions"]), reverse=True)
+        return best_combinations
+    
+    def get_item_total_performance(self, item_id):
+        """Get total performance across all categories for a specific item"""
+        if item_id not in self.item_performance:
+            return None
+        
+        data = self.item_performance[item_id]
+        return {
+            "item_id": item_id,
+            "total_opportunities": (
+                data["upsell"]["opportunities"] + 
+                data["upsize"]["opportunities"] + 
+                data["addon"]["opportunities"]
+            ),
+            "total_offers": (
+                data["upsell"]["offers"] + 
+                data["upsize"]["offers"] + 
+                data["addon"]["offers"]
+            ),
+            "total_conversions": (
+                data["upsell"]["conversions"] + 
+                data["upsize"]["conversions"] + 
+                data["addon"]["conversions"]
+            ),
+            "upsell_rate": data["upsell"]["conversions"] / max(data["upsell"]["offers"], 1),
+            "upsize_rate": data["upsize"]["conversions"] / max(data["upsize"]["offers"], 1),
+            "addon_rate": data["addon"]["conversions"] / max(data["addon"]["offers"], 1),
+            "overall_rate": (
+                data["upsell"]["conversions"] + data["upsize"]["conversions"] + data["addon"]["conversions"]
+            ) / max(
+                data["upsell"]["offers"] + data["upsize"]["offers"] + data["addon"]["offers"], 1
+            )
+        }
+    
+    def get_underperforming_items(self, min_opportunities=5, max_conversion_rate=0.3):
+        """Find items with many opportunities but low conversion rates"""
+        underperforming = []
+        
+        for item_id, data in self.item_performance.items():
+            total_opportunities = (
+                data["upsell"]["opportunities"] + 
+                data["upsize"]["opportunities"] + 
+                data["addon"]["opportunities"]
+            )
+            total_conversions = (
+                data["upsell"]["conversions"] + 
+                data["upsize"]["conversions"] + 
+                data["addon"]["conversions"]
+            )
+            
+            if total_opportunities >= min_opportunities:
+                conversion_rate = total_conversions / total_opportunities
+                if conversion_rate <= max_conversion_rate:
+                    underperforming.append({
+                        "item_id": item_id,
+                        "total_opportunities": total_opportunities,
+                        "total_conversions": total_conversions,
+                        "conversion_rate": round(conversion_rate, 4),
+                        "upsell_opps": data["upsell"]["opportunities"],
+                        "upsize_opps": data["upsize"]["opportunities"],
+                        "addon_opps": data["addon"]["opportunities"]
+                    })
+        
+        # Sort by conversion rate (lowest first)
+        underperforming.sort(key=lambda x: x["conversion_rate"])
+        return underperforming
 
     def generate_analytics_json(self):
         """Generate complete analytics JSON that fits the database schema"""
+        print("🔍 DEBUG: Starting generate_analytics_json...")
+        start_time = time.time()
+        
         # Calculate all metrics
+        print("🔍 DEBUG: Getting basic metrics...")
+        basic_start = time.time()
         total_transactions = self.get_total_transactions()
         complete_transactions = self.get_complete_transactions()
         completion_rate = self.get_completion_rate() if total_transactions > 0 else 0
@@ -333,37 +371,52 @@ class Analytics:
         avg_items_initial = self.avg_items_initial_order()
         avg_items_final = self.avg_items_after_order()
         avg_item_increase = avg_items_final - avg_items_initial
+        print(f"🔍 DEBUG: Got basic metrics in {time.time() - basic_start:.2f}s")
         
-        # Upsell metrics
-        upsell_opportunities = self.get_total_upsell_opportunities()
-        upsell_offers = self.get_total_upsell_offers()
-        upsell_successes = self.get_total_upsell_success()
+        # Get detailed item analytics first (this populates item_performance and revenue_map)
+        print("🔍 DEBUG: Getting detailed item analytics...")
+        item_start = time.time()
+        item_analytics = self.get_item_analytics()
+        print(f"🔍 DEBUG: Got item analytics in {time.time() - item_start:.2f}s")
+        
+        # Calculate metrics from the new structure
+        print("🔍 DEBUG: Calculating metrics from new structure...")
+        calc_start = time.time()
+        
+        # Initialize totals
+        upsell_opportunities = upsell_offers = upsell_successes = 0
+        upsize_opportunities = upsize_offers = upsize_successes = 0
+        addon_opportunities = addon_offers = addon_successes = 0
+        
+        # Sum up from item_performance
+        for item_id, data in self.item_performance.items():
+            upsell_opportunities += data["upsell"]["opportunities"]
+            upsell_offers += data["upsell"]["offers"]
+            upsell_successes += data["upsell"]["conversions"]
+            
+            upsize_opportunities += data["upsize"]["opportunities"]
+            upsize_offers += data["upsize"]["offers"]
+            upsize_successes += data["upsize"]["conversions"]
+            
+            addon_opportunities += data["addon"]["opportunities"]
+            addon_offers += data["addon"]["offers"]
+            addon_successes += data["addon"]["conversions"]
+        
+        # Calculate conversion rates
         upsell_conversion_rate = upsell_successes / upsell_offers if upsell_offers > 0 else 0
-        upsell_revenue = self._calculate_upsell_revenue()
-
-        # Upsize metrics
-        upsize_opportunities = self.get_total_upsize_opportunities()
-        upsize_offers = self.get_total_upsize_offers()
-        upsize_successes = self.get_total_upsize_success()
         upsize_conversion_rate = upsize_successes / upsize_offers if upsize_offers > 0 else 0
-        upsize_revenue = self._calculate_upsize_revenue()
-
-        # Addon metrics
-        addon_opportunities = self.get_total_addon_opportunities()
-        addon_offers = self.get_total_addon_offers()
-        addon_successes = self.get_total_addon_success()
         addon_conversion_rate = addon_successes / addon_offers if addon_offers > 0 else 0
-        addon_revenue = self._calculate_addon_revenue()
+        
+        # Get revenue from revenue_map
+        total_revenue = self.get_total_revenue()
         
         # Overall metrics
         total_opportunities = upsell_opportunities + upsize_opportunities + addon_opportunities
         total_offers = upsell_offers + upsize_offers + addon_offers
         total_successes = upsell_successes + upsize_successes + addon_successes
         overall_conversion_rate = total_successes / total_offers if total_offers > 0 else 0
-        total_revenue = upsell_revenue + upsize_revenue + addon_revenue
         
-        # Get detailed item analytics
-        item_analytics = self.get_item_analytics()
+        print(f"🔍 DEBUG: Calculated metrics in {time.time() - calc_start:.2f}s")
         
         # Create the analytics JSON structure
         analytics_data = {
@@ -378,22 +431,20 @@ class Analytics:
             "upsell_offers": upsell_offers,
             "upsell_successes": upsell_successes,
             "upsell_conversion_rate": round(upsell_conversion_rate, 4),
-            "upsell_revenue": upsell_revenue,
             "upsize_opportunities": upsize_opportunities,
             "upsize_offers": upsize_offers,
             "upsize_successes": upsize_successes,
             "upsize_conversion_rate": round(upsize_conversion_rate, 4),
-            "upsize_revenue": upsize_revenue,
             "addon_opportunities": addon_opportunities,
             "addon_offers": addon_offers,
             "addon_successes": addon_successes,
             "addon_conversion_rate": round(addon_conversion_rate, 4),
-            "addon_revenue": addon_revenue,
             "total_opportunities": total_opportunities,
             "total_offers": total_offers,
             "total_successes": total_successes,
             "overall_conversion_rate": round(overall_conversion_rate, 4),
             "total_revenue": total_revenue,
+            "detailed_revenue": json.dumps(self.revenue_map),
             "detailed_analytics": json.dumps(item_analytics)
         }
         

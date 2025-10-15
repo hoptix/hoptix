@@ -227,49 +227,32 @@ class Supa:
 
     def get_items_prices(self, location_id: str):
         """Get item prices as a dict mapping item_id_size to price"""
-        result = self.client.table("items").select("item_id, size_ids, price").eq("location_id", location_id).execute()
-        prices = {}
-        print(f"🔍 DEBUG: get_items_prices for location {location_id}: {len(result.data)} items found")
+        result = self.client.table("items").select("item_id, price").eq("location_id", location_id).execute()
+        prices = {} 
         for item in result.data:
-            if item.get("size_ids"):
-                for size_id in item["size_ids"]:
-                    key = f"{item['item_id']}_{size_id}"
-                    price = float(item["price"]) if item.get("price") else 0.0
-                    prices[key] = price
-                    print(f"🔍 DEBUG: Item {key} has price {price}")
-            else:
-                print(f"🔍 DEBUG: Item {item['item_id']} has no size_ids")
-        print(f"🔍 DEBUG: Total items prices: {len(prices)}")
+            item_id = str(item["item_id"])
+            price = float(item["price"]) if item.get("price") else 0.0
+            prices[item_id] = price
         return prices
 
     def get_meals_prices(self, location_id: str):
         """Get meal prices as a dict mapping item_id_size to price"""
-        result = self.client.table("meals").select("item_id, size_ids, price").eq("location_id", location_id).execute()
-        prices = {}
-        print(f"🔍 DEBUG: get_meals_prices for location {location_id}: {len(result.data)} meals found")
+        result = self.client.table("meals").select("item_id, price").eq("location_id", location_id).execute()
+        prices = {} 
         for meal in result.data:
-            if meal.get("size_ids"):
-                for size_id in meal["size_ids"]:
-                    key = f"{meal['item_id']}_{size_id}"
-                    price = float(meal["price"]) if meal.get("price") else 0.0
-                    prices[key] = price
-                    print(f"🔍 DEBUG: Meal {key} has price {price}")
-            else:
-                print(f"🔍 DEBUG: Meal {meal['item_id']} has no size_ids")
-        print(f"🔍 DEBUG: Total meals prices: {len(prices)}")
+            meal_id = str(meal["item_id"])
+            price = float(meal["price"]) if meal.get("price") else 0.0
+            prices[meal_id] = price
         return prices
 
     def get_addons_prices(self, location_id: str):
         """Get addon prices as a dict mapping item_id to price"""
         result = self.client.table("add_ons").select("item_id, price").eq("location_id", location_id).execute()
-        prices = {}
-        print(f"🔍 DEBUG: get_addons_prices for location {location_id}: {len(result.data)} addons found")
-        for item in result.data:
-            item_id = str(item["item_id"])
-            price = float(item["price"]) if item.get("price") else 0.0
-            prices[item_id] = price
-            print(f"🔍 DEBUG: Addon {item_id} has price {price}")
-        print(f"🔍 DEBUG: Total addon prices: {len(prices)}")
+        prices = {} 
+        for addon in result.data:
+            addon_id = str(addon["item_id"])
+            price = float(addon["price"]) if addon.get("price") else 0.0
+            prices[addon_id] = price
         return prices
 
     def get_operator_feedback_raw(self, operator_id: str, run_id: str = None, days: int = 30, limit: int = 50) -> list[dict]:
