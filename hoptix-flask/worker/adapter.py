@@ -670,15 +670,15 @@ def grade_transactions(transactions: List[Dict], db=None, location_id: str = Non
         # Derive simple booleans + score (kept for backward compatibility)
         upsell_possible = _ii(parsed.get("3", 0)) > 0
         upsell_offered  = _ii(parsed.get("6", 0)) > 0  # Field 6 is num_upsell_offers
-        upsize_possible = _ii(parsed.get("11", 0)) > 0  # Field 11 is num_upsize_opportunities
-        upsize_offered  = _ii(parsed.get("14", 0)) > 0  # Field 14 is num_upsize_offers
+        upsize_possible = _ii(parsed.get("14", 0)) > 0  # Field 14 is num_upsize_opportunities
+        upsize_offered  = _ii(parsed.get("16", 0)) > 0  # Field 16 is num_upsize_offers
 
         # score: if present, else a light heuristic
         score = parsed.get("score", None)
         if score is None:
             try:
-                total_ops = _ii(parsed.get("3",0)) + _ii(parsed.get("11",0))
-                total_off = _ii(parsed.get("6",0)) + _ii(parsed.get("14",0))
+                total_ops = _ii(parsed.get("3",0)) + _ii(parsed.get("14",0))
+                total_off = _ii(parsed.get("6",0)) + _ii(parsed.get("16",0))
                 score = float(total_off) / float(total_ops) if total_ops > 0 else 0.0
             except Exception:
                 score = 0.0
