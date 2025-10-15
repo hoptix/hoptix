@@ -48,7 +48,7 @@ function SidebarContent({ children }: { children: React.ReactNode }) {
       >
         <AppSidebar variant="sidebar" />
       </div>
-      <SidebarInset className="overflow-x-hidden">
+      <SidebarInset>
         {children}
       </SidebarInset>
     </SidebarProvider>
