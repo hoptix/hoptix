@@ -20,13 +20,11 @@ def _get_menu_data_from_db(db, location_id: str) -> tuple[list, list, list, list
     try:
         # Get items for this location
         items_result = db.client.table("items").select(
-            "item_id, item_name, ordered_cnt, size_ids, upsell, upsize, addon"
-        ).eq("location_id", location_id).execute()
+            "*" ).eq("location_id", location_id).execute()
         
         # Get meals for this location
         meals_result = db.client.table("meals").select(
-            "item_id, item_name, ordered_cnt, inclusions, upsell, upsize, addon, size_ids"
-        ).eq("location_id", location_id).execute()
+            "*").eq("location_id", location_id).execute()
         
         # Get add-ons for this location
         addons_result = db.client.table("add_ons").select(
@@ -39,7 +37,7 @@ def _get_menu_data_from_db(db, location_id: str) -> tuple[list, list, list, list
             items.append({
                 "Item": item["item_name"],
                 "Item ID": item["item_id"],
-                "Size IDs": item["size_ids"],
+                "Size IDs": item["size"],
                 "Ordered Items Count": item["ordered_cnt"] or 1,
                 "Upselling Chance": item["upsell"] or "0",
                 "Upsizing Chance": item["upsize"] or "0",
@@ -51,7 +49,6 @@ def _get_menu_data_from_db(db, location_id: str) -> tuple[list, list, list, list
             meals.append({
                 "Item": meal["item_name"],
                 "Item ID": meal["item_id"],
-                "Size IDs": meal["size_ids"],
                 "Ordered Items Count": meal["ordered_cnt"] or 1,
                 "Inclusions": meal["inclusions"] or "",
                 "Upselling Chance": meal["upsell"] or "0",
@@ -63,8 +60,7 @@ def _get_menu_data_from_db(db, location_id: str) -> tuple[list, list, list, list
         for addon in addons_result.data:
             addons.append({
                 "Item": addon["item_name"],
-                "Item ID": addon["item_id"],
-                "Size IDs": addon["size_ids"]
+                "Item ID": addon["item_id"]
             })
         
         # For now, keep upselling and upsizing as static (can be moved to DB later if needed)
@@ -174,13 +170,13 @@ CRITICAL FORMATTING RULE - ITEM ID USAGE:
 
 **NEVER use item names. ALWAYS use the [Item ID]_[Size ID] format for ALL items.**
 
-When indicating items, meals, add-ons, and any menu items, you MUST format them using ONLY the Item ID and Size ID numbers: [Item ID]_[Size ID]
+When indicating items, meals, add-ons, and any menu items, you MUST format them using ONLY the Item ID number: [Item ID]
 
 **Examples:**
-- Medium Misty Freeze (Item ID 16, Size ID 2) → Write as: 16_2
-- Small Sundae (Item ID 1, Size ID 1) → Write as: 1_1  
-- Pretzel Sticks (Item ID 4, Size ID 0) → Write as: 4_0
-- Large Blizzard (Item ID 22, Size ID 3) → Write as: 22_3
+- Medium Misty Freeze (Item ID 16) → Write as: 16
+- Small Sundae (Item ID 1) → Write as: 1  
+- Pretzel Sticks (Item ID 4) → Write as: 4
+- Large Blizzard (Item ID 22) → Write as: 22
 
 **This applies to ALL item references including:**
 - Initial items ordered (Field 1)
@@ -200,25 +196,19 @@ When indicating items, meals, add-ons, and any menu items, you MUST format them 
 - Any descriptive item names
 
 **ALWAYS write:**
-- 16_2
-- 1_1
-- 4_0  
-- 22_3
-- Only the numeric Item ID and Size ID
-
-**Size ID Reference:**
-- 0 = No size/Default size
-- 1 = Small/Kid's
-- 2 = Medium/Regular  
-- 3 = Large
+- 16
+- 1
+- 4  
+- 22
+- Only the numeric Item ID
 
 **This is a HARD RULE that must be followed without exception. Any deviation from this format is incorrect.**
 
 **For JSON/JSONB fields:** Use the same format within JSON arrays or objects:
-- Correct: ["16_2", "1_1", "4_0"]
+- Correct: ["16", "1", "4"]
 - Incorrect: ["Medium Misty Freeze", "Small Sundae", "Pretzel Sticks"]
 
-**Reference the items.json file to find the correct Item ID and Size IDs for each menu item.**
+**Reference the items.json file to find the correct Item ID given the corresponding size and name for each menu item.**
 
 1. Meals and items initially ordered by customer as a jsonb. Make sure this is a jsonb with no other text than the items ordered. Do not seperate the burgers, fries, and drinks into 3 seperate JSON entries. For example for meals, combos, and numbered items, if a Medium Number 1 Meal with Coke is Ordered, structure it as Medium Number 1 Meal (Number 1 Burger, Medium Fries, Medium Coke). If there are no items ordered, put a 0. Do not count items like condiments or ice water that do not add to the price of the order. Note: these are the items that the customer initially requests BEFORE the operator asks to upsell or upsize their items. The list items that are actually ordered AFTER the operator's upselling, upsizing, and additional toppings offers go into entry 31.
 2. Number of Items Ordered. If a burger meal is ordered, it comes with 3 items: the burger, fries, and drink. Make sure that this is a number. Format this as an integer.
