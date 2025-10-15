@@ -117,7 +117,6 @@ def _grade_transaction(tx: Dict, location_id: str, step2_prompt: str, testing: b
 # ---------- 3) GRADE (Step‑2 prompt per transaction, return ALL columns) ----------
 def map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) -> Dict[str,Any]:
     """Map numbered Step-2 keys (UPDATED) to `public.grades` columns with candidates + offered + converted."""
-    # Parse JSON/JSONB-like fields
     print(f"Step2 object: {step2_obj}")
     print(f"Tx meta: {tx_meta}")
 
@@ -133,47 +132,49 @@ def map_step2_to_grade_cols(step2_obj: Dict[str,Any], tx_meta: Dict[str,Any]) ->
         "items_initial":         step2_obj.get("1", "0"),
         "num_items_initial":     ii(step2_obj.get("2", 0)),
 
-        # ---- Upsell (candidates → offered → converted) ----
+        # ---- Upsell (opportunities → offered → converted) ----
         "num_upsell_opportunities": ii(step2_obj.get("3", 0)),
-        "upsell_base_items":        parse_json_field(step2_obj.get("4_base", "0")),
-        "upsell_candidate_items":   parse_json_field(step2_obj.get("4", "0")),
-        "num_upsell_offers":        ii(step2_obj.get("5", 0)),
-        "upsell_offered_items":     parse_json_field(step2_obj.get("6", "0")),
-        "num_upsell_base_offered":  ii(step2_obj.get("6_num_base_offered", 0)),
-        "upsell_success_items":     parse_json_field(step2_obj.get("7", "0")),
-        "upsell_base_sold_items":   parse_json_field(step2_obj.get("8_base_sold", "0")),
-        "num_upsell_success":       ii(step2_obj.get("9", 0)),
-        "num_largest_offers":       ii(step2_obj.get("10", 0)),
+        "upsell_main_items":        parse_json_field(step2_obj.get("4", "0")),
+        "upsell_addon_items":       parse_json_field(step2_obj.get("5", "0")),
+        "num_upsell_offers":        ii(step2_obj.get("6", 0)),
+        "upsell_offered_main":      parse_json_field(step2_obj.get("7", "0")),
+        "num_upsell_offered_main":  ii(step2_obj.get("6", 0)),
+        "num_upsell_offered_addon": ii(step2_obj.get("8", 0)),
+        "upsell_offered_addon":     parse_json_field(step2_obj.get("9", "0")),
+        "num_upsell_success":       ii(step2_obj.get("10", 0)),
+        "upsell_success_main":      parse_json_field(step2_obj.get("11", "0")),
+        "num_upsell_success_addon": ii(step2_obj.get("12", 0)),
+        "upsell_success_addon":     parse_json_field(step2_obj.get("13", "0")),
 
-        # ---- Upsize (candidates → offered → converted) ----
-        "num_upsize_opportunities": ii(step2_obj.get("11", 0)),
-        "upsize_base_items":        parse_json_field(step2_obj.get("11_base", "0")),
-        "upsize_candidate_items":   parse_json_field(step2_obj.get("12", "0")),
-        "num_upsize_offers":        ii(step2_obj.get("14", 0)),
-        "upsize_offered_items":     parse_json_field(step2_obj.get("14_base", "0")),
-        "num_upsize_base_offered":  ii(step2_obj.get("14_num_base_offered", 0)),
-        "upsize_success_items":     parse_json_field(step2_obj.get("16", "0")),
-        "upsize_base_sold_items":   parse_json_field(step2_obj.get("16_base_sold", "0")),
-        "num_upsize_success":       ii(step2_obj.get("15", 0)),
+        # ---- Upsize (opportunities → offered → converted) ----
+        "num_upsize_opportunities": ii(step2_obj.get("14", 0)),
+        "upsize_items":             parse_json_field(step2_obj.get("15", "0")),
+        "num_upsize_offers":        ii(step2_obj.get("16", 0)),
+        "upsize_offered":           parse_json_field(step2_obj.get("17", "0")),
+        "num_upsize_offered":       ii(step2_obj.get("16", 0)),
+        "num_upsize_success":       ii(step2_obj.get("18", 0)),
+        "upsize_success":           parse_json_field(step2_obj.get("19", "0")),
 
-        # ---- Add-on (candidates → offered → converted) ----
-        "num_addon_opportunities":  ii(step2_obj.get("18", 0)),
-        "addon_base_items":         parse_json_field(step2_obj.get("18_base", "0")),
-        "addon_candidate_items":    parse_json_field(step2_obj.get("19", "0")),
-        "num_addon_offers":         ii(step2_obj.get("21", 0)),
-        "addon_offered_items":      parse_json_field(step2_obj.get("21_base", "0")),
-        "num_addon_base_offered":   ii(step2_obj.get("21_num_base_offered", 0)),
-        "addon_success_items":      parse_json_field(step2_obj.get("23", "0")),
-        "addon_base_sold_items":    parse_json_field(step2_obj.get("23_base_sold", "0")),
-        "num_addon_success":        ii(step2_obj.get("22", 0)),
+        # ---- Add-on (opportunities → offered → converted) ----
+        "num_addon_opportunities":  ii(step2_obj.get("20", 0)),
+        "addon_main_items":         parse_json_field(step2_obj.get("21", "0")),
+        "addon_topping_items":      parse_json_field(step2_obj.get("22", "0")),
+        "num_addon_offered_main":   ii(step2_obj.get("23", 0)),
+        "addon_offered_main":       parse_json_field(step2_obj.get("24", "0")),
+        "num_addon_offered_topping": ii(step2_obj.get("25", 0)),
+        "addon_offered_topping":    parse_json_field(step2_obj.get("26", "0")),
+        "num_addon_success_main":   ii(step2_obj.get("27", 0)),
+        "addon_success_main":       parse_json_field(step2_obj.get("28", "0")),
+        "num_addon_success_topping": ii(step2_obj.get("29", 0)),
+        "addon_success_topping":    parse_json_field(step2_obj.get("30", "0")),
 
         # AFTER items
-        "items_after":              step2_obj.get("25", "0"),
-        "num_items_after":          ii(step2_obj.get("26", 0)),
+        "items_after":              step2_obj.get("31", "0"),
+        "num_items_after":          ii(step2_obj.get("32", 0)),
 
         # Text feedback
-        "feedback":                 step2_obj.get("27", ""),
-        "issues":                   step2_obj.get("28", ""),
+        "feedback":                 step2_obj.get("33", ""),
+        "issues":                   step2_obj.get("34", ""),
 
         # Optional extras
         "reasoning_summary":        step2_obj.get("reasoning_summary", "")
