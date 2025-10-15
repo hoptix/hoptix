@@ -8,10 +8,11 @@ from datetime import datetime
 from services.database import Supa
 from services.media import get_audio_from_location_and_date
 from services.audio import AudioTransactionProcessor
-from services.transcribe import transcribe_audio_clip
+from services.transcribe import transcribe_segments
 from services.grader import grade_transactions
 from services.analytics import Analytics
 from services.clipper import clip_transactions
+from services.transactions import format_transactions
 from utils.helpers import get_memory_usage, log_memory_usage
 
 db = Supa() 
@@ -45,26 +46,23 @@ def full_pipeline(location_id: str, date: str):
     
     # Create audio clips using silence detection
     audio_processor = AudioTransactionProcessor()
+
+
+    # Extract original filename from gdrive_path for timestamp conversion
+    # gdrive_path is a URL, so we need to construct the filename from location_id and date
+    original_filename = f"audio_{date}_10-00-02.mp3" if gdrive_path else None
+    print(f'🔍 DEBUG: gdrive_path: {gdrive_path}')
+    print(f'🔍 DEBUG: original_filename: {original_filename}')
+    
     clip_paths, begin_times, end_times, reg_begin_times, reg_end_times = audio_processor.create_audio_subclips(
-        audio_path, location_id
+        audio_path, location_id, "extracted_audio", original_filename
     )
     
     print(f"✅ Created {len([p for p in clip_paths if p])} audio clips")
     
-    # Transcribe each audio clip
-    transcript_segments = []
-    for i, (clip_path, begin_time, end_time) in enumerate(zip(clip_paths, begin_times, end_times)):
-        if clip_path:  # Skip failed clips
-            result = transcribe_audio_clip(clip_path, begin_time, end_time, i)
-            if 'error' not in result:
-                transcript_segments.append({
-                    'start': begin_time,
-                    'end': end_time,
-                    'text': result['transcript']
-                })
-            else:
-                print(f"❌ Failed to transcribe clip {i}: {result['error']}")
-    
+    transcript_segments = transcribe_segments(clip_paths, begin_times, end_times)
+
+
     print(f"✅ Transcribed {len(transcript_segments)} audio clips")
     
     # Force garbage collection after transcription
@@ -73,18 +71,7 @@ def full_pipeline(location_id: str, date: str):
 
     #3) Create transactions from transcript segments
     log_memory_usage("Creating transactions from transcript segments", 3, TOTAL_STEPS)
-    transactions = []
-    for i, segment in enumerate(transcript_segments):
-        transaction = {
-            'run_id': run_id,
-            'audio_id': audio_id,
-            'start_time': segment['start'],
-            'end_time': segment['end'],
-            'transcript': segment['text'],
-            'created_at': datetime.now().isoformat()
-        }
-        transactions.append(transaction)
-    
+    transactions = format_transactions(transcript_segments, run_id, audio_id)
     print(f"📝 Created {len(transactions)} transactions")
 
     #4) Insert transactions into database 

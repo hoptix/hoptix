@@ -133,42 +133,47 @@ class Analytics:
     def _count_transaction_metrics(self, tx, item_analytics):
         """Count metrics for a single transaction"""
         # Parse JSON arrays from transaction
-        upsell_base = self._parse_json_array(tx.get("upsell_base_items", "0"))
-        upsell_candidates = self._parse_json_array(tx.get("upsell_candidate_items", "0"))
-        upsell_offered = self._parse_json_array(tx.get("upsell_offered_items", "0"))
-        upsell_success = self._parse_json_array(tx.get("upsell_success_items", "0"))
-        upsell_base_sold = self._parse_json_array(tx.get("upsell_base_sold_items", "0"))
+        upsell_main_items = self._parse_json_array(tx.get("upsell_main_items", "0"))
+        upsell_addon_items = self._parse_json_array(tx.get("upsell_addon_items", "0"))
+        upsell_offered_main = self._parse_json_array(tx.get("upsell_offered_main", "0"))
+        upsell_offered_addon = self._parse_json_array(tx.get("upsell_offered_addon", "0"))
+        upsell_success_main = self._parse_json_array(tx.get("upsell_success_main", "0"))
+        upsell_success_addon = self._parse_json_array(tx.get("upsell_success_addon", "0"))
         
-        upsize_base = self._parse_json_array(tx.get("upsize_base_items", "0"))
-        upsize_candidates = self._parse_json_array(tx.get("upsize_candidate_items", "0"))
-        upsize_offered = self._parse_json_array(tx.get("upsize_offered_items", "0"))
-        upsize_success = self._parse_json_array(tx.get("upsize_success_items", "0"))
-        upsize_base_sold = self._parse_json_array(tx.get("upsize_base_sold_items", "0"))
+        upsize_items = self._parse_json_array(tx.get("upsize_items", "0"))
+        upsize_offered = self._parse_json_array(tx.get("upsize_offered", "0"))
+        upsize_success = self._parse_json_array(tx.get("upsize_success", "0"))
         # Debug: print("Upsize base", upsize_base, "Upsize offered", upsize_offered, "upsize candidates", upsize_candidates, "Upsize success", upsize_success)
         
-        addon_base = self._parse_json_array(tx.get("addon_base_items", "0"))
-        addon_candidates = self._parse_json_array(tx.get("addon_candidate_items", "0"))
-        addon_offered = self._parse_json_array(tx.get("addon_offered_items", "0"))
-        addon_success = self._parse_json_array(tx.get("addon_success_items", "0"))
-        addon_base_sold = self._parse_json_array(tx.get("addon_base_sold_items", "0"))
+        addon_main_items = self._parse_json_array(tx.get("addon_main_items", "0"))
+        addon_topping_items = self._parse_json_array(tx.get("addon_topping_items", "0"))
+        addon_offered_main = self._parse_json_array(tx.get("addon_offered_main", "0"))
+        addon_offered_topping = self._parse_json_array(tx.get("addon_offered_topping", "0"))
+        addon_success_main = self._parse_json_array(tx.get("addon_success_main", "0"))
+        addon_success_topping = self._parse_json_array(tx.get("addon_success_topping", "0"))
+        
         # Count each metric type
-        self._count_items(upsell_base, item_analytics, "upsell_base")
-        self._count_items(upsell_candidates, item_analytics, "upsell_candidates")
-        self._count_items(upsell_offered, item_analytics, "upsell_offered")
-        self._count_items(upsell_success, item_analytics, "upsell_success")
-        self._count_items(upsell_base_sold, item_analytics, "upsell_base_sold")
-        self._count_items(upsize_base, item_analytics, "upsize_base")
-        self._count_items(upsize_candidates, item_analytics, "upsize_candidates")
+        self._count_items(upsell_main_items, item_analytics, "upsell_main")
+        self._count_items(upsell_addon_items, item_analytics, "upsell_addon")
+        self._count_items(upsell_offered_main, item_analytics, "upsell_offered_main")
+        self._count_items(upsell_offered_addon, item_analytics, "upsell_offered_addon")
+        self._count_items(upsell_success_main, item_analytics, "upsell_success_main")
+        self._count_items(upsell_success_addon, item_analytics, "upsell_success_addon")
         self._count_items(upsize_offered, item_analytics, "upsize_offered")
+        self._count_items(upsize_items, item_analytics, "upsize_items")
         self._count_items(upsize_success, item_analytics, "upsize_success")
-        self._count_items(upsize_base_sold, item_analytics, "upsize_base_sold")
-        self._count_items(addon_base, item_analytics, "addon_base")
-        self._count_items(addon_candidates, item_analytics, "addon_candidates")
-        self._count_items(addon_offered, item_analytics, "addon_offered")
-        self._count_items(addon_success, item_analytics, "addon_success")
-        self._count_items(addon_base_sold, item_analytics, "addon_base_sold_items")
+        self._count_items(addon_offered_main, item_analytics, "addon_offered_main")
+        self._count_items(addon_offered_topping, item_analytics, "addon_offered_topping")
+        self._count_items(addon_success_main, item_analytics, "addon_success_main")
+        self._count_items(addon_success_topping, item_analytics, "addon_success_topping")
+        self._count_items(addon_main_items, item_analytics, "addon_main")
+        self._count_items(addon_topping_items, item_analytics, "addon_topping")
+        self._count_items(addon_offered_main, item_analytics, "addon_offered_main")
+        self._count_items(addon_offered_topping, item_analytics, "addon_offered_topping")
+        self._count_items(addon_success_main, item_analytics, "addon_success_main")
+        self._count_items(addon_success_topping, item_analytics, "addon_success_topping")
         # Track size transitions
-        self._track_transitions(upsize_base, upsize_success, item_analytics)
+        self._track_transitions(upsize_items, upsize_success, item_analytics)
     
     def _parse_json_array(self, json_str):
         """Parse JSON array string to list"""
@@ -182,16 +187,15 @@ class Analytics:
     def _count_items(self, items, item_analytics, metric_type):
         """Count items for a specific metric type"""
         for item in items:
-            item_id, size = int(item.split("_")[0]), item.split("_")[1]  # Keep size as string
+            item_id = int(item.split("_")[0])  # Keep size as string
             # Debug: print(f"Processing item {item} -> item_id: {item_id}, size: {size}, metric_type: {metric_type}")
             if item_id in item_analytics:
-                if size not in item_analytics[item_id]["sizes"]:
-                    item_analytics[item_id]["sizes"][size] = {
-                        "upsell_base": 0, "upsell_candidates": 0, "upsell_offered": 0, "upsell_success": 0, "upsell_base_sold": 0,
-                        "upsize_base": 0, "upsize_candidates": 0, "upsize_offered": 0, "upsize_success": 0, "upsize_base_sold": 0,
-                        "addon_base": 0, "addon_candidates": 0, "addon_offered": 0, "addon_success": 0, "addon_base_sold_items": 0
+                item_analytics[item_id] = {
+                        "upsell_main": 0, "upsell_addon": 0, "upsell_offered_main": 0, "upsell_offered_addon": 0, "upsell_success_main": 0, "upsell_success_addon": 0,
+                        "upsize_items": 0, "upsize_offered": 0, "upsize_success": 0,
+                        "addon_main": 0, "addon_topping": 0, "addon_offered_main": 0, "addon_offered_topping": 0, "addon_success_main": 0, "addon_success_topping": 0
                     }
-                item_analytics[item_id]["sizes"][size][metric_type] += 1
+                item_analytics[item_id][metric_type] += 1
                 # Debug: print(f"Incremented {metric_type} for item {item_id}, size {size}. New count: {item_analytics[item_id]['sizes'][size][metric_type]}")
             # else:
                 # Debug: print(f"Item ID {item_id} not found in item_analytics")

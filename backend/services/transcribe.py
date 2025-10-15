@@ -1,12 +1,35 @@
 import os
 import soundfile as sf
-from typing import Dict, Any
+from typing import Dict, Any, List
 from openai import OpenAI
 from config import Settings
 
 ASR_MODEL = Settings.ASR_MODEL
 
 client = OpenAI()
+
+def transcribe_segments(audio_clip_paths: List[str], begin_times: List[float], end_times: List[float]) -> List[Dict[str, Any]]:
+    transcript_segments = []
+    print(f"🔍 DEBUG: Transcribing {len(audio_clip_paths)} audio clips")
+    print(f"🔍 DEBUG: Audio clip paths: {audio_clip_paths}")
+    print(f"🔍 DEBUG: Begin times: {begin_times}")
+    print(f"🔍 DEBUG: End times: {end_times}")
+    for i, (audio_clip_path, begin_time, end_time) in enumerate(zip(audio_clip_paths, begin_times, end_times)):
+        # Skip empty or failed clip paths
+        if not audio_clip_path or audio_clip_path == "":
+            print(f"⚠️ Skipping empty clip path for clip {i}")
+            continue
+            
+        result = transcribe_audio_clip(audio_clip_path, begin_time, end_time, i)
+        if 'error' not in result:
+            transcript_segments.append({
+                'start': begin_time,
+                'end': end_time,
+                'text': result['transcript']
+            })
+        else:
+            print(f"❌ Failed to transcribe clip {i}: {result['error']}")
+    return transcript_segments
 
 def transcribe_audio_clip(audio_clip_path: str, begin_time: float, end_time: float,
                          index: int) -> Dict[str, Any]:
