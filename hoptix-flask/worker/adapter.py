@@ -28,7 +28,7 @@ def _get_menu_data_from_db(db, location_id: str) -> tuple[list, list, list, list
         
         # Get add-ons for this location
         addons_result = db.client.table("add_ons").select(
-            "item_id, item_name, size_ids"
+            "*"
         ).eq("location_id", location_id).execute()
         
         # Convert to the format expected by the prompt
