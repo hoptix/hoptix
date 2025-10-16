@@ -1,0 +1,17 @@
+# Development requirements for local testing (without GPU/ML dependencies)
+# Use this for local development when you don't need voice diarization
+
+# Include base requirements
+-r requirements.txt
+
+# Add development-specific packages
+ipython>=8.0.0
+ipdb>=0.13.0
+
+# Minimal audio dependencies for testing
+pydub>=0.25.1
+
+# Note: For full voice diarization testing, you'll need:
+# pip install torch torchvision torchaudio  # For Mac/CPU
+# pip install Cython  # Before other voice deps
+# pip install -r requirements-voice.txt  # Voice-specific deps

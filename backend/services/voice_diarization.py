@@ -13,12 +13,26 @@ import logging
 from typing import Dict, List, Optional, Tuple, Any
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-import torch
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from pydub import AudioSegment
-from nemo.collections.asr.models import EncDecSpeakerLabelModel
-import assemblyai as aai
+
+# Conditional imports for GPU dependencies
+try:
+    import torch
+    from nemo.collections.asr.models import EncDecSpeakerLabelModel
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
+    import warnings
+    warnings.warn("PyTorch and NeMo not available. Voice diarization will not work. Install with GPU support for production.")
+
+# Audio processing imports (these should always work)
+try:
+    from pydub import AudioSegment
+    import assemblyai as aai
+except ImportError as e:
+    import warnings
+    warnings.warn(f"Audio processing libraries not available: {e}")
 
 from services.database import Supa
 from services.gdrive import GoogleDriveClient
@@ -56,6 +70,9 @@ class VoiceDiarization:
 
     def load_speaker_model(self):
         """Load TitaNet speaker verification model (lazy loading for GPU efficiency)."""
+        if not TORCH_AVAILABLE:
+            raise RuntimeError("PyTorch and NeMo are not installed. Cannot load TitaNet model. Please use GPU-enabled deployment.")
+
         if self.speaker_model is None:
             logger.info("Loading TitaNet speaker verification model...")
             self.speaker_model = EncDecSpeakerLabelModel.from_pretrained(
@@ -169,7 +186,8 @@ class VoiceDiarization:
         model = self.load_speaker_model()
         emb = model.get_embedding(wav_path)
 
-        if isinstance(emb, torch.Tensor):
+        if TORCH_AVAILABLE and hasattr(emb, 'squeeze'):
+            # It's a torch.Tensor
             emb = emb.squeeze().cpu().numpy()
         else:
             emb = np.asarray(emb).squeeze()

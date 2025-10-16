@@ -5,7 +5,7 @@ name: voice-diarization
 build:
   method: docker
   context: ./
-  dockerfile: ./Dockerfile.gpu
+  dockerfile: ./backend/Dockerfile.gpu
 
 # Voice diarization job service with GPU
 services:

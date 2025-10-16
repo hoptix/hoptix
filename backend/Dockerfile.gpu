@@ -33,45 +33,24 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1 \
 
 WORKDIR /app
 
-# Copy requirements first to leverage Docker cache
-COPY requirements.txt ./requirements.txt
+# Copy requirements files from backend directory (build context is repo root)
+COPY backend/requirements.txt ./requirements.txt
+COPY backend/requirements-voice.txt ./requirements-voice.txt
 
 # Install PyTorch with CUDA support
 RUN pip install torch==2.0.0+cu118 torchaudio==2.0.0+cu118 --index-url https://download.pytorch.org/whl/cu118
 
-# Install NeMo toolkit and related packages
-# Install in stages to manage memory during build
-RUN pip install --no-cache-dir \
-    nemo-toolkit==1.21.0 \
-    Cython \
-    hydra-core \
-    pytorch-lightning \
-    huggingface-hub==0.23.5 \
-    librosa \
-    transformers
+# Install Cython first (required by youtokentome)
+RUN pip install --no-cache-dir Cython>=3.0.0
 
-# Install audio processing and ML packages
-RUN pip install --no-cache-dir \
-    pydub \
-    assemblyai \
-    scikit-learn \
-    numpy \
-    pandas \
-    inflect \
-    webdataset \
-    sentencepiece \
-    youtokentome \
-    pyannote.audio \
-    editdistance \
-    jiwer \
-    lhotse \
-    datasets
+# Install base requirements (without voice dependencies)
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install remaining requirements
-RUN pip install --no-cache-dir -r requirements.txt || true
+# Install voice-specific requirements
+RUN pip install --no-cache-dir -r requirements-voice.txt || true
 
-# Copy the application code
-COPY . .
+# Copy the application code from backend directory
+COPY backend/ .
 
 # ---- Final Stage ----
 FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04 AS final
@@ -104,19 +83,7 @@ COPY --from=builder /usr/local/lib/python3.11/dist-packages /usr/local/lib/pytho
 COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy application files from builder
-COPY --from=builder /app/app.py /app/app.py
-COPY --from=builder /app/config.py /app/config.py
-COPY --from=builder /app/gunicorn.conf.py /app/gunicorn.conf.py
-COPY --from=builder /app/start.sh /app/start.sh
-COPY --from=builder /app/routes /app/routes
-COPY --from=builder /app/services /app/services
-COPY --from=builder /app/middleware /app/middleware
-COPY --from=builder /app/pipeline /app/pipeline
-COPY --from=builder /app/prompts /app/prompts
-COPY --from=builder /app/tests /app/tests
-COPY --from=builder /app/utils /app/utils
-COPY --from=builder /app/scripts /app/scripts
-COPY --from=builder /app/porter.yaml /app/porter.yaml
+COPY --from=builder /app /app
 
 # Ensure scripts are executable
 RUN chmod +x /app/scripts/*.py /app/start.sh || true
