@@ -5,7 +5,7 @@ name: voice-diarization
 build:
   method: docker
   context: ./
-  dockerfile: ./backend/Dockerfile.gpu
+  dockerfile: ./backend/Dockerfile.gpu-pytorch-base  # Using PyTorch base image to save space
 
 # Voice diarization job service with GPU
 services:

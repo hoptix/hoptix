@@ -155,7 +155,7 @@ class VoiceDiarization:
         Convert any local media (audio/video) to mono WAV and return the path.
         """
         if out_dir is None:
-            out_dir = tempfile.gettempdir()
+            out_dir = os.getenv("VOICE_CONVERTED_DIR", "./content/converted_audio")
 
         os.makedirs(out_dir, exist_ok=True)
         base = os.path.splitext(os.path.basename(src_path))[0]
@@ -292,7 +292,9 @@ class VoiceDiarization:
         for u in top:
             start_ms, end_ms = int(u["start"]), int(u["end"])
             seg = audio[start_ms:end_ms]
-            tmp = os.path.join(tempfile.gettempdir(), f"tmp_avg_{uuid.uuid4().hex[:8]}.wav")
+            converted_dir = os.getenv("VOICE_CONVERTED_DIR", "./content/converted_audio")
+            os.makedirs(converted_dir, exist_ok=True)
+            tmp = os.path.join(converted_dir, f"tmp_avg_{uuid.uuid4().hex[:8]}.wav")
             seg.export(tmp, format="wav")
             try:
                 e = self.get_embedding_for_wav(tmp)
@@ -344,7 +346,9 @@ class VoiceDiarization:
         for p in pieces[1:]:
             concat += p
 
-        tmp = os.path.join(tempfile.gettempdir(), f"tmp_cat_{uuid.uuid4().hex[:8]}.wav")
+        converted_dir = os.getenv("VOICE_CONVERTED_DIR", "./content/converted_audio")
+        os.makedirs(converted_dir, exist_ok=True)
+        tmp = os.path.join(converted_dir, f"tmp_cat_{uuid.uuid4().hex[:8]}.wav")
         concat.export(tmp, format="wav")
 
         try:

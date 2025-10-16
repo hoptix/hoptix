@@ -63,17 +63,14 @@ def voice_diarization_pipeline(
         samples_folder = os.getenv("VOICE_SAMPLES_FOLDER", "Cary Voice Samples")
 
     if not clips_folder:
-        # Format: Clips_YYYY-MM-DD_0700
-        date_formatted = date.replace("-", "-")  # Keep original format
-        clips_folder_prefix = os.getenv("VOICE_CLIPS_FOLDER_PREFIX", "Clips_")
-        clips_folder = f"{clips_folder_prefix}{date}_0700"
+        clips_folder = os.getenv("VOICE_CLIPS_FOLDER", f"Clips_{date}_0700")
 
     initial_memory = get_memory_usage()
 
     logger.info(f"🚀 Starting voice diarization pipeline for {location_name} on {date}")
     logger.info(f"📊 Initial memory usage: {initial_memory:.1f} MB")
-    logger.info(f"📁 Samples folder: {samples_folder}")
-    logger.info(f"📁 Clips folder: {clips_folder}")
+    logger.info(f"📁 Samples folder (Google Drive): {samples_folder}")
+    logger.info(f"📁 Clips folder (Google Drive): {clips_folder}")
 
     # Initialize voice diarization service
     log_memory_usage("Initializing voice diarization service", 1, TOTAL_STEPS)

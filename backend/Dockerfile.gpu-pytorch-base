@@ -1,0 +1,104 @@
+# ---- Alternative GPU Dockerfile using PyTorch base image ----
+# This uses an official PyTorch image that already includes CUDA and PyTorch
+FROM pytorch/pytorch:2.0.0-cuda11.7-cudnn8-runtime AS builder
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+ENV PIP_NO_CACHE_DIR=1
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ffmpeg \
+    libsndfile1 \
+    git \
+    curl \
+    gcc \
+    g++ && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+WORKDIR /app
+
+# Copy requirements files from backend directory (build context is repo root)
+COPY backend/requirements.txt ./requirements.txt
+COPY backend/requirements-voice.txt ./requirements-voice.txt
+
+# Install dependencies in order
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    # Install Cython first (required by youtokentome)
+    pip install --no-cache-dir Cython>=3.0.0 && \
+    # Install torchaudio separately (PyTorch is already in the base image)
+    pip install --no-cache-dir torchaudio==2.0.0 && \
+    # Install base requirements
+    pip install --no-cache-dir --ignore-installed blinker -r requirements.txt && \
+    # Install voice-specific requirements
+    pip install --no-cache-dir -r requirements-voice.txt || true && \
+    # Clean up
+    rm -rf ~/.cache/pip /tmp/* /var/tmp/* && \
+    find /opt/conda/lib/python*/site-packages -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true && \
+    find /opt/conda/lib/python*/site-packages -name "*.pyc" -delete 2>/dev/null || true
+
+# Copy the application code from backend directory
+COPY backend/ .
+
+# ---- Final Stage ----
+FROM pytorch/pytorch:2.0.0-cuda11.7-cudnn8-runtime AS final
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+ENV PIP_NO_CACHE_DIR=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+WORKDIR /app
+
+# Install only runtime dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ffmpeg \
+    libsndfile1 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Copy Python packages from builder
+COPY --from=builder /opt/conda/lib/python*/site-packages /opt/conda/lib/python3.10/site-packages
+COPY --from=builder /opt/conda/bin /opt/conda/bin
+
+# Copy application files from builder
+COPY --from=builder /app /app
+
+# Ensure scripts are executable
+RUN chmod +x /app/scripts/*.py /app/start.sh || true
+
+# Create a non-root user
+RUN useradd -m -s /bin/bash appuser && \
+    chown -R appuser:appuser /app
+
+# Create cache directories for models
+RUN mkdir -p /home/appuser/.cache/torch/hub \
+    /home/appuser/.cache/huggingface \
+    /home/appuser/.cache/nemo && \
+    chown -R appuser:appuser /home/appuser/.cache
+
+USER appuser
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV PATH="/app/scripts:$PATH"
+ENV FLASK_ENV=production
+ENV IMAGEIO_FFMPEG_EXE=/usr/bin/ffmpeg
+ENV FFMPEG_BINARY=/usr/bin/ffmpeg
+ENV PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
+ENV TORCH_HOME=/home/appuser/.cache/torch
+ENV HF_HOME=/home/appuser/.cache/huggingface
+ENV NEMO_CACHE_DIR=/home/appuser/.cache/nemo
+
+# Expose port for health checks (optional)
+EXPOSE 8080
+
+# Default command for job execution
+CMD ["python", "scripts/run_voice_diarization.py", "--help"]
