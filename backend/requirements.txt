@@ -44,3 +44,24 @@ google-auth-oauthlib>=1.2.0
 # Audio processing additional dependencies for Docker
 soundfile>=0.13.0
 audioread>=3.0.0
+
+# Voice Diarization Dependencies
+# Note: PyTorch with CUDA is installed separately in Dockerfile.gpu
+assemblyai>=0.34.0
+pydub>=0.25.1
+nemo-toolkit==1.21.0
+Cython>=3.0.0
+hydra-core>=1.3.0
+pytorch-lightning>=2.0.0
+huggingface-hub==0.23.5
+librosa>=0.10.0
+transformers>=4.30.0
+inflect>=7.0.0
+webdataset>=0.2.0
+sentencepiece>=0.1.99
+youtokentome>=1.0.6
+pyannote.audio>=3.0.0
+editdistance>=0.6.0
+jiwer>=3.0.0
+lhotse>=1.17.0
+datasets>=2.14.0

@@ -1,0 +1,155 @@
+# ---- GPU-enabled Docker image for Voice Diarization ----
+# Base from NVIDIA CUDA image for GPU support
+FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04 AS builder
+
+# Set environment variables for CUDA
+ENV CUDA_HOME=/usr/local/cuda
+ENV PATH=${CUDA_HOME}/bin:${PATH}
+ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
+
+# Install Python 3.11 and system dependencies
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get update && apt-get install -y \
+    python3.11 \
+    python3.11-dev \
+    python3.11-distutils \
+    python3-pip \
+    gcc \
+    g++ \
+    ffmpeg \
+    libsndfile1 \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Update pip and setuptools
+RUN python3.11 -m pip install --upgrade pip setuptools wheel
+
+# Set Python 3.11 as default
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1 \
+    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
+
+WORKDIR /app
+
+# Copy requirements first to leverage Docker cache
+COPY requirements.txt ./requirements.txt
+
+# Install PyTorch with CUDA support
+RUN pip install torch==2.0.0+cu118 torchaudio==2.0.0+cu118 --index-url https://download.pytorch.org/whl/cu118
+
+# Install NeMo toolkit and related packages
+# Install in stages to manage memory during build
+RUN pip install --no-cache-dir \
+    nemo-toolkit==1.21.0 \
+    Cython \
+    hydra-core \
+    pytorch-lightning \
+    huggingface-hub==0.23.5 \
+    librosa \
+    transformers
+
+# Install audio processing and ML packages
+RUN pip install --no-cache-dir \
+    pydub \
+    assemblyai \
+    scikit-learn \
+    numpy \
+    pandas \
+    inflect \
+    webdataset \
+    sentencepiece \
+    youtokentome \
+    pyannote.audio \
+    editdistance \
+    jiwer \
+    lhotse \
+    datasets
+
+# Install remaining requirements
+RUN pip install --no-cache-dir -r requirements.txt || true
+
+# Copy the application code
+COPY . .
+
+# ---- Final Stage ----
+FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04 AS final
+
+# Set environment variables for CUDA
+ENV CUDA_HOME=/usr/local/cuda
+ENV PATH=${CUDA_HOME}/bin:${PATH}
+ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
+
+WORKDIR /app
+
+# Install Python 3.11 and runtime dependencies
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get update && apt-get install -y \
+    python3.11 \
+    python3.11-distutils \
+    ffmpeg \
+    libsndfile1 \
+    && rm -rf /var/lib/apt/lists/* \
+    && ffmpeg -version
+
+# Set Python 3.11 as default
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1 \
+    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
+
+# Copy Python packages from builder
+COPY --from=builder /usr/local/lib/python3.11/dist-packages /usr/local/lib/python3.11/dist-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+# Copy application files from builder
+COPY --from=builder /app/app.py /app/app.py
+COPY --from=builder /app/config.py /app/config.py
+COPY --from=builder /app/gunicorn.conf.py /app/gunicorn.conf.py
+COPY --from=builder /app/start.sh /app/start.sh
+COPY --from=builder /app/routes /app/routes
+COPY --from=builder /app/services /app/services
+COPY --from=builder /app/middleware /app/middleware
+COPY --from=builder /app/pipeline /app/pipeline
+COPY --from=builder /app/prompts /app/prompts
+COPY --from=builder /app/tests /app/tests
+COPY --from=builder /app/utils /app/utils
+COPY --from=builder /app/scripts /app/scripts
+COPY --from=builder /app/porter.yaml /app/porter.yaml
+
+# Ensure scripts are executable
+RUN chmod +x /app/scripts/*.py /app/start.sh || true
+
+# Create a non-root user
+RUN useradd -m -s /bin/bash appuser && \
+    chown -R appuser:appuser /app
+
+# Create cache directories for models
+RUN mkdir -p /home/appuser/.cache/torch/hub \
+    /home/appuser/.cache/huggingface \
+    /home/appuser/.cache/nemo \
+    && chown -R appuser:appuser /home/appuser/.cache
+
+USER appuser
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV PATH="/app/scripts:$PATH"
+ENV FLASK_ENV=production
+ENV IMAGEIO_FFMPEG_EXE=/usr/bin/ffmpeg
+ENV FFMPEG_BINARY=/usr/bin/ffmpeg
+ENV PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
+ENV TORCH_HOME=/home/appuser/.cache/torch
+ENV HF_HOME=/home/appuser/.cache/huggingface
+ENV NEMO_CACHE_DIR=/home/appuser/.cache/nemo
+
+# Pre-download the TitaNet model during build (optional - speeds up first run)
+# RUN python -c "from nemo.collections.asr.models import EncDecSpeakerLabelModel; model = EncDecSpeakerLabelModel.from_pretrained('nvidia/speakerverification_en_titanet_large')" || true
+
+# Expose port for health checks (optional)
+EXPOSE 8080
+
+# Default command for job execution
+# This can be overridden by Porter's job configuration
+CMD ["python", "scripts/run_voice_diarization.py", "--help"]

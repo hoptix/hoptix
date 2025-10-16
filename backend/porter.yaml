@@ -1,0 +1,25 @@
+version: v2
+name: voice-diarization
+
+# Build configuration for GPU-enabled voice diarization
+build:
+  method: docker
+  context: ./
+  dockerfile: ./Dockerfile.gpu
+
+# Voice diarization job service with GPU
+services:
+  - name: voice-diarization-job
+    type: job
+    run: python scripts/run_voice_diarization.py
+    cpuCores: 2
+    ramMegabytes: 8192
+    gpuCoresNvidia: 1  # GPU allocation required for TitaNet
+    # Cron schedule - configure in Porter dashboard after deployment
+    # Example: "0 3 * * *" for daily at 3 AM
+
+# Environment variables - will be injected from Porter dashboard
+env:
+  PYTHONPATH: /app
+  PYTORCH_CUDA_AVAILABLE: "1"
+  # All other env vars (AAI_API_KEY, SUPABASE_*, etc.) configured in Porter dashboard
