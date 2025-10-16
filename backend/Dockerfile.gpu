@@ -1,176 +1,115 @@
 # ---- GPU-enabled Docker image for Voice Diarization ----
-# Base from NVIDIA CUDA image for GPU support
+# Optimized for minimal disk usage
 FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04 AS builder
 
-# Set environment variables for CUDA
-ENV CUDA_HOME=/usr/local/cuda
-ENV PATH=${CUDA_HOME}/bin:${PATH}
-ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
+# Set all environment variables
+ENV CUDA_HOME=/usr/local/cuda \
+    PATH=${CUDA_HOME}/bin:${PATH} \
+    LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH} \
+    DEBIAN_FRONTEND=noninteractive \
+    TZ=UTC \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONDONTWRITEBYTECODE=1
 
-# Set timezone and other environment variables
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=UTC
-# Disable pip cache to save space
-ENV PIP_NO_CACHE_DIR=1
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
-ENV PYTHONDONTWRITEBYTECODE=1
-
-# Install Python 3.11 and system dependencies in one layer
+# Install system dependencies and Python 3.11 in one layer, clean immediately
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    software-properties-common \
-    tzdata && \
+    software-properties-common tzdata && \
     ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
     dpkg-reconfigure --frontend noninteractive tzdata && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-    python3.11 \
-    python3.11-dev \
-    python3.11-distutils \
-    python3-pip \
-    gcc \
-    g++ \
-    ffmpeg \
-    libsndfile1 \
-    git \
-    curl && \
+    python3.11 python3.11-dev python3.11-distutils python3-pip \
+    gcc g++ ffmpeg libsndfile1 && \
     update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1 && \
     update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1 && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 WORKDIR /app
 
-# Copy requirements files from backend directory (build context is repo root)
-COPY backend/requirements.txt ./requirements.txt
-COPY backend/requirements-voice.txt ./requirements-voice.txt
+# Copy requirements
+COPY backend/requirements.txt backend/requirements-voice-minimal.txt ./
 
-# Upgrade pip first
+# Install ALL Python dependencies in ONE layer to minimize disk usage
 RUN python3.11 -m pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    rm -rf ~/.cache/pip /tmp/*
+    # Install Cython first
+    pip install --no-cache-dir Cython>=3.0.0 && \
+    # Install PyArrow with binary only
+    pip install --no-cache-dir --only-binary=pyarrow "pyarrow>=12.0.0,<18.0.0" && \
+    # Install PyTorch with CUDA
+    pip install --no-cache-dir torch==2.0.0+cu118 torchaudio==2.0.0+cu118 \
+        --index-url https://download.pytorch.org/whl/cu118 && \
+    # Install base requirements
+    pip install --no-cache-dir --ignore-installed blinker -r requirements.txt && \
+    # Install voice requirements (minimal set - allow failures for optional deps)
+    pip install --no-cache-dir -r requirements-voice-minimal.txt || true && \
+    # Aggressive cleanup - all in one command to save space
+    find /usr/local/lib/python3.11/dist-packages -type d -name "__pycache__" -delete && \
+    find /usr/local/lib/python3.11/dist-packages -type d -name "tests" -delete && \
+    find /usr/local/lib/python3.11/dist-packages -type d -name "test" -delete && \
+    find /usr/local/lib/python3.11/dist-packages -name "*.pyc" -delete && \
+    find /usr/local/lib/python3.11/dist-packages -name "*.pyo" -delete && \
+    find /usr/local/lib/python3.11/dist-packages -name "*.c" -delete && \
+    find /usr/local/lib/python3.11/dist-packages -name "*.cpp" -delete && \
+    find /usr/local/lib/python3.11/dist-packages -name "*.h" -delete && \
+    rm -rf /root/.cache /tmp/* /var/tmp/* /usr/local/lib/python3.11/dist-packages/*/tests
 
-# Install Cython separately (required by youtokentome)
-RUN pip install --no-cache-dir Cython>=3.0.0 && \
-    rm -rf ~/.cache/pip /tmp/*
-
-# Install PyArrow with binary wheels only (no source builds to avoid CMake issues)
-RUN pip install --no-cache-dir --only-binary=pyarrow "pyarrow>=12.0.0,<18.0.0" && \
-    rm -rf ~/.cache/pip /tmp/*
-
-# Install PyTorch with CUDA support separately to manage space
-RUN pip install --no-cache-dir \
-    torch==2.0.0+cu118 \
-    torchaudio==2.0.0+cu118 \
-    --index-url https://download.pytorch.org/whl/cu118 && \
-    # Immediately clean up after PyTorch installation
-    rm -rf ~/.cache/pip /tmp/* && \
-    find /usr/local/lib/python3.11/dist-packages/torch -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true && \
-    find /usr/local/lib/python3.11/dist-packages/torch -name "*.pyc" -delete 2>/dev/null || true
-
-# Install base requirements
-RUN pip install --no-cache-dir --ignore-installed blinker -r requirements.txt && \
-    rm -rf ~/.cache/pip /tmp/* && \
-    find /usr/local/lib/python3.11/dist-packages -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
-
-# Install voice-specific requirements (allow failures for optional packages)
-RUN pip install --no-cache-dir -r requirements-voice.txt || true && \
-    rm -rf ~/.cache/pip /tmp/*
-
-# Final cleanup of the builder stage
-RUN find /usr/local/lib/python3.11/dist-packages -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true && \
-    find /usr/local/lib/python3.11/dist-packages -type d -name "tests" -exec rm -rf {} + 2>/dev/null || true && \
-    find /usr/local/lib/python3.11/dist-packages -name "*.pyc" -delete 2>/dev/null || true && \
-    # Remove .dist-info directories except for critical metadata
-    find /usr/local/lib/python3.11/dist-packages -type d -name "*.dist-info" | \
-    while read dir; do \
-        if [ -f "$dir/METADATA" ]; then \
-            mv "$dir/METADATA" "$dir.metadata.tmp" 2>/dev/null || true; \
-            rm -rf "$dir"/* 2>/dev/null || true; \
-            mv "$dir.metadata.tmp" "$dir/METADATA" 2>/dev/null || true; \
-        else \
-            rm -rf "$dir" 2>/dev/null || true; \
-        fi \
-    done && \
-    rm -rf /tmp/* /var/tmp/* ~/.cache/*
-
-# Copy the application code from backend directory
+# Copy application code
 COPY backend/ .
 
-# ---- Final Stage ----
+# ---- Final Stage - Minimal runtime image ----
 FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04 AS final
 
-# Set environment variables for CUDA
-ENV CUDA_HOME=/usr/local/cuda
-ENV PATH=${CUDA_HOME}/bin:${PATH}
-ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
-
-# Set timezone and other environment variables
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=UTC
-ENV PIP_NO_CACHE_DIR=1
-ENV PYTHONDONTWRITEBYTECODE=1
+ENV CUDA_HOME=/usr/local/cuda \
+    PATH=${CUDA_HOME}/bin:${PATH} \
+    LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH} \
+    DEBIAN_FRONTEND=noninteractive \
+    TZ=UTC \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app \
+    PATH="/app/scripts:$PATH" \
+    FLASK_ENV=production \
+    IMAGEIO_FFMPEG_EXE=/usr/bin/ffmpeg \
+    FFMPEG_BINARY=/usr/bin/ffmpeg \
+    PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
 
 WORKDIR /app
 
-# Install Python 3.11 and minimal runtime dependencies
+# Install minimal runtime dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    software-properties-common \
-    tzdata && \
+    software-properties-common tzdata && \
     ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
     dpkg-reconfigure --frontend noninteractive tzdata && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-    python3.11 \
-    python3.11-distutils \
-    ffmpeg \
-    libsndfile1 && \
+    python3.11 python3.11-distutils ffmpeg libsndfile1 && \
     update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1 && \
     update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1 && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Copy Python packages from builder
+# Copy only essential Python packages (exclude unnecessary stuff)
 COPY --from=builder /usr/local/lib/python3.11/dist-packages /usr/local/lib/python3.11/dist-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
-
-# Copy application files from builder
 COPY --from=builder /app /app
 
-# Ensure scripts are executable
-RUN chmod +x /app/scripts/*.py /app/start.sh || true
-
-# Create a non-root user
-RUN useradd -m -s /bin/bash appuser && \
-    chown -R appuser:appuser /app
-
-# Create cache directories for models
-RUN mkdir -p /home/appuser/.cache/torch/hub \
-    /home/appuser/.cache/huggingface \
-    /home/appuser/.cache/nemo && \
+# Make scripts executable and create user
+RUN chmod +x /app/scripts/*.py /app/start.sh 2>/dev/null || true && \
+    useradd -m -s /bin/bash appuser && \
+    chown -R appuser:appuser /app && \
+    mkdir -p /home/appuser/.cache/torch/hub /home/appuser/.cache/huggingface /home/appuser/.cache/nemo && \
     chown -R appuser:appuser /home/appuser/.cache
 
 USER appuser
 
-# Set environment variables
-ENV PYTHONPATH=/app
-ENV PATH="/app/scripts:$PATH"
-ENV FLASK_ENV=production
-ENV IMAGEIO_FFMPEG_EXE=/usr/bin/ffmpeg
-ENV FFMPEG_BINARY=/usr/bin/ffmpeg
-ENV PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
-ENV TORCH_HOME=/home/appuser/.cache/torch
-ENV HF_HOME=/home/appuser/.cache/huggingface
-ENV NEMO_CACHE_DIR=/home/appuser/.cache/nemo
+ENV TORCH_HOME=/home/appuser/.cache/torch \
+    HF_HOME=/home/appuser/.cache/huggingface \
+    NEMO_CACHE_DIR=/home/appuser/.cache/nemo
 
-# Pre-download the TitaNet model during build (optional - speeds up first run)
-# RUN python -c "from nemo.collections.asr.models import EncDecSpeakerLabelModel; model = EncDecSpeakerLabelModel.from_pretrained('nvidia/speakerverification_en_titanet_large')" || true
-
-# Expose port for health checks (optional)
 EXPOSE 8080
 
-# Default command for job execution
-# This can be overridden by Porter's job configuration
 CMD ["python", "scripts/run_voice_diarization.py", "--help"]
