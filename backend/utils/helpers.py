@@ -5,11 +5,22 @@ from services.database import Supa
 from services.items import ItemLookupService
 import logging
 import psutil
-from datetime import datetime
+from datetime import datetime, timedelta
+from dateutil import parser as dateparse
 
 logger = logging.getLogger(__name__)
 
 db = Supa()
+
+def iso_from_start(base_iso: str, seconds_from_start: float) -> str:
+    return (dateparse.isoparse(base_iso) + timedelta(seconds=float(seconds_from_start))).isoformat()
+
+
+def iso_or_die(value: str) -> str:
+    dt = dateparse.isoparse(value)
+    if dt.tzinfo is None:
+        raise ValueError("Timestamp must include timezone offset")
+    return dt.isoformat()
 
 def parse_json_field(value, default="0"):
     if value is None:

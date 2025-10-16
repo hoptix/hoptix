@@ -12,7 +12,7 @@ from services.transcribe import transcribe_segments
 from services.grader import grade_transactions
 from services.analytics import Analytics
 from services.clipper import clip_transactions
-from services.transactions import format_transactions
+from services.transactions import split_into_transactions
 from utils.helpers import get_memory_usage, log_memory_usage
 
 db = Supa() 
@@ -71,7 +71,7 @@ def full_pipeline(location_id: str, date: str):
 
     #3) Create transactions from transcript segments
     log_memory_usage("Creating transactions from transcript segments", 3, TOTAL_STEPS)
-    transactions = format_transactions(transcript_segments, run_id, audio_id)
+    transactions = split_into_transactions(transcript_segments, date)
     print(f"📝 Created {len(transactions)} transactions")
 
     #4) Insert transactions into database 
