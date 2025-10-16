@@ -51,7 +51,8 @@ RUN pip install torch==2.0.0+cu118 torchaudio==2.0.0+cu118 --index-url https://d
 RUN pip install --no-cache-dir Cython>=3.0.0
 
 # Install base requirements (without voice dependencies)
-RUN pip install --no-cache-dir -r requirements.txt
+# Use --ignore-installed for system packages that conflict
+RUN pip install --no-cache-dir --ignore-installed blinker -r requirements.txt
 
 # Install voice-specific requirements
 RUN pip install --no-cache-dir -r requirements-voice.txt || true
