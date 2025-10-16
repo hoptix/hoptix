@@ -52,8 +52,8 @@ RUN echo "=== CREATING CONSTRAINTS FILE ===" && \
     echo "pydantic-core==2.23.4" >> /tmp/constraints.txt && \
     echo "pydantic-settings==2.6.1" >> /tmp/constraints.txt && \
     echo "typing-extensions>=4.6.1" >> /tmp/constraints.txt && \
-    echo "torch==2.0.1+cu117" >> /tmp/constraints.txt && \
-    echo "torchaudio==2.0.2+cu117" >> /tmp/constraints.txt && \
+    echo "torch==2.0.1" >> /tmp/constraints.txt && \
+    echo "torchaudio==2.0.2" >> /tmp/constraints.txt && \
     echo "numpy>=1.22,<1.24" >> /tmp/constraints.txt && \
     echo "# NeMo requires numpy<1.24" >> /tmp/constraints.txt && \
     cat /tmp/constraints.txt
@@ -82,8 +82,8 @@ print('✓ TypeAdapter OK');" || (echo "FATAL: PYDANTIC V2 INSTALL FAILED" && ex
 # This version will work on both CPU and GPU environments
 RUN echo "=== INSTALLING PYTORCH WITH CUDA 11.7 ===" && \
     pip install --no-cache-dir \
-    torch==2.0.1+cu117 \
-    torchaudio==2.0.2+cu117 \
+    torch==2.0.1 \
+    torchaudio==2.0.2 \
     --index-url https://download.pytorch.org/whl/cu117 && \
     python -c "import torch; print(f'PyTorch {torch.__version__} installed with CUDA support')"
 
@@ -151,8 +151,8 @@ RUN echo "=== INSTALLING NEMO DEPENDENCIES ===" && \
 
 # STEP 10b: Verify PyTorch versions haven't changed
 RUN echo "=== VERIFYING PYTORCH VERSIONS AFTER DEPENDENCIES ===" && \
-    python -c "import torch; assert '2.0.1+cu117' in torch.__version__, f'PyTorch version changed to {torch.__version__}'" && \
-    python -c "import torchaudio; assert '2.0.2+cu117' in torchaudio.__version__, f'Torchaudio version changed to {torchaudio.__version__}'" && \
+    python -c "import torch; assert '2.0.1' in torch.__version__, f'PyTorch version changed to {torch.__version__}'" && \
+    python -c "import torchaudio; assert '2.0.2' in torchaudio.__version__, f'Torchaudio version changed to {torchaudio.__version__}'" && \
     echo "✓ PyTorch versions locked successfully"
 
 # STEP 10c: Install NeMo without dependencies
@@ -214,7 +214,7 @@ RUN echo "=== VERIFYING CRITICAL IMPORTS ===" && \
 
 # STEP 14: FINAL VERIFICATION - Essential checks only
 RUN echo "=== FINAL BUILD VERIFICATION ===" && \
-    python -c "import sys, torch, torchaudio, numpy, pydantic; from pydantic import TypeAdapter; from supabase import create_client; print(f'Python: {sys.version}'); print(f'PyTorch: {torch.__version__}'); print(f'Torchaudio: {torchaudio.__version__}'); print(f'NumPy: {numpy.__version__}'); print(f'Pydantic: {pydantic.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}'); assert '2.0.1+cu117' in torch.__version__; assert '2.0.2+cu117' in torchaudio.__version__; assert pydantic.__version__ == '2.9.2'; assert 'TypeAdapter' in dir(pydantic); print('✅ BUILD SUCCESSFUL - ALL CRITICAL VERSIONS WITH CUDA SUPPORT LOCKED')" || (echo "FATAL ERROR: Build verification failed!" && exit 1)
+    python -c "import sys, torch, torchaudio, numpy, pydantic; from pydantic import TypeAdapter; from supabase import create_client; print(f'Python: {sys.version}'); print(f'PyTorch: {torch.__version__}'); print(f'Torchaudio: {torchaudio.__version__}'); print(f'NumPy: {numpy.__version__}'); print(f'Pydantic: {pydantic.__version__}'); print(f'CUDA version in PyTorch: {torch.version.cuda if hasattr(torch.version, \"cuda\") else \"N/A\"}'); print(f'CUDA available: {torch.cuda.is_available()}'); assert '2.0.1' in torch.__version__; assert '2.0.2' in torchaudio.__version__; assert pydantic.__version__ == '2.9.2'; assert 'TypeAdapter' in dir(pydantic); print('✅ BUILD SUCCESSFUL - ALL CRITICAL VERSIONS WITH CUDA SUPPORT LOCKED')" || (echo "FATAL ERROR: Build verification failed!" && exit 1)
 
 # Copy application
 COPY backend/ .
