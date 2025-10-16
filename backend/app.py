@@ -37,7 +37,7 @@ def health():
 if __name__ == "__main__":
     # Development server configuration
     # In production, use Gunicorn instead (see Dockerfile CMD)
-    port = int(os.environ.get("PORT", 8081))
+    port = int(os.environ.get("PORT", 8080))
     debug = os.environ.get("FLASK_ENV", "development") == "development"
 
     app.run(

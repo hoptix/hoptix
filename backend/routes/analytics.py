@@ -161,22 +161,20 @@ def get_run_worker_analytics(run_id):
                 "upsell_offers": worker_data['upsell_offers'],
                 "upsell_successes": worker_data['upsell_successes'],
                 "upsell_conversion_rate": float(worker_data['upsell_conversion_rate']),
-                "upsell_revenue": float(worker_data['upsell_revenue']),
                 "upsize_opportunities": worker_data['upsize_opportunities'],
                 "upsize_offers": worker_data['upsize_offers'],
                 "upsize_successes": worker_data['upsize_successes'],
                 "upsize_conversion_rate": float(worker_data['upsize_conversion_rate']),
-                "upsize_revenue": float(worker_data['upsize_revenue']),
                 "addon_opportunities": worker_data['addon_opportunities'],
                 "addon_offers": worker_data['addon_offers'],
                 "addon_successes": worker_data['addon_successes'],
                 "addon_conversion_rate": float(worker_data['addon_conversion_rate']),
-                "addon_revenue": float(worker_data['addon_revenue']),
                 "total_opportunities": worker_data['total_opportunities'],
                 "total_offers": worker_data['total_offers'],
                 "total_successes": worker_data['total_successes'],
                 "overall_conversion_rate": float(worker_data['overall_conversion_rate']),
                 "total_revenue": float(worker_data['total_revenue']),
+                "detailed_revenue": worker_data.get('detailed_revenue'),  # JSONB field with revenue breakdown
                 "detailed_analytics": json.dumps(detailed_analytics),
                 "created_at": worker_data['created_at'],
                 "updated_at": worker_data['updated_at']
@@ -282,22 +280,20 @@ def get_all_worker_analytics():
                 "upsell_offers": worker_data['upsell_offers'],
                 "upsell_successes": worker_data['upsell_successes'],
                 "upsell_conversion_rate": float(worker_data['upsell_conversion_rate']),
-                "upsell_revenue": float(worker_data['upsell_revenue']),
                 "upsize_opportunities": worker_data['upsize_opportunities'],
                 "upsize_offers": worker_data['upsize_offers'],
                 "upsize_successes": worker_data['upsize_successes'],
                 "upsize_conversion_rate": float(worker_data['upsize_conversion_rate']),
-                "upsize_revenue": float(worker_data['upsize_revenue']),
                 "addon_opportunities": worker_data['addon_opportunities'],
                 "addon_offers": worker_data['addon_offers'],
                 "addon_successes": worker_data['addon_successes'],
                 "addon_conversion_rate": float(worker_data['addon_conversion_rate']),
-                "addon_revenue": float(worker_data['addon_revenue']),
                 "total_opportunities": worker_data['total_opportunities'],
                 "total_offers": worker_data['total_offers'],
                 "total_successes": worker_data['total_successes'],
                 "overall_conversion_rate": float(worker_data['overall_conversion_rate']),
                 "total_revenue": float(worker_data['total_revenue']),
+                "detailed_revenue": worker_data.get('detailed_revenue'),  # JSONB field with revenue breakdown
                 "detailed_analytics": json.dumps(detailed_analytics),
                 "created_at": worker_data['created_at'],
                 "updated_at": worker_data['updated_at']
@@ -364,27 +360,71 @@ def get_location_analytics_over_time(location_id):
         else:
             start_date = end_date - timedelta(days=days)
 
-        # Query run_analytics_with_details for time-series data
-        result = db.client.table("run_analytics_with_details").select(
-            "run_date, upsell_revenue, upsize_revenue, addon_revenue, total_revenue, "
+        # Query runs and run_analytics tables for time-series data
+        # First get runs in the date range for this location
+        runs_result = db.client.table("runs").select("id, run_date").eq(
+            "location_id", location_id
+        ).gte("run_date", start_date.isoformat()).lte(
+            "run_date", end_date.isoformat()
+        ).order("run_date", desc=False).execute()
+
+        if not runs_result.data:
+            # No runs found, return empty data
+            return jsonify({
+                "success": True,
+                "data": [],
+                "period": {
+                    "start_date": start_date.isoformat(),
+                    "end_date": end_date.isoformat(),
+                    "days": (end_date - start_date).days
+                }
+            })
+
+        # Get run_ids and create lookup dict
+        run_ids = [run["id"] for run in runs_result.data]
+        runs_dict = {run["id"]: run for run in runs_result.data}
+
+        # Fetch analytics for these runs
+        analytics_result = db.client.table("run_analytics").select(
+            "run_id, total_revenue, "
             "total_opportunities, total_offers, total_successes, "
             "upsell_opportunities, upsell_offers, upsell_successes, "
             "upsize_opportunities, upsize_offers, upsize_successes, "
             "addon_opportunities, addon_offers, addon_successes"
-        ).eq("location_id", location_id).gte("run_date", start_date.isoformat()).lte(
-            "run_date", end_date.isoformat()
-        ).order("run_date", desc=False).execute()
+        ).in_("run_id", run_ids).execute()
+
+        # Create analytics lookup
+        analytics_dict = {a["run_id"]: a for a in analytics_result.data}
+
+        # Merge runs with analytics
+        result_data = []
+        for run in runs_result.data:
+            analytics = analytics_dict.get(run["id"])
+            if analytics:
+                result_data.append({
+                    "run_date": run["run_date"],
+                    "total_revenue": analytics.get("total_revenue", 0),
+                    "total_opportunities": analytics.get("total_opportunities", 0),
+                    "total_offers": analytics.get("total_offers", 0),
+                    "total_successes": analytics.get("total_successes", 0),
+                    "upsell_opportunities": analytics.get("upsell_opportunities", 0),
+                    "upsell_offers": analytics.get("upsell_offers", 0),
+                    "upsell_successes": analytics.get("upsell_successes", 0),
+                    "upsize_opportunities": analytics.get("upsize_opportunities", 0),
+                    "upsize_offers": analytics.get("upsize_offers", 0),
+                    "upsize_successes": analytics.get("upsize_successes", 0),
+                    "addon_opportunities": analytics.get("addon_opportunities", 0),
+                    "addon_offers": analytics.get("addon_offers", 0),
+                    "addon_successes": analytics.get("addon_successes", 0)
+                })
 
         # Aggregate data by date (in case multiple runs per day)
         daily_metrics = {}
-        for row in result.data:
+        for row in result_data:
             date = row["run_date"]
             if date not in daily_metrics:
                 daily_metrics[date] = {
                     "date": date,
-                    "upsell_revenue": 0.0,
-                    "upsize_revenue": 0.0,
-                    "addon_revenue": 0.0,
                     "total_revenue": 0.0,
                     "total_opportunities": 0,
                     "total_offers": 0,
@@ -400,9 +440,6 @@ def get_location_analytics_over_time(location_id):
                     "addon_successes": 0
                 }
 
-            daily_metrics[date]["upsell_revenue"] += float(row["upsell_revenue"] or 0)
-            daily_metrics[date]["upsize_revenue"] += float(row["upsize_revenue"] or 0)
-            daily_metrics[date]["addon_revenue"] += float(row["addon_revenue"] or 0)
             daily_metrics[date]["total_revenue"] += float(row["total_revenue"] or 0)
             daily_metrics[date]["total_opportunities"] += row["total_opportunities"] or 0
             daily_metrics[date]["total_offers"] += row["total_offers"] or 0
@@ -506,11 +543,11 @@ def get_location_dashboard_analytics(location_id):
         # Calculate period length for comparison
         period_days = (end_date - start_date).days
 
-        # Query current period data from run_analytics_with_details view
-        current_result = db.client.table("run_analytics_with_details").select(
-            "total_opportunities, total_offers, total_successes, total_revenue, "
-            "upsell_revenue, upsize_revenue, addon_revenue"
-        ).eq("location_id", location_id).gte("run_date", start_date.isoformat()).lte("run_date", end_date.isoformat()).execute()
+        # Query current period data from runs and run_analytics tables
+        # First get runs in the date range for this location
+        runs_result = db.client.table("runs").select("id").eq(
+            "location_id", location_id
+        ).gte("run_date", start_date.isoformat()).lte("run_date", end_date.isoformat()).execute()
 
         # Aggregate current period metrics
         current_metrics = {
@@ -520,13 +557,22 @@ def get_location_dashboard_analytics(location_id):
             "total_revenue": 0.0
         }
 
-        # Only aggregate if data exists, otherwise return zero metrics
-        if current_result.data:
-            for row in current_result.data:
-                current_metrics["total_opportunities"] += row["total_opportunities"] or 0
-                current_metrics["total_offers"] += row["total_offers"] or 0
-                current_metrics["total_successes"] += row["total_successes"] or 0
-                current_metrics["total_revenue"] += float(row["total_revenue"] or 0)
+        # Only aggregate if runs exist
+        if runs_result.data:
+            run_ids = [run["id"] for run in runs_result.data]
+
+            # Fetch analytics for these runs
+            analytics_result = db.client.table("run_analytics").select(
+                "total_revenue, total_opportunities, total_offers, total_successes"
+            ).in_("run_id", run_ids).execute()
+
+            # Aggregate the metrics
+            if analytics_result.data:
+                for row in analytics_result.data:
+                    current_metrics["total_opportunities"] += row["total_opportunities"] or 0
+                    current_metrics["total_offers"] += row["total_offers"] or 0
+                    current_metrics["total_successes"] += row["total_successes"] or 0
+                    current_metrics["total_revenue"] += float(row["total_revenue"] or 0)
 
         # Calculate current period rates
         offer_rate = (current_metrics["total_offers"] / current_metrics["total_opportunities"] * 100) if current_metrics["total_opportunities"] > 0 else 0
@@ -558,10 +604,10 @@ def get_location_dashboard_analytics(location_id):
             prev_end_date = start_date - timedelta(days=1)
             prev_start_date = prev_end_date - timedelta(days=period_days)
 
-            # Query previous period data
-            prev_result = db.client.table("run_analytics_with_details").select(
-                "total_opportunities, total_offers, total_successes, total_revenue"
-            ).eq("location_id", location_id).gte("run_date", prev_start_date.isoformat()).lte("run_date", prev_end_date.isoformat()).execute()
+            # Query previous period data from runs and run_analytics tables
+            prev_runs_result = db.client.table("runs").select("id").eq(
+                "location_id", location_id
+            ).gte("run_date", prev_start_date.isoformat()).lte("run_date", prev_end_date.isoformat()).execute()
 
             # Aggregate previous period metrics
             prev_metrics = {
@@ -571,12 +617,21 @@ def get_location_dashboard_analytics(location_id):
                 "total_revenue": 0.0
             }
 
-            if prev_result.data:
-                for row in prev_result.data:
-                    prev_metrics["total_opportunities"] += row["total_opportunities"] or 0
-                    prev_metrics["total_offers"] += row["total_offers"] or 0
-                    prev_metrics["total_successes"] += row["total_successes"] or 0
-                    prev_metrics["total_revenue"] += float(row["total_revenue"] or 0)
+            if prev_runs_result.data:
+                prev_run_ids = [run["id"] for run in prev_runs_result.data]
+
+                # Fetch analytics for these runs
+                prev_analytics_result = db.client.table("run_analytics").select(
+                    "total_revenue, total_opportunities, total_offers, total_successes"
+                ).in_("run_id", prev_run_ids).execute()
+
+                # Aggregate the metrics
+                if prev_analytics_result.data:
+                    for row in prev_analytics_result.data:
+                        prev_metrics["total_opportunities"] += row["total_opportunities"] or 0
+                        prev_metrics["total_offers"] += row["total_offers"] or 0
+                        prev_metrics["total_successes"] += row["total_successes"] or 0
+                        prev_metrics["total_revenue"] += float(row["total_revenue"] or 0)
 
             # Calculate previous period rates
             prev_offer_rate = (prev_metrics["total_offers"] / prev_metrics["total_opportunities"] * 100) if prev_metrics["total_opportunities"] > 0 else 0
@@ -663,11 +718,11 @@ def get_multi_location_dashboard_analytics():
         # Calculate period length for comparison
         period_days = (end_date - start_date).days
 
-        # Query current period data from run_analytics_with_details view
-        current_result = db.client.table("run_analytics_with_details").select(
-            "total_opportunities, total_offers, total_successes, total_revenue, "
-            "upsell_revenue, upsize_revenue, addon_revenue"
-        ).in_("location_id", location_ids).gte("run_date", start_date.isoformat()).lte("run_date", end_date.isoformat()).execute()
+        # Query current period data from runs and run_analytics tables
+        # First get runs in the date range for these locations
+        runs_result = db.client.table("runs").select("id").in_(
+            "location_id", location_ids
+        ).gte("run_date", start_date.isoformat()).lte("run_date", end_date.isoformat()).execute()
 
         # Aggregate current period metrics
         current_metrics = {
@@ -677,13 +732,22 @@ def get_multi_location_dashboard_analytics():
             "total_revenue": 0.0
         }
 
-        # Only aggregate if data exists, otherwise return zero metrics
-        if current_result.data:
-            for row in current_result.data:
-                current_metrics["total_opportunities"] += row["total_opportunities"] or 0
-                current_metrics["total_offers"] += row["total_offers"] or 0
-                current_metrics["total_successes"] += row["total_successes"] or 0
-                current_metrics["total_revenue"] += float(row["total_revenue"] or 0)
+        # Only aggregate if runs exist
+        if runs_result.data:
+            run_ids = [run["id"] for run in runs_result.data]
+
+            # Fetch analytics for these runs
+            analytics_result = db.client.table("run_analytics").select(
+                "total_revenue, total_opportunities, total_offers, total_successes"
+            ).in_("run_id", run_ids).execute()
+
+            # Aggregate the metrics
+            if analytics_result.data:
+                for row in analytics_result.data:
+                    current_metrics["total_opportunities"] += row["total_opportunities"] or 0
+                    current_metrics["total_offers"] += row["total_offers"] or 0
+                    current_metrics["total_successes"] += row["total_successes"] or 0
+                    current_metrics["total_revenue"] += float(row["total_revenue"] or 0)
 
         # Calculate current period rates
         offer_rate = (current_metrics["total_offers"] / current_metrics["total_opportunities"] * 100) if current_metrics["total_opportunities"] > 0 else 0
@@ -715,10 +779,10 @@ def get_multi_location_dashboard_analytics():
             prev_end_date = start_date - timedelta(days=1)
             prev_start_date = prev_end_date - timedelta(days=period_days)
 
-            # Query previous period data
-            prev_result = db.client.table("run_analytics_with_details").select(
-                "total_opportunities, total_offers, total_successes, total_revenue"
-            ).in_("location_id", location_ids).gte("run_date", prev_start_date.isoformat()).lte("run_date", prev_end_date.isoformat()).execute()
+            # Query previous period data from runs and run_analytics tables
+            prev_runs_result = db.client.table("runs").select("id").in_(
+                "location_id", location_ids
+            ).gte("run_date", prev_start_date.isoformat()).lte("run_date", prev_end_date.isoformat()).execute()
 
             # Aggregate previous period metrics
             prev_metrics = {
@@ -728,12 +792,21 @@ def get_multi_location_dashboard_analytics():
                 "total_revenue": 0.0
             }
 
-            if prev_result.data:
-                for row in prev_result.data:
-                    prev_metrics["total_opportunities"] += row["total_opportunities"] or 0
-                    prev_metrics["total_offers"] += row["total_offers"] or 0
-                    prev_metrics["total_successes"] += row["total_successes"] or 0
-                    prev_metrics["total_revenue"] += float(row["total_revenue"] or 0)
+            if prev_runs_result.data:
+                prev_run_ids = [run["id"] for run in prev_runs_result.data]
+
+                # Fetch analytics for these runs
+                prev_analytics_result = db.client.table("run_analytics").select(
+                    "total_revenue, total_opportunities, total_offers, total_successes"
+                ).in_("run_id", prev_run_ids).execute()
+
+                # Aggregate the metrics
+                if prev_analytics_result.data:
+                    for row in prev_analytics_result.data:
+                        prev_metrics["total_opportunities"] += row["total_opportunities"] or 0
+                        prev_metrics["total_offers"] += row["total_offers"] or 0
+                        prev_metrics["total_successes"] += row["total_successes"] or 0
+                        prev_metrics["total_revenue"] += float(row["total_revenue"] or 0)
 
             # Calculate previous period rates
             prev_offer_rate = (prev_metrics["total_offers"] / prev_metrics["total_opportunities"] * 100) if prev_metrics["total_opportunities"] > 0 else 0
@@ -830,9 +903,9 @@ def get_top_operators():
         # Get worker analytics for these runs
         worker_result = db.client.table("run_analytics_worker").select(
             "worker_id, total_transactions, total_opportunities, total_offers, total_successes, "
-            "total_revenue, upsell_opportunities, upsell_offers, upsell_successes, upsell_revenue, "
-            "upsize_opportunities, upsize_offers, upsize_successes, upsize_revenue, "
-            "addon_opportunities, addon_offers, addon_successes, addon_revenue, "
+            "total_revenue, upsell_opportunities, upsell_offers, upsell_successes, "
+            "upsize_opportunities, upsize_offers, upsize_successes, "
+            "addon_opportunities, addon_offers, addon_successes, "
             "overall_conversion_rate"
         ).in_("run_id", run_ids).execute()
 
@@ -856,15 +929,12 @@ def get_top_operators():
                     "upsell_opportunities": 0,
                     "upsell_offers": 0,
                     "upsell_successes": 0,
-                    "upsell_revenue": 0.0,
                     "upsize_opportunities": 0,
                     "upsize_offers": 0,
                     "upsize_successes": 0,
-                    "upsize_revenue": 0.0,
                     "addon_opportunities": 0,
                     "addon_offers": 0,
-                    "addon_successes": 0,
-                    "addon_revenue": 0.0
+                    "addon_successes": 0
                 }
 
             worker_metrics[worker_id]["total_transactions"] += row["total_transactions"] or 0
@@ -875,15 +945,12 @@ def get_top_operators():
             worker_metrics[worker_id]["upsell_opportunities"] += row["upsell_opportunities"] or 0
             worker_metrics[worker_id]["upsell_offers"] += row["upsell_offers"] or 0
             worker_metrics[worker_id]["upsell_successes"] += row["upsell_successes"] or 0
-            worker_metrics[worker_id]["upsell_revenue"] += float(row["upsell_revenue"] or 0)
             worker_metrics[worker_id]["upsize_opportunities"] += row["upsize_opportunities"] or 0
             worker_metrics[worker_id]["upsize_offers"] += row["upsize_offers"] or 0
             worker_metrics[worker_id]["upsize_successes"] += row["upsize_successes"] or 0
-            worker_metrics[worker_id]["upsize_revenue"] += float(row["upsize_revenue"] or 0)
             worker_metrics[worker_id]["addon_opportunities"] += row["addon_opportunities"] or 0
             worker_metrics[worker_id]["addon_offers"] += row["addon_offers"] or 0
             worker_metrics[worker_id]["addon_successes"] += row["addon_successes"] or 0
-            worker_metrics[worker_id]["addon_revenue"] += float(row["addon_revenue"] or 0)
 
         # Calculate conversion rates and prepare ranking
         operators_list = []
@@ -917,22 +984,19 @@ def get_top_operators():
                         "opportunities": metrics["upsell_opportunities"],
                         "offers": metrics["upsell_offers"],
                         "successes": metrics["upsell_successes"],
-                        "conversion_rate": round(upsell_conversion_rate, 1),
-                        "revenue": round(metrics["upsell_revenue"], 2)
+                        "conversion_rate": round(upsell_conversion_rate, 1)
                     },
                     "upsize": {
                         "opportunities": metrics["upsize_opportunities"],
                         "offers": metrics["upsize_offers"],
                         "successes": metrics["upsize_successes"],
-                        "conversion_rate": round(upsize_conversion_rate, 1),
-                        "revenue": round(metrics["upsize_revenue"], 2)
+                        "conversion_rate": round(upsize_conversion_rate, 1)
                     },
                     "addon": {
                         "opportunities": metrics["addon_opportunities"],
                         "offers": metrics["addon_offers"],
                         "successes": metrics["addon_successes"],
-                        "conversion_rate": round(addon_conversion_rate, 1),
-                        "revenue": round(metrics["addon_revenue"], 2)
+                        "conversion_rate": round(addon_conversion_rate, 1)
                     }
                 }
             })
@@ -1381,15 +1445,12 @@ def get_range_report():
             "upsell_opportunities": 0,
             "upsell_offers": 0,
             "upsell_successes": 0,
-            "upsell_revenue": 0.0,
             "upsize_opportunities": 0,
             "upsize_offers": 0,
             "upsize_successes": 0,
-            "upsize_revenue": 0.0,
             "addon_opportunities": 0,
             "addon_offers": 0,
             "addon_successes": 0,
-            "addon_revenue": 0.0,
             "total_opportunities": 0,
             "total_offers": 0,
             "total_successes": 0,
@@ -1409,15 +1470,12 @@ def get_range_report():
             aggregated["upsell_opportunities"] += run_analytics["upsell_opportunities"] or 0
             aggregated["upsell_offers"] += run_analytics["upsell_offers"] or 0
             aggregated["upsell_successes"] += run_analytics["upsell_successes"] or 0
-            aggregated["upsell_revenue"] += float(run_analytics["upsell_revenue"] or 0)
             aggregated["upsize_opportunities"] += run_analytics["upsize_opportunities"] or 0
             aggregated["upsize_offers"] += run_analytics["upsize_offers"] or 0
             aggregated["upsize_successes"] += run_analytics["upsize_successes"] or 0
-            aggregated["upsize_revenue"] += float(run_analytics["upsize_revenue"] or 0)
             aggregated["addon_opportunities"] += run_analytics["addon_opportunities"] or 0
             aggregated["addon_offers"] += run_analytics["addon_offers"] or 0
             aggregated["addon_successes"] += run_analytics["addon_successes"] or 0
-            aggregated["addon_revenue"] += float(run_analytics["addon_revenue"] or 0)
             aggregated["total_opportunities"] += run_analytics["total_opportunities"] or 0
             aggregated["total_offers"] += run_analytics["total_offers"] or 0
             aggregated["total_successes"] += run_analytics["total_successes"] or 0
@@ -1507,17 +1565,14 @@ def get_range_report():
             "upsell_offers": aggregated["upsell_offers"],
             "upsell_successes": aggregated["upsell_successes"],
             "upsell_conversion_rate": round(upsell_conversion_rate, 2),
-            "upsell_revenue": round(aggregated["upsell_revenue"], 2),
             "upsize_opportunities": aggregated["upsize_opportunities"],
             "upsize_offers": aggregated["upsize_offers"],
             "upsize_successes": aggregated["upsize_successes"],
             "upsize_conversion_rate": round(upsize_conversion_rate, 2),
-            "upsize_revenue": round(aggregated["upsize_revenue"], 2),
             "addon_opportunities": aggregated["addon_opportunities"],
             "addon_offers": aggregated["addon_offers"],
             "addon_successes": aggregated["addon_successes"],
             "addon_conversion_rate": round(addon_conversion_rate, 2),
-            "addon_revenue": round(aggregated["addon_revenue"], 2),
             "total_opportunities": aggregated["total_opportunities"],
             "total_offers": aggregated["total_offers"],
             "total_successes": aggregated["total_successes"],
@@ -1542,15 +1597,12 @@ def get_range_report():
                         "upsell_opportunities": 0,
                         "upsell_offers": 0,
                         "upsell_successes": 0,
-                        "upsell_revenue": 0.0,
                         "upsize_opportunities": 0,
                         "upsize_offers": 0,
                         "upsize_successes": 0,
-                        "upsize_revenue": 0.0,
                         "addon_opportunities": 0,
                         "addon_offers": 0,
                         "addon_successes": 0,
-                        "addon_revenue": 0.0,
                         "total_opportunities": 0,
                         "total_offers": 0,
                         "total_successes": 0,
@@ -1568,15 +1620,12 @@ def get_range_report():
                 worker_aggregated[worker_id]["upsell_opportunities"] += worker_data["upsell_opportunities"] or 0
                 worker_aggregated[worker_id]["upsell_offers"] += worker_data["upsell_offers"] or 0
                 worker_aggregated[worker_id]["upsell_successes"] += worker_data["upsell_successes"] or 0
-                worker_aggregated[worker_id]["upsell_revenue"] += float(worker_data["upsell_revenue"] or 0)
                 worker_aggregated[worker_id]["upsize_opportunities"] += worker_data["upsize_opportunities"] or 0
                 worker_aggregated[worker_id]["upsize_offers"] += worker_data["upsize_offers"] or 0
                 worker_aggregated[worker_id]["upsize_successes"] += worker_data["upsize_successes"] or 0
-                worker_aggregated[worker_id]["upsize_revenue"] += float(worker_data["upsize_revenue"] or 0)
                 worker_aggregated[worker_id]["addon_opportunities"] += worker_data["addon_opportunities"] or 0
                 worker_aggregated[worker_id]["addon_offers"] += worker_data["addon_offers"] or 0
                 worker_aggregated[worker_id]["addon_successes"] += worker_data["addon_successes"] or 0
-                worker_aggregated[worker_id]["addon_revenue"] += float(worker_data["addon_revenue"] or 0)
                 worker_aggregated[worker_id]["total_opportunities"] += worker_data["total_opportunities"] or 0
                 worker_aggregated[worker_id]["total_offers"] += worker_data["total_offers"] or 0
                 worker_aggregated[worker_id]["total_successes"] += worker_data["total_successes"] or 0
@@ -1644,17 +1693,14 @@ def get_range_report():
                 "upsell_offers": worker_data["upsell_offers"],
                 "upsell_successes": worker_data["upsell_successes"],
                 "upsell_conversion_rate": round(upsell_conversion_rate, 2),
-                "upsell_revenue": round(worker_data["upsell_revenue"], 2),
                 "upsize_opportunities": worker_data["upsize_opportunities"],
                 "upsize_offers": worker_data["upsize_offers"],
                 "upsize_successes": worker_data["upsize_successes"],
                 "upsize_conversion_rate": round(upsize_conversion_rate, 2),
-                "upsize_revenue": round(worker_data["upsize_revenue"], 2),
                 "addon_opportunities": worker_data["addon_opportunities"],
                 "addon_offers": worker_data["addon_offers"],
                 "addon_successes": worker_data["addon_successes"],
                 "addon_conversion_rate": round(addon_conversion_rate, 2),
-                "addon_revenue": round(worker_data["addon_revenue"], 2),
                 "total_opportunities": worker_data["total_opportunities"],
                 "total_offers": worker_data["total_offers"],
                 "total_successes": worker_data["total_successes"],

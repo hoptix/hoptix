@@ -421,9 +421,9 @@ const AnalyticsReportContent = ({
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <MetricCard
-                title="Total Transactions"
+                title="Complete Transactions"
                 value={data.complete_transactions}
-                subtitle="Orders processed"
+                subtitle="Graded orders"
                 icon={IconShoppingCart}
                 color="neutral"
               />
@@ -480,22 +480,18 @@ const AnalyticsReportContent = ({
                     </div>
                   </div>
                   <div className="border-t border-gray-200 pt-4">
-                    <div className="flex justify-between items-center mb-2">
+                    <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-700">Success Rate</span>
                       <Badge className={`${
                         data.upsell_offers > 0 && ((data.upsell_successes / data.upsell_offers) * 100) >= 50
                           ? 'bg-green-100 text-green-800 hover:bg-green-200'
                           : 'bg-red-100 text-red-800 hover:bg-red-200'
                       }`}>
-                        {data.upsell_offers > 0 
+                        {data.upsell_offers > 0
                           ? `${((data.upsell_successes / data.upsell_offers) * 100).toFixed(1)}%`
                           : '0%'
                         }
                       </Badge>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-700">Revenue Impact</span>
-                      <span className="font-bold text-green-600">${data.upsell_revenue?.toFixed(2) || '0.00'}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -523,22 +519,18 @@ const AnalyticsReportContent = ({
                     </div>
                   </div>
                   <div className="border-t border-gray-200 pt-4">
-                    <div className="flex justify-between items-center mb-2">
+                    <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-700">Success Rate</span>
                       <Badge className={`${
                         data.upsize_offers > 0 && ((data.upsize_successes / data.upsize_offers) * 100) >= 50
                           ? 'bg-green-100 text-green-800 hover:bg-green-200'
                           : 'bg-red-100 text-red-800 hover:bg-red-200'
                       }`}>
-                        {data.upsize_offers > 0 
+                        {data.upsize_offers > 0
                           ? `${((data.upsize_successes / data.upsize_offers) * 100).toFixed(1)}%`
                           : '0%'
                         }
                       </Badge>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-700">Revenue Impact</span>
-                      <span className="font-bold text-blue-600">${data.upsize_revenue?.toFixed(2) || '0.00'}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -566,22 +558,18 @@ const AnalyticsReportContent = ({
                     </div>
                   </div>
                   <div className="border-t border-gray-200 pt-4">
-                    <div className="flex justify-between items-center mb-2">
+                    <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-gray-700">Success Rate</span>
                       <Badge className={`${
                         data.addon_offers > 0 && ((data.addon_successes / data.addon_offers) * 100) >= 50
                           ? 'bg-green-100 text-green-800 hover:bg-green-200'
                           : 'bg-red-100 text-red-800 hover:bg-red-200'
                       }`}>
-                        {data.addon_offers > 0 
+                        {data.addon_offers > 0
                           ? `${((data.addon_successes / data.addon_offers) * 100).toFixed(1)}%`
                           : '0%'
                         }
                       </Badge>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-700">Revenue Impact</span>
-                      <span className="font-bold text-purple-600">${data.addon_revenue?.toFixed(2) || '0.00'}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -602,13 +590,13 @@ const AnalyticsReportContent = ({
 
         // Get items with activity
         const itemsWithActivity = Object.entries(detailedAnalytics).filter(([_, itemData]) => {
-          const hasSizeActivity = Object.values(itemData.sizes).some(size =>
+          const hasSizeActivity = itemData.sizes && Object.values(itemData.sizes).some(size =>
             size.upsell_base > 0 || size.upsize_base > 0 || size.addon_base > 0 ||
             size.upsell_offered > 0 || size.upsize_offered > 0 || size.addon_offered > 0
           );
-          const hasTransitions = itemData.transitions["1_to_2"] > 0 ||
+          const hasTransitions = itemData.transitions && (itemData.transitions["1_to_2"] > 0 ||
                                itemData.transitions["1_to_3"] > 0 ||
-                               itemData.transitions["2_to_3"] > 0;
+                               itemData.transitions["2_to_3"] > 0);
           return hasSizeActivity || hasTransitions;
         });
 

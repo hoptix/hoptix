@@ -51,7 +51,7 @@ def get_all_runs():
                     run["total_transcriptions"] = analytics.get("total_transactions", 0)
                     run["successful_upsells"] = analytics.get("upsell_successes", 0)
                     run["successful_upsizes"] = analytics.get("upsize_successes", 0)
-                    run["total_revenue"] = float(analytics.get("upsell_revenue", 0) or 0) + float(analytics.get("addon_revenue", 0) or 0) + float(analytics.get("upsize_revenue", 0) or 0)
+                    run["total_revenue"] = float(analytics.get("total_revenue", 0) or 0)
                 else:
                     # No analytics data found, set defaults
                     run["total_transcriptions"] = 0

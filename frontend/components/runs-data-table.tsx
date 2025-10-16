@@ -233,7 +233,7 @@ const createRunsColumns = (): ColumnDef<RunsData>[] => [
   },
   {
     accessorKey: "totalTransactions",
-    header: () => <div className="text-center">Transactions</div>,
+    header: () => <div className="text-center">Total Transactions</div>,
     cell: ({ row }) => (
       <div className="text-center font-medium">
         {row.original.totalTransactions.toLocaleString()}
@@ -358,7 +358,7 @@ const createOperatorColumns = (): ColumnDef<any>[] => [
   },
   {
     accessorKey: "total_transactions",
-    header: () => <div className="text-center">Transactions</div>,
+    header: () => <div className="text-center">Total Transactions</div>,
     cell: ({ row }) => (
       <div className="text-center font-medium">
         {row.original.total_transactions.toLocaleString()}
