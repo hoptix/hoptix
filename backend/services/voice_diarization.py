@@ -3,6 +3,8 @@ Voice Diarization Service for speaker identification using TitaNet embeddings.
 Processes audio clips to identify workers based on voice matching.
 """
 
+from __future__ import annotations
+
 import os
 import tempfile
 import uuid
