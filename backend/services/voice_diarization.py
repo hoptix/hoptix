@@ -18,6 +18,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
+# Set up logger first (before using it)
+logger = logging.getLogger(__name__)
+
 # Conditional imports for GPU dependencies
 TORCH_AVAILABLE = False
 TORCH_ERROR = None
@@ -70,8 +73,6 @@ except ImportError:
 from services.gdrive import GoogleDriveClient
 from services.monitoring import MonitoringService, retry_with_monitoring
 from config import Settings
-
-logger = logging.getLogger(__name__)
 
 # Audio file extensions
 SUPPORTED_AUDIO_EXTS = {".wav", ".mp3", ".m4a", ".flac", ".aac", ".ogg", ".wma", ".mkv", ".mp4"}
