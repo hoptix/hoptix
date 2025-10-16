@@ -19,14 +19,38 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Conditional imports for GPU dependencies
+TORCH_AVAILABLE = False
+TORCH_ERROR = None
+
 try:
     import torch
-    from nemo.collections.asr.models import EncDecSpeakerLabelModel
-    TORCH_AVAILABLE = True
-except ImportError:
+    logger.info(f"PyTorch imported successfully: {torch.__version__}")
+    logger.info(f"CUDA available: {torch.cuda.is_available()}")
+
+    try:
+        import torchaudio
+        logger.info(f"Torchaudio imported successfully: {torchaudio.__version__}")
+    except Exception as torchaudio_error:
+        logger.error(f"Torchaudio import failed: {torchaudio_error}")
+        raise
+
+    try:
+        from nemo.collections.asr.models import EncDecSpeakerLabelModel
+        logger.info("NeMo ASR models imported successfully")
+        TORCH_AVAILABLE = True
+    except Exception as nemo_error:
+        logger.error(f"NeMo import failed: {nemo_error}")
+        raise
+
+except Exception as e:
     TORCH_AVAILABLE = False
+    TORCH_ERROR = str(e)
     import warnings
-    warnings.warn("PyTorch and NeMo not available. Voice diarization will not work. Install with GPU support for production.")
+    import traceback
+    error_details = f"PyTorch/NeMo import error: {e}"
+    logger.error(error_details)
+    logger.error(f"Traceback: {traceback.format_exc()}")
+    warnings.warn(f"PyTorch and NeMo not available. Voice diarization will not work. Error: {error_details}")
 
 # Audio processing imports (these should always work)
 try:
@@ -81,7 +105,11 @@ class VoiceDiarization:
     def load_speaker_model(self):
         """Load TitaNet speaker verification model (lazy loading for GPU efficiency)."""
         if not TORCH_AVAILABLE:
-            raise RuntimeError("PyTorch and NeMo are not installed. Cannot load TitaNet model. Please use GPU-enabled deployment.")
+            error_msg = "PyTorch and NeMo are not available. Cannot load TitaNet model."
+            if TORCH_ERROR:
+                error_msg += f" Import error: {TORCH_ERROR}"
+            error_msg += " Please check the Docker build logs and ensure GPU-enabled deployment."
+            raise RuntimeError(error_msg)
 
         if self.speaker_model is None:
             logger.info("Loading TitaNet speaker verification model...")

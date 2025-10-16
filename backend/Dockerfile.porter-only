@@ -49,12 +49,14 @@ RUN pip install --upgrade pip setuptools wheel && \
     find /usr/local -name "*pydantic*" -type d -exec rm -rf {} + 2>/dev/null || true && \
     echo "=== PYDANTIC REMOVAL COMPLETE ==="
 
-# STEP 2: Create STRICT constraint file that LOCKS Pydantic v2
+# STEP 2: Create STRICT constraint file that LOCKS Pydantic v2 and PyTorch versions
 RUN echo "=== CREATING CONSTRAINTS FILE ===" && \
     echo "pydantic==2.9.2" > /tmp/constraints.txt && \
     echo "pydantic-core==2.23.4" >> /tmp/constraints.txt && \
     echo "pydantic-settings==2.6.1" >> /tmp/constraints.txt && \
     echo "typing-extensions>=4.6.1" >> /tmp/constraints.txt && \
+    echo "torch==2.0.1+cu117" >> /tmp/constraints.txt && \
+    echo "torchaudio==2.0.2+cu117" >> /tmp/constraints.txt && \
     cat /tmp/constraints.txt
 
 # STEP 3: Install Pydantic v2 with NO DEPENDENCIES (most aggressive)
@@ -109,9 +111,9 @@ RUN echo "=== INSTALLING SUPABASE WITH CONSTRAINTS ===" && \
     PIP_CONSTRAINT=/tmp/constraints.txt pip install --no-cache-dir "supabase>=2.9.0" && \
     python -c "import pydantic; assert pydantic.__version__ == '2.9.2', f'DOWNGRADED TO {pydantic.__version__}!'"
 
-# STEP 10: Install NeMo dependencies first (without PyTorch)
+# STEP 10: Install NeMo dependencies first (with constraints to prevent PyTorch upgrade)
 RUN echo "=== INSTALLING NEMO DEPENDENCIES ===" && \
-    pip install --no-cache-dir \
+    PIP_CONSTRAINT=/tmp/constraints.txt pip install --no-cache-dir \
     hydra-core>=1.3.0 \
     pytorch-lightning>=2.0.0,<2.1.0 \
     omegaconf>=2.3 \
@@ -146,7 +148,13 @@ RUN echo "=== INSTALLING NEMO DEPENDENCIES ===" && \
     sox \
     youtokentome>=1.0.6 || echo "Some NeMo dependencies installed with warnings"
 
-# STEP 10b: Install NeMo without dependencies
+# STEP 10b: Verify PyTorch versions haven't changed
+RUN echo "=== VERIFYING PYTORCH VERSIONS AFTER DEPENDENCIES ===" && \
+    python -c "import torch; assert '2.0.1' in torch.__version__, f'PyTorch version changed to {torch.__version__}'" && \
+    python -c "import torchaudio; assert '2.0.2' in torchaudio.__version__, f'Torchaudio version changed to {torchaudio.__version__}'" && \
+    echo "✓ PyTorch versions locked successfully"
+
+# STEP 10c: Install NeMo without dependencies
 RUN echo "=== INSTALLING NEMO CORE ===" && \
     pip install --no-cache-dir --no-deps nemo-toolkit[asr]==1.21.0
 
@@ -175,30 +183,42 @@ RUN echo "=== VERIFYING CRITICAL IMPORTS ===" && \
     python -c "import sys; import torch; import torchaudio; print('Python:', sys.version); print('✓ PyTorch:', torch.__version__); print('✓ Torchaudio:', torchaudio.__version__); print('✓ CUDA available:', torch.cuda.is_available())" && \
     python -c "import torch; dummy = torch.randn(1, 16000); import torchaudio.transforms as T; r = T.Resample(16000, 8000); print('✓ Torchaudio transforms: OK')" && \
     python -c "from pydub import AudioSegment; import assemblyai as aai; import librosa; print('✓ Pydub: OK'); print('✓ AssemblyAI: OK'); print('✓ Librosa: OK')" && \
+    python -c "from nemo.collections.asr.models import EncDecSpeakerLabelModel; print('✓ NeMo ASR models: OK')" && \
     python -c "print('=== ALL VOICE DEPENDENCIES INSTALLED ===')" || (echo "CRITICAL: Voice dependencies missing!" && exit 1)
 
-# STEP 14: FINAL VERIFICATION (fail build if pydantic downgraded)
-RUN echo "=== FINAL PYDANTIC VERIFICATION ===" && \
+# STEP 14: FINAL VERIFICATION (fail build if pydantic or pytorch downgraded)
+RUN echo "=== FINAL BUILD VERIFICATION ===" && \
     python -c "\
 import sys; \
+import torch; \
+import torchaudio; \
 import pydantic; \
 from pydantic import TypeAdapter, BaseModel; \
 from supabase import create_client; \
 from postgrest import AsyncPostgrestClient; \
+from nemo.collections.asr.models import EncDecSpeakerLabelModel; \
 print(''); \
 print('=' * 50); \
-print('FINAL VERIFICATION'); \
+print('FINAL BUILD VERIFICATION'); \
 print('=' * 50); \
 print(f'Python: {sys.version}'); \
+print(f'PyTorch: {torch.__version__}'); \
+print(f'Torchaudio: {torchaudio.__version__}'); \
 print(f'Pydantic: {pydantic.__version__}'); \
-print(f'Location: {pydantic.__file__}'); \
+print(f'Pydantic Location: {pydantic.__file__}'); \
+assert '2.0.1' in torch.__version__, f'FATAL: PyTorch version changed to {torch.__version__}!'; \
+assert '2.0.2' in torchaudio.__version__, f'FATAL: Torchaudio version changed to {torchaudio.__version__}!'; \
 assert pydantic.__version__ == '2.9.2', f'FATAL: Pydantic downgraded to {pydantic.__version__}!'; \
 assert 'TypeAdapter' in dir(pydantic), 'FATAL: TypeAdapter not available!'; \
+print('✓ PyTorch: Locked at 2.0.1+cu117'); \
+print('✓ Torchaudio: Locked at 2.0.2+cu117'); \
+print('✓ NeMo: Available'); \
+print('✓ Pydantic: Locked at v2.9.2'); \
 print('✓ TypeAdapter: OK'); \
 print('✓ Supabase: OK'); \
 print('✓ Postgrest: OK'); \
 print('=' * 50); \
-print('BUILD SUCCESSFUL - PYDANTIC V2 LOCKED'); \
+print('BUILD SUCCESSFUL - ALL VERSIONS LOCKED'); \
 print('=' * 50); \
 " || (echo "FATAL ERROR: Verification failed!" && exit 1)
 

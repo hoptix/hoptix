@@ -161,24 +161,57 @@ def initialize_voice_pipeline(location_id: str, date: str) -> str:
     Returns:
         Run ID for tracking
     """
-    # Insert run record with voice-specific type
-    run_data = {
-        "location_id": location_id,
-        "date": date,
-        "status": "processing",
-        "pipeline_type": "voice_diarization",
-        "started_at": datetime.utcnow().isoformat()
-    }
+    try:
+        # Get org_id for the location
+        org_response = db.client.table("locations").select("org_id").eq("id", location_id).limit(1).execute()
+        if not org_response.data:
+            raise ValueError(f"Location {location_id} not found")
+        org_id = org_response.data[0]["org_id"]
 
-    response = db.client.table("runs").insert(run_data).execute()
+        # Insert run record with voice-specific type (using correct column names)
+        run_data = {
+            "org_id": org_id,
+            "location_id": location_id,
+            "run_date": date,  # Correct column name is 'run_date', not 'date'
+            "status": "processing",
+            "pipeline_type": "voice_diarization",
+            "started_at": datetime.utcnow().isoformat()
+        }
 
-    if response.data and len(response.data) > 0:
-        run_id = response.data[0]["id"]
-        logger.info(f"Created run ID: {run_id}")
-        return run_id
-    else:
-        # Fallback: use the standard insert_run method
-        return db.insert_run(location_id, date)
+        response = db.client.table("runs").insert(run_data).execute()
+
+        if response.data and len(response.data) > 0:
+            run_id = response.data[0]["id"]
+            logger.info(f"Created run ID: {run_id}")
+            return run_id
+        else:
+            raise Exception("Failed to create run record")
+    except Exception as e:
+        logger.warning(f"Failed to create custom run record: {e}")
+        # Fallback: try different insert_run signatures based on database module
+        try:
+            # Try database.py signature (location_id, run_date)
+            if hasattr(db, 'insert_run'):
+                import inspect
+                sig = inspect.signature(db.insert_run)
+                params = list(sig.parameters.keys())
+
+                if len(params) == 2:  # database.py style: (location_id, run_date)
+                    return db.insert_run(location_id, date)
+                elif len(params) == 1:  # database_voice.py style: (data)
+                    # Get org_id again for fallback
+                    org_response = db.client.table("locations").select("org_id").eq("id", location_id).limit(1).execute()
+                    org_id = org_response.data[0]["org_id"] if org_response.data else None
+
+                    return db.insert_run({
+                        "org_id": org_id,
+                        "location_id": location_id,
+                        "run_date": date,
+                        "status": "processing"
+                    })
+        except Exception as fallback_error:
+            logger.error(f"Fallback insert_run also failed: {fallback_error}")
+            raise Exception(f"Failed to create run record: {e}, fallback also failed: {fallback_error}")
 
 
 def complete_voice_pipeline(run_id: str, results: Dict[str, int]):
