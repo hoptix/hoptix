@@ -3,9 +3,10 @@ from services.analytics import Analytics
 from services.database import Supa
 from services.auth_helpers import verify_run_ownership, verify_location_ownership, get_user_locations
 from middleware.auth import require_auth
+from services.items import ItemLookupService
 
 db = Supa()
-
+item_lookup_service = ItemLookupService()
 # Create blueprint
 analytics_bp = Blueprint('analytics', __name__, url_prefix='/api')
 
@@ -1675,3 +1676,11 @@ def get_range_report():
             "success": False,
             "error": str(e)
         }), 500
+
+@analytics_bp.route('/analytics/item-names-map', methods=['GET'])
+def get_item_names_map():
+    item_names_map = item_lookup_service.generate_item_names_map()
+    return jsonify({
+            "success": True,
+            "data": item_names_map  
+        })

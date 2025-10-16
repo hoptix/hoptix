@@ -11,15 +11,15 @@ import os
 from typing import Dict, Optional, Tuple
 import logging
 from services.database import Supa
-
 logger = logging.getLogger(__name__)
 
+db = Supa()
 class ItemLookupService:
     """Service to lookup item names from IDs using database tables"""
     
     def __init__(self, db: Supa = None, location_id: str = None):
         self.db = db
-        self.location_id = location_id
+        self.location_id = "c3607cc3-0f0c-4725-9c42-eb2fdb5e016a"
         self.items_map: Dict[int, Dict] = {}
         self.meals_map: Dict[int, Dict] = {}
         self.misc_items_map: Dict[int, Dict] = {}
@@ -43,41 +43,39 @@ class ItemLookupService:
             
             # Load items from database
             items_result = self.db.client.table("items").select(
-                "item_id, item_name, size_ids, price"
+                "*"
             ).eq("location_id", self.location_id).execute()
             
             for item in items_result.data:
                 self.items_map[item['item_id']] = {
-                    'Item ID': item['item_id'],
-                    'Item': item['item_name'],
-                    'Size IDs': item['size_ids'],
-                    'Price': item.get('price', 0.0)
+                    'item_id': item['item_id'],
+                    'item_name': item['item_name'],
+                    'item_size': item['size'],
+                    'price': item.get('price', 0.0)
                 }
             
             # Load meals from database
             meals_result = self.db.client.table("meals").select(
-                "item_id, item_name, size_ids, price"
+                "*"
             ).eq("location_id", self.location_id).execute()
             
             for meal in meals_result.data:
                 self.meals_map[meal['item_id']] = {
-                    'Item ID': meal['item_id'],
-                    'Item': meal['item_name'],
-                    'Size IDs': meal['size_ids'],
-                    'Price': meal.get('price', 0.0)
+                    'item_id': meal['item_id'],
+                    'item_name': meal['item_name'],
+                    'price': meal.get('price', 0.0)
                 }
             
             # Load add-ons from database
             addons_result = self.db.client.table("add_ons").select(
-                "item_id, item_name, size_ids, price"
+                "*"
             ).eq("location_id", self.location_id).execute()
             
             for addon in addons_result.data:
                 self.misc_items_map[addon['item_id']] =  {
-                    'Item ID': addon['item_id'],
-                    'Item': addon['item_name'],
-                    'Size IDs': addon['size_ids'],
-                    'Price': addon.get('price', 0.0)
+                    'item_id': addon['item_id'],
+                    'item_name': addon['item_name'],
+                    'price': addon.get('price', 0.0)
                 }
             
             logger.info(f"Loaded {len(self.items_map)} items, {len(self.meals_map)} meals, {len(self.misc_items_map)} add-ons from database")
@@ -119,45 +117,23 @@ class ItemLookupService:
         except Exception as e:
             logger.error(f"Error loading menu data: {e}")
             
-    def parse_item_code(self, item_code: str) -> Tuple[Optional[int], Optional[int]]:
-        """Parse item code like '22_2' into (item_id, size_id)"""
-        try:
-            if '_' in item_code:
-                parts = item_code.split('_')
-                item_id = int(parts[0])
-                size_id = int(parts[1]) if len(parts) > 1 else 0
-                return item_id, size_id
-            else:
-                return int(item_code), 0
-        except (ValueError, IndexError):
-            return None, None
+    def get_full_item_name(self, item: dict) -> str:
+        """Get human-readable item name from item code, optionally prefixing a provided size.
+
+        - item_id is the item ID
+        """
+        if item is None:
+            return ""
+        # Get the item dat
+
+        print(f"🔍 DEBUG: Got item data: {item}, item_size: {item.get('size')}, item_name: {item.get('item_name')}")
+
+        if item.get("size") and item.get("size") != "None": 
+            return item.get("size") + " " + item.get("item_name")
+        else:
+            return item.get("item_name")
     
-    def get_item_name(self, item_code: str) -> str:
-        """Get human-readable item name from item code"""
-        item_id, size_id = self.parse_item_code(item_code)
-        
-        if item_id is None:
-            return item_code  # Return original if can't parse
-        
-        # Check items first
-        if item_id in self.items_map:
-            item_data = self.items_map[item_id]
-            base_name = item_data['Item'].split('[')[0].strip()  # Remove size info in brackets
-            size_name = self.size_names.get(size_id, "")
-            return f"{size_name} {base_name}".strip()
-        
-        # Check meals
-        if item_id in self.meals_map:
-            meal_data = self.meals_map[item_id]
-            return meal_data['Item']
-        
-        # Check misc items
-        if item_id in self.misc_items_map:
-            misc_data = self.misc_items_map[item_id]
-            return misc_data['Item']
-        
-        # Fallback to original code
-        return item_code
+    
     
     def get_item_price(self, item_code: str) -> float:
         """Get item price from item code"""
@@ -188,144 +164,16 @@ class ItemLookupService:
             return float(misc_data.get('Price', 0.0))
         
         return 0.0
-    
-    def get_item_details(self, item_code: str) -> Dict:
-        """Get full item details including name, category, etc."""
-        item_id, size_id = self.parse_item_code(item_code)
-        
-        if item_id is None:
-            return {"name": item_code, "category": "Unknown", "type": "Unknown"}
-        
-        # Check items first
-        if item_id in self.items_map:
-            item_data = self.items_map[item_id]
-            base_name = item_data['Item'].split('[')[0].strip()
-            size_name = self.size_names.get(size_id, "")
-            price = self.get_item_price(f"{item_id}_{size_id}")
-            
-            return {
-                "name": f"{size_name} {base_name}".strip(),
-                "base_name": base_name,
-                "size": size_name,
-                "price": price,
-                "category": self._categorize_item(base_name),
-                "type": "Item",
-                "raw_data": item_data
-            }
-        
-        # Check meals
-        if item_id in self.meals_map:
-            meal_data = self.meals_map[item_id]
-            price = float(meal_data.get('Price', 0.0))
-            return {
-                "name": meal_data['Item'],
-                "base_name": meal_data['Item'],
-                "size": "",
-                "price": price,
-                "category": "Meal",
-                "type": "Meal", 
-                "raw_data": meal_data
-            }
-        
-        # Check misc items
-        if item_id in self.misc_items_map:
-            misc_data = self.misc_items_map[item_id]
-            price = float(misc_data.get('Price', 0.0))
-            return {
-                "name": misc_data['Item'],
-                "base_name": misc_data['Item'],
-                "size": "",
-                "price": price,
-                "category": "Add-on",
-                "type": "Misc",
-                "raw_data": misc_data
-            }
-        
-        return {"name": item_code, "category": "Unknown", "type": "Unknown"}
-    
-    def _categorize_item(self, item_name: str) -> str:
-        """Categorize items for analytics"""
-        item_lower = item_name.lower()
-        
-        if any(word in item_lower for word in ['blizzard', 'sundae', 'cone', 'shake', 'malt']):
-            return "Treats"
-        elif any(word in item_lower for word in ['burger', 'sandwich', 'hot dog', 'chicken']):
-            return "Entrees"
-        elif any(word in item_lower for word in ['fries', 'onion ring', 'cheese curd']):
-            return "Sides"
-        elif any(word in item_lower for word in ['drink', 'coke', 'sprite', 'tea', 'coffee']):
-            return "Beverages"
-        else:
-            return "Other"
-    
-    def enhance_analytics_data(self, analytics_data: Dict) -> Dict:
-        """Enhance analytics data by replacing item codes with names"""
-        enhanced_data = analytics_data.copy()
-        
-        # Helper function to enhance item breakdown sections
-        def enhance_item_breakdown(item_breakdown: Dict) -> Dict:
-            enhanced_breakdown = {}
-            for item_code, stats in item_breakdown.items():
-                item_name = self.get_item_name(item_code)
-                enhanced_breakdown[item_name] = stats
-            return enhanced_breakdown
-        
-        # Enhance main analytics sections (legacy format)
-        for category in ["upselling", "upsizing", "addons"]:
-            if category in enhanced_data and "by_item" in enhanced_data[category]:
-                enhanced_data[category]["by_item"] = enhance_item_breakdown(
-                    enhanced_data[category]["by_item"]
-                )
-        
-        # Enhance operator analytics (legacy format)
-        if "operator_analytics" in enhanced_data:
-            for category in ["upselling", "upsizing", "addons"]:
-                if category in enhanced_data["operator_analytics"]:
-                    for operator, operator_data in enhanced_data["operator_analytics"][category].items():
-                        if "by_item" in operator_data:
-                            enhanced_data["operator_analytics"][category][operator]["by_item"] = enhance_item_breakdown(
-                                operator_data["by_item"]
-                            )
-        
-        # Enhance store analytics (new structured format)
-        if "store" in enhanced_data:
-            store_data = enhanced_data["store"]
-            
-            # Enhance store-level item breakdowns
-            for category in ["upselling", "upsizing", "addons"]:
-                if category in store_data and "item_breakdown" in store_data[category]:
-                    store_data[category]["item_breakdown"] = enhance_item_breakdown(
-                        store_data[category]["item_breakdown"]
-                    )
-            
-            # Enhance operator-level item breakdowns
-            if "operators" in store_data:
-                for operator_name, operator_data in store_data["operators"].items():
-                    for category in ["upselling", "upsizing", "addons"]:
-                        if category in operator_data and "item_breakdown" in operator_data[category]:
-                            operator_data[category]["item_breakdown"] = enhance_item_breakdown(
-                                operator_data[category]["item_breakdown"]
-                            )
-        
-        # Enhance top performing items
-        if "top_performing_items" in enhanced_data:
-            top_items = enhanced_data["top_performing_items"]
-            
-            for category in ["most_frequent_items", "highest_success_rate_items", "most_successful_items"]:
-                if category in top_items:
-                    enhanced_category = {}
-                    for item_code, stats in top_items[category].items():
-                        item_name = self.get_item_name(item_code)
-                        enhanced_category[item_name] = stats
-                    enhanced_data["top_performing_items"][category] = enhanced_category
-        
-        return enhanced_data
 
-# Global instance
-_item_lookup_service = None
+    def generate_item_names_map(self):
+        """Generate a map of item IDs to item names"""
+        item_names_map = {}
 
-def get_item_lookup_service(db=None, location_id=None) -> ItemLookupService:
-    """Get instance of ItemLookupService with optional database connection"""
-    # Create a new instance each time to handle different locations
-    # In production, you might want to cache these by location_id
-    return ItemLookupService(db, location_id)
+        items = db.get_all_item_ids(self.location_id)
+
+        print(f"🔍 DEBUG: Got {len(items)} items")
+
+        for item in items: 
+            item_names_map[item['item_id']] = self.get_full_item_name(item)
+
+        return item_names_map

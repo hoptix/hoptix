@@ -283,3 +283,33 @@ class Supa:
         """Get operator monthly feedback from the database"""
         result = self.client.table("workers").select("monthly_feedback").eq("id", operator_id).execute()
         return result.data[0]["monthly_feedback"] if result.data else None
+
+    def get_item_by_id(self, item_id: str):
+        """Get item by ID"""
+        result = self.client.table("items").select("*").eq("item_id", item_id).execute()
+        return result.data[0] if result.data else None
+    
+    def get_item_meal_addon_by_id(self, item_id: str):
+        """Get meal, addon, or item by ID"""
+
+        result = self.client.table("meals").select("*").eq("item_id", item_id).execute()
+        print(f"🔍 DEBUG: Got meal data: {result.data}")
+        if result.data:
+            return result.data[0]
+        
+        result = self.client.table("add_ons").select("*").eq("item_id", item_id).execute()
+        if result.data:
+            return result.data[0]
+        
+        result = self.client.table("items").select("*").eq("item_id", item_id).execute()
+        if result.data:
+            return result.data[0]
+        
+        return None
+   
+    def get_all_item_ids(self, location_id: str):
+        """Get all item IDs for a location"""
+        result = self.client.table("items").select("*").eq("location_id", location_id).execute()
+        result.data.extend(self.client.table("meals").select("*").eq("location_id", location_id).execute().data)
+        result.data.extend(self.client.table("add_ons").select("*").eq("location_id", location_id).execute().data)
+        return result.data
