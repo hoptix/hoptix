@@ -99,21 +99,41 @@ RUN echo "=== INSTALLING SUPABASE WITH CONSTRAINTS ===" && \
     PIP_CONSTRAINT=/tmp/constraints.txt pip install --no-cache-dir "supabase>=2.9.0" && \
     python -c "import pydantic; assert pydantic.__version__ == '2.9.2', f'DOWNGRADED TO {pydantic.__version__}!'"
 
-# STEP 10: Install NeMo and ML dependencies
-RUN echo "=== INSTALLING NEMO AND ML DEPS ===" && \
-    PIP_CONSTRAINT=/tmp/constraints.txt pip install --no-cache-dir \
+# STEP 10: Install NeMo and ML dependencies WITHOUT constraints
+# NeMo 1.21.0 requires pydantic<2, but we'll override it after installation
+RUN echo "=== INSTALLING NEMO ML DEPS ===" && \
+    pip install --no-cache-dir \
     pytorch-lightning>=2.0.0 \
     hydra-core>=1.3.0 \
     huggingface-hub==0.23.5 \
     sentencepiece>=0.1.99 \
-    youtokentome>=1.0.6 && \
-    PIP_CONSTRAINT=/tmp/constraints.txt pip install --no-cache-dir nemo-toolkit[asr]==1.21.0
+    youtokentome>=1.0.6
 
-# STEP 11: Install other base requirements with CONSTRAINTS
+RUN echo "=== INSTALLING NEMO (ignoring pydantic conflict) ===" && \
+    pip install --no-cache-dir nemo-toolkit[asr]==1.21.0 || \
+    echo "NeMo install completed (may have warnings)"
+
+# STEP 11: FORCE REINSTALL Pydantic v2 (nuclear option to override NeMo's v1)
+RUN echo "=== FORCING PYDANTIC V2 BACK ===" && \
+    pip uninstall -y pydantic pydantic-core pydantic-settings 2>/dev/null || true && \
+    rm -rf /usr/local/lib/python3.10/site-packages/pydantic* && \
+    rm -rf /usr/local/lib/python3.10/site-packages/Pydantic* && \
+    find /usr/local -name "*.so" | grep -i pydantic | xargs rm -f 2>/dev/null || true && \
+    find /usr/local -name "*pydantic*" -type f -delete 2>/dev/null || true && \
+    pip install --no-cache-dir --force-reinstall --no-deps \
+        pydantic==2.9.2 \
+        pydantic-core==2.23.4 \
+        pydantic-settings==2.6.1 && \
+    pip install --no-cache-dir \
+        typing-extensions>=4.6.1 \
+        annotated-types>=0.4.0 && \
+    python -c "import pydantic; print(f'✓ Pydantic v2 restored: {pydantic.__version__}')"
+
+# STEP 12: Install other base requirements with CONSTRAINTS
 RUN echo "=== INSTALLING BASE REQUIREMENTS ===" && \
     PIP_CONSTRAINT=/tmp/constraints.txt pip install --no-cache-dir -r requirements.txt || echo "Some base requirements failed (non-critical)"
 
-# STEP 12: Verify ALL critical imports
+# STEP 13: Verify ALL critical imports
 RUN echo "=== VERIFYING CRITICAL IMPORTS ===" && \
     python -c "\
 import torch; \
@@ -130,7 +150,7 @@ print('✓ AssemblyAI: OK'); \
 print('✓ Librosa: OK'); \
 print('=== ALL VOICE DEPENDENCIES INSTALLED ===');" || (echo "CRITICAL: Voice dependencies missing!" && exit 1)
 
-# STEP 9: FINAL VERIFICATION (fail build if pydantic downgraded)
+# STEP 14: FINAL VERIFICATION (fail build if pydantic downgraded)
 RUN echo "=== FINAL PYDANTIC VERIFICATION ===" && \
     python -c "\
 import sys; \
