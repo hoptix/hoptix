@@ -25,7 +25,7 @@ WORKDIR /app
 
 # Copy requirements files from backend directory (build context is repo root)
 COPY backend/requirements.txt ./requirements.txt
-COPY backend/requirements-voice.txt ./requirements-voice.txt
+COPY backend/requirements-voice-minimal.txt ./requirements-voice-minimal.txt
 
 # Install dependencies in order
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
@@ -37,8 +37,8 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
     pip install --no-cache-dir torchaudio==2.0.0 && \
     # Install base requirements
     pip install --no-cache-dir --ignore-installed blinker -r requirements.txt && \
-    # Install voice-specific requirements
-    pip install --no-cache-dir -r requirements-voice.txt || true && \
+    # Install voice-specific requirements (minimal set for space savings)
+    pip install --no-cache-dir -r requirements-voice-minimal.txt || true && \
     # Clean up
     rm -rf ~/.cache/pip /tmp/* /var/tmp/* && \
     find /opt/conda/lib/python*/site-packages -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true && \
