@@ -86,7 +86,7 @@ def split_into_transactions(transcript_segments: List[Dict], date: str, audio_st
                     "audio_start_seconds": s_rel,
                     "audio_end_seconds": e_rel,
                     "segment_index": i,
-                    "total_segments_in_audio": len(parts)
+                    "total_segments_in_audio": len(normalized_parts)
                 }
             })
     return results
