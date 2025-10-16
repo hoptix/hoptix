@@ -66,21 +66,18 @@ interface RunAnalytics {
   upsell_offers: number
   upsell_successes: number
   upsell_conversion_rate: number
-  upsell_revenue: number
 
   // Upsizing metrics
   upsize_opportunities: number
   upsize_offers: number
   upsize_successes: number
   upsize_conversion_rate: number
-  upsize_revenue: number
 
   // Add-on metrics
   addon_opportunities: number
   addon_offers: number
   addon_successes: number
   addon_conversion_rate: number
-  addon_revenue: number
 
   // Overall metrics
   total_opportunities: number
@@ -91,6 +88,7 @@ interface RunAnalytics {
 
   // Detailed analytics with per-item breakdown
   detailed_analytics?: string // JSON string containing item analytics
+  detailed_revenue?: string // JSON string containing revenue map 
 }
 
 const fetchRunAnalytics = async (runId: string): Promise<{ success: boolean; data: RunAnalytics }> => {

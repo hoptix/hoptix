@@ -25,6 +25,8 @@ import {
 } from "@tabler/icons-react"
 
 import { useGetRunAnalytics, useGetWorkerAnalytics, type RunAnalytics, type OperatorMetrics, type ItemAnalytics, type SizeMetrics, type DetailedAnalytics, type WorkerAnalytics } from "@/hooks/getRunAnalytics"
+import { useItemNames } from "@/hooks/useItemNames"
+import { UNKNOWN_ITEM_NAME, type ItemNamesMap } from "@/constants/items"
 import { useRunAIFeedback } from "@/hooks/useRunAIFeedback"
 import { RunAIFeedbackDisplay } from "@/components/run-ai-feedback-display"
 import { Button } from "@/components/ui/button"
@@ -96,138 +98,63 @@ const MetricCard = ({
   )
 }
 
-// Component for displaying size transition data
-const SizeTransitionCard = ({ itemId, itemName, transitions }: { itemId: string, itemName: string, transitions: ItemAnalytics['transitions'] }) => {
-  const totalTransitions = transitions["1_to_2"] + transitions["1_to_3"] + transitions["2_to_3"];
-  
-  if (totalTransitions === 0) {
-    return null; // Don't show items with no transitions
-  }
 
-  const transitionData = [
-    { key: "1_to_2", label: "Small → Medium", value: transitions["1_to_2"], color: "blue" },
-    { key: "1_to_3", label: "Small → Large", value: transitions["1_to_3"], color: "green" },
-    { key: "2_to_3", label: "Medium → Large", value: transitions["2_to_3"], color: "purple" }
-  ].filter(item => item.value > 0);
-
-  if (transitionData.length === 0) return null;
-
-  return (
-    <Card className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-xl font-bold text-gray-900">{itemName}</CardTitle>
-            <p className="text-sm text-gray-600 mt-1">Size upgrade transitions</p>
-          </div>
-          <div className="text-right">
-            <div className="text-2xl font-bold text-gray-900">{totalTransitions}</div>
-            <div className="text-xs text-gray-500 uppercase tracking-wide">Total Upgrades</div>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          {transitionData.map(({ key, label, value, color }) => {
-            const percentage = totalTransitions > 0 ? (value / totalTransitions * 100) : 0;
-            const colorClasses = {
-              blue: "bg-blue-50 border-blue-200 text-blue-700",
-              green: "bg-green-50 border-green-200 text-green-700", 
-              purple: "bg-purple-50 border-purple-200 text-purple-700"
-            };
-            
-            return (
-              <div key={key} className={`p-4 rounded-lg border ${colorClasses[color as keyof typeof colorClasses]}`}>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="font-semibold">{label}</div>
-                  <div className="text-2xl font-bold">{value}</div>
-                </div>
-                <div className="w-full bg-white/50 rounded-full h-2">
-                  <div 
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      color === 'blue' ? 'bg-blue-500' : 
-                      color === 'green' ? 'bg-green-500' : 'bg-purple-500'
-                    }`}
-                    style={{ width: `${percentage}%` }}
-                  ></div>
-                </div>
-                <div className="text-xs mt-1 opacity-75">{percentage.toFixed(1)}% of total upgrades</div>
-              </div>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
-
-// Component for displaying items suggestively sold
-const ItemsSuggestivelySoldTable = ({ items }: { items: [string, ItemAnalytics][] }) => {
+// Component for displaying detailed item analytics
+const DetailedAnalyticsTable = ({ itemPerformance, itemNamesMap }: { itemPerformance: Record<string, any>, itemNamesMap: ItemNamesMap }) => {
   const [page, setPage] = useState(1);
   const pageSize = 10;
-  const [sortKey, setSortKey] = useState<
-    'name' | 'upsellBase' | 'upsellOffered' | 'upsellSold' | 'upsizeBase' | 'upsizeOffered' | 'upsizeSold' | 'addonBase' | 'addonOffered' | 'addonSold'
-  >('name');
-  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [filterQuery, setFilterQuery] = useState<string>('');
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
-  const getItemTotals = (itemData: ItemAnalytics) => {
-    const sizeEntries = Object.entries(itemData.sizes);
-    return sizeEntries.reduce((acc, [_, metrics]) => ({
-      upsell: {
-        candidates: (acc.upsell.candidates || 0) + (metrics.upsell_candidates || 0),
-        offered: (acc.upsell.offered || 0) + (metrics.upsell_offered || 0),
-        sold: (acc.upsell.sold || 0) + (metrics.upsell_base_sold || 0)
-      },
-      upsize: {
-        candidates: (acc.upsize.candidates || 0) + (metrics.upsize_candidates || 0),
-        offered: (acc.upsize.offered || 0) + (metrics.upsize_offered || 0),
-        sold: (acc.upsize.sold || 0) + (metrics.upsize_base_sold || 0)
-      },
-      addon: {
-        candidates: (acc.addon.candidates || 0) + (metrics.addon_candidates || 0),
-        offered: (acc.addon.offered || 0) + (metrics.addon_offered || 0),
-        sold: (acc.addon.sold || 0) + (metrics.addon_base_sold || 0)
-      }
-    }), {
-      upsell: { candidates: 0, offered: 0, sold: 0 },
-      upsize: { candidates: 0, offered: 0, sold: 0 },
-      addon: { candidates: 0, offered: 0, sold: 0 }
-    });
+  // Safely extract category metrics with fallbacks to 0
+  const getCategory = (data: any, category: 'upsell' | 'upsize' | 'addon') => {
+    return {
+      opportunities: Number(data?.[category]?.opportunities ?? 0),
+      offers: Number(data?.[category]?.offers ?? 0),
+      conversions: Number(data?.[category]?.conversions ?? 0),
+      revenue: Number(data?.[category]?.revenue ?? 0),
+    };
   };
 
-  const filteredItems = items.filter(([_, itemData]) => {
+  // Get items_count map entries for a category
+  const getItemsCountEntries = (data: any, category: 'upsell' | 'upsize' | 'addon') => {
+    const itemsCount = data?.[category]?.items_count || {};
+    return Object.entries(itemsCount) as [string, any][];
+  };
+
+  const filteredItems = Object.entries(itemPerformance).filter(([itemId, _]) => {
     if (!filterQuery.trim()) return true;
-    return itemData.name.toLowerCase().includes(filterQuery.trim().toLowerCase());
+    const name = itemNamesMap[itemId] || UNKNOWN_ITEM_NAME;
+    const q = filterQuery.trim().toLowerCase();
+    return itemId.toLowerCase().includes(q) || name.toLowerCase().includes(q);
   });
 
-  const withComputed = filteredItems.map(([itemId, itemData]) => {
-    const totals = getItemTotals(itemData);
-    const totalOffers = (totals.upsell.offered || 0) + (totals.upsize.offered || 0) + (totals.addon.offered || 0);
-    const totalOpportunities = (totals.upsell.candidates || 0) + (totals.upsize.candidates || 0) + (totals.addon.candidates || 0);
-    const totalConversions = (totals.upsell.sold || 0) + (totals.upsize.sold || 0) + (totals.addon.sold || 0);
-    return { itemId, itemData, totals, totalOffers, totalOpportunities, totalConversions };
-  });
-
-  const sorted = [...withComputed]
-    .filter((x) => (x.totalOffers || 0) > 0)
-    .sort((a, b) => (b.totalOffers || 0) - (a.totalOffers || 0));
+  const sorted = [...filteredItems]
+    .filter(([_, data]) => {
+      const u = getCategory(data as any, 'upsell');
+      const z = getCategory(data as any, 'upsize');
+      const a = getCategory(data as any, 'addon');
+      const totalActivity = u.opportunities + u.offers + u.conversions +
+                           z.opportunities + z.offers + z.conversions +
+                           a.opportunities + a.offers + a.conversions;
+      return totalActivity > 0;
+    })
+    .sort((a, b) => {
+      const au = getCategory(a[1] as any, 'upsell');
+      const az = getCategory(a[1] as any, 'upsize');
+      const aa = getCategory(a[1] as any, 'addon');
+      const bu = getCategory(b[1] as any, 'upsell');
+      const bz = getCategory(b[1] as any, 'upsize');
+      const ba = getCategory(b[1] as any, 'addon');
+      const aTotal = au.opportunities + au.offers + au.conversions + az.opportunities + az.offers + az.conversions + aa.opportunities + aa.offers + aa.conversions;
+      const bTotal = bu.opportunities + bu.offers + bu.conversions + bz.opportunities + bz.offers + bz.conversions + ba.opportunities + ba.offers + ba.conversions;
+      return bTotal - aTotal;
+    });
 
   const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
   const currentPage = Math.min(page, totalPages);
   const start = (currentPage - 1) * pageSize;
   const pageItems = sorted.slice(start, start + pageSize);
-
-  const setSort = (key: typeof sortKey) => {
-    if (sortKey === key) {
-      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortKey(key);
-      setSortDir('asc');
-    }
-    setPage(1);
-  };
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
@@ -238,24 +165,12 @@ const ItemsSuggestivelySoldTable = ({ items }: { items: [string, ItemAnalytics][
             type="text"
             value={filterQuery}
             onChange={(e) => { setFilterQuery(e.target.value); setPage(1); }}
-            placeholder="Filter items by name..."
+            placeholder="Filter items by ID..."
             className="w-full md:w-72 px-3 py-2 text-sm border border-gray-300 rounded"
           />
         </div>
         <div className="text-xs text-gray-600">
-          <span className="mr-3">Sorting by: <span className="font-medium">{
-            sortKey === 'name' ? 'Item' :
-            sortKey === 'upsellBase' ? 'Upsell Base' :
-            sortKey === 'upsellOffered' ? 'Upsell Offered' :
-            sortKey === 'upsellSold' ? 'Upsell Sold' :
-            sortKey === 'upsizeBase' ? 'Upsize Base' :
-            sortKey === 'upsizeOffered' ? 'Upsize Offered' :
-            sortKey === 'upsizeSold' ? 'Upsize Sold' :
-            sortKey === 'addonBase' ? 'Add-on Base' :
-            sortKey === 'addonOffered' ? 'Add-on Offered' :
-            'Add-on Sold'
-          } ({sortDir.toUpperCase()})</span></span>
-          <span>Filter: <span className="font-medium">{filterQuery.trim() ? `name contains "${filterQuery.trim()}"` : 'None'}</span></span>
+          <span>Filter: <span className="font-medium">{filterQuery.trim() ? `ID contains "${filterQuery.trim()}"` : 'None'}</span></span>
         </div>
       </div>
 
@@ -263,24 +178,21 @@ const ItemsSuggestivelySoldTable = ({ items }: { items: [string, ItemAnalytics][
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                <button onClick={() => setSort('name')} className="flex items-center space-x-1">
-                  <span>Item</span>
-                  <span className="text-gray-400 text-[10px]">{sortKey==='name' ? (sortDir==='asc'?'▲':'▼') : ''}</span>
-                </button>
-              </th>
-              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Offers</th>
-              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Opportunities</th>
-              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Conversions</th>
+              <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Activity</th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Upsell (Offers/Opps)</th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Upsize (Offers/Opps)</th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Add-on (Offers/Opps)</th>
               <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {pageItems.map(({ itemId, itemData, totals }) => {
+            {pageItems.map(([itemId, data]) => {
               const isExpanded = expandedItems.has(itemId);
-              const totalOffers = totals.upsell.offered + totals.upsize.offered + totals.addon.offered;
-              const totalOpportunities = (totals.upsell.candidates || 0) + (totals.upsize.candidates || 0) + (totals.addon.candidates || 0);
-              const totalConversions = totals.upsell.sold + totals.upsize.sold + totals.addon.sold;
+              const u = getCategory(data as any, 'upsell');
+              const z = getCategory(data as any, 'upsize');
+              const a = getCategory(data as any, 'addon');
+              const totalActivity = u.opportunities + u.offers + u.conversions + z.opportunities + z.offers + z.conversions + a.opportunities + a.offers + a.conversions;
 
               return (
                 <React.Fragment key={itemId}>
@@ -301,15 +213,30 @@ const ItemsSuggestivelySoldTable = ({ items }: { items: [string, ItemAnalytics][
                             <IconChevronRight className="h-4 w-4 text-gray-400" />
                           )}
                           <div>
-                            <div className="text-sm font-medium text-gray-900">{itemData.name}</div>
-                            <div className="text-xs text-gray-500">Click to expand details</div>
+                            <div className="text-sm font-medium text-gray-900">{itemNamesMap[itemId] || UNKNOWN_ITEM_NAME}</div>
+                            <div className="text-xs text-gray-500">ID: {itemId} • Click to expand details</div>
                           </div>
                         </button>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center"><div className="text-sm font-semibold text-gray-900">{totalOffers}</div></td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center"><div className="text-sm font-semibold text-gray-900">{totalOpportunities}</div></td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center"><div className="text-sm font-semibold text-gray-900">{totalConversions}</div></td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <div className="text-sm font-semibold text-gray-900">{totalActivity}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <div className="text-sm font-semibold text-green-600">
+                        {u.offers}/{u.opportunities}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <div className="text-sm font-semibold text-blue-600">
+                        {z.offers}/{z.opportunities}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <div className="text-sm font-semibold text-purple-600">
+                        {a.offers}/{a.opportunities}
+                      </div>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       <button
                         onClick={() => {
@@ -326,45 +253,141 @@ const ItemsSuggestivelySoldTable = ({ items }: { items: [string, ItemAnalytics][
 
                   {isExpanded && (
                     <tr>
-                      <td colSpan={5} className="px-6 py-4 bg-gray-50">
+                      <td colSpan={6} className="px-6 py-4 bg-gray-50">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          {(totals.upsell.candidates || totals.upsell.offered || totals.upsell.sold) > 0 && (
+                          {(u.opportunities || u.offers || u.conversions) > 0 && (
                             <div className="bg-white p-4 rounded-lg border border-gray-200">
                               <div className="flex items-center space-x-2 mb-3">
                                 <IconTrendingUp className="h-4 w-4 text-green-600" />
                                 <h4 className="font-semibold text-gray-900">Upselling</h4>
                               </div>
                               <div className="grid grid-cols-3 gap-2 text-sm">
-                                <div className="text-center"><div className="font-semibold text-blue-600">{totals.upsell.candidates || 0}</div><div className="text-xs text-gray-500">Opportunities</div></div>
-                                <div className="text-center"><div className="font-semibold text-orange-600">{totals.upsell.offered}</div><div className="text-xs text-gray-500">Offered</div></div>
-                                <div className="text-center"><div className="font-semibold text-green-600">{totals.upsell.sold}</div><div className="text-xs text-gray-500">Conversions</div></div>
+                                <div className="text-center"><div className="font-semibold text-blue-600">{u.opportunities}</div><div className="text-xs text-gray-500">Opportunities</div></div>
+                                <div className="text-center"><div className="font-semibold text-orange-600">{u.offers}</div><div className="text-xs text-gray-500">Offered</div></div>
+                                <div className="text-center"><div className="font-semibold text-green-600">{u.conversions}</div><div className="text-xs text-gray-500">Conversions</div></div>
                               </div>
+                              {/* Per-target item breakdown */}
+                              {(() => {
+                                const entries = getItemsCountEntries(data, 'upsell');
+                                if (!entries.length) return null;
+                                return (
+                                  <div className="mt-4">
+                                    <div className="text-xs font-semibold text-gray-700 mb-2">By Item</div>
+                                    <div className="overflow-x-auto">
+                                      <table className="w-full text-sm">
+                                        <thead className="bg-gray-50 border-b">
+                                          <tr>
+                                            <th className="px-3 py-2 text-left text-gray-600">Item</th>
+                                            <th className="px-3 py-2 text-center text-gray-600">Opps</th>
+                                            <th className="px-3 py-2 text-center text-gray-600">Offers</th>
+                                            <th className="px-3 py-2 text-center text-gray-600">Conv</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {entries.map(([targetId, counts]) => (
+                                            <tr key={`upsell-${targetId}`} className="border-b last:border-b-0">
+                                              <td className="px-3 py-2 text-gray-900">{itemNamesMap[targetId] || UNKNOWN_ITEM_NAME} <span className="text-xs text-gray-500">({targetId})</span></td>
+                                              <td className="px-3 py-2 text-center">{Number(counts?.opportunities ?? 0)}</td>
+                                              <td className="px-3 py-2 text-center">{Number(counts?.offers ?? 0)}</td>
+                                              <td className="px-3 py-2 text-center">{Number(counts?.conversions ?? 0)}</td>
+                                            </tr>
+                                          ))}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </div>
+                                );
+                              })()}
                             </div>
                           )}
-                          {(totals.upsize.candidates || totals.upsize.offered || totals.upsize.sold) > 0 && (
+                          {(z.opportunities || z.offers || z.conversions) > 0 && (
                             <div className="bg-white p-4 rounded-lg border border-gray-200">
                               <div className="flex items-center space-x-2 mb-3">
                                 <IconTarget className="h-4 w-4 text-blue-600" />
                                 <h4 className="font-semibold text-gray-900">Upsizing</h4>
                               </div>
                               <div className="grid grid-cols-3 gap-2 text-sm">
-                                <div className="text-center"><div className="font-semibold text-blue-600">{totals.upsize.candidates || 0}</div><div className="text-xs text-gray-500">Opportunities</div></div>
-                                <div className="text-center"><div className="font-semibold text-orange-600">{totals.upsize.offered}</div><div className="text-xs text-gray-500">Offered</div></div>
-                                <div className="text-center"><div className="font-semibold text-green-600">{totals.upsize.sold}</div><div className="text-xs text-gray-500">Conversions</div></div>
+                                <div className="text-center"><div className="font-semibold text-blue-600">{z.opportunities}</div><div className="text-xs text-gray-500">Opportunities</div></div>
+                                <div className="text-center"><div className="font-semibold text-orange-600">{z.offers}</div><div className="text-xs text-gray-500">Offered</div></div>
+                                <div className="text-center"><div className="font-semibold text-green-600">{z.conversions}</div><div className="text-xs text-gray-500">Conversions</div></div>
                               </div>
+                              {/* Per-target item breakdown */}
+                              {(() => {
+                                const entries = getItemsCountEntries(data, 'upsize');
+                                if (!entries.length) return null;
+                                return (
+                                  <div className="mt-4">
+                                    <div className="text-xs font-semibold text-gray-700 mb-2">By Item</div>
+                                    <div className="overflow-x-auto">
+                                      <table className="w-full text-sm">
+                                        <thead className="bg-gray-50 border-b">
+                                          <tr>
+                                            <th className="px-3 py-2 text-left text-gray-600">Item</th>
+                                            <th className="px-3 py-2 text-center text-gray-600">Opps</th>
+                                            <th className="px-3 py-2 text-center text-gray-600">Offers</th>
+                                            <th className="px-3 py-2 text-center text-gray-600">Conv</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {entries.map(([targetId, counts]) => (
+                                            <tr key={`upsize-${targetId}`} className="border-b last:border-b-0">
+                                              <td className="px-3 py-2 text-gray-900">{itemNamesMap[targetId] || UNKNOWN_ITEM_NAME} <span className="text-xs text-gray-500">({targetId})</span></td>
+                                              <td className="px-3 py-2 text-center">{Number(counts?.opportunities ?? 0)}</td>
+                                              <td className="px-3 py-2 text-center">{Number(counts?.offers ?? 0)}</td>
+                                              <td className="px-3 py-2 text-center">{Number(counts?.conversions ?? 0)}</td>
+                                            </tr>
+                                          ))}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </div>
+                                );
+                              })()}
                             </div>
                           )}
-                          {(totals.addon.candidates || totals.addon.offered || totals.addon.sold) > 0 && (
+                          {(a.opportunities || a.offers || a.conversions) > 0 && (
                             <div className="bg-white p-4 rounded-lg border border-gray-200">
                               <div className="flex items-center space-x-2 mb-3">
                                 <IconShoppingCart className="h-4 w-4 text-purple-600" />
                                 <h4 className="font-semibold text-gray-900">Add-ons</h4>
                               </div>
                               <div className="grid grid-cols-3 gap-2 text-sm">
-                                <div className="text-center"><div className="font-semibold text-blue-600">{totals.addon.candidates || 0}</div><div className="text-xs text-gray-500">Opportunities</div></div>
-                                <div className="text-center"><div className="font-semibold text-orange-600">{totals.addon.offered}</div><div className="text-xs text-gray-500">Offered</div></div>
-                                <div className="text-center"><div className="font-semibold text-green-600">{totals.addon.sold}</div><div className="text-xs text-gray-500">Conversions</div></div>
+                                <div className="text-center"><div className="font-semibold text-blue-600">{a.opportunities}</div><div className="text-xs text-gray-500">Opportunities</div></div>
+                                <div className="text-center"><div className="font-semibold text-orange-600">{a.offers}</div><div className="text-xs text-gray-500">Offered</div></div>
+                                <div className="text-center"><div className="font-semibold text-green-600">{a.conversions}</div><div className="text-xs text-gray-500">Conversions</div></div>
                               </div>
+                              {/* Per-target item breakdown */}
+                              {(() => {
+                                const entries = getItemsCountEntries(data, 'addon');
+                                if (!entries.length) return null;
+                                return (
+                                  <div className="mt-4">
+                                    <div className="text-xs font-semibold text-gray-700 mb-2">By Item</div>
+                                    <div className="overflow-x-auto">
+                                      <table className="w-full text-sm">
+                                        <thead className="bg-gray-50 border-b">
+                                          <tr>
+                                            <th className="px-3 py-2 text-left text-gray-600">Item</th>
+                                            <th className="px-3 py-2 text-center text-gray-600">Opps</th>
+                                            <th className="px-3 py-2 text-center text-gray-600">Offers</th>
+                                            <th className="px-3 py-2 text-center text-gray-600">Conv</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {entries.map(([targetId, counts]) => (
+                                            <tr key={`addon-${targetId}`} className="border-b last:border-b-0">
+                                              <td className="px-3 py-2 text-gray-900">{itemNamesMap[targetId] || UNKNOWN_ITEM_NAME} <span className="text-xs text-gray-500">({targetId})</span></td>
+                                              <td className="px-3 py-2 text-center">{Number(counts?.opportunities ?? 0)}</td>
+                                              <td className="px-3 py-2 text-center">{Number(counts?.offers ?? 0)}</td>
+                                              <td className="px-3 py-2 text-center">{Number(counts?.conversions ?? 0)}</td>
+                                            </tr>
+                                          ))}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </div>
+                                );
+                              })()}
                             </div>
                           )}
                         </div>
@@ -401,15 +424,125 @@ const ItemsSuggestivelySoldTable = ({ items }: { items: [string, ItemAnalytics][
   );
 };
 
+// Component for displaying revenue by item
+const RevenueTable = ({ revenueMap, itemNamesMap }: { revenueMap: Record<string, number>, itemNamesMap: ItemNamesMap }) => {
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const [filterQuery, setFilterQuery] = useState<string>('');
+
+  const filteredItems = Object.entries(revenueMap).filter(([itemId, _]) => {
+    if (!filterQuery.trim()) return true;
+    const name = itemNamesMap[itemId] || UNKNOWN_ITEM_NAME;
+    const q = filterQuery.trim().toLowerCase();
+    return itemId.toLowerCase().includes(q) || name.toLowerCase().includes(q);
+  });
+
+  const sorted = [...filteredItems]
+    .filter(([_, revenue]) => revenue > 0)
+    .sort((a, b) => b[1] - a[1]);
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const start = (currentPage - 1) * pageSize;
+  const pageItems = sorted.slice(start, start + pageSize);
+
+  const totalRevenue = Object.values(revenueMap).reduce((sum, revenue) => sum + revenue, 0);
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+      {/* Header with total revenue */}
+      <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900">Revenue by Item</h3>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-green-600">${totalRevenue.toFixed(2)}</div>
+            <div className="text-xs text-gray-500">Total Revenue</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 py-3 bg-gray-50 border-b border-gray-200 space-y-3 md:space-y-0">
+        <div className="flex items-center space-x-2">
+          <input
+            type="text"
+            value={filterQuery}
+            onChange={(e) => { setFilterQuery(e.target.value); setPage(1); }}
+            placeholder="Filter items by ID..."
+            className="w-full md:w-72 px-3 py-2 text-sm border border-gray-300 rounded"
+          />
+        </div>
+        <div className="text-xs text-gray-600">
+          <span>Filter: <span className="font-medium">{filterQuery.trim() ? `ID contains "${filterQuery.trim()}"` : 'None'}</span></span>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+              <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue Generated</th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">% of Total</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {pageItems.map(([itemId, revenue]) => {
+              const percentage = totalRevenue > 0 ? (revenue / totalRevenue * 100) : 0;
+              return (
+                <tr key={itemId} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">{itemNamesMap[itemId] || UNKNOWN_ITEM_NAME}</div>
+                    <div className="text-xs text-gray-500">ID: {itemId}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right">
+                    <div className="text-sm font-semibold text-green-600">${revenue.toFixed(2)}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-center">
+                    <div className="text-sm text-gray-600">{percentage.toFixed(1)}%</div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination controls */}
+      <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-gray-50">
+        <div className="text-sm text-gray-600">Page {currentPage} of {totalPages}</div>
+        <div className="space-x-2">
+          <button
+            className="px-3 py-1 text-sm rounded border border-gray-300 disabled:opacity-50"
+            disabled={currentPage === 1}
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+          >
+            Previous
+          </button>
+          <button
+            className="px-3 py-1 text-sm rounded border border-gray-300 disabled:opacity-50"
+            disabled={currentPage === totalPages}
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Reusable Analytics Report Component
 const AnalyticsReportContent = ({ 
   data, 
   title, 
-  subtitle 
+  subtitle,
+  itemNamesMap,
 }: { 
   data: RunAnalytics | WorkerAnalytics, 
   title: string, 
-  subtitle?: string 
+  subtitle?: string,
+  itemNamesMap: ItemNamesMap
 }) => {
   return (
         <div className="space-y-8">
@@ -577,65 +710,80 @@ const AnalyticsReportContent = ({
             </div>
           </section>
 
-      {/* Items Suggestively Sold Section */}
-      {data.detailed_analytics && (() => {
-        // Parse the detailed analytics JSON
-        let detailedAnalytics: DetailedAnalytics = {};
+      {/* Detailed Analytics and Revenue Section */}
+      {data.detailed_analytics && data.detailed_revenue && (() => {
+        // Parse the detailed analytics and revenue JSON
+        console.log("[AnalyticsReport] data:", data);
+        console.log("[AnalyticsReport] detailed_analytics (raw):", data.detailed_analytics);
+        console.log("[AnalyticsReport] detailed_revenue (raw):", data.detailed_revenue);
+        let itemPerformance: Record<string, any> = {};
+        let revenueMap: Record<string, number> = {};
+        
         try {
-          detailedAnalytics = JSON.parse(data.detailed_analytics);
+          itemPerformance = JSON.parse(data.detailed_analytics);
+          revenueMap = JSON.parse(data.detailed_revenue);
         } catch (error) {
-          console.error('Error parsing detailed analytics:', error);
+          console.error('Error parsing detailed analytics or revenue:', error);
           return null;
         }
 
-        // Get items with activity
-        const itemsWithActivity = Object.entries(detailedAnalytics).filter(([_, itemData]) => {
-          const hasSizeActivity = itemData.sizes && Object.values(itemData.sizes).some(size =>
-            size.upsell_base > 0 || size.upsize_base > 0 || size.addon_base > 0 ||
-            size.upsell_offered > 0 || size.upsize_offered > 0 || size.addon_offered > 0
-          );
-          const hasTransitions = itemData.transitions && (itemData.transitions["1_to_2"] > 0 ||
-                               itemData.transitions["1_to_3"] > 0 ||
-                               itemData.transitions["2_to_3"] > 0);
-          return hasSizeActivity || hasTransitions;
-        });
+        // Normalize structure: backend may return an array of maps; merge into a single map
+        const normalizedItemPerformance = Array.isArray(itemPerformance)
+          ? Object.assign({}, ...itemPerformance)
+          : (itemPerformance || {});
 
-        if (itemsWithActivity.length === 0) {
+
+        try {
+          const itemKeys = Object.keys(normalizedItemPerformance || {});
+          console.log("[AnalyticsReport] parsed itemPerformance keys count:", itemKeys.length);
+          if (itemKeys.length > 0) {
+            console.log("[AnalyticsReport] sample itemPerformance[", itemKeys[0], "]:", normalizedItemPerformance[itemKeys[0]]);
+          }
+          const revKeys = Object.keys(revenueMap || {});
+          console.log("[AnalyticsReport] parsed revenueMap keys count:", revKeys.length);
+          if (revKeys.length > 0) {
+            console.log("[AnalyticsReport] sample revenueMap entry:", revKeys[0], revenueMap[revKeys[0]]);
+          }
+        } catch (e) {
+          console.warn("[AnalyticsReport] logging parsed structures failed:", e);
+        }
+
+        // Check if we have any data
+        const hasItemData = Object.keys(itemPerformance).length > 0;
+        const hasRevenueData = Object.keys(revenueMap).length > 0;
+
+        if (!hasItemData && !hasRevenueData) {
           return null;
         }
 
         return (
-            <section>
-              <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Items Suggestively Sold</h2>
-              <p className="text-gray-600">Base items, offers made, and items sold through suggestive selling</p>
-              </div>
+          <section> 
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Detailed Item Analytics</h2>
+              <p className="text-gray-600">Performance breakdown by item with revenue tracking</p>
+            </div>
 
             <div className="space-y-8">
-              {/* Items Suggestively Sold Table */}
-              <div>
-                <ItemsSuggestivelySoldTable items={itemsWithActivity} />
-                      </div>
+              {/* Detailed Analytics Table */}
+              {hasItemData && (
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Item Performance</h3>
+                  <DetailedAnalyticsTable itemPerformance={normalizedItemPerformance} itemNamesMap={itemNamesMap} />
+                </div>
+              )}
 
-              {/* Size Transition Analysis */}
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Size Upgrade Transitions</h3>
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {itemsWithActivity.map(([itemId, itemData]) => (
-                    <SizeTransitionCard
-                      key={itemId}
-                      itemId={itemId}
-                      itemName={itemData.name}
-                      transitions={itemData.transitions}
-                    />
-                  ))}
-                                </div>
-                              </div>
-                            </div>
+              {/* Revenue Table */}
+              {hasRevenueData && (
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Revenue Breakdown</h3>
+                  <RevenueTable revenueMap={revenueMap} itemNamesMap={itemNamesMap} />
+                </div>
+              )}
+            </div>
           </section>
         );
       })()}
-                              </div>
+      </div>
   );
 };
 
@@ -673,6 +821,8 @@ export default function AnalyticsReportPage() {
   const { data: analyticsResponse, isLoading, isError, error } = useGetRunAnalytics(runId, !selectedOperator)
   const { data: workerAnalytics, isLoading: isLoadingWorkers, isError: isErrorWorkers } = useGetWorkerAnalytics(runId, selectedOperator || undefined)
   const { data: aiFeedbackResponse, isLoading: isLoadingAIFeedback } = useRunAIFeedback(runId, { enabled: !selectedOperator })
+  const { data: itemNamesResp } = useItemNames(true)
+  const itemNamesMap: ItemNamesMap = (itemNamesResp as any)?.data || (itemNamesResp as any) || {}
 
   const handleViewTransactions = () => {
     router.push(`/reports/${runId}/transactions`)
@@ -809,6 +959,7 @@ export default function AnalyticsReportPage() {
                   data={data}
                   title="Overall Performance"
                   subtitle="Combined analytics from all operators"
+                  itemNamesMap={itemNamesMap}
                 />
               )}
             </section>
@@ -913,6 +1064,7 @@ export default function AnalyticsReportPage() {
                               data={workerData}
                               title={`Operator Performance: ${workerNameMap[workerData.worker_id] || workerData.worker_id}`}
                               subtitle="Individual operator analytics and performance metrics"
+                              itemNamesMap={itemNamesMap}
                             />
                     </CardContent>
                         )}

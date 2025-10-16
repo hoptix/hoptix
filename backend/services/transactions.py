@@ -40,15 +40,34 @@ def split_into_transactions(transcript_segments: List[Dict], date: str, audio_st
         print(f"Input transcript: {raw[:200]}...")
         print(f"Raw LLM response: {text_out}")
         print("=" * 50)
-        
-        parts = [p for p in text_out.split("@#&") if str(p).strip()]
-        if not parts:
-            parts = [json.dumps({"1": raw, "2": "0"})]
+
+        # Normalize LLM output: it may be a JSON array or a delimiter-separated string
+        normalized_parts = None
+        try:
+            maybe_json = json.loads(text_out)
+            if isinstance(maybe_json, list) and len(maybe_json) > 0:
+                # Use list of dicts directly
+                normalized_parts = maybe_json
+        except Exception:
+            normalized_parts = None
+
+        if normalized_parts is None:
+            # Fallback to delimiter-based splitting
+            split_parts = [p for p in text_out.split("@#&") if str(p).strip()]
+            if not split_parts:
+                # Ultimate fallback: single default part
+                normalized_parts = [{"1": raw, "2": "0"}]
+            else:
+                normalized_parts = split_parts
 
         seg_dur = max(0.001, float(seg["end"]) - float(seg["start"]))
-        slice_dur = seg_dur / len(parts)
-        for i, p in enumerate(parts):
-            d = json_or_none(p) or {}
+        slice_dur = seg_dur / max(1, len(normalized_parts))
+        for i, p in enumerate(normalized_parts):
+            # Ensure we have a dict for downstream access
+            if isinstance(p, dict):
+                d = p
+            else:
+                d = json_or_none(p) or {"1": raw, "2": "0"}
             s_rel = float(seg["start"]) + i*slice_dur
             e_rel = float(seg["start"]) + (i+1)*slice_dur
             results.append({
