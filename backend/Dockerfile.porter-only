@@ -147,7 +147,7 @@ RUN echo "=== INSTALLING NEMO DEPENDENCIES ===" && \
     sox \
     huggingface-hub \
     onnx>=1.7.0 \
-    youtokentome>=1.0.6 || echo "Some NeMo dependencies installed with warnings"
+    youtokentome>=1.0.6
 
 # STEP 10b: Verify PyTorch versions haven't changed
 RUN echo "=== VERIFYING PYTORCH VERSIONS AFTER DEPENDENCIES ===" && \
@@ -158,6 +158,13 @@ RUN echo "=== VERIFYING PYTORCH VERSIONS AFTER DEPENDENCIES ===" && \
 # STEP 10c: Install NeMo without dependencies
 RUN echo "=== INSTALLING NEMO CORE ===" && \
     pip install --no-cache-dir --no-deps nemo-toolkit[asr]==1.21.0
+
+# STEP 10d: Verify NeMo can import successfully
+RUN echo "=== VERIFYING NEMO INSTALLATION ===" && \
+    python -c "import hydra; print(f'✓ Hydra: {hydra.__version__}')" && \
+    python -c "import omegaconf; print(f'✓ OmegaConf: {omegaconf.__version__}')" && \
+    python -c "from nemo.collections.asr.models import EncDecSpeakerLabelModel; print('✓ NeMo ASR models: OK')" && \
+    echo "✓ NeMo installation verified"
 
 # STEP 11: FORCE REINSTALL Pydantic v2 (nuclear option to override NeMo's v1)
 RUN echo "=== FORCING PYDANTIC V2 BACK ===" && \
@@ -194,7 +201,7 @@ RUN echo "=== INSTALLING BASE REQUIREMENTS (SELECTIVE) ===" && \
     google-api-python-client>=2.181.0 \
     google-auth-httplib2>=0.2.0 \
     google-auth-oauthlib>=1.2.0 \
-    audioread>=3.0.0 || echo "Some packages may have warnings"
+    audioread>=3.0.0
 
 # STEP 12b: Verify critical dependencies are still present
 RUN echo "=== VERIFYING CRITICAL PACKAGES ===" && \
@@ -202,7 +209,9 @@ RUN echo "=== VERIFYING CRITICAL PACKAGES ===" && \
     python -c "import numpy; print(f'✓ NumPy: {numpy.__version__}')" && \
     python -c "import torch; print(f'✓ PyTorch: {torch.__version__}')" && \
     python -c "import pydantic; print(f'✓ Pydantic: {pydantic.__version__}')" && \
-    echo "Note: Hydra-core is installed in Step 10"
+    python -c "import hydra; print(f'✓ Hydra: {hydra.__version__}')" && \
+    python -c "import googleapiclient; print('✓ Google API Client: OK')" && \
+    python -c "import omegaconf; print(f'✓ OmegaConf: {omegaconf.__version__}')"
 
 # STEP 13: Verify critical imports and PyTorch/torchaudio compatibility
 RUN echo "=== VERIFYING CRITICAL IMPORTS ===" && \
