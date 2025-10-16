@@ -1,6 +1,5 @@
-# ---- PORTER-ONLY DOCKERFILE ----
-# This is the exact Dockerfile that Porter should use
-# It will work on Porter even if local Docker has auth issues
+# ---- ULTRA-AGGRESSIVE PYDANTIC V2 DOCKERFILE ----
+# This forcefully maintains Pydantic v2 through all installations
 
 FROM python:3.10
 
@@ -28,29 +27,94 @@ WORKDIR /app
 COPY backend/requirements.txt ./requirements.txt
 COPY backend/requirements-voice-minimal.txt ./requirements-voice-minimal.txt
 
-# Critical: Install Pydantic v2 FIRST before anything else
-RUN pip install --upgrade pip && \
-    pip uninstall -y pydantic pydantic-core || true && \
-    pip install --no-cache-dir \
-        "pydantic==2.9.2" \
-        "pydantic-core==2.23.4" \
-        "typing-extensions>=4.6.1"
+# STEP 1: Nuclear option - remove ALL pydantic files
+RUN pip install --upgrade pip setuptools wheel && \
+    echo "=== REMOVING ALL PYDANTIC FILES ===" && \
+    pip uninstall -y pydantic pydantic-core pydantic-settings 2>/dev/null || true && \
+    pip freeze | grep -i pydantic | xargs pip uninstall -y 2>/dev/null || true && \
+    rm -rf /usr/local/lib/python3.10/site-packages/pydantic* && \
+    rm -rf /usr/local/lib/python3.10/site-packages/Pydantic* && \
+    rm -rf /usr/local/lib/python3.10/site-packages/*pydantic* && \
+    find /usr/local -name "*.so" | grep -i pydantic | xargs rm -f 2>/dev/null || true && \
+    find /usr/local -name "*pydantic*" -type f -delete 2>/dev/null || true && \
+    find /usr/local -name "*pydantic*" -type d -exec rm -rf {} + 2>/dev/null || true && \
+    echo "=== PYDANTIC REMOVAL COMPLETE ==="
 
-# Install PyTorch
-RUN pip install torch==2.0.0+cu117 torchaudio==2.0.0+cu117 \
+# STEP 2: Create STRICT constraint file that LOCKS Pydantic v2
+RUN echo "=== CREATING CONSTRAINTS FILE ===" && \
+    echo "pydantic==2.9.2" > /tmp/constraints.txt && \
+    echo "pydantic-core==2.23.4" >> /tmp/constraints.txt && \
+    echo "pydantic-settings==2.6.1" >> /tmp/constraints.txt && \
+    echo "typing-extensions>=4.6.1" >> /tmp/constraints.txt && \
+    cat /tmp/constraints.txt
+
+# STEP 3: Install Pydantic v2 with NO DEPENDENCIES (most aggressive)
+RUN echo "=== INSTALLING PYDANTIC V2 (NO DEPS) ===" && \
+    pip install --no-cache-dir --force-reinstall --no-deps \
+        pydantic==2.9.2 \
+        pydantic-core==2.23.4 \
+        pydantic-settings==2.6.1 && \
+    pip install --no-cache-dir \
+        typing-extensions>=4.6.1 \
+        annotated-types>=0.4.0
+
+# STEP 4: VERIFY Pydantic v2 (fail build if not v2)
+RUN echo "=== VERIFYING PYDANTIC V2 ===" && \
+    python -c "\
+import pydantic; \
+print(f'Pydantic: {pydantic.__version__}'); \
+print(f'Location: {pydantic.__file__}'); \
+assert pydantic.__version__ == '2.9.2', f'WRONG VERSION: {pydantic.__version__}'; \
+from pydantic import TypeAdapter; \
+print('✓ TypeAdapter OK');" || (echo "FATAL: PYDANTIC V2 INSTALL FAILED" && exit 1)
+
+# STEP 5: Install PyTorch (doesn't conflict with Pydantic)
+RUN echo "=== INSTALLING PYTORCH ===" && \
+    PIP_CONSTRAINT=/tmp/constraints.txt pip install --no-cache-dir \
+    torch==2.0.0+cu117 \
+    torchaudio==2.0.0+cu117 \
     --index-url https://download.pytorch.org/whl/cu117
 
-# Install Cython and other build deps
-RUN pip install --no-cache-dir \
+# STEP 6: Install build dependencies with constraints
+RUN echo "=== INSTALLING BUILD DEPS ===" && \
+    PIP_CONSTRAINT=/tmp/constraints.txt pip install --no-cache-dir \
     Cython>=3.0.0 \
     "pyarrow>=12.0.0,<18.0.0"
 
-# Install supabase and all dependencies (let pip resolve versions)
-RUN pip install --no-cache-dir "supabase>=2.9.0"
+# STEP 7: Install supabase WITH CONSTRAINTS (critical!)
+RUN echo "=== INSTALLING SUPABASE WITH CONSTRAINTS ===" && \
+    PIP_CONSTRAINT=/tmp/constraints.txt pip install --no-cache-dir "supabase>=2.9.0" && \
+    python -c "import pydantic; assert pydantic.__version__ == '2.9.2', f'DOWNGRADED TO {pydantic.__version__}!'"
 
-# Install other requirements
-RUN pip install --no-cache-dir -r requirements.txt || true
-RUN pip install --no-cache-dir -r requirements-voice-minimal.txt || true
+# STEP 8: Install ALL other requirements with CONSTRAINTS
+RUN echo "=== INSTALLING REQUIREMENTS WITH CONSTRAINTS ===" && \
+    PIP_CONSTRAINT=/tmp/constraints.txt pip install --no-cache-dir -r requirements.txt || true && \
+    PIP_CONSTRAINT=/tmp/constraints.txt pip install --no-cache-dir -r requirements-voice-minimal.txt || true
+
+# STEP 9: FINAL VERIFICATION (fail build if pydantic downgraded)
+RUN echo "=== FINAL PYDANTIC VERIFICATION ===" && \
+    python -c "\
+import sys; \
+import pydantic; \
+from pydantic import TypeAdapter, BaseModel; \
+from supabase import create_client; \
+from postgrest import AsyncPostgrestClient; \
+print(''); \
+print('=' * 50); \
+print('FINAL VERIFICATION'); \
+print('=' * 50); \
+print(f'Python: {sys.version}'); \
+print(f'Pydantic: {pydantic.__version__}'); \
+print(f'Location: {pydantic.__file__}'); \
+assert pydantic.__version__ == '2.9.2', f'FATAL: Pydantic downgraded to {pydantic.__version__}!'; \
+assert 'TypeAdapter' in dir(pydantic), 'FATAL: TypeAdapter not available!'; \
+print('✓ TypeAdapter: OK'); \
+print('✓ Supabase: OK'); \
+print('✓ Postgrest: OK'); \
+print('=' * 50); \
+print('BUILD SUCCESSFUL - PYDANTIC V2 LOCKED'); \
+print('=' * 50); \
+" || (echo "FATAL ERROR: Verification failed!" && exit 1)
 
 # Copy application
 COPY backend/ .
