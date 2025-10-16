@@ -20,7 +20,7 @@ def split_into_transactions(transcript_segments: List[Dict], date: str, audio_st
     print(f"Using database timestamp: {date}T{audio_started_at_iso}")
     
     # Process segments in parallel with controlled concurrency
-    with ThreadPoolExecutor(max_workers=5) as executor:  # Reduced from 10 to avoid rate limits
+    with ThreadPoolExecutor(max_workers=10) as executor:  # Reduced from 10 to avoid rate limits
         futures = [
             executor.submit(_process_segment, seg, date, audio_started_at_iso) 
             for seg in transcript_segments
