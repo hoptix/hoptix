@@ -11,7 +11,7 @@ build:
 services:
   - name: voice-diarization-job
     type: job
-    run: python scripts/run_voice_diarization.py
+    run: bash scripts/start_voice_job.sh
     cpuCores: 2
     ramMegabytes: 8192
     gpuCoresNvidia: 1  # GPU allocation required for TitaNet
@@ -22,4 +22,7 @@ services:
 env:
   PYTHONPATH: /app
   PYTORCH_CUDA_AVAILABLE: "1"
+  # Job parameters - set these in Porter dashboard or pass as command args
+  # LOCATION_ID: "your-location-uuid"
+  # DATE: "2025-10-06"
   # All other env vars (AAI_API_KEY, SUPABASE_*, etc.) configured in Porter dashboard

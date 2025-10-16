@@ -12,7 +12,13 @@ import logging
 from datetime import datetime
 from typing import Optional, Dict, Any
 
-from services.database import Supa
+try:
+    # Try to import the regular database module
+    from services.database import Supa
+except ImportError:
+    # Fall back to the lightweight version for voice diarization
+    from services.database_voice import Supa
+
 from services.voice_diarization import VoiceDiarization
 from services.monitoring import MonitoringService
 from utils.helpers import get_memory_usage, log_memory_usage

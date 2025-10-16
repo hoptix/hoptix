@@ -13,12 +13,19 @@ Example:
 
 import sys
 import os
-import argparse
-from datetime import datetime
 
 # Add the backend directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+# Apply Pydantic compatibility fix before any other imports
+try:
+    import fix_pydantic_compat
+    fix_pydantic_compat.patch_pydantic_import()
+except ImportError:
+    pass  # If the fix script doesn't exist, continue anyway
+
+import argparse
+from datetime import datetime
 from pipeline.voice_diarization_pipeline import voice_diarization_pipeline, process_location_date_range
 
 

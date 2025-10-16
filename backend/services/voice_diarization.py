@@ -36,7 +36,13 @@ except ImportError as e:
     import warnings
     warnings.warn(f"Audio processing libraries not available: {e}")
 
-from services.database import Supa
+try:
+    # Try to import the regular database module
+    from services.database import Supa
+except ImportError:
+    # Fall back to the lightweight version for voice diarization
+    from services.database_voice import Supa
+
 from services.gdrive import GoogleDriveClient
 from services.monitoring import MonitoringService, retry_with_monitoring
 from config import Settings

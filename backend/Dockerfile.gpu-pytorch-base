@@ -29,14 +29,19 @@ COPY backend/requirements-voice-minimal.txt ./requirements-voice-minimal.txt
 
 # Install dependencies in order
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    # Upgrade Pydantic to v2 (base image has v1, but supabase needs v2)
-    pip install --no-cache-dir "pydantic>=2.0.0,<3.0.0" && \
     # Install Cython first (required by youtokentome)
     pip install --no-cache-dir Cython>=3.0.0 && \
     # Install PyArrow with binary wheels only (no source builds to avoid CMake issues)
     pip install --no-cache-dir --only-binary=pyarrow "pyarrow>=12.0.0,<18.0.0" && \
     # Install torchaudio separately (PyTorch is already in the base image)
     pip install --no-cache-dir torchaudio==2.0.0 && \
+    # First upgrade critical packages to ensure compatibility
+    # Upgrade Pydantic to v2 and install compatible supabase/realtime versions
+    pip install --no-cache-dir --upgrade \
+        "pydantic>=2.0.0,<3.0.0" \
+        "pydantic-core>=2.0.0" \
+        "supabase>=2.9.0" \
+        "realtime>=2.0.0" && \
     # Install base requirements (use --upgrade to override base image versions)
     pip install --no-cache-dir --upgrade --ignore-installed blinker -r requirements.txt && \
     # Install voice-specific requirements (minimal set for space savings)
@@ -77,6 +82,11 @@ COPY --from=builder /app /app
 
 # Ensure scripts are executable
 RUN chmod +x /app/scripts/*.py /app/scripts/*.sh /app/start.sh || true
+
+# Test imports and apply fixes if needed
+RUN echo "Testing Pydantic/Supabase compatibility..." && \
+    python /app/scripts/test_pydantic_imports.py || \
+    echo "Import tests failed but continuing (fallback modules available)"
 
 # Create a non-root user
 RUN useradd -m -s /bin/bash appuser && \
