@@ -38,6 +38,7 @@ except ImportError as e:
 
 from services.database import Supa
 from services.gdrive import GoogleDriveClient
+from services.monitoring import MonitoringService, retry_with_monitoring
 from config import Settings
 
 logger = logging.getLogger(__name__)
@@ -53,6 +54,7 @@ class VoiceDiarization:
         """Initialize voice diarization service with configuration."""
         self.db = Supa()
         self.gdrive = GoogleDriveClient()
+        self.monitor = MonitoringService()
 
         # Load configuration from environment
         self.aai_api_key = os.getenv("AAI_API_KEY")
@@ -83,16 +85,17 @@ class VoiceDiarization:
             logger.info("TitaNet model loaded successfully")
         return self.speaker_model
 
+    @retry_with_monitoring(api_name="supabase_get_workers", max_retries=3)
     def get_worker_name_to_id(self) -> Dict[str, str]:
         """
         Fetch workers from Supabase and return a mapping {legal_name: id}.
-        Includes bug fix for handling empty results.
+        Includes bug fix for handling empty results and retry logic.
         """
         try:
             resp = self.db.client.table("workers").select("id, legal_name").execute()
         except Exception as e:
             logger.error(f"Supabase request failed: {e}")
-            return {}
+            raise  # Re-raise to trigger retry
 
         # Handle different response formats safely
         data = None
@@ -121,11 +124,12 @@ class VoiceDiarization:
         logger.info(f"Loaded {len(worker_map)} workers from database")
         return worker_map
 
+    @retry_with_monitoring(api_name="supabase_check_transaction", max_retries=2)
     def check_complete_transactions_or_labeled(self, transaction_id: str) -> bool:
         """
         Checks if a transaction is complete or already labeled in the graded_rows_filtered table.
         Returns True if the transaction should be skipped, False otherwise.
-        Includes bug fix for handling empty query results.
+        Includes bug fix for handling empty query results and retry logic.
         """
         try:
             transaction = self.db.client.table("graded_rows_filtered").select("*").eq(
@@ -205,19 +209,38 @@ class VoiceDiarization:
         stem = os.path.splitext(os.path.basename(path))[0]
         return stem.replace("_", " ").strip()
 
+    @retry_with_monitoring(api_name="gdrive_get_folder", max_retries=3)
+    def _get_gdrive_folder_id(self, folder_name: str) -> str:
+        """Get Google Drive folder ID with retry logic."""
+        folder_id = self.gdrive.get_folder_id_from_name(folder_name)
+        if not folder_id:
+            raise ValueError(f"Folder '{folder_name}' not found in Google Drive")
+        return folder_id
+
+    @retry_with_monitoring(api_name="gdrive_list_files", max_retries=3)
+    def _list_gdrive_files(self, folder_id: str) -> list:
+        """List files in Google Drive folder with retry logic."""
+        return self.gdrive.list_media_files_shared_with_me(folder_id)
+
+    @retry_with_monitoring(api_name="gdrive_download", max_retries=3)
+    def _download_gdrive_file(self, file_id: str, local_path: str) -> bool:
+        """Download file from Google Drive with retry logic."""
+        result = self.gdrive.download_file(file_id, local_path)
+        if not result:
+            raise RuntimeError(f"Failed to download file {file_id}")
+        return result
+
     def build_local_embeddings(self, samples_folder: str) -> Dict[str, np.ndarray]:
         """
         Build embeddings from reference voice samples in Google Drive folder.
         """
         logger.info(f"Building embeddings from samples folder: {samples_folder}")
 
-        # Get folder ID from Google Drive
-        folder_id = self.gdrive.get_folder_id_from_name(samples_folder)
-        if not folder_id:
-            raise ValueError(f"Samples folder '{samples_folder}' not found in Google Drive")
+        # Get folder ID from Google Drive with retry
+        folder_id = self._get_gdrive_folder_id(samples_folder)
 
-        # List all WAV files in the folder
-        files = self.gdrive.list_media_files_shared_with_me(folder_id)
+        # List all WAV files in the folder with retry
+        files = self._list_gdrive_files(folder_id)
         wav_files = [f for f in files if f['name'].endswith('.wav')]
 
         if not wav_files:
@@ -232,20 +255,23 @@ class VoiceDiarization:
                 file_name = file_info['name']
                 label = self.filename_to_label(file_name)
 
-                # Download to temp location
+                # Download to temp location with retry
                 local_path = os.path.join(temp_dir, file_name)
-                if self.gdrive.download_file(file_id, local_path):
-                    # Convert to mono WAV and get embedding
-                    wav_path = self.ensure_wav_mono(local_path, temp_dir)
-                    emb = self.get_embedding_for_wav(wav_path)
-                    local_embeddings[label] = emb
-                    logger.info(f"  - embedded: {label}")
+                try:
+                    if self._download_gdrive_file(file_id, local_path):
+                        # Convert to mono WAV and get embedding
+                        wav_path = self.ensure_wav_mono(local_path, temp_dir)
+                        emb = self.get_embedding_for_wav(wav_path)
+                        local_embeddings[label] = emb
+                        logger.info(f"  - embedded: {label}")
 
-                    # Clean up temp file
-                    if os.path.exists(local_path) and local_path != wav_path:
-                        os.remove(local_path)
-                    if os.path.exists(wav_path):
-                        os.remove(wav_path)
+                        # Clean up temp file
+                        if os.path.exists(local_path) and local_path != wav_path:
+                            os.remove(local_path)
+                        if os.path.exists(wav_path):
+                            os.remove(wav_path)
+                except Exception as e:
+                    logger.error(f"Failed to process sample {file_name}: {e}")
 
         finally:
             # Clean up temp directory
@@ -258,17 +284,37 @@ class VoiceDiarization:
         logger.info(f"Built {len(local_embeddings)} embeddings from samples")
         return local_embeddings
 
-    def transcribe_with_speaker_labels(self, local_media_path: str) -> dict:
+    def transcribe_with_speaker_labels(self, local_media_path: str, max_retries: int = 3) -> dict:
         """
         Transcribe a LOCAL file with AssemblyAI and return json_response.
+        Includes retry logic for API failures.
         """
         if not self.aai_api_key:
             raise RuntimeError("AAI_API_KEY not configured")
 
         config = aai.TranscriptionConfig(speaker_labels=True)
         transcriber = aai.Transcriber(config=config)
-        transcript = transcriber.transcribe(local_media_path)
-        return transcript.json_response
+
+        for attempt in range(max_retries):
+            try:
+                transcript = transcriber.transcribe(local_media_path)
+                if transcript.status == "error":
+                    logger.warning(f"Transcription error: {transcript.error}")
+                    if attempt < max_retries - 1:
+                        import time
+                        time.sleep(5 * (attempt + 1))  # Exponential backoff
+                        continue
+                    raise RuntimeError(f"Transcription failed: {transcript.error}")
+                return transcript.json_response
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    logger.warning(f"Transcription attempt {attempt + 1} failed: {e}")
+                    import time
+                    time.sleep(5 * (attempt + 1))  # Exponential backoff
+                else:
+                    raise
+
+        raise RuntimeError(f"Transcription failed after {max_retries} attempts")
 
     def cosine_sim(self, a: np.ndarray, b: np.ndarray) -> float:
         """Calculate cosine similarity between two vectors."""

@@ -22,6 +22,21 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from pipeline.voice_diarization_pipeline import voice_diarization_pipeline, process_location_date_range
 
 
+def start_health_check_server(port: int):
+    """Start the health check server in the background if requested."""
+    try:
+        from health_check import run_in_background
+        thread = run_in_background(port)
+        print(f"✅ Health check server started on port {port}")
+        print(f"   - Health endpoint: http://localhost:{port}/health")
+        print(f"   - Readiness endpoint: http://localhost:{port}/ready")
+        print(f"   - Metrics endpoint: http://localhost:{port}/metrics")
+        return thread
+    except Exception as e:
+        print(f"⚠️ Warning: Could not start health check server: {e}")
+        return None
+
+
 def validate_date(date_string):
     """Validate that the date string is in YYYY-MM-DD format"""
     try:
@@ -115,7 +130,24 @@ Examples:
         help='Show what would be done without actually processing'
     )
 
+    parser.add_argument(
+        '--enable-health-check',
+        action='store_true',
+        help='Enable health check HTTP server on port 8080'
+    )
+
+    parser.add_argument(
+        '--health-check-port',
+        type=int,
+        default=8080,
+        help='Port for health check server (default: 8080)'
+    )
+
     args = parser.parse_args()
+
+    # Start health check server if requested
+    if args.enable_health_check:
+        start_health_check_server(args.health_check_port)
 
     # Handle both positional and flag arguments
     location_id = args.location_id or args.location_id_flag

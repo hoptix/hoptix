@@ -23,6 +23,10 @@ huggingface-hub==0.23.5
 sentencepiece>=0.1.99
 youtokentome>=1.0.6
 
+# Monitoring and health checks
+requests>=2.31.0
+psutil>=5.9.0
+
 # Note: PyTorch with CUDA is installed separately in Dockerfile.gpu
 # Note: Cython is installed separately in Dockerfile.gpu
 # Note: Removed non-essential packages: transformers, pyannote.audio, webdataset, lhotse, datasets, editdistance, jiwer, inflect

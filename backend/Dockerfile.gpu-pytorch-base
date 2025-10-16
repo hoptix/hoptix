@@ -76,7 +76,7 @@ COPY --from=builder /opt/conda/bin /opt/conda/bin
 COPY --from=builder /app /app
 
 # Ensure scripts are executable
-RUN chmod +x /app/scripts/*.py /app/start.sh || true
+RUN chmod +x /app/scripts/*.py /app/scripts/*.sh /app/start.sh || true
 
 # Create a non-root user
 RUN useradd -m -s /bin/bash appuser && \

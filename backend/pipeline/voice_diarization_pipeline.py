@@ -14,6 +14,7 @@ from typing import Optional, Dict, Any
 
 from services.database import Supa
 from services.voice_diarization import VoiceDiarization
+from services.monitoring import MonitoringService
 from utils.helpers import get_memory_usage, log_memory_usage
 
 # Configure logging
@@ -72,6 +73,10 @@ def voice_diarization_pipeline(
     logger.info(f"📁 Samples folder (Google Drive): {samples_folder}")
     logger.info(f"📁 Clips folder (Google Drive): {clips_folder}")
 
+    # Initialize monitoring service
+    monitor = MonitoringService()
+    job_metadata = monitor.start_job(location_id, date)
+
     # Initialize voice diarization service
     log_memory_usage("Initializing voice diarization service", 1, TOTAL_STEPS)
     voice_service = VoiceDiarization()
@@ -79,6 +84,7 @@ def voice_diarization_pipeline(
     # Create or get run record
     log_memory_usage("Creating run record", 2, TOTAL_STEPS)
     run_id = initialize_voice_pipeline(location_id, date)
+    job_metadata["run_id"] = run_id
 
     try:
         # Process all clips in the folder
@@ -103,6 +109,9 @@ def voice_diarization_pipeline(
         log_memory_usage("Updating run status", 5, TOTAL_STEPS)
         complete_voice_pipeline(run_id, results)
 
+        # Report success to monitoring
+        monitor.complete_job(job_metadata, results)
+
         final_memory = get_memory_usage()
         logger.info(f"\n🎉 Successfully completed voice diarization pipeline!")
         logger.info(f"📊 Memory usage: {initial_memory:.1f} MB → {final_memory:.1f} MB")
@@ -122,6 +131,9 @@ def voice_diarization_pipeline(
         # Mark run as failed
         if run_id:
             fail_voice_pipeline(run_id, str(e))
+
+        # Report failure to monitoring
+        monitor.fail_job(job_metadata, e)
 
         return {
             "status": "error",
