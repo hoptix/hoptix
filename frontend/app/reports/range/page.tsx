@@ -36,6 +36,8 @@ import { useGetLocations } from "@/hooks/getLocations"
 import { IconInfoCircle } from "@tabler/icons-react"
 import { useRangeRunsAIFeedback } from "@/hooks/useRangeRunsAIFeedback"
 import { RangeRunsAIFeedbackDisplay } from "@/components/range-runs-ai-feedback-display"
+import { ItemNamesMap } from "@/constants/items"
+
 
 const MetricCard = ({
   title,
@@ -410,11 +412,13 @@ const ItemsSuggestivelySoldTable = ({ items }: { items: [string, ItemAnalytics][
 const AnalyticsReportContent = ({
   data,
   title,
-  subtitle
+  subtitle,
+  itemNamesMap
 }: {
   data: RunAnalytics | WorkerAnalytics,
   title: string,
   subtitle?: string
+  itemNamesMap: ItemNamesMap
 }) => {
   return (
         <div className="space-y-8">
@@ -848,6 +852,7 @@ function RangeAnalyticsReportContent() {
                 data={data}
                 title="Overall Performance"
                 subtitle={`Combined analytics from ${data.total_transactions} transactions across the selected date range`}
+                itemNamesMap={itemNamesMap}
               />
             )}
           </section>
@@ -917,6 +922,7 @@ function RangeAnalyticsReportContent() {
                               data={workerData}
                               title={`Operator Performance: ${workerNameMap[workerData.worker_id] || workerData.worker_id}`}
                               subtitle="Individual operator analytics across the date range"
+                              itemNamesMap={itemNamesMap}
                             />
                   </CardContent>
                         )}

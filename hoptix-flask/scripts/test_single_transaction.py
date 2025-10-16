@@ -44,13 +44,13 @@ def test_single_transaction(run_id: str, location_id: str = None):
 
     # Fetch one transaction from the run
     print(f"📥 Fetching one transaction from run {run_id}...")
-    tx_result = db.client.table('transactions').select('*').eq('run_id', run_id).limit(1).execute()
+    tx_result = db.client.table('transactions').select('*').eq('run_id', run_id).limit(50).execute()
     
     if not tx_result.data:
         print("❌ No transactions found for this run")
         return False
     
-    tx = tx_result.data[0]
+    tx = tx_result.data[45]
     print(f"✅ Found transaction: {tx['id']}")
     
     # Get location_id from video if not provided
