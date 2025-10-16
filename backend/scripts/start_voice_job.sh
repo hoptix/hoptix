@@ -1,18 +1,18 @@
 #!/bin/bash
-# Startup script for voice diarization job with compatibility fixes
+# Startup script for voice diarization job
 
 set -e
 
-echo "🚀 Starting Voice Diarization Job with compatibility fixes"
+echo "🚀 Starting Voice Diarization Job"
 echo "================================"
 
 # Export Python path
 export PYTHONPATH=/app:$PYTHONPATH
 
-# Test Pydantic compatibility first
-echo "📋 Testing Pydantic compatibility..."
-python /app/scripts/fix_pydantic_compat.py --test || {
-    echo "⚠️ Pydantic compatibility test failed, but continuing..."
+# Quick import test
+python -c "from pydantic import TypeAdapter; from supabase import create_client; print('✓ Imports verified')" || {
+    echo "❌ CRITICAL: Import test failed. Docker image is broken."
+    exit 1
 }
 
 # Get parameters from command line args or environment variables

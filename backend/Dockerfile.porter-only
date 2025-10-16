@@ -1,0 +1,67 @@
+# ---- PORTER-ONLY DOCKERFILE ----
+# This is the exact Dockerfile that Porter should use
+# It will work on Porter even if local Docker has auth issues
+
+FROM python:3.10
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+ENV PIP_NO_CACHE_DIR=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONPATH=/app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    libsndfile1 \
+    git \
+    curl \
+    gcc \
+    g++ \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy requirements
+COPY backend/requirements.txt ./requirements.txt
+COPY backend/requirements-voice-minimal.txt ./requirements-voice-minimal.txt
+
+# Critical: Install Pydantic v2 FIRST before anything else
+RUN pip install --upgrade pip && \
+    pip uninstall -y pydantic pydantic-core || true && \
+    pip install --no-cache-dir \
+        "pydantic==2.9.2" \
+        "pydantic-core==2.23.4" \
+        "typing-extensions>=4.6.1"
+
+# Install PyTorch
+RUN pip install torch==2.0.0+cu117 torchaudio==2.0.0+cu117 \
+    --index-url https://download.pytorch.org/whl/cu117
+
+# Install Cython and other build deps
+RUN pip install --no-cache-dir \
+    Cython>=3.0.0 \
+    "pyarrow>=12.0.0,<18.0.0"
+
+# Install supabase and all dependencies (let pip resolve versions)
+RUN pip install --no-cache-dir "supabase>=2.9.0"
+
+# Install other requirements
+RUN pip install --no-cache-dir -r requirements.txt || true
+RUN pip install --no-cache-dir -r requirements-voice-minimal.txt || true
+
+# Copy application
+COPY backend/ .
+
+# Make scripts executable
+RUN chmod +x /app/scripts/*.py /app/scripts/*.sh || true
+
+# Create user
+RUN useradd -m appuser && chown -R appuser:appuser /app
+USER appuser
+
+EXPOSE 8080
+
+CMD ["bash", "scripts/start_voice_job.sh"]

@@ -5,7 +5,8 @@ name: voice-diarization
 build:
   method: docker
   context: ./
-  dockerfile: ./backend/Dockerfile.gpu-pytorch-base
+  # Use Dockerfile.porter-only which is optimized for Porter deployment
+  dockerfile: ./backend/Dockerfile.porter-only
 
 # Voice diarization job service with GPU
 services:

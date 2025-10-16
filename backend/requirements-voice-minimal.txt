@@ -27,6 +27,6 @@ youtokentome>=1.0.6
 requests>=2.31.0
 psutil>=5.9.0
 
-# Note: PyTorch with CUDA is installed separately in Dockerfile.gpu
-# Note: Cython is installed separately in Dockerfile.gpu
+# Note: PyTorch with CUDA is installed separately in Dockerfile
+# Note: Cython is installed separately in Dockerfile
 # Note: Removed non-essential packages: transformers, pyannote.audio, webdataset, lhotse, datasets, editdistance, jiwer, inflect
