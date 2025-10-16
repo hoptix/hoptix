@@ -172,43 +172,10 @@ RUN echo "=== INSTALLING BASE REQUIREMENTS ===" && \
 
 # STEP 13: Verify critical imports and PyTorch/torchaudio compatibility
 RUN echo "=== VERIFYING CRITICAL IMPORTS ===" && \
-    python -c "
-import sys
-import torch
-import torchaudio
-
-print('Python:', sys.version)
-print('✓ PyTorch:', torch.__version__)
-print('✓ Torchaudio:', torchaudio.__version__)
-print('✓ CUDA available:', torch.cuda.is_available())
-
-# Verify torchaudio operations work
-try:
-    dummy_tensor = torch.randn(1, 16000)
-    print('✓ PyTorch tensor creation: OK')
-    # Test basic torchaudio operation
-    import torchaudio.transforms as T
-    resampler = T.Resample(16000, 8000)
-    print('✓ Torchaudio transforms: OK')
-except Exception as e:
-    print(f'Warning: {e}')
-
-# Verify NeMo imports
-try:
-    from nemo.collections.asr.models import EncDecSpeakerLabelModel
-    print('✓ NeMo ASR models: OK')
-except Exception as e:
-    print(f'Warning: NeMo import issue (may work at runtime): {e}')
-
-# Verify other voice dependencies
-from pydub import AudioSegment
-import assemblyai as aai
-import librosa
-
-print('✓ Pydub: OK')
-print('✓ AssemblyAI: OK')
-print('✓ Librosa: OK')
-print('=== ALL VOICE DEPENDENCIES INSTALLED ===')" || (echo "CRITICAL: Voice dependencies missing!" && exit 1)
+    python -c "import sys; import torch; import torchaudio; print('Python:', sys.version); print('✓ PyTorch:', torch.__version__); print('✓ Torchaudio:', torchaudio.__version__); print('✓ CUDA available:', torch.cuda.is_available())" && \
+    python -c "import torch; dummy = torch.randn(1, 16000); import torchaudio.transforms as T; r = T.Resample(16000, 8000); print('✓ Torchaudio transforms: OK')" && \
+    python -c "from pydub import AudioSegment; import assemblyai as aai; import librosa; print('✓ Pydub: OK'); print('✓ AssemblyAI: OK'); print('✓ Librosa: OK')" && \
+    python -c "print('=== ALL VOICE DEPENDENCIES INSTALLED ===')" || (echo "CRITICAL: Voice dependencies missing!" && exit 1)
 
 # STEP 14: FINAL VERIFICATION (fail build if pydantic downgraded)
 RUN echo "=== FINAL PYDANTIC VERIFICATION ===" && \
