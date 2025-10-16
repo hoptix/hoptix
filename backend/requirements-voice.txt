@@ -5,6 +5,10 @@
 assemblyai>=0.34.0
 pydub>=0.25.1
 
+# PyArrow - install pre-built wheel before other packages
+# Required by datasets/webdataset, but needs to avoid building from source
+pyarrow>=12.0.0,<18.0.0
+
 # NeMo and ML dependencies - install order matters!
 # Note: Cython is installed separately in Dockerfile.gpu before this file
 nemo-toolkit==1.21.0
