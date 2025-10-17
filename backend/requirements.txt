@@ -44,6 +44,3 @@ google-auth-oauthlib>=1.2.0
 # Audio processing additional dependencies for Docker
 soundfile>=0.13.0
 audioread>=3.0.0
-
-# Note: Voice diarization dependencies are in requirements-voice-minimal.txt
-# and are only installed in Dockerfile.porter-only
