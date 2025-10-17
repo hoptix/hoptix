@@ -27,8 +27,8 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Upgrade pip and install wheel
 RUN pip install --upgrade pip setuptools wheel
 
-# Copy requirements files
-COPY requirements-voice-core.txt requirements-voice-nemo.txt /tmp/
+# Copy requirements files (from backend/voice-diarization/ since build context is repo root)
+COPY backend/voice-diarization/requirements-voice-core.txt backend/voice-diarization/requirements-voice-nemo.txt /tmp/
 
 # Install PyTorch with CUDA 11.7 support FIRST (critical for GPU)
 RUN pip install torch==2.0.1+cu117 torchaudio==2.0.2+cu117 \
@@ -101,10 +101,10 @@ WORKDIR /app
 RUN useradd -m -u 1000 -s /bin/bash voiceuser && \
     chown -R voiceuser:voiceuser /app
 
-# Copy application code
-COPY --chown=voiceuser:voiceuser voice_job.py health_check.py /app/
-COPY --chown=voiceuser:voiceuser services/ /app/services/
-COPY --chown=voiceuser:voiceuser pipeline/ /app/pipeline/
+# Copy application code (from backend/voice-diarization/ since build context is repo root)
+COPY --chown=voiceuser:voiceuser backend/voice-diarization/voice_job.py backend/voice-diarization/health_check.py /app/
+COPY --chown=voiceuser:voiceuser backend/voice-diarization/services/ /app/services/
+COPY --chown=voiceuser:voiceuser backend/voice-diarization/pipeline/ /app/pipeline/
 
 # Switch to non-root user
 USER voiceuser
