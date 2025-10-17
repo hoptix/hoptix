@@ -86,7 +86,7 @@ def full_pipeline(location_id: str, date: str):
     log_memory_usage("Upserting grades into database", 6, TOTAL_STEPS)
     db.upsert_grades(grades)
 
-    # Generate the report 
+    # Generate the report
     log_memory_usage("Generating analytics report", 7, TOTAL_STEPS)
     analytics = Analytics(run_id)
     analytics.upload_to_db()

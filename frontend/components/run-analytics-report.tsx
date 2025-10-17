@@ -96,21 +96,21 @@ const MetricCard = ({
   )
 }
 
-const PerformanceSection = ({ 
-  title, 
-  opportunities, 
-  offers, 
-  successes, 
-  conversionRate, 
+const PerformanceSection = ({
+  title,
+  opportunities,
+  offers,
+  successes,
+  conversionRate,
   revenue,
-  color 
+  color
 }: {
   title: string
   opportunities: number
   offers: number
   successes: number
   conversionRate: number
-  revenue: number
+  revenue?: number
   color: "blue" | "green" | "red" | "yellow" | "purple" | "gray"
 }) => {
   const offerRate = opportunities > 0 ? (offers / opportunities) * 100 : 0
@@ -125,7 +125,7 @@ const PerformanceSection = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className={`grid grid-cols-2 gap-4 ${revenue !== undefined ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}>
           <div className="text-center">
             <div className="text-2xl font-bold text-gray-900">{opportunities}</div>
             <div className="text-sm text-muted-foreground">Opportunities</div>
@@ -140,10 +140,12 @@ const PerformanceSection = ({
             <div className="text-sm text-muted-foreground">Successes</div>
             <div className="text-xs text-muted-foreground">{successRate.toFixed(1)}% rate</div>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-gray-900">${revenue.toFixed(2)}</div>
-            <div className="text-sm text-muted-foreground">Revenue</div>
-          </div>
+          {revenue !== undefined && (
+            <div className="text-center">
+              <div className="text-2xl font-bold text-gray-900">${revenue.toFixed(2)}</div>
+              <div className="text-sm text-muted-foreground">Revenue</div>
+            </div>
+          )}
         </div>
         
         {/* Progress bars */}
@@ -572,7 +574,6 @@ export function RunAnalyticsReport({ runId, runDate, isOpen, onClose }: RunAnaly
                 offers={analytics.data.upsell_offers}
                 successes={analytics.data.upsell_successes}
                 conversionRate={analytics.data.upsell_conversion_rate}
-                revenue={analytics.data.upsell_revenue}
                 color="gray"
               />
 
@@ -582,7 +583,6 @@ export function RunAnalyticsReport({ runId, runDate, isOpen, onClose }: RunAnaly
                 offers={analytics.data.upsize_offers}
                 successes={analytics.data.upsize_successes}
                 conversionRate={analytics.data.upsize_conversion_rate}
-                revenue={analytics.data.upsize_revenue}
                 color="gray"
               />
 
@@ -592,7 +592,6 @@ export function RunAnalyticsReport({ runId, runDate, isOpen, onClose }: RunAnaly
                 offers={analytics.data.addon_offers}
                 successes={analytics.data.addon_successes}
                 conversionRate={analytics.data.addon_conversion_rate}
-                revenue={analytics.data.addon_revenue}
                 color="gray"
               />
             </div>

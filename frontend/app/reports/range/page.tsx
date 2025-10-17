@@ -36,7 +36,8 @@ import { useGetLocations } from "@/hooks/getLocations"
 import { IconInfoCircle } from "@tabler/icons-react"
 import { useRangeRunsAIFeedback } from "@/hooks/useRangeRunsAIFeedback"
 import { RangeRunsAIFeedbackDisplay } from "@/components/range-runs-ai-feedback-display"
-import { ItemNamesMap } from "@/constants/items"
+import { type ItemNamesMap } from "@/constants/items"
+import { useItemNames } from "@/hooks/useItemNames"
 
 
 const MetricCard = ({
@@ -710,6 +711,9 @@ function RangeAnalyticsReportContent() {
     startDate,
     endDate
   )
+
+  // Get item names map for display
+  const { data: itemNamesMap = {} } = useItemNames()
 
   const handleGoBack = () => {
     router.back()

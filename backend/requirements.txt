@@ -11,7 +11,8 @@ boto3==1.34.34
 botocore>=1.34.0
 
 # Database and ORM
-supabase>=2.9.0
+supabase==2.22.0
+postgrest==2.22.0
 
 # OpenAI API
 openai>=1.26.0
