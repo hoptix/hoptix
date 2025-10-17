@@ -9,10 +9,11 @@ from typing import Dict, Any, List
 from utils.helpers import iso_from_start, iso_or_die
 from utils.helpers import json_or_none
 from concurrent.futures import ThreadPoolExecutor
-
+from services.database import Supa
 settings = Settings()
 prompts = Prompts()
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
+db = Supa()
 
 
 def split_into_transactions(transcript_segments: List[Dict], date: str, audio_started_at_iso: str = "10:00:00Z") -> List[Dict]:
@@ -20,7 +21,7 @@ def split_into_transactions(transcript_segments: List[Dict], date: str, audio_st
     print(f"Using database timestamp: {date}T{audio_started_at_iso}")
     
     # Process segments in parallel with controlled concurrency
-    with ThreadPoolExecutor(max_workers=10) as executor:  # Reduced from 10 to avoid rate limits
+    with ThreadPoolExecutor(max_workers=10) as executor:  # Reduced to avoid rate limits
         futures = [
             executor.submit(_process_segment, seg, date, audio_started_at_iso) 
             for seg in transcript_segments
@@ -35,6 +36,36 @@ def split_into_transactions(transcript_segments: List[Dict], date: str, audio_st
     
     return all_transactions
 
+
+def upload_transactions_to_database(transactions: List[Dict], batch_size: int = 30) -> List[Dict]:
+    """Upload transactions to database in batches and return all uploaded transactions with IDs."""
+    if not transactions:
+        return []
+    
+    all_uploaded_transactions = []
+    total_batches = (len(transactions) + batch_size - 1) // batch_size
+    
+    print(f"📤 Uploading {len(transactions)} transactions in {total_batches} batches of {batch_size}")
+    
+    for i in range(0, len(transactions), batch_size):
+        batch = transactions[i:i + batch_size]
+        batch_num = (i // batch_size) + 1
+        
+        print(f"📤 Uploading batch {batch_num}/{total_batches} ({len(batch)} transactions)")
+        
+        try:
+            # Upload batch to database
+            uploaded_batch = db.upsert_transactions(batch)
+            all_uploaded_transactions.extend(uploaded_batch)
+            print(f"✅ Successfully uploaded batch {batch_num}/{total_batches}")
+            
+        except Exception as e:
+            print(f"❌ Failed to upload batch {batch_num}/{total_batches}: {e}")
+            # Continue with next batch instead of failing completely
+            continue
+    
+    print(f"🎉 Completed uploading {len(all_uploaded_transactions)} transactions in {total_batches} batches")
+    return all_uploaded_transactions
 
 def _process_segment(seg: Dict, date: str, audio_started_at_iso: str) -> List[Dict]:
     """Process a single transcript segment and return all transactions from it."""
