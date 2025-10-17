@@ -1,5 +1,6 @@
 # Voice Diarization Service - Optimized Multi-Stage Dockerfile
 # Builds a minimal, GPU-enabled container for voice diarization with TitaNet
+# Version: 2.0.1 - Fixed paths for Porter deployment
 
 # Stage 1: Dependencies Builder
 FROM python:3.10-slim AS deps-builder
