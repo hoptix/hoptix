@@ -153,7 +153,7 @@ def _process_segment(seg: Dict, date: str, audio_id: str, run_id: str, audio_sta
                 "mobile_order": int(str(d.get("3","0")) or "0"),
                 "coupon_used": int(str(d.get("4","0")) or "0"),
                 "asked_more_time": int(str(d.get("5","0")) or "0"),
-                "out_of_stock_items": d.get("6","0"),
+                "out_of_stock_items": str(d.get("6","0") or "0"),  # Keep as string since it can contain descriptive text
                 "step1_raw": p,
                 # Additional timing metadata
                 "audio_start_seconds": s_rel,
