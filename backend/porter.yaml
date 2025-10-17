@@ -1,0 +1,35 @@
+version: v2
+name: voice-diarization
+
+build:
+  method: docker
+  context: ./
+  dockerfile: ./backend/voice-diarization/Dockerfile
+
+services:
+  - name: voice-job
+    type: job
+    run: /opt/venv/bin/python -u /app/voice_job.py
+    cpuCores: 4
+    ramMegabytes: 16384
+    gpuCoresNvidia: 1          # request a GPU from Porter
+    allowConcurrent: false
+    timeoutSeconds: 3600       # <-- correct key
+    # cron: "0 3 * * *"          # <-- bake schedule in code
+
+env:
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+  # Keep PYTHONPATH empty unless you really need it; venv resolves imports.
+  # PYTHONPATH: "/app"
+  PYTORCH_CUDA_ALLOC_CONF: "max_split_size_mb:512"
+  BATCH_SIZE: "10"
+  MAX_WORKERS: "2"
+  CONFIDENCE_THRESHOLD: "0.75"
+  # HEALTH_CHECK_PORT is unused for jobs; drop it or your code must consume it.
+  # HEALTH_CHECK_PORT: "8080"
+  SERVICE_NAME: "voice-diarization"
+  SERVICE_VERSION: "2.0.0"
+
+autoRollback:
+  enabled: true
