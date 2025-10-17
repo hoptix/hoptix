@@ -71,7 +71,7 @@ def full_pipeline(location_id: str, date: str):
 
     #3) Create transactions from transcript segments
     log_memory_usage("Creating transactions from transcript segments", 3, TOTAL_STEPS)
-    transactions = split_into_transactions(transcript_segments, date)
+    transactions = split_into_transactions(transcript_segments, date, audio_id, run_id)
     print(f"📝 Created {len(transactions)} transactions")
 
     #4) Insert transactions into database 
