@@ -1,6 +1,6 @@
 # Voice Diarization Service - Optimized Multi-Stage Dockerfile
 # Builds a minimal, GPU-enabled container for voice diarization with TitaNet
-# Version: 2.0.4 - Use venv Python explicitly in ENTRYPOINT
+# Version: 2.0.5 - Use system Python with PYTHONPATH to venv packages
 
 # Stage 1: Dependencies Builder
 FROM python:3.10-slim AS deps-builder
@@ -98,7 +98,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=nemo-builder /opt/venv /opt/venv
 
 # Set environment
-ENV PATH="/opt/venv/bin:$PATH" \
+# Use system Python but point to venv's packages
+ENV PYTHONPATH="/opt/venv/lib/python3.10/site-packages" \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     CUDA_VISIBLE_DEVICES=0 \
@@ -117,10 +118,10 @@ COPY --chown=voiceuser:voiceuser backend/voice-diarization/pipeline/ /app/pipeli
 # Switch to non-root user
 USER voiceuser
 
-# Health check (use venv's Python explicitly)
+# Health check (use system Python with PYTHONPATH set to venv packages)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD /opt/venv/bin/python health_check.py || exit 1
+    CMD python health_check.py || exit 1
 
-# Entry point (use venv's Python explicitly to ensure packages are found)
-ENTRYPOINT ["/opt/venv/bin/python", "-u"]
+# Entry point (use system Python with PYTHONPATH pointing to venv packages)
+ENTRYPOINT ["python", "-u"]
 CMD ["voice_job.py"]
