@@ -96,6 +96,7 @@ def _process_segment(seg: Dict, date: str, audio_started_at_iso: str) -> List[Di
         segment_transactions.append({
             "started_at": iso_from_start(f"{date}T{audio_started_at_iso}", s_rel),
             "ended_at":   iso_from_start(f"{date}T{audio_started_at_iso}", e_rel),
+            "tx_range": [iso_from_start(f"{date}T{audio_started_at_iso}", s_rel), iso_from_start(f"{date}T{audio_started_at_iso}", e_rel)],
             "kind": "order",
             "meta": {
                 "text": d.get("1", raw),
