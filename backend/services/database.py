@@ -217,6 +217,12 @@ class Supa:
         """Update a transaction record"""
         self.client.table("transactions").update(updates).eq("id", transaction_id).execute()
 
+    def delete_transactions_by_run_id(self, run_id: str):
+        """Delete all transactions for a specific run_id"""
+        result = self.client.table("transactions").delete().eq("run_id", run_id).execute()
+        print(f"Deleted transactions for run_id: {run_id}")
+        return result.data if result.data else []
+
     def get_add_ons(self, location_id: str):
         result = self.client.table("add_ons").select("*").eq("location_id", location_id).execute()
         return result.data if result.data else []

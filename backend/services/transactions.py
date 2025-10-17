@@ -16,14 +16,14 @@ client = OpenAI(api_key=settings.OPENAI_API_KEY)
 db = Supa()
 
 
-def split_into_transactions(transcript_segments: List[Dict], date: str, audio_started_at_iso: str = "10:00:00Z") -> List[Dict]:
+def split_into_transactions(transcript_segments: List[Dict], date: str, audio_id: str, run_id: str, audio_started_at_iso: str = "10:00:00Z") -> List[Dict]:
     # Anchor all transaction times strictly to the audio's database start time
     print(f"Using database timestamp: {date}T{audio_started_at_iso}")
     
     # Process segments in parallel with controlled concurrency
     with ThreadPoolExecutor(max_workers=10) as executor:  # Reduced to avoid rate limits
         futures = [
-            executor.submit(_process_segment, seg, date, audio_started_at_iso) 
+            executor.submit(_process_segment, seg, date, audio_id, run_id, audio_started_at_iso) 
             for seg in transcript_segments
         ]
         
@@ -67,7 +67,7 @@ def upload_transactions_to_database(transactions: List[Dict], batch_size: int = 
     print(f"🎉 Completed uploading {len(all_uploaded_transactions)} transactions in {total_batches} batches")
     return all_uploaded_transactions
 
-def _process_segment(seg: Dict, date: str, audio_started_at_iso: str) -> List[Dict]:
+def _process_segment(seg: Dict, date: str, audio_id: str, run_id: str, audio_started_at_iso: str) -> List[Dict]:
     """Process a single transcript segment and return all transactions from it."""
     raw = seg.get("text","") or ""
     if not raw.strip():
@@ -125,6 +125,8 @@ def _process_segment(seg: Dict, date: str, audio_started_at_iso: str) -> List[Di
         s_rel = float(seg["start"]) + i*slice_dur
         e_rel = float(seg["start"]) + (i+1)*slice_dur
         segment_transactions.append({
+            "audio_id": audio_id, 
+            "run_id": run_id,
             "started_at": iso_from_start(f"{date}T{audio_started_at_iso}", s_rel),
             "ended_at":   iso_from_start(f"{date}T{audio_started_at_iso}", e_rel),
             "tx_range": [iso_from_start(f"{date}T{audio_started_at_iso}", s_rel), iso_from_start(f"{date}T{audio_started_at_iso}", e_rel)],

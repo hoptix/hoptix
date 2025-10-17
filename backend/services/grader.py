@@ -218,7 +218,7 @@ def get_menu_data_from_db(location_id: str) -> tuple[list, list, list, list, lis
             items.append({
                 "Item": item["item_name"],
                 "Item ID": item["item_id"],
-                "Size IDs": item["size_ids"],
+                "Size": item["size"],
                 "Ordered Items Count": item["ordered_cnt"] or 1,
                 "Upselling Chance": item["upsell"] or "0",
                 "Upsizing Chance": item["upsize"] or "0",
@@ -230,7 +230,6 @@ def get_menu_data_from_db(location_id: str) -> tuple[list, list, list, list, lis
             meals.append({
                 "Item": meal["item_name"],
                 "Item ID": meal["item_id"],
-                "Size IDs": meal["size_ids"],
                 "Ordered Items Count": meal["ordered_cnt"] or 1,
                 "Inclusions": meal["inclusions"] or "",
                 "Upselling Chance": meal["upsell"] or "0",
@@ -243,7 +242,6 @@ def get_menu_data_from_db(location_id: str) -> tuple[list, list, list, list, lis
             addons.append({
                 "Item": addon["item_name"],
                 "Item ID": addon["item_id"],
-                "Size IDs": addon["size_ids"]
             })
         
         # For now, keep upselling and upsizing as static (can be moved to DB later if needed)
