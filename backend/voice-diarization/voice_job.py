@@ -24,6 +24,10 @@ logger = logging.getLogger(__name__)
 
 def check_gpu_availability() -> bool:
     """Check if GPU is available and log details."""
+    logger.info("=" * 60)
+    logger.info("GPU AVAILABILITY CHECK")
+    logger.info("=" * 60)
+
     try:
         import torch
         cuda_available = torch.cuda.is_available()
@@ -32,24 +36,38 @@ def check_gpu_availability() -> bool:
             device_name = torch.cuda.get_device_name(0)
             memory_allocated = torch.cuda.memory_allocated(0) / 1024**3
             memory_reserved = torch.cuda.memory_reserved(0) / 1024**3
+            memory_total = torch.cuda.get_device_properties(0).total_memory / 1024**3
 
-            logger.info(f"✅ GPU Available: {device_name}")
-            logger.info(f"   Devices: {device_count}")
+            logger.info("✅ RUNNING ON GPU")
+            logger.info(f"   Device: {device_name}")
+            logger.info(f"   Device Count: {device_count}")
+            logger.info(f"   Total Memory: {memory_total:.2f} GB")
             logger.info(f"   Memory Allocated: {memory_allocated:.2f} GB")
             logger.info(f"   Memory Reserved: {memory_reserved:.2f} GB")
         else:
-            logger.warning("⚠️ GPU not available, will use CPU (slower performance)")
+            logger.warning("⚠️ RUNNING ON CPU (NO GPU AVAILABLE)")
+            logger.warning("   Performance will be significantly slower")
+
+        logger.info("=" * 60)
         return cuda_available
-    except ImportError:
-        logger.error("❌ PyTorch not installed")
+    except ImportError as e:
+        logger.error("❌ GPU CHECK FAILED: PyTorch not installed")
+        logger.error(f"   Cannot determine GPU availability without PyTorch")
+        logger.error(f"   Import error: {e}")
+        logger.info("=" * 60)
         return False
     except Exception as e:
-        logger.error(f"❌ Error checking GPU: {e}")
+        logger.error(f"❌ GPU CHECK FAILED: {e}")
+        logger.info("=" * 60)
         return False
 
 
 def verify_dependencies() -> bool:
     """Verify all critical dependencies are installed."""
+    logger.info("=" * 60)
+    logger.info("DEPENDENCY VERIFICATION")
+    logger.info("=" * 60)
+
     dependencies_ok = True
 
     # Check core dependencies
@@ -57,37 +75,43 @@ def verify_dependencies() -> bool:
         import torch
         logger.info(f"✓ PyTorch {torch.__version__}")
     except ImportError as e:
-        logger.error(f"✗ PyTorch: {e}")
+        logger.error(f"✗ PyTorch MISSING: {e}")
         dependencies_ok = False
 
     try:
         import torchaudio
         logger.info(f"✓ Torchaudio {torchaudio.__version__}")
     except ImportError as e:
-        logger.error(f"✗ Torchaudio: {e}")
+        logger.error(f"✗ Torchaudio MISSING: {e}")
         dependencies_ok = False
 
     try:
         import assemblyai
         logger.info("✓ AssemblyAI")
     except ImportError as e:
-        logger.error(f"✗ AssemblyAI: {e}")
+        logger.error(f"✗ AssemblyAI MISSING: {e}")
         dependencies_ok = False
 
     try:
         from nemo.collections.asr.models import EncDecSpeakerLabelModel
         logger.info("✓ NeMo ASR models")
     except ImportError as e:
-        logger.error(f"✗ NeMo: {e}")
+        logger.error(f"✗ NeMo MISSING: {e}")
         dependencies_ok = False
 
     try:
         import httpx
         logger.info("✓ HTTPX (for Supabase REST)")
     except ImportError as e:
-        logger.error(f"✗ HTTPX: {e}")
+        logger.error(f"✗ HTTPX MISSING: {e}")
         dependencies_ok = False
 
+    if dependencies_ok:
+        logger.info("✅ All dependencies verified")
+    else:
+        logger.error("❌ Some dependencies are missing - job cannot proceed")
+
+    logger.info("=" * 60)
     return dependencies_ok
 
 

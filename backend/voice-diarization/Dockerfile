@@ -1,6 +1,6 @@
 # Voice Diarization Service - Optimized Multi-Stage Dockerfile
 # Builds a minimal, GPU-enabled container for voice diarization with TitaNet
-# Version: 2.0.3 - Install Cython before NeMo for correct build order
+# Version: 2.0.4 - Use venv Python explicitly in ENTRYPOINT
 
 # Stage 1: Dependencies Builder
 FROM python:3.10-slim AS deps-builder
@@ -117,10 +117,10 @@ COPY --chown=voiceuser:voiceuser backend/voice-diarization/pipeline/ /app/pipeli
 # Switch to non-root user
 USER voiceuser
 
-# Health check
+# Health check (use venv's Python explicitly)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD python health_check.py || exit 1
+    CMD /opt/venv/bin/python health_check.py || exit 1
 
-# Entry point
-ENTRYPOINT ["python", "-u"]
+# Entry point (use venv's Python explicitly to ensure packages are found)
+ENTRYPOINT ["/opt/venv/bin/python", "-u"]
 CMD ["voice_job.py"]
