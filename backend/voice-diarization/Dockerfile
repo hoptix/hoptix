@@ -50,6 +50,9 @@ RUN pip install hydra-core==1.3.2 omegaconf==2.3.0 pytorch-lightning==2.0.0
 # Install NeMo without dependencies to avoid conflicts
 RUN pip install --no-deps nemo-toolkit[asr]==1.21.0
 
+# Install Cython BEFORE youtokentome (required for building)
+RUN pip install Cython>=3.0.0
+
 # Install remaining NeMo requirements
 RUN pip install \
     text-unidecode \
