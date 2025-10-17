@@ -281,7 +281,8 @@ class DatabaseClient:
         self,
         transaction_id: str,
         worker_id: Optional[str],
-        confidence: float
+        confidence: float,
+        assignment_source: str = 'voice'
     ) -> bool:
         """
         Update transaction with worker assignment.
@@ -290,6 +291,7 @@ class DatabaseClient:
             transaction_id: Transaction ID
             worker_id: Worker ID (or None for no match)
             confidence: Confidence score (0-1)
+            assignment_source: Source of assignment (default: 'voice')
 
         Returns:
             Success boolean
@@ -297,7 +299,9 @@ class DatabaseClient:
         try:
             data = {
                 'worker_id': worker_id,
-                'voice_confidence': confidence,
+                'worker_assignment_source': assignment_source,
+                'worker_confidence': float(confidence),
+                'voice_confidence': confidence,  # Keep for backward compatibility
                 'voice_processed_at': datetime.now().isoformat()
             }
 

@@ -123,9 +123,20 @@ def validate_environment() -> Dict[str, str]:
         'AAI_API_KEY': os.getenv('AAI_API_KEY'),
     }
 
+    # Optional but recommended
+    optional_vars = {
+        'GOOGLE_DRIVE_CREDENTIALS': os.getenv('GOOGLE_DRIVE_CREDENTIALS'),
+        'GOOGLE_DRIVE_CREDENTIALS_PATH': os.getenv('GOOGLE_DRIVE_CREDENTIALS_PATH'),
+        'CONFIDENCE_THRESHOLD': os.getenv('CONFIDENCE_THRESHOLD', '0.2'),
+        'MIN_UTTERANCE_MS': os.getenv('MIN_UTTERANCE_MS', '1000'),
+    }
+
     missing = [var for var, value in required_vars.items() if not value]
     if missing:
         raise ValueError(f"Missing required environment variables: {', '.join(missing)}")
+
+    # Add optional vars to result
+    required_vars.update(optional_vars)
 
     return required_vars
 
@@ -134,7 +145,9 @@ def run_voice_diarization(
     location_id: str,
     date: str,
     batch_size: int = 10,
-    max_workers: int = 2
+    max_workers: int = 5,
+    confidence_threshold: float = 0.2,
+    min_utterance_ms: int = 1000
 ) -> Dict[str, Any]:
     """
     Run the voice diarization pipeline with proper resource management.
@@ -144,12 +157,15 @@ def run_voice_diarization(
         date: Date string in YYYY-MM-DD format
         batch_size: Number of clips to process in each batch
         max_workers: Maximum concurrent workers for processing
+        confidence_threshold: Minimum confidence for worker match
+        min_utterance_ms: Minimum utterance length for embeddings
 
     Returns:
         Dictionary with processing results
     """
     from pipeline.voice_diarization_pipeline import VoiceDiarizationPipeline
     from services.database_rest import DatabaseClient
+    from services.gdrive_client import GoogleDriveClient
 
     start_time = datetime.now()
     results = {
@@ -159,6 +175,7 @@ def run_voice_diarization(
         'start_time': start_time.isoformat(),
         'processed': 0,
         'updated': 0,
+        'no_match': 0,
         'failures': 0,
         'errors': []
     }
@@ -166,6 +183,13 @@ def run_voice_diarization(
     try:
         # Initialize database client (REST-only, no Pydantic)
         db = DatabaseClient()
+
+        # Initialize Google Drive client
+        gdrive = None
+        try:
+            gdrive = GoogleDriveClient()
+        except Exception as e:
+            logger.warning(f"Could not initialize Google Drive client: {e}")
 
         # Create run record
         run_id = db.create_run(location_id, date, 'voice_diarization')
@@ -175,12 +199,17 @@ def run_voice_diarization(
         # Initialize pipeline
         pipeline = VoiceDiarizationPipeline(
             db_client=db,
+            gdrive_client=gdrive,
             batch_size=batch_size,
-            max_workers=max_workers
+            max_workers=max_workers,
+            confidence_threshold=confidence_threshold,
+            min_utterance_ms=min_utterance_ms
         )
 
         # Process the location and date
         logger.info(f"Processing location {location_id} for date {date}")
+        logger.info(f"Settings: threshold={confidence_threshold}, min_utterance={min_utterance_ms}ms")
+
         process_results = pipeline.process(location_id, date)
 
         # Update results
@@ -190,9 +219,14 @@ def run_voice_diarization(
         # Update run record
         db.update_run(run_id, {
             'status': 'completed',
-            'processed': results['processed'],
-            'updated': results['updated'],
-            'failures': results['failures']
+            'processed': results.get('processed', 0),
+            'updated': results.get('updated', 0),
+            'failures': results.get('failures', 0),
+            'metadata': {
+                'no_match': results.get('no_match', 0),
+                'threshold': confidence_threshold,
+                'min_utterance_ms': min_utterance_ms
+            }
         })
 
     except Exception as e:
@@ -232,9 +266,10 @@ def run_voice_diarization(
         logger.info("PROCESSING SUMMARY")
         logger.info("=" * 60)
         logger.info(f"Status: {results['status']}")
-        logger.info(f"Processed: {results['processed']} clips")
-        logger.info(f"Updated: {results['updated']} transactions")
-        logger.info(f"Failures: {results['failures']}")
+        logger.info(f"Processed: {results.get('processed', 0)} clips")
+        logger.info(f"Updated: {results.get('updated', 0)} transactions")
+        logger.info(f"No Match: {results.get('no_match', 0)} transactions")
+        logger.info(f"Failures: {results.get('failures', 0)}")
         logger.info(f"Duration: {duration:.1f} seconds")
 
         if results['errors']:
@@ -272,8 +307,22 @@ def main():
     parser.add_argument(
         '--max-workers',
         type=int,
-        default=int(os.getenv('MAX_WORKERS', '2')),
-        help='Maximum concurrent processing workers (default: 2)'
+        default=int(os.getenv('MAX_WORKERS', '5')),
+        help='Maximum concurrent processing workers (default: 5)'
+    )
+
+    parser.add_argument(
+        '--confidence-threshold',
+        type=float,
+        default=float(os.getenv('CONFIDENCE_THRESHOLD', '0.2')),
+        help='Minimum confidence threshold for worker match (default: 0.2)'
+    )
+
+    parser.add_argument(
+        '--min-utterance-ms',
+        type=int,
+        default=int(os.getenv('MIN_UTTERANCE_MS', '1000')),
+        help='Minimum utterance length in milliseconds (default: 1000)'
     )
 
     parser.add_argument(
@@ -303,6 +352,8 @@ def main():
     logger.info(f"Date: {args.date}")
     logger.info(f"Batch Size: {args.batch_size}")
     logger.info(f"Max Workers: {args.max_workers}")
+    logger.info(f"Confidence Threshold: {args.confidence_threshold}")
+    logger.info(f"Min Utterance: {args.min_utterance_ms}ms")
     logger.info("=" * 60)
 
     try:
@@ -361,7 +412,9 @@ def main():
             location_id=args.location_id,
             date=args.date,
             batch_size=args.batch_size,
-            max_workers=args.max_workers
+            max_workers=args.max_workers,
+            confidence_threshold=args.confidence_threshold,
+            min_utterance_ms=args.min_utterance_ms
         )
 
         # Exit with appropriate code

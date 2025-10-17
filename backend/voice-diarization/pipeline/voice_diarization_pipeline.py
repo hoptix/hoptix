@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """
 Voice Diarization Pipeline
-Clean implementation with proper resource management and error handling
+Uses AssemblyAI for transcription and speaker diarization
+Matches speakers to workers using TitaNet embeddings
 """
 
 import os
+import re
 import gc
 import tempfile
 import logging
@@ -22,44 +24,55 @@ class ProcessingResult:
     """Result from processing a single clip."""
     transaction_id: str
     worker_id: Optional[str]
+    worker_name: Optional[str]
     confidence: float
     success: bool
     error: Optional[str] = None
+    transcript: Optional[Dict[str, Any]] = None
 
 
 class VoiceDiarizationPipeline:
     """
     Main pipeline for voice diarization processing.
-    Handles batch processing, GPU memory management, and error recovery.
+    Uses AssemblyAI for diarization and TitaNet for speaker verification.
     """
 
     def __init__(
         self,
         db_client,
+        gdrive_client=None,
         batch_size: int = 10,
-        max_workers: int = 2,
-        confidence_threshold: float = 0.75
+        max_workers: int = 5,
+        confidence_threshold: float = 0.2,
+        min_utterance_ms: int = 1000
     ):
         """
         Initialize the pipeline.
 
         Args:
             db_client: Database client instance
+            gdrive_client: Optional Google Drive client
             batch_size: Number of clips to process per batch
             max_workers: Maximum concurrent processing threads
             confidence_threshold: Minimum confidence for worker match
+            min_utterance_ms: Minimum utterance length for robust embeddings
         """
         self.db = db_client
+        self.gdrive = gdrive_client
         self.batch_size = batch_size
         self.max_workers = max_workers
         self.confidence_threshold = confidence_threshold
+        self.min_utterance_ms = min_utterance_ms
 
         # Initialize components
         self.titanet_model = None
-        self.gdrive_client = None
         self.worker_embeddings = {}
+        self.label_to_worker_id = {}
 
-        logger.info(f"Initialized pipeline (batch_size={batch_size}, max_workers={max_workers})")
+        logger.info(
+            f"Initialized pipeline (batch_size={batch_size}, "
+            f"max_workers={max_workers}, threshold={confidence_threshold})"
+        )
 
     def _initialize_titanet(self) -> bool:
         """Initialize TitaNet speaker verification model."""
@@ -91,11 +104,14 @@ class VoiceDiarizationPipeline:
             return False
 
     def _initialize_gdrive(self) -> bool:
-        """Initialize Google Drive client."""
+        """Initialize or verify Google Drive client."""
+        if self.gdrive:
+            logger.info("✅ Using provided Google Drive client")
+            return True
+
         try:
             from services.gdrive_client import GoogleDriveClient
-
-            self.gdrive_client = GoogleDriveClient()
+            self.gdrive = GoogleDriveClient()
             logger.info("✅ Google Drive client initialized")
             return True
 
@@ -103,59 +119,41 @@ class VoiceDiarizationPipeline:
             logger.error(f"Failed to initialize Google Drive: {e}")
             return False
 
-    def _build_worker_embeddings(self, location_name: str, samples_folder: Optional[str] = None) -> bool:
+    def _build_worker_embeddings(self, location_name: str) -> bool:
         """
-        Build voice embeddings for workers from samples.
+        Build voice embeddings for workers from Google Drive samples.
 
         Args:
             location_name: Name of the location
-            samples_folder: Optional custom folder name for samples
 
         Returns:
             Success boolean
         """
+        from services.speaker_matcher import build_local_embeddings
+
         try:
-            # Default samples folder
-            if not samples_folder:
-                samples_folder = f"{location_name} Voice Samples"
+            logger.info(f"Building worker embeddings for location: {location_name}")
 
-            logger.info(f"Building worker embeddings from '{samples_folder}'")
+            # Download voice samples to temp directory
+            temp_dir = tempfile.mkdtemp(prefix="voice_samples_")
+            sample_paths = self.gdrive.download_voice_samples(location_name, temp_dir)
 
-            # Get workers from database
-            workers = self.db.get_workers()
-            if not workers:
-                logger.warning("No workers found in database")
+            if not sample_paths:
+                logger.warning(f"No voice samples found for {location_name}")
                 return False
 
-            # Download and process voice samples
-            for worker in workers:
-                worker_name = worker['legal_name']
-                worker_id = worker['id']
+            # Build embeddings
+            self.worker_embeddings = build_local_embeddings(
+                temp_dir,
+                self.titanet_model
+            )
 
-                try:
-                    # Find voice sample for worker
-                    sample_path = self._download_worker_sample(
-                        samples_folder,
-                        worker_name
-                    )
-
-                    if sample_path:
-                        # Generate embedding
-                        embedding = self._generate_embedding(sample_path)
-                        if embedding is not None:
-                            self.worker_embeddings[worker_id] = {
-                                'name': worker_name,
-                                'embedding': embedding
-                            }
-                            logger.info(f"✓ Generated embedding for {worker_name}")
-
-                        # Clean up temp file
-                        Path(sample_path).unlink(missing_ok=True)
-                    else:
-                        logger.warning(f"No sample found for {worker_name}")
-
-                except Exception as e:
-                    logger.error(f"Error processing {worker_name}: {e}")
+            # Clean up temp files
+            import shutil
+            try:
+                shutil.rmtree(temp_dir)
+            except:
+                pass
 
             logger.info(f"Built embeddings for {len(self.worker_embeddings)} workers")
             return len(self.worker_embeddings) > 0
@@ -164,127 +162,90 @@ class VoiceDiarizationPipeline:
             logger.error(f"Failed to build worker embeddings: {e}")
             return False
 
-    def _download_worker_sample(self, folder: str, worker_name: str) -> Optional[str]:
-        """Download voice sample for a worker."""
-        try:
-            # Search for audio file with worker's name
-            files = self.gdrive_client.list_files_in_folder(folder)
+    def _map_worker_names_to_ids(self) -> None:
+        """Map worker names from voice samples to database IDs."""
+        from services.speaker_matcher import map_worker_names_to_ids
 
-            for file in files:
-                if worker_name.lower() in file['name'].lower():
-                    # Download to temp file
-                    with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp:
-                        self.gdrive_client.download_file(file['id'], tmp.name)
-                        return tmp.name
+        # Get workers from database
+        workers = self.db.get_workers()
+        if not workers:
+            logger.warning("No workers found in database")
+            return
 
-            return None
+        # Build name to ID mapping
+        worker_name_to_id = {}
+        for worker in workers:
+            name = worker.get('legal_name')
+            wid = worker.get('id')
+            if name and wid:
+                worker_name_to_id[name] = wid
 
-        except Exception as e:
-            logger.error(f"Error downloading sample for {worker_name}: {e}")
-            return None
+        # Map voice sample labels to worker IDs
+        self.label_to_worker_id = map_worker_names_to_ids(
+            self.worker_embeddings,
+            worker_name_to_id
+        )
 
-    def _generate_embedding(self, audio_path: str) -> Optional[np.ndarray]:
-        """Generate voice embedding from audio file."""
-        try:
-            import torch
-            import torchaudio
+        logger.info(f"Mapped {len(self.label_to_worker_id)} voice samples to worker IDs")
 
-            # Load and preprocess audio
-            waveform, sample_rate = torchaudio.load(audio_path)
-
-            # Resample to 16kHz if needed
-            if sample_rate != 16000:
-                resampler = torchaudio.transforms.Resample(sample_rate, 16000)
-                waveform = resampler(waveform)
-
-            # Convert to mono
-            if waveform.shape[0] > 1:
-                waveform = torch.mean(waveform, dim=0, keepdim=True)
-
-            # Move to GPU if available
-            if torch.cuda.is_available():
-                waveform = waveform.cuda()
-
-            # Generate embedding
-            with torch.no_grad():
-                embedding = self.titanet_model.infer_segment(waveform)
-
-            # Convert to numpy
-            embedding = embedding.cpu().numpy()
-
-            return embedding
-
-        except Exception as e:
-            logger.error(f"Error generating embedding: {e}")
-            return None
-
-    def _process_clip_batch(self, clips: List[Dict[str, Any]]) -> List[ProcessingResult]:
+    def _process_single_clip(
+        self,
+        clip_path: str,
+        transaction_id: str
+    ) -> ProcessingResult:
         """
-        Process a batch of clips.
+        Process a single transaction clip using AssemblyAI diarization.
 
         Args:
-            clips: List of clip records
+            clip_path: Path to audio clip
+            transaction_id: Transaction UUID
 
         Returns:
-            List of processing results
+            ProcessingResult with worker assignment
         """
-        results = []
-
-        for clip in clips:
-            result = self._process_single_clip(clip)
-            results.append(result)
-
-            # Clear GPU memory periodically
-            if len(results) % 5 == 0:
-                self._clear_gpu_memory()
-
-        return results
-
-    def _process_single_clip(self, clip: Dict[str, Any]) -> ProcessingResult:
-        """Process a single transaction clip."""
-        transaction_id = clip['transaction_id']
+        from services.speaker_matcher import run_pipeline_on_media_best_match
 
         try:
-            # Download clip audio
-            audio_path = self._download_clip(clip)
-            if not audio_path:
+            logger.info(f"Processing transaction {transaction_id}")
+
+            # Run diarization and matching pipeline
+            best_label, best_score, relabeled_utterances, presence = run_pipeline_on_media_best_match(
+                local_media_path=clip_path,
+                speaker_model=self.titanet_model,
+                local_embeddings=self.worker_embeddings,
+                threshold=self.confidence_threshold,
+                min_utterance_ms=self.min_utterance_ms
+            )
+
+            # Map label to worker ID
+            worker_id = self.label_to_worker_id.get(best_label)
+
+            if not worker_id or best_label == "No match":
+                logger.info(
+                    f"Transaction {transaction_id}: No match "
+                    f"(best={best_label}, score={best_score:.3f})"
+                )
                 return ProcessingResult(
                     transaction_id=transaction_id,
                     worker_id=None,
-                    confidence=0.0,
-                    success=False,
-                    error="Failed to download audio"
+                    worker_name=None,
+                    confidence=best_score,
+                    success=True,
+                    transcript={"utterances": relabeled_utterances}
                 )
 
-            # Generate embedding for clip
-            clip_embedding = self._generate_embedding(audio_path)
-
-            # Clean up temp file
-            Path(audio_path).unlink(missing_ok=True)
-
-            if clip_embedding is None:
-                return ProcessingResult(
-                    transaction_id=transaction_id,
-                    worker_id=None,
-                    confidence=0.0,
-                    success=False,
-                    error="Failed to generate embedding"
-                )
-
-            # Match against worker embeddings
-            best_match, confidence = self._match_worker(clip_embedding)
-
-            # Apply confidence threshold
-            if confidence >= self.confidence_threshold:
-                worker_id = best_match
-            else:
-                worker_id = None
+            logger.info(
+                f"Transaction {transaction_id}: Matched {best_label} "
+                f"(worker_id={worker_id}, confidence={best_score:.3f})"
+            )
 
             return ProcessingResult(
                 transaction_id=transaction_id,
                 worker_id=worker_id,
-                confidence=confidence,
-                success=True
+                worker_name=best_label,
+                confidence=best_score,
+                success=True,
+                transcript={"utterances": relabeled_utterances}
             )
 
         except Exception as e:
@@ -292,108 +253,119 @@ class VoiceDiarizationPipeline:
             return ProcessingResult(
                 transaction_id=transaction_id,
                 worker_id=None,
+                worker_name=None,
                 confidence=0.0,
                 success=False,
                 error=str(e)
             )
 
-    def _download_clip(self, clip: Dict[str, Any]) -> Optional[str]:
-        """Download clip from S3 or Google Drive."""
-        try:
-            # Check if we have S3 info
-            if clip.get('audio_s3_bucket') and clip.get('audio_s3_key'):
-                # Download from S3
-                return self._download_from_s3(
-                    clip['audio_s3_bucket'],
-                    clip['audio_s3_key']
-                )
-            else:
-                # Try Google Drive fallback
-                return self._download_from_gdrive(clip)
-
-        except Exception as e:
-            logger.error(f"Error downloading clip: {e}")
-            return None
-
-    def _download_from_s3(self, bucket: str, key: str) -> Optional[str]:
-        """Download audio from S3."""
-        try:
-            import boto3
-
-            s3 = boto3.client('s3')
-
-            with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp:
-                s3.download_file(bucket, key, tmp.name)
-                return tmp.name
-
-        except Exception as e:
-            logger.error(f"Error downloading from S3: {e}")
-            return None
-
-    def _download_from_gdrive(self, clip: Dict[str, Any]) -> Optional[str]:
-        """Download audio from Google Drive."""
-        # Implementation depends on your Google Drive structure
-        # This is a placeholder
-        return None
-
-    def _match_worker(self, clip_embedding: np.ndarray) -> Tuple[Optional[str], float]:
+    def _process_clip_from_drive(
+        self,
+        clip_metadata: Dict[str, Any]
+    ) -> ProcessingResult:
         """
-        Match clip embedding against worker embeddings.
+        Process a clip from Google Drive.
 
         Args:
-            clip_embedding: Voice embedding from clip
+            clip_metadata: Drive file metadata
 
         Returns:
-            Tuple of (worker_id, confidence_score)
+            ProcessingResult
         """
+        import re
+
+        # Extract transaction ID from filename
+        filename = clip_metadata.get('name', '')
+        match = re.match(r'^tx_([0-9a-fA-F-]{36})\.(wav|mp3|m4a)$', filename, re.IGNORECASE)
+
+        if not match:
+            logger.warning(f"Invalid clip filename: {filename}")
+            return ProcessingResult(
+                transaction_id="unknown",
+                worker_id=None,
+                worker_name=None,
+                confidence=0.0,
+                success=False,
+                error=f"Invalid filename pattern: {filename}"
+            )
+
+        transaction_id = match.group(1)
+
+        # Check if should skip
+        if self.db.should_skip_transaction(transaction_id):
+            logger.info(f"Skipping transaction {transaction_id} (complete or already labeled)")
+            return ProcessingResult(
+                transaction_id=transaction_id,
+                worker_id=None,
+                worker_name=None,
+                confidence=0.0,
+                success=False,
+                error="Transaction already processed or incomplete"
+            )
+
+        # Download clip to temp file
+        temp_file = os.path.join(
+            tempfile.gettempdir(),
+            f"clip_{transaction_id}.wav"
+        )
+
         try:
-            if not self.worker_embeddings:
-                return None, 0.0
+            if not self.gdrive.download_file(clip_metadata['id'], temp_file):
+                raise Exception("Failed to download clip")
 
-            best_match = None
-            best_score = 0.0
+            # Process the clip
+            result = self._process_single_clip(temp_file, transaction_id)
 
-            # Compare against each worker
-            for worker_id, worker_data in self.worker_embeddings.items():
-                # Calculate cosine similarity
-                score = self._cosine_similarity(
-                    clip_embedding,
-                    worker_data['embedding']
-                )
+            return result
 
-                if score > best_score:
-                    best_score = score
-                    best_match = worker_id
+        finally:
+            # Clean up temp file
+            if os.path.exists(temp_file):
+                try:
+                    os.remove(temp_file)
+                except:
+                    pass
 
-            return best_match, best_score
+    def _process_batch_parallel(
+        self,
+        clips: List[Dict[str, Any]]
+    ) -> List[ProcessingResult]:
+        """
+        Process a batch of clips in parallel.
 
-        except Exception as e:
-            logger.error(f"Error matching worker: {e}")
-            return None, 0.0
+        Args:
+            clips: List of clip metadata from Google Drive
 
-    def _cosine_similarity(self, a: np.ndarray, b: np.ndarray) -> float:
-        """Calculate cosine similarity between two embeddings."""
-        try:
-            # Flatten arrays
-            a = a.flatten()
-            b = b.flatten()
+        Returns:
+            List of processing results
+        """
+        results = []
 
-            # Calculate cosine similarity
-            dot_product = np.dot(a, b)
-            norm_a = np.linalg.norm(a)
-            norm_b = np.linalg.norm(b)
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            # Submit all clips for processing
+            futures = {
+                executor.submit(self._process_clip_from_drive, clip): clip
+                for clip in clips
+            }
 
-            if norm_a == 0 or norm_b == 0:
-                return 0.0
+            # Collect results as they complete
+            for future in as_completed(futures):
+                try:
+                    result = future.result()
+                    results.append(result)
+                except Exception as e:
+                    clip = futures[future]
+                    logger.error(f"Failed to process {clip.get('name', 'unknown')}: {e}")
+                    results.append(ProcessingResult(
+                        transaction_id="unknown",
+                        worker_id=None,
+                        worker_name=None,
+                        confidence=0.0,
+                        success=False,
+                        error=str(e)
+                    ))
 
-            similarity = dot_product / (norm_a * norm_b)
-
-            # Ensure in range [0, 1]
-            return max(0.0, min(1.0, (similarity + 1) / 2))
-
-        except Exception as e:
-            logger.error(f"Error calculating similarity: {e}")
-            return 0.0
+        return results
 
     def _clear_gpu_memory(self):
         """Clear GPU memory cache."""
@@ -437,22 +409,39 @@ class VoiceDiarizationPipeline:
             if not location_name:
                 raise ValueError(f"Location {location_id} not found")
 
+            logger.info(f"Processing voice diarization for {location_name} on {date}")
+
             # Build worker embeddings
             if not self._build_worker_embeddings(location_name):
                 logger.warning("No worker embeddings built, continuing anyway")
 
-            # Get transactions for the date
-            transactions = self.db.get_transactions_for_date(location_id, date)
-            total_clips = len(transactions)
-            logger.info(f"Processing {total_clips} transaction clips")
+            # Map worker names to IDs
+            self._map_worker_names_to_ids()
+
+            # Find clips folder for date
+            clips_folder = self.gdrive.get_clips_folder_for_date(location_name, date)
+            if not clips_folder:
+                raise ValueError(f"No clips folder found for {date}")
+
+            # List transaction clips
+            clips = self.gdrive.list_transaction_clips(clips_folder['name'])
+            total_clips = len(clips)
+
+            logger.info(f"Found {total_clips} transaction clips to process")
 
             # Process in batches
             for i in range(0, total_clips, self.batch_size):
-                batch = transactions[i:i + self.batch_size]
-                logger.info(f"Processing batch {i//self.batch_size + 1} ({len(batch)} clips)")
+                batch = clips[i:i + self.batch_size]
+                batch_num = i // self.batch_size + 1
+                total_batches = (total_clips + self.batch_size - 1) // self.batch_size
 
-                # Process batch
-                batch_results = self._process_clip_batch(batch)
+                logger.info(
+                    f"Processing batch {batch_num}/{total_batches} "
+                    f"({len(batch)} clips)"
+                )
+
+                # Process batch in parallel
+                batch_results = self._process_batch_parallel(batch)
 
                 # Update database
                 for result in batch_results:
@@ -460,15 +449,36 @@ class VoiceDiarizationPipeline:
 
                     if result.success:
                         # Update transaction
+                        update_data = {
+                            'worker_id': result.worker_id,
+                            'worker_assignment_source': 'voice',
+                            'worker_confidence': float(result.confidence)
+                        }
+
                         success = self.db.update_transaction_worker(
                             result.transaction_id,
                             result.worker_id,
                             result.confidence
                         )
 
+                        # Also update with new fields
+                        try:
+                            self.db._request(
+                                'PATCH',
+                                'transactions',
+                                params={'id': f'eq.{result.transaction_id}'},
+                                data=update_data
+                            )
+                        except:
+                            pass
+
                         if success:
                             if result.worker_id:
                                 results['updated'] += 1
+                                logger.info(
+                                    f"✓ Updated {result.transaction_id} -> "
+                                    f"{result.worker_name} ({result.confidence:.3f})"
+                                )
                             else:
                                 results['no_match'] += 1
                         else:
@@ -482,7 +492,11 @@ class VoiceDiarizationPipeline:
                 self._clear_gpu_memory()
 
                 # Log progress
-                logger.info(f"Progress: {results['processed']}/{total_clips} clips")
+                logger.info(
+                    f"Progress: {results['processed']}/{total_clips} clips "
+                    f"({results['updated']} matched, {results['no_match']} no match, "
+                    f"{results['failures']} failures)"
+                )
 
         except Exception as e:
             logger.error(f"Pipeline error: {e}")
@@ -491,5 +505,15 @@ class VoiceDiarizationPipeline:
         finally:
             # Clean up
             self._clear_gpu_memory()
+
+        # Final summary
+        logger.info("=" * 60)
+        logger.info("PROCESSING COMPLETE")
+        logger.info("=" * 60)
+        logger.info(f"Total Processed: {results['processed']}")
+        logger.info(f"Workers Matched: {results['updated']}")
+        logger.info(f"No Match: {results['no_match']}")
+        logger.info(f"Failures: {results['failures']}")
+        logger.info("=" * 60)
 
         return results
