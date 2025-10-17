@@ -1,6 +1,6 @@
 # Voice Diarization Service - Optimized Multi-Stage Dockerfile
 # Builds a minimal, GPU-enabled container for voice diarization with TitaNet
-# Version: 2.0.2 - Install NeMo with full dependencies
+# Version: 2.0.3 - Install Cython before NeMo for correct build order
 
 # Stage 1: Dependencies Builder
 FROM python:3.10-slim AS deps-builder
@@ -47,11 +47,11 @@ FROM deps-builder AS nemo-builder
 # Install NeMo dependencies carefully
 RUN pip install hydra-core==1.3.2 omegaconf==2.3.0 pytorch-lightning==2.0.0
 
-# Install NeMo with all dependencies (we've pre-installed conflict sources)
-RUN pip install nemo-toolkit[asr]==1.21.0
-
-# Install Cython BEFORE youtokentome (required for building)
+# Install Cython first (required for youtokentome and other packages that NeMo will install)
 RUN pip install Cython>=3.0.0
+
+# Install NeMo with all dependencies (Cython now available for building)
+RUN pip install nemo-toolkit[asr]==1.21.0
 
 # Install remaining NeMo requirements (including previously missing dependencies)
 RUN pip install \
