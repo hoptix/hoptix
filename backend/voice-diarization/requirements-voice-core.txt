@@ -1,0 +1,28 @@
+# Core Voice Diarization Dependencies
+# Minimal set of packages for production deployment
+# PyTorch is installed separately in Dockerfile with CUDA support
+
+# Essential numerical computing (NeMo requires numpy<1.24)
+numpy==1.23.5
+scipy==1.10.1
+scikit-learn==1.3.2
+
+# Voice and audio processing
+assemblyai==0.34.0
+pydub==0.25.1
+librosa==0.10.2
+soundfile==0.12.1
+audioread==3.0.1
+
+# For direct Supabase REST API calls (no SDK conflicts)
+httpx==0.27.0
+python-dotenv==1.0.1
+
+# Google Drive integration
+google-api-python-client==2.181.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.0
+
+# Utilities
+python-dateutil==2.9.0
+psutil==5.9.8

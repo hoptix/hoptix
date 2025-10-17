@@ -1,29 +1,62 @@
 version: v2
 name: voice-diarization
 
-# Build configuration for GPU-enabled voice diarization
+# Build configuration - using our optimized multi-stage Dockerfile
 build:
   method: docker
   context: ./
-  # Use Dockerfile.porter-only which is optimized for Porter deployment
-  dockerfile: ./backend/Dockerfile.porter-only
+  dockerfile: ./backend/voice-diarization/Dockerfile
 
-# Voice diarization job service with GPU
+# Voice diarization job service
 services:
-  - name: voice-diarization-job
+  - name: voice-job
     type: job
-    run: bash scripts/start_voice_job.sh
+    # Direct Python execution with unbuffered output
+    run: python -u voice_job.py
+    # Resource allocation (optimized for efficiency)
     cpuCores: 2
-    ramMegabytes: 8192
-    gpuCoresNvidia: 1  # GPU allocation required for TitaNet
-    # Cron schedule - configure in Porter dashboard after deployment
-    # Example: "0 3 * * *" for daily at 3 AM
+    ramMegabytes: 4096
+    gpuCoresNvidia: 1
+    # Timeout for long-running jobs (1 hour)
+    timeout: 3600
+    # Retry policy
+    retryCount: 2
+    retryDelay: 300  # 5 minutes between retries
+    # Note: Configure cron schedule in Porter dashboard
+    # Recommended: "0 3 * * *" for daily at 3 AM
 
-# Environment variables - will be injected from Porter dashboard
+# Environment variables
+# Additional secrets should be configured in Porter dashboard
 env:
-  PYTHONPATH: /app
-  PYTORCH_CUDA_AVAILABLE: "1"
-  # Job parameters - set these in Porter dashboard or pass as command args
-  # LOCATION_ID: "your-location-uuid"
-  # DATE: "2025-10-06"
-  # All other env vars (AAI_API_KEY, SUPABASE_*, etc.) configured in Porter dashboard
+  # Python configuration
+  PYTHONUNBUFFERED: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONPATH: "/app"
+
+  # GPU configuration
+  CUDA_VISIBLE_DEVICES: "0"
+  PYTORCH_CUDA_ALLOC_CONF: "max_split_size_mb:512"
+
+  # Job configuration (can be overridden in Porter dashboard)
+  BATCH_SIZE: "10"
+  MAX_WORKERS: "2"
+  CONFIDENCE_THRESHOLD: "0.75"
+
+  # Health check configuration
+  HEALTH_CHECK_PORT: "8080"
+
+  # Service identification
+  SERVICE_NAME: "voice-diarization"
+  SERVICE_VERSION: "2.0.0"
+
+# Auto-rollback configuration
+autoRollback:
+  enabled: true
+
+# Note: Set these environment variables in Porter dashboard:
+# - LOCATION_ID: UUID of the location to process
+# - DATE: Date in YYYY-MM-DD format
+# - SUPABASE_URL: Supabase project URL
+# - SUPABASE_SERVICE_KEY: Supabase service key
+# - AAI_API_KEY: AssemblyAI API key
+# - GOOGLE_DRIVE_CREDENTIALS: Google Drive service account JSON (or path)
