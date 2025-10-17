@@ -16,9 +16,25 @@ client = OpenAI(api_key=settings.OPENAI_API_KEY)
 db = Supa()
 
 
-def split_into_transactions(transcript_segments: List[Dict], date: str, audio_id: str, run_id: str, audio_started_at_iso: str = "10:00:00Z") -> List[Dict]:
+def split_into_transactions(transcript_segments: List[Dict], date: str, audio_id: str, run_id: str, audio_started_at_iso: str = "10:00:00Z", test_first_segment: bool = True) -> List[Dict]:
     # Anchor all transaction times strictly to the audio's database start time
     print(f"Using database timestamp: {date}T{audio_started_at_iso}")
+    
+    # Test mode: process first segment only first
+    if test_first_segment and transcript_segments:
+        print(f"🧪 TEST MODE: Processing first segment only ({len(transcript_segments)} total segments)")
+        first_segment = transcript_segments[0]
+        print(f"First segment: {first_segment.get('text', '')[:100]}...")
+        
+        # Process first segment
+        first_transactions = _process_segment(first_segment, date, audio_id, run_id, audio_started_at_iso)
+        print(f"✅ First segment processed: {len(first_transactions)} transactions")
+        
+        if len(transcript_segments) == 1:
+            return first_transactions
+        
+        # Ask user if they want to continue with parallel processing
+        print(f"🔄 Proceeding with parallel processing of remaining {len(transcript_segments) - 1} segments...")
     
     # Process segments in parallel with controlled concurrency
     with ThreadPoolExecutor(max_workers=10) as executor:  # Reduced to avoid rate limits
