@@ -53,8 +53,12 @@ RUN pip install --no-deps nemo-toolkit[asr]==1.21.0
 # Install Cython BEFORE youtokentome (required for building)
 RUN pip install Cython>=3.0.0
 
-# Install remaining NeMo requirements
+# Install remaining NeMo requirements (including previously missing dependencies)
 RUN pip install \
+    huggingface-hub==0.23.5 \
+    onnx>=1.7.0 \
+    ruamel.yaml \
+    wget>=3.2 \
     text-unidecode \
     youtokentome>=1.0.6 \
     sentencepiece>=0.1.99 \
