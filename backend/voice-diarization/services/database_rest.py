@@ -2,16 +2,58 @@
 """
 Database REST Client for Voice Diarization
 Uses direct REST API calls to Supabase, avoiding SDK and Pydantic conflicts
+Includes retry logic and defensive response parsing for reliability
 """
 
 import os
 import json
 import logging
-from typing import Dict, Any, List, Optional
+import time
+from typing import Dict, Any, List, Optional, Callable
 from datetime import datetime
 import httpx
+from functools import wraps
 
 logger = logging.getLogger(__name__)
+
+
+def retry_on_failure(retries: int = 3, delay: float = 5.0, backoff: float = 1.5):
+    """
+    Decorator to retry a function on failure with exponential backoff.
+
+    Args:
+        retries: Number of retry attempts
+        delay: Initial delay between retries in seconds
+        backoff: Multiplier for delay on each retry
+    """
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            current_delay = delay
+            last_exception = None
+
+            for attempt in range(retries):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    last_exception = e
+                    if attempt < retries - 1:
+                        logger.warning(
+                            f"Attempt {attempt + 1}/{retries} failed for {func.__name__}: {e}. "
+                            f"Retrying in {current_delay:.1f}s..."
+                        )
+                        time.sleep(current_delay)
+                        current_delay *= backoff
+                    else:
+                        logger.error(
+                            f"All {retries} attempts failed for {func.__name__}: {e}"
+                        )
+
+            # If all retries failed, raise the last exception
+            raise last_exception
+
+        return wrapper
+    return decorator
 
 
 class DatabaseClient:
@@ -51,6 +93,7 @@ class DatabaseClient:
         if hasattr(self, 'client'):
             self.client.close()
 
+    @retry_on_failure(retries=3, delay=5.0, backoff=1.5)
     def _request(
         self,
         method: str,
@@ -59,7 +102,7 @@ class DatabaseClient:
         data: Optional[Any] = None
     ) -> Any:
         """
-        Make a REST API request with error handling.
+        Make a REST API request with error handling and automatic retries.
 
         Args:
             method: HTTP method (GET, POST, PATCH, DELETE)
@@ -175,7 +218,8 @@ class DatabaseClient:
         limit: int = 1000
     ) -> List[Dict[str, Any]]:
         """
-        Get all transactions for a location and date.
+        Get all valid transactions for a location and date.
+        Automatically filters out incomplete orders and already-labeled transactions.
 
         Args:
             location_id: Location UUID
@@ -183,7 +227,7 @@ class DatabaseClient:
             limit: Maximum number of transactions
 
         Returns:
-            List of transaction records
+            List of transaction records ready for processing
         """
         try:
             # Query graded_rows_filtered view
@@ -193,14 +237,41 @@ class DatabaseClient:
                 params={
                     'location_id': f'eq.{location_id}',
                     'run_date': f'eq.{date}',
-                    'select': 'transaction_id,grade_id,audio_s3_bucket,audio_s3_key,transcription',
+                    'select': 'transaction_id,grade_id,audio_s3_bucket,audio_s3_key,transcription,complete_order,worker_id',
                     'limit': limit,
                     'order': 'transaction_created_at'
                 }
             )
 
-            logger.info(f"Found {len(result)} transactions for {location_id} on {date}")
-            return result if result else []
+            if not result:
+                logger.info(f"No transactions found for {location_id} on {date}")
+                return []
+
+            # Filter out transactions that should be skipped
+            valid_transactions = []
+            skipped_incomplete = 0
+            skipped_labeled = 0
+
+            for transaction in result:
+                # Skip if order not complete
+                if not transaction.get('complete_order'):
+                    skipped_incomplete += 1
+                    continue
+
+                # Skip if worker already labeled
+                if transaction.get('worker_id') is not None:
+                    skipped_labeled += 1
+                    continue
+
+                valid_transactions.append(transaction)
+
+            logger.info(
+                f"Found {len(result)} transactions for {location_id} on {date}: "
+                f"{len(valid_transactions)} valid, {skipped_incomplete} incomplete, "
+                f"{skipped_labeled} already labeled"
+            )
+
+            return valid_transactions
 
         except Exception as e:
             logger.error(f"Error fetching transactions: {e}")
@@ -288,6 +359,52 @@ class DatabaseClient:
         except Exception as e:
             logger.error(f"Error fetching location name: {e}")
             return None
+
+    def should_skip_transaction(self, transaction_id: str) -> bool:
+        """
+        Check if a transaction should be skipped (not complete or already labeled).
+
+        Args:
+            transaction_id: Transaction ID to check
+
+        Returns:
+            True if transaction should be skipped, False otherwise
+        """
+        try:
+            # Query graded_rows_filtered for this transaction
+            result = self._request(
+                'GET',
+                'graded_rows_filtered',
+                params={
+                    'transaction_id': f'eq.{transaction_id}',
+                    'select': 'complete_order,worker_id'
+                }
+            )
+
+            # If transaction not found, skip it
+            if not result or len(result) == 0:
+                logger.debug(f"Transaction {transaction_id} not found in graded_rows_filtered. Skipping.")
+                return True
+
+            transaction = result[0]
+
+            # Skip if order not complete
+            if not transaction.get('complete_order'):
+                logger.debug(f"Order for transaction {transaction_id} not complete. Skipping.")
+                return True
+
+            # Skip if worker already labeled
+            if transaction.get('worker_id') is not None:
+                logger.debug(f"Worker for transaction {transaction_id} already labeled. Skipping.")
+                return True
+
+            # Transaction is valid for processing
+            return False
+
+        except Exception as e:
+            logger.error(f"Error checking transaction {transaction_id}: {e}")
+            # If check fails, skip transaction to be safe
+            return True
 
     def test_connection(self) -> bool:
         """
