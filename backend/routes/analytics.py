@@ -6,7 +6,7 @@ from middleware.auth import require_auth
 from services.items import ItemLookupService
 
 db = Supa()
-item_lookup_service = ItemLookupService()
+item_lookup_service = ItemLookupService(db=db)
 # Create blueprint
 analytics_bp = Blueprint('analytics', __name__, url_prefix='/api')
 

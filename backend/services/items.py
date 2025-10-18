@@ -79,6 +79,9 @@ class ItemLookupService:
                 }
             
             logger.info(f"Loaded {len(self.items_map)} items, {len(self.meals_map)} meals, {len(self.misc_items_map)} add-ons from database")
+            print(f"🔍 DEBUG: Items map keys: {list(self.items_map.keys())[:10]}...")  # Show first 10 keys
+            print(f"🔍 DEBUG: Meals map keys: {list(self.meals_map.keys())[:10]}...")  # Show first 10 keys
+            print(f"🔍 DEBUG: Misc items map keys: {list(self.misc_items_map.keys())[:10]}...")  # Show first 10 keys
             
         except Exception as e:
             logger.error(f"Error loading menu data from database: {e}")
@@ -127,8 +130,11 @@ class ItemLookupService:
         # Get the item data from the database
         item_data = self.items_map.get(item_id, self.meals_map.get(item_id, self.misc_items_map.get(item_id, None)))
         if item_data:
-            return item_data.get("item_name","")
+            name = item_data.get("item_name","")
+            print(f"🔍 DEBUG: Found item {item_id}: '{name}'")
+            return name
         else:
+            print(f"🔍 DEBUG: No data found for item_id {item_id}")
             return ""
     
     
@@ -166,11 +172,15 @@ class ItemLookupService:
         """Generate a map of item IDs to item names"""
         item_names_map = {}
 
-        items = db.get_all_item_ids(self.location_id)
+        # Use the same db instance that was used to load the data
+        items = self.db.get_all_item_ids(self.location_id)
 
         print(f"🔍 DEBUG: Got {len(items)} items")
+        print(f"🔍 DEBUG: First few items: {items[:3] if items else 'No items'}")
 
         for item in items: 
-            item_names_map[item['item_id']] = self.get_full_item_name(item)
-
+            item_names_map[item['item_id']] = self.get_full_item_name(item['item_id'])
+        
+        print(f"🔍 DEBUG: Item names map: {item_names_map}")
+        
         return item_names_map

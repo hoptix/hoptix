@@ -6,14 +6,14 @@
 set -e  # Exit on any error
 
 # Configuration
-RUN_ID="26534cd7-d097-4510-959f-6dfe35be1323"
-GDRIVE_FILE_ID="1r42Gvh8roy5hRlge7a3Kk1eHuRF-c8Sj"
-ANCHOR_TRANSACTION_TIME="07:00:00"
+RUN_ID="bd87ea28-45f9-40f2-89b8-30c853bed490"
+GDRIVE_FILE_ID="1xWuxY5BdZpatr-tIdxRbbuPe0t6hhWc1"
+ANCHOR_TRANSACTION_TIME="10:00:00"
 ANCHOR_VIDEO_TIME="00:00:00"
 
 # File paths
 DOWNLOADS_DIR="$HOME/Downloads"
-MP3_FILENAME="audio_2025-10-07_10-00-03.mp3"
+MP3_FILENAME="Copy of audio_2025-10-10_10-00-02.mp3"
 MP3_PATH="$DOWNLOADS_DIR/$MP3_FILENAME"
 
 echo "🎯 Processing run: $RUN_ID"
@@ -46,7 +46,16 @@ download_mp3() {
     cat > /tmp/download_mp3.py << 'EOF'
 import sys
 import os
-from integrations.gdrive_client import GoogleDriveClient
+
+# Add the current directory to Python path
+sys.path.insert(0, os.getcwd())
+
+try:
+    from integrations.gdrive_client import GoogleDriveClient
+except ImportError as e:
+    print(f"❌ Import error: {e}")
+    print("Make sure you're running from the hoptix-flask directory")
+    sys.exit(1)
 
 def main():
     if len(sys.argv) != 3:
@@ -73,9 +82,9 @@ if __name__ == "__main__":
     main()
 EOF
 
-    # Run the download script
+    # Run the download script from the hoptix-flask directory
     cd "$(dirname "$0")/.."
-    python /tmp/download_mp3.py "$GDRIVE_FILE_ID" "$MP3_PATH"
+    PYTHONPATH="$(pwd)" python /tmp/download_mp3.py "$GDRIVE_FILE_ID" "$MP3_PATH"
     
     # Clean up
     rm -f /tmp/download_mp3.py
@@ -149,7 +158,17 @@ echo "🎬 Using anchor MP3 time: $ANCHOR_VIDEO_TIME"
 
 # Run the cutting script
 cd "$(dirname "$0")/.."
-source venv/bin/activate
+echo "📁 Current directory: $(pwd)"
+echo "🔍 Checking for virtual environment..."
+if [ -f "venv/bin/activate" ]; then
+    echo "✅ Found virtual environment, activating..."
+    source venv/bin/activate
+else
+    echo "❌ Virtual environment not found at venv/bin/activate"
+    echo "Available files in current directory:"
+    ls -la
+    exit 1
+fi
 python services/cut_tx_audio_supabase.py \
     --mp3-filename "$MP3_FILENAME" \
     --anchor-started-at "$ANCHOR_STARTED_AT" \
