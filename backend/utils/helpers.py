@@ -100,7 +100,7 @@ def convert_item_ids_to_names(item_data, item_lookup: ItemLookupService) -> str:
         item_names = []
         for item_id in item_list:
             if item_id and str(item_id) != '0' and str(item_id).strip():
-                item_name = item_lookup.get_item_name(str(item_id).strip())
+                item_name = item_lookup.get_full_item_name(str(item_id).strip())
                 item_names.append(item_name)
         
         return ', '.join(item_names) if item_names else 'None'

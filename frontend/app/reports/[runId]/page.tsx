@@ -913,10 +913,10 @@ export default function AnalyticsReportPage() {
                 <h1 className="text-4xl font-bold text-gray-900 mb-2">Analytics Report</h1>
                 <div className="flex items-center space-x-3 text-gray-600">
                   <span className="text-lg font-medium">
-                    <p>October 6th, 2025</p>
+                    <p>{data.run_date}</p>
                                  </span>
                   <span className="text-gray-400">•</span>
-                  <span className="text-lg">DQ Cary</span>
+                  <span className="text-lg">{data.location_name}</span>
                               </div>
                               </div>
                               </div>

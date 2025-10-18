@@ -117,22 +117,19 @@ class ItemLookupService:
         except Exception as e:
             logger.error(f"Error loading menu data: {e}")
             
-    def get_full_item_name(self, item: dict) -> str:
+    def get_full_item_name(self, item_id: int) -> str:
         """Get human-readable item name from item code, optionally prefixing a provided size.
 
         - item_id is the item ID
         """
-        if item is None:
+        if item_id is None:
             return ""
-        # Get the item dat
-
-        print(f"🔍 DEBUG: Got item data: {item}, item_size: {item.get('size')}, item_name: {item.get('item_name')}")
-
-        if item.get("size") and item.get("size") != "None": 
-            return item.get("size") + " " + item.get("item_name")
+        # Get the item data from the database
+        item_data = self.items_map.get(item_id, self.meals_map.get(item_id, self.misc_items_map.get(item_id, None)))
+        if item_data:
+            return item_data.get("item_name","")
         else:
-            return item.get("item_name")
-    
+            return ""
     
     
     def get_item_price(self, item_code: str) -> float:
