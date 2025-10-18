@@ -253,7 +253,7 @@ class Supa:
 
     def get_addons_prices(self, location_id: str):
         """Get addon prices as a dict mapping item_id to price"""
-        result = self.client.table("add_ons").select("item_id, price").eq("location_id", location_id).execute()
+        result = self.client.table("add_ons").select("item_id, price").execute()
         prices = {} 
         for addon in result.data:
             addon_id = str(addon["item_id"])

@@ -4,10 +4,14 @@ import json
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from services.analytics import Analytics
+from services.database import Supa
 
-
-RUN_ID = "9ba8c21f-3991-4aa9-8c56-c6d8374c72d3"
-analytics = Analytics(RUN_ID)
+db = Supa()
+run_Ids = db.client.table("runs").select("id").execute().data   
+for run_id in run_Ids:
+    analytics = Analytics(run_id["id"])
+    item_analytics, revenue_map = analytics.get_item_analytics()
+    analytics.upload_to_db()
 
 # assert analytics.get_total_upsell_opportunities() == 135
 # assert analytics.get_total_upsell_offers() == 29
@@ -18,9 +22,3 @@ analytics = Analytics(RUN_ID)
 # assert analytics.get_total_addon_opportunities() == 288
 # assert analytics.get_total_addon_offers() == 5
 # assert analytics.get_total_addon_success() == 2
-
-# Test item-level analytics
-item_analytics, revenue_map = analytics.get_item_analytics()
-
-
-analytics.upload_to_db()
